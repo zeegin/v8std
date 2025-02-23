@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  mkdocs:
+    container_name: mkdocs
+    build: ./docker/
+    restart: "no"
+    environment:
+      LIVE_RELOAD_SUPPORT: 'false'
+      FAST_MODE: 'true'
+      DOCS_DIRECTORY: 'docs'
+    volumes:
+      - ./:/mkdocs
+    working_dir: /mkdocs
+    command: build
+
+  nginx:
+    image: nginx:alpine
+    restart: always    
+    ports:
+      - "8000:8080"
+    volumes: 
+      - ./site/:/usr/share/nginx/html/
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:rw
