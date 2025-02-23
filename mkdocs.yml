@@ -67,9 +67,15 @@ extra:
       link: 'https://github.com/zeegin/v8std'
     - icon: fontawesome/brands/telegram
       link: 'https://t.me/v8std'
-  analytics:
-    provider: google
-    property: G-T64GZF40WT
+  consent:
+    title: Cookie
+    description: >- 
+      Мы используем файлы cookie для распознавания ваших повторных посещений и предпочтений,
+      а также для оценки эффективности нашей документации и того, находят ли пользователи то, что ищут.
+      С вашего согласия вы помогаете нам сделать нашу документацию лучше.
+    cookies:
+      analytics: Yandex.Metrika
+
 
 extra_css:
   - 'assets/stylesheets/extra.css'
