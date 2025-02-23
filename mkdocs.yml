@@ -35,21 +35,30 @@ theme:
     - search.highlight
     - search.share
     - search.suggest
-  palette: 
+  palette:
+
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Автоматически
+
     # Palette toggle for light mode
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default 
       primary: white
       accent: blue
       toggle:
-        icon: material/lightbulb-outline
+        icon: material/brightness-7
         name: Выключить свет
 
     # Palette toggle for dark mode
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: black
       accent: light blue
       toggle:
-        icon: material/lightbulb
+        icon: material/brightness-4
         name: Включить свет
   font:
     text: Roboto
