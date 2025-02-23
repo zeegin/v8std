@@ -2,10 +2,7 @@ site_name: Стандарты разработки 1С от Ингвара
 site_url: https://v8std.ru
 site_author: Ingvar Vilkman
 site_description: >-
-  Система стандартов и&nbsp;методик разработки конфигураций для платформы 1С:Предприятие 8.
-  Исходные стандарты опубликованы на сайте ИТС <a href=https://its.1c.ru/db/v8std>https://its.1c.ru/db/v8std</a>.<br><br>
-  Этот проект создан для того, чтобы описать эти&nbsp;же стандарты другими словами.<br>
-  Что-то опущено, что-то детализировано. Суть та же. Частный взгляд Ингвара.
+  Частный взгляд Ингвара.
 
 repo_name: zeegin/v8std
 repo_url: https://github.com/zeegin/v8std
