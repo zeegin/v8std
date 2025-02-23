@@ -27,6 +27,7 @@ theme:
     - content.tabs.link
     - header.autohide
     - navigation.indexes
+    - navigation.footer
     - navigation.sections
     - navigation.tabs
     - navigation.top
