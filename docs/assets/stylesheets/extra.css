@@ -28,7 +28,7 @@
 }
 
 /* Icon after offsite links */
-a[href^="http"]:not(.md-social__link):not(.md-button):after {
+.md-main a[href^="http"]:not(.md-button):after {
     content: '';
     display: inline-block;
     width: 1em;
@@ -41,11 +41,11 @@ a[href^="http"]:not(.md-social__link):not(.md-button):after {
 }
 
 /* Icon after offsite links at dark */
-[data-md-color-scheme=slate] a[href^="http"]:not(.md-social__link):not(.md-button):after {
+[data-md-color-scheme=slate] .md-main a[href^="http"]:not(.md-button):after {
     background-color: #95A0EB;
 }
 
 /* Icon after offsite links hover */
-a[href^="http"]:not(.md-social__link):not(.md-button):hover:after {
+.md-main a[href^="http"]:not(.md-button):hover:after {
     background-color: var(--md-accent-fg-color);
 }
