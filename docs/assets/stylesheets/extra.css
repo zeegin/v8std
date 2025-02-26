@@ -17,11 +17,35 @@
 [data-md-color-scheme=slate] .md-typeset h6 {
     opacity: .2
 }
-/* Color for anchors at dark*/
+/* Color for anchors at dark */
 [data-md-color-scheme=slate] a {
     color: #95A0EB;
 }
 
+/* Color for youtube icon */
 .youtube {
     color: #EE0F0F;
+}
+
+/* Icon after offsite links */
+a[href^="http"]:after {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-left: 0.25em;
+    background-size: 100%;
+    background-color: var(--md-typeset-a-color);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3C!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--%3E%3Cpath d='M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32zM80 32C35.8 32 0 67.8 0 112v320c0 44.2 35.8 80 80 80h320c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v112c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h112c17.7 0 32-14.3 32-32s-14.3-32-32-32z'%3E%3C/path%3E%3C/svg%3E");
+    transform: translateY(0.15em);
+}
+
+/* Icon after offsite links at dark */
+[data-md-color-scheme=slate] a[href^="http"]:after {
+    background-color: #95A0EB;
+}
+
+/* Icon after offsite links hover */
+a[href^="http"]:hover:after {
+    background-color: var(--md-accent-fg-color);
 }
