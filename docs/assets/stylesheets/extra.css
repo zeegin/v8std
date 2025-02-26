@@ -28,7 +28,7 @@
 }
 
 /* Icon after offsite links */
-a[href^="http"]:after {
+a[href^="http"]:not(.md-social__link):after {
     content: '';
     display: inline-block;
     width: 1em;
