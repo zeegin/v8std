@@ -115,8 +115,8 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.magiclink:
       repo_url_shorthand: true
-      user: squidfunk
-      repo: mkdocs-material
+      user: zeegin
+      repo: v8std
   - pymdownx.mark
   - pymdownx.smartsymbols
   - pymdownx.superfences:
