@@ -8,7 +8,7 @@ repo_name: zeegin/v8std
 repo_url: https://github.com/zeegin/v8std
 edit_uri: edit/master/docs
 
-copyright: No Rights Reserved CREATIVE COMMONS CC0
+copyright: No Rights Reserved <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.ru">CREATIVE COMMONS CC0</a>
 
 theme:
   name: material
