@@ -1,4 +1,4 @@
-site_name: Стандарты разработки 1С от Ингвара
+site_name: Стандарты разработки 1С
 site_url: https://v8std.ru
 site_author: Ingvar Vilkman
 site_description: >-
@@ -90,6 +90,7 @@ extra:
 
 extra_css:
   - 'assets/stylesheets/extra.css'
+  - 'assets/stylesheets/monokai.css'
 
 # Extensions
 markdown_extensions:
@@ -110,8 +111,8 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.keys
   - pymdownx.magiclink:
       repo_url_shorthand: true
@@ -139,6 +140,7 @@ markdown_extensions:
 # Page tree
 nav:
   - Домашняя: index.md
+  - Встроенный язык: lang/index.md
   - Стандарты:
     - ИТС:
       - Создание и изменение объектов метаданных:
@@ -157,16 +159,25 @@ nav:
         - Оформление модулей:
           - Тексты модулей: std/456.md
           - Структура модуля: std/455.md
+          - Описание процедур и функций: std/453.md
           - Имена процедур и функций: std/647.md
-          - Структуры и таблицы значений в качестве параметров процедур и функций: std/640.md
+          - Параметры процедур и функций: std/640.md
+          - Структуры и таблицы значений в качестве параметров процедур и функций: std/641.md
           - Правила образования имен переменных: std/454.md
           - Работа с параметром "Отказ" в обработчиках событий: std/686.md
         - Использование конструкций встроенного языка:
           - Ограничение на использование оператора Перейти: std/547.md
+        - Использование прикладных объектов и универсальных коллекций значений:
+          - Ограничение на использование экспортных процедур и функций: std/544.md
+          - Использование объектов типа Структура: std/693.md
       - Общие вопросы безопасности: 
         - Безопасность прикладного программного интерфейса сервера: std/678.md
         - Ограничение на выполнение "внешнего" кода: std/669.md
         - Ограничения на использование внешних ресурсов: std/794.md
       - Проектирование интерфейсов:
         - Размеры экрана: std/727.md
+      - Разработка пользовательских интерфейсов:
+        - Реализация работы формы:
+          - Открытие параметризированных форм: std/741.md
+          - Правила создания модулей форм: std/630.md
   - Помочь: support.md
