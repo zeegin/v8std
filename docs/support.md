@@ -18,6 +18,9 @@ hide:
 Можно просто нажать на иконку `Редактировать` и прислать Pull Request.
 
 Хотите изменить дизайн и посмотреть, как отладить сайт локально?
+
+### Вариант 1. Локально через `venv`
+
 Выполните следующие операции на своем компьютере:
 
 ```cmd
@@ -25,10 +28,32 @@ git clone https://github.com/zeegin/v8std.git
 
 cd v8std
 
+python -m venv .venv
+# macOS/Linux
+source .venv/bin/activate
+# Windows (PowerShell)
+# .venv\Scripts\Activate.ps1
+
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
 mkdocs serve --watch-theme
+```
+
+### Вариант 2. Локально через Docker
+
+```cmd
+git clone https://github.com/zeegin/v8std.git
+
+cd v8std
+
+docker compose -f docker-compose/docker-compose.yml up --build
+```
+
+Сборка статической версии + проверка через `nginx`:
+
+```cmd
+docker compose -f docker-compose/docker-compose.ngnix.yml up --build
 ```
 
 Если нужно локально генерировать social cards (Open Graph), установите системную библиотеку Cairo и включите плагин переменной окружения `MKDOCS_SOCIAL=true`.
