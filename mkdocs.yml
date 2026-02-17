@@ -2,11 +2,11 @@ site_name: Стандарты разработки 1С
 site_url: https://v8std.ru
 site_author: Ingvar Vilkman
 site_description: >-
-  Частный взгляд Ингвара.
+  Система стандартов и методик разработки конфигураций для платформы 1С:Предприятие 8.
 
 repo_name: zeegin/v8std
 repo_url: https://github.com/zeegin/v8std
-edit_uri: edit/master/docs
+edit_uri: edit/main/docs
 
 copyright: No Rights Reserved <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.ru">CREATIVE COMMONS CC0</a>
 
@@ -19,40 +19,49 @@ theme:
   search_index_only: true
 
   language: ru
-  logo: 'assets/images/logo.png'
-  favicon: 'assets/images/logo.png'
 
   features:
+    - content.action.edit
+    - content.action.view
     - content.code.annotate
     - content.code.copy
+    # - content.code.select
+    # - content.footnote.tooltips
     - content.tabs.link
+    - content.tooltips
     - header.autohide
-    - navigation.indexes
+    # - navigation.expand
     - navigation.footer
+    - navigation.indexes
+    # - navigation.instant
+    # - navigation.instant.prefetch
+    # - navigation.instant.progress
+    # - navigation.instant.preview
     - navigation.sections
     - navigation.tabs
+    # - navigation.tabs.sticky
     - navigation.top
     - navigation.tracking
+    # - navigation.path
     - search.highlight
     - search.share
     - search.suggest
+    - toc.follow
+    # - toc.integrate
   palette:
-
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
       toggle:
         icon: material/brightness-auto
         name: Автоматически
-
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
-      scheme: default 
+      scheme: default
       primary: white
       accent: blue
       toggle:
         icon: material/brightness-7
         name: Выключить свет
-
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
@@ -64,13 +73,35 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
+  logo: 'assets/images/logo.png'
+  favicon: 'assets/images/logo.png'
   icon:
-    logo: logo
+    # logo: 'assets/images/logo.png'
+    repo: fontawesome/brands/github
+    edit: material/file-edit-outline
+    view: material/file-eye-outline
 
 plugins:
+  - meta
   - search:
       lang:
         - ru
+  - social:
+      enabled: !ENV [MKDOCS_SOCIAL, false]
+      cards_layout: default/variant
+      cards_layout_options:
+        background_color: "#303F8F"
+        color: "#FFFFFF"
+        logo: docs/assets/images/logo-social.png
+  - git-revision-date-localized:
+      enable_creation_date: true
+      strict: false
+      enable_git_follow: false
+  # - git-committers:
+  #     repository: zeegin/v8std
+  #     branch: main
+  # - git-authors
+
 
 extra:
   social:
@@ -187,4 +218,4 @@ nav:
           - Правила создания модулей форм: std/630.md
           - Обращение из кода к автоматически формируемым элементам управления формы: std/536.md
           - Обращение из кода к пользовательским элементам управления формы: std/545.md
-  - Помочь: support.md
+  - Поддержка: support.md

@@ -1,0 +1,6 @@
+mkdocs
+mkdocs-material[imaging]
+mkdocs-minify-plugin
+mkdocs-redirects
+mkdocs-git-revision-date-localized-plugin
+pygments-bsl

@@ -27,8 +27,58 @@
     color: #EE0F0F;
 }
 
-/* Icon after offsite links */
-.md-main a[href^="http"]:not(.md-button):after {
+/* Increase hitbox for edit/view action buttons */
+.md-typeset .md-content__button {
+    align-items: center;
+    border-radius: 0.2rem;
+    display: inline-flex;
+    justify-content: center;
+    line-height: 0;
+    margin: 0.3rem 0;
+    min-height: 1.9rem;
+    min-width: 1.9rem;
+    padding: 0.25rem;
+    position: relative;
+}
+
+[dir=ltr] .md-typeset .md-content__button {
+    margin-left: 0.2rem;
+}
+
+[dir=rtl] .md-typeset .md-content__button {
+    margin-right: 0.2rem;
+}
+
+/* Prevent overlap: the first heading after action buttons must clear floats */
+.md-typeset .md-content__button + h1,
+.md-typeset .md-content__button + h2,
+.md-typeset .md-content__button + h3,
+.md-typeset .md-content__button + h4,
+.md-typeset .md-content__button + h5,
+.md-typeset .md-content__button + h6 {
+    clear: both;
+}
+
+/* Extend hover/click zone outside the icon box */
+.md-typeset .md-content__button::before {
+    content: "";
+    inset: -0.2rem;
+    position: absolute;
+}
+
+/* Make hover state more obvious and stable */
+.md-typeset .md-content__button:hover,
+.md-typeset .md-content__button:focus-visible {
+    background-color: var(--md-accent-fg-color--transparent);
+}
+
+/* Route hover/click to anchor box, not only painted SVG parts */
+.md-content__button svg {
+    pointer-events: none;
+}
+
+/* Icon after offsite links (exclude action buttons: edit/view) */
+.md-main a[href^="http"]:not(.md-button):not(.md-content__button):after {
     content: '';
     display: inline-block;
     width: 1em;
@@ -41,11 +91,11 @@
 }
 
 /* Icon after offsite links at dark */
-[data-md-color-scheme=slate] .md-main a[href^="http"]:not(.md-button):after {
+[data-md-color-scheme=slate] .md-main a[href^="http"]:not(.md-button):not(.md-content__button):after {
     background-color: #95A0EB;
 }
 
 /* Icon after offsite links hover */
-.md-main a[href^="http"]:not(.md-button):hover:after {
+.md-main a[href^="http"]:not(.md-button):not(.md-content__button):hover:after {
     background-color: var(--md-accent-fg-color);
 }
