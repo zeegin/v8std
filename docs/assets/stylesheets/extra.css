@@ -4,8 +4,31 @@
 }
 
 /* disable toc nav*/
-.md-nav--secondary {
+/* .md-nav--secondary {
     display: none;
+} */
+
+/* Desktop: use full content width when secondary TOC is not needed */
+@media screen and (min-width: 76.25em) {
+    .md-sidebar--secondary {
+        display: none !important;
+    }
+
+    [dir=ltr] .md-sidebar--secondary:not([hidden]) ~ .md-content > .md-content__inner,
+    [dir=rtl] .md-sidebar--secondary:not([hidden]) ~ .md-content > .md-content__inner {
+        margin-inline: 1.2rem !important;
+    }
+}
+
+/* Tablet: center content when left sidebar is collapsed */
+@media screen and (min-width: 60em) and (max-width: 76.234375em) {
+    .md-main__inner > .md-content > .md-content__inner {
+        margin-inline: 1.2rem !important;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) {
+        padding-inline-end: 0 !important;
+    }
 }
 
 /* Color for iterators */
@@ -16,6 +39,127 @@
 /* Color for iterators at dark */
 [data-md-color-scheme=slate] .md-typeset h6 {
     opacity: .2
+}
+
+/* Keep heading permalink attached to the last heading word */
+.md-typeset :is(h1, h2, h3, h4, h5, h6) > .headerlink {
+    display: inline;
+    margin-inline-start: 0;
+    white-space: nowrap;
+}
+
+.md-typeset :is(h1, h2, h3, h4, h5, h6) > .headerlink::before {
+    content: "\00a0";
+}
+
+/* Two-column content layout for pages that use h6 as section labels */
+@media screen and (min-width: 60em) {
+    .md-content__inner.md-typeset:has(> h6) {
+        --std-label-column-width: max-content;
+        --std-column-gap: clamp(0.2rem, 0.5vw, 0.45rem);
+        align-items: start;
+        column-gap: var(--std-column-gap);
+        display: grid;
+        grid-template-columns: var(--std-label-column-width) minmax(0, 1fr);
+        padding-inline-end: 0;
+        position: relative;
+        row-gap: 0.2rem;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > h6 {
+        align-self: start;
+        display: flex;
+        gap: 0.15rem;
+        grid-column: 1;
+        justify-content: flex-end;
+        justify-self: stretch;
+        margin: 0.85rem 0 0;
+        min-width: 0;
+        padding-inline-end: 0.1rem;
+        text-align: end;
+        text-align-last: end;
+        white-space: nowrap;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > h6 > .headerlink {
+        flex: 0 0 auto;
+        margin: 0;
+        min-width: 0.7em;
+        position: static;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > h6:first-of-type {
+        align-self: baseline;
+        grid-row: 1;
+        line-height: 1.3;
+        margin-top: 0;
+    }
+
+    /* Lower all section labels except the first one to align with right paragraph line */
+    .md-content__inner.md-typeset:has(> h6) > h6:not(:first-of-type) {
+        transform: translateY(0.12rem);
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > h6:first-of-type + h1 {
+        align-self: baseline;
+        grid-column: 2;
+        grid-row: 1;
+        margin: 0;
+        padding-inline-end: 4.8rem;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > :not(h6):not(.md-content__button) {
+        grid-column: 2;
+        min-width: 0;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > h6 + :not(h1) {
+        margin-top: 0.85rem;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > .md-source-file {
+        grid-column: 1 / -1;
+        margin-top: 1rem;
+    }
+
+    .md-content__inner.md-typeset:has(> h6) > .md-content__button {
+        align-self: start;
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+        margin: 0;
+        position: relative;
+        top: auto;
+        z-index: 4;
+    }
+
+    [dir=ltr] .md-content__inner.md-typeset:has(> h6) > .md-content__button {
+        left: auto;
+        right: auto;
+    }
+
+    /* Visual order (LTR): view, then edit */
+    [dir=ltr] .md-content__inner.md-typeset:has(> h6) > .md-content__button:not([rel="edit"]) {
+        margin-inline-end: 2.2rem;
+    }
+
+    [dir=ltr] .md-content__inner.md-typeset:has(> h6) > .md-content__button[rel="edit"] {
+        margin-inline-end: 0;
+    }
+
+    [dir=rtl] .md-content__inner.md-typeset:has(> h6) > .md-content__button {
+        left: auto;
+        right: auto;
+    }
+
+    /* Visual order (RTL): view, then edit */
+    [dir=rtl] .md-content__inner.md-typeset:has(> h6) > .md-content__button:not([rel="edit"]) {
+        margin-inline-start: 2.2rem;
+    }
+
+    [dir=rtl] .md-content__inner.md-typeset:has(> h6) > .md-content__button[rel="edit"] {
+        margin-inline-start: 0;
+    }
 }
 /* Color for anchors at dark */
 [data-md-color-scheme=slate] a {
@@ -57,6 +201,33 @@
 .md-typeset .md-content__button + h5,
 .md-typeset .md-content__button + h6 {
     clear: both;
+}
+
+/* Mobile: align action buttons with first h6 line */
+@media screen and (max-width: 59.984375em) {
+    .md-main__inner {
+        margin-top: 0.4rem;
+    }
+
+    .md-content__inner {
+        padding-top: 0;
+    }
+
+    .md-content__inner:before {
+        display: none;
+        height: 0;
+    }
+
+    .md-typeset .md-content__button {
+        margin-bottom: 0;
+        margin-top: 0;
+    }
+
+    .md-content__inner.md-typeset > .md-content__button + h6 {
+        clear: none;
+        margin-top: 0;
+        padding-inline-end: 4.8rem;
+    }
 }
 
 /* Extend hover/click zone outside the icon box */

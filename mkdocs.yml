@@ -46,7 +46,7 @@ theme:
     - search.highlight
     - search.share
     - search.suggest
-    - toc.follow
+    # - toc.follow
     # - toc.integrate
   palette:
     # Palette toggle for automatic mode
@@ -133,6 +133,7 @@ markdown_extensions:
   - meta
   - md_in_html
   - toc:
+      toc_depth: 0
       permalink: true
   - pymdownx.arithmatex:
       generic: true
@@ -218,4 +219,4 @@ nav:
           - Правила создания модулей форм: std/630.md
           - Обращение из кода к автоматически формируемым элементам управления формы: std/536.md
           - Обращение из кода к пользовательским элементам управления формы: std/545.md
-  - Поддержка: support.md
+  - Помочь: support.md
