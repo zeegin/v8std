@@ -270,3 +270,9 @@
 .md-main a[href^="http"]:not(.md-button):not(.md-content__button):hover:after {
     background-color: var(--md-accent-fg-color);
 }
+
+/* Reduce visual gap between paragraph and following list */
+.md-typeset p + ul,
+.md-typeset p + ol {
+    margin-top: -0.5rem;
+}
