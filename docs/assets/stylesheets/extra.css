@@ -271,8 +271,14 @@
     background-color: var(--md-accent-fg-color);
 }
 
-/* Reduce visual gap between paragraph and following list */
-.md-typeset p + ul,
-.md-typeset p + ol {
+/* Reduce gap after paragraph only in the main article flow */
+.md-content__inner.md-typeset > p + ul,
+.md-content__inner.md-typeset > p + ol {
     margin-top: -0.5rem;
+}
+
+/* Keep default spacing inside admonitions (example/tip/etc.) */
+.md-typeset :is(.admonition, details) p + ul,
+.md-typeset :is(.admonition, details) p + ol {
+    margin-top: 1em;
 }
