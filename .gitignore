@@ -1,5 +1,8 @@
 .vscode/
 site/
 .DS_Store
-standards-table.md
 .cache/
+skills/
+
+standards-table.md
+telegram-autopost-queue.md
