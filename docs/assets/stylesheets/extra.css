@@ -332,3 +332,10 @@
 [data-md-color-scheme=slate] .md-typeset .std-rgb-dot {
     border-color: rgba(255, 255, 255, 0.28);
 }
+
+/* std683: keep equal width of the "Критерий" column in all criteria tables */
+.md-typeset .std683-criteria-tables table th:first-child,
+.md-typeset .std683-criteria-tables table td:first-child {
+    width: 34%;
+    min-width: 34%;
+}
