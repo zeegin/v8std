@@ -298,3 +298,21 @@
     white-space: nowrap;
     width: 12rem;
 }
+
+/* Pair layout: Good vs Bad blocks */
+.md-typeset .std-good-bad-pair {
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: 1fr;
+    margin: 0.6rem 0;
+}
+
+.md-typeset .std-good-bad-pair > :is(.admonition, details) {
+    margin: 0;
+}
+
+@media screen and (min-width: 60em) {
+    .md-typeset .std-good-bad-pair {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
