@@ -282,3 +282,11 @@
 .md-typeset :is(.admonition, details) p + ol {
     margin-top: 1em;
 }
+
+/* std430: widen the hotkey column and prevent auto-wrap in single combinations */
+.md-typeset .std430-hotkeys table th:first-child,
+.md-typeset .std430-hotkeys table td:first-child {
+    min-width: 12rem;
+    white-space: nowrap;
+    width: 12rem;
+}
