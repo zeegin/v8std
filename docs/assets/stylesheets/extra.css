@@ -272,6 +272,14 @@
 }
 
 /* Reduce gap after paragraph only in the main article flow */
+.md-content__inner.md-typeset > p {
+    margin-bottom: 0.55rem;
+}
+
+.md-content__inner.md-typeset > p + p {
+    margin-top: -0.2rem;
+}
+
 .md-content__inner.md-typeset > p + ul,
 .md-content__inner.md-typeset > p + ol {
     margin-top: -0.5rem;
