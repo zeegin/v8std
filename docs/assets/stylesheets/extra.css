@@ -316,3 +316,19 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* RGB value marker */
+.md-typeset .std-rgb-dot {
+    background-color: rgb(var(--std-rgb-color));
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 50%;
+    display: inline-block;
+    height: 0.85em;
+    margin-inline-start: 0.3em;
+    vertical-align: -0.08em;
+    width: 0.85em;
+}
+
+[data-md-color-scheme=slate] .md-typeset .std-rgb-dot {
+    border-color: rgba(255, 255, 255, 0.28);
+}
