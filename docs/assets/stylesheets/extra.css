@@ -18,6 +18,155 @@
     [dir=rtl] .md-sidebar--secondary:not([hidden]) ~ .md-content > .md-content__inner {
         margin-inline: 1.2rem !important;
     }
+
+    /* Expand primary navigation for the top-level "Стандарты" branch */
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) {
+        --std-nav-grow: 8rem;  /* ~160px */
+        --std-grid-grow: 2rem; /* ~40px */
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-main .md-grid {
+        max-width: calc(61rem + var(--std-grid-grow));
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary {
+        width: calc(12.1rem + var(--std-nav-grow));
+    }
+
+    body[dir=ltr]:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-sidebar__inner {
+        padding-right: calc(100% - (11.5rem + var(--std-nav-grow)));
+    }
+
+    body[dir=rtl]:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-sidebar__inner {
+        padding-left: calc(100% - (11.5rem + var(--std-nav-grow)));
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-sidebar__scrollwrap {
+        margin-inline: 0;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary.md-nav--lifted {
+        width: 100%;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav:is([data-md-level="0"], [data-md-level="1"]) {
+        --std-level-indent: 1.3rem;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav[data-md-level="2"] {
+        --std-level-indent: 2.1rem;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav[data-md-level="3"] {
+        --std-level-indent: 2.9rem;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav[data-md-level="4"] {
+        --std-level-indent: 3.7rem;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav:is([data-md-level="5"], [data-md-level="6"]) {
+        --std-level-indent: 4.5rem;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__list {
+        margin-inline-start: 0;
+        padding-inline-start: 0;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > .md-nav__container,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > :is(label.md-nav__link, a.md-nav__link),
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > .md-nav__container > a.md-nav__link,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title {
+        margin-inline: 0;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > :is(label.md-nav__link, a.md-nav__link),
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > .md-nav__container > a.md-nav__link,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title {
+        padding-inline-end: 0.2rem;
+        padding-inline-start: var(--std-level-indent, 1.3rem);
+        position: relative;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary :is(.md-nav__link, .md-nav__title) > .md-ellipsis {
+        min-width: 0;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > :is(label.md-nav__link, a.md-nav__link)::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > .md-nav__container > a.md-nav__link::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title::before {
+        background-color: currentColor;
+        content: "";
+        height: 0.95rem;
+        inset-inline-start: calc(var(--std-level-indent, 1.3rem) - 1.1rem);
+        inset-block-start: 0.62em;
+        mask-position: center;
+        mask-repeat: no-repeat;
+        mask-size: contain;
+        pointer-events: none;
+        position: absolute;
+        transform: translateY(-50%);
+        width: 0.95rem;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav:is([data-md-level="2"], [data-md-level="3"], [data-md-level="4"], [data-md-level="5"], [data-md-level="6"]) > .md-nav__list > .md-nav__item:not(.md-nav__item--section) > :is(label.md-nav__link, a.md-nav__link)::after,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav:is([data-md-level="2"], [data-md-level="3"], [data-md-level="4"], [data-md-level="5"], [data-md-level="6"]) > .md-nav__list > .md-nav__item:not(.md-nav__item--section) > .md-nav__container > a.md-nav__link::after {
+        border-bottom: 1px solid var(--md-default-fg-color--lighter);
+        border-inline-start: 1px solid var(--md-default-fg-color--lighter);
+        content: "";
+        height: 0.65em;
+        inset-block-start: 0.62em;
+        inset-inline-start: calc(var(--std-level-indent, 1.3rem) - 1.55rem);
+        opacity: 0.7;
+        pointer-events: none;
+        position: absolute;
+        transform: translateY(-50%);
+        width: 0.45rem;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item--nested > :is(label.md-nav__link, .md-nav__container > a.md-nav__link)::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title::before {
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 4H2v16h20V6h-10z'/%3E%3C/svg%3E");
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item:not(.md-nav__item--nested) > a.md-nav__link::before {
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm0 1.5L18.5 8H14z'/%3E%3C/svg%3E");
+    }
+
+    /* Keep section headings text-only: no folder/file icon for header rows */
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item--section > :is(label.md-nav__link, .md-nav__container > a.md-nav__link)::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title::before {
+        content: none;
+    }
+
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item--section > :is(label.md-nav__link, .md-nav__container > a.md-nav__link)::after,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title::after {
+        content: none;
+    }
+
+    /* Remove the top section heading "Стандарты" from sidebar tree */
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary > .md-nav__list > .md-nav__item > label.md-nav__link[for="__nav_2"],
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title[for="__nav_2"] {
+        display: none;
+    }
+
+    /* Special case: show article icon for the "Встроенный язык" item */
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > input#__nav_2_1 ~ .md-nav__container > a.md-nav__link::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title[for="__nav_2_1"]::before {
+        content: "";
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm0 1.5L18.5 8H14z'/%3E%3C/svg%3E");
+    }
+
+    /* Show folder icon for these section entries */
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > input#__nav_2_2 ~ label.md-nav__link::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__item > input#__nav_2_3 ~ label.md-nav__link::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title[for="__nav_2_2"]::before,
+    body:has(.md-nav--primary > .md-nav__list > li.md-nav__item--active > input#__nav_2:checked) .md-sidebar--primary .md-nav--primary .md-nav__title[for="__nav_2_3"]::before {
+        content: "";
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 4H2v16h20V6h-10z'/%3E%3C/svg%3E");
+    }
 }
 
 /* Tablet: center content when left sidebar is collapsed */
