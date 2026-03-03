@@ -180,6 +180,33 @@
     }
 }
 
+/* Mobile + tablet: open primary sidebar to 80% of viewport width */
+@media screen and (max-width: 76.234375em) {
+    :root {
+        --std-drawer-width: 80vw;
+    }
+
+    [dir=ltr] .md-sidebar--primary {
+        left: calc(-1 * var(--std-drawer-width));
+        max-width: var(--std-drawer-width);
+        width: var(--std-drawer-width);
+    }
+
+    [dir=rtl] .md-sidebar--primary {
+        max-width: var(--std-drawer-width);
+        right: calc(-1 * var(--std-drawer-width));
+        width: var(--std-drawer-width);
+    }
+
+    [data-md-toggle=drawer]:checked ~ .md-container .md-sidebar--primary {
+        transform: translateX(var(--std-drawer-width));
+    }
+
+    [dir=rtl] [data-md-toggle=drawer]:checked ~ .md-container .md-sidebar--primary {
+        transform: translateX(calc(-1 * var(--std-drawer-width)));
+    }
+}
+
 /* Color for iterators */
 .md-typeset h6 {
     color: #CDCDCD;
