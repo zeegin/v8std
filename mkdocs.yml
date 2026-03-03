@@ -540,4 +540,6 @@ nav:
       - Сводная таблица: diagnostics/bslls/index.md
     - EDT v8-code-style:
       - Сводная таблица: diagnostics/v8-code-style/index.md
+    - АПК (ACC):
+      - Сводная таблица: diagnostics/acc/index.md
   - Помочь: support.md
