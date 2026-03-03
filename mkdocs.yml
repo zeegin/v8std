@@ -536,6 +536,7 @@ nav:
     - Методические рекомендации:
       - Оптимизация клиент-серверного взаимодействия прикладных решений: metod8dev/4105.md
   - Диагностики:
+    - Диагностики: diagnostics/index.md
     - BSL Language Server:
       - Сводная таблица: diagnostics/bslls/index.md
     - EDT v8-code-style:
