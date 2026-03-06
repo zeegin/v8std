@@ -94,14 +94,6 @@ plugins:
         background_color: "#303F8F"
         color: "#FFFFFF"
         logo: docs/assets/images/logo-social.png
-  - git-revision-date-localized:
-      enable_creation_date: true
-      strict: false
-      enable_git_follow: false
-  # - git-committers:
-  #     repository: zeegin/v8std
-  #     branch: main
-  # - git-authors
 
 
 extra:

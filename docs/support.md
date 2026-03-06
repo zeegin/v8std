@@ -41,6 +41,8 @@ source .venv/bin/activate
 zensical serve
 ```
 
+Скрипт установит Zensical и дополнительные Python-зависимости проекта из `requirements.txt`.
+
 ### Вариант 2. Локально через Docker
 
 ```cmd
@@ -57,7 +59,7 @@ docker compose -f docker-compose/docker-compose.yml up --build
 docker compose -f docker-compose/docker-compose.ngnix.yml up --build
 ```
 
-Пример запуска:
+Пример production-сборки:
 
 - `MKDOCS_SOCIAL=true zensical build --strict`
 

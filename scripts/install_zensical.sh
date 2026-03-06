@@ -41,5 +41,5 @@ printf 'Preparing Zensical templates\n'
   python -m pip install --force-reinstall .
 )
 
-printf 'Installing project plugins\n'
+printf 'Installing project Python dependencies\n'
 python -m pip install --upgrade -r "${REPO_ROOT}/requirements.txt"
