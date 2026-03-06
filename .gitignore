@@ -2,6 +2,7 @@
 site/
 .DS_Store
 .cache/
+.venv/
 skills/
 
 standards-table.md

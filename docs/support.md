@@ -28,16 +28,17 @@ git clone https://github.com/zeegin/v8std.git
 
 cd v8std
 
-python -m venv .venv
+# Требуется Python 3.10+, а также установленный Rust toolchain (cargo/rustc) и git.
+# Если ваш `python3` указывает на более старую версию, используйте `python3.12`.
+python3.12 -m venv .venv
 # macOS/Linux
 source .venv/bin/activate
 # Windows (PowerShell)
 # .venv\Scripts\Activate.ps1
 
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+./scripts/install_zensical.sh
 
-mkdocs serve --watch-theme
+zensical serve
 ```
 
 ### Вариант 2. Локально через Docker
@@ -56,17 +57,8 @@ docker compose -f docker-compose/docker-compose.yml up --build
 docker compose -f docker-compose/docker-compose.ngnix.yml up --build
 ```
 
-Если нужно локально генерировать social cards (Open Graph), установите системную библиотеку Cairo и включите плагин переменной окружения `MKDOCS_SOCIAL=true`.
-Например:
-
-- macOS: `brew install cairo`
-- Debian/Ubuntu: `sudo apt-get update && sudo apt-get install -y libcairo2 libcairo2-dev`
-
 Пример запуска:
 
-- macOS (Apple Silicon + Homebrew):
-  `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/lib MKDOCS_SOCIAL=true mkdocs build --strict`
-- Linux:
-  `MKDOCS_SOCIAL=true mkdocs build --strict`
+- `MKDOCS_SOCIAL=true zensical build --strict`
 
 Теперь по адресу `http://127.0.0.1:8000` можно открыть документацию на своем компьютере.

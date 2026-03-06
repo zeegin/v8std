@@ -1,17 +1,13 @@
 services:
-  mkdocs:
-    container_name: mkdocs
+  zensical:
+    container_name: zensical
     build:
       context: ..
       dockerfile: docker-compose/docker/Dockerfile
     restart: "no"
-    environment:
-      LIVE_RELOAD_SUPPORT: 'false'
-      FAST_MODE: 'true'
-      DOCS_DIRECTORY: 'docs'
     volumes:
-      - ../:/mkdocs
-    working_dir: /mkdocs
+      - ../:/docs
+    working_dir: /docs
     command: build
 
   nginx:

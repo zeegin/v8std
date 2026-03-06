@@ -12,6 +12,7 @@ copyright: No Rights Reserved <a href="https://creativecommons.org/publicdomain/
 
 theme:
   name: material
+  variant: classic
   custom_dir: overrides
 
   # Don't include MkDocs' JavaScript
@@ -143,8 +144,8 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:zensical.extensions.emoji.twemoji
+      emoji_generator: !!python/name:zensical.extensions.emoji.to_svg
   - pymdownx.keys
   - pymdownx.magiclink:
       repo_url_shorthand: true
