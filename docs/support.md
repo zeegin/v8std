@@ -31,7 +31,7 @@ git clone https://github.com/zeegin/v8std.git
 
 cd v8std
 
-# Требуется Python 3.10+, а также установленный Rust toolchain (cargo/rustc) и git.
+# Требуется Python 3.10+, установленный Rust toolchain 1.86+ (cargo/rustc) и git.
 # Если ваш `python3` указывает на более старую версию, используйте `python3.12`.
 python3.12 -m venv .venv
 # macOS/Linux

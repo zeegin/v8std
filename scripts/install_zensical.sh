@@ -26,6 +26,26 @@ require_command git
 require_command cargo
 require_command rustc
 
+python - "${ZENSICAL_RUST_VERSION}" <<'PY'
+import re
+import subprocess
+import sys
+
+required = tuple(int(part) for part in sys.argv[1].split("."))
+output = subprocess.check_output(["rustc", "--version"], text=True).strip()
+match = re.search(r"rustc (\d+)\.(\d+)\.(\d+)", output)
+if not match:
+    raise SystemExit(f"error: unable to parse rustc version: {output}")
+
+actual = tuple(int(part) for part in match.groups())
+if actual < required:
+    required_text = ".".join(str(part) for part in required)
+    actual_text = ".".join(str(part) for part in actual)
+    raise SystemExit(
+        f"error: rustc {required_text}+ is required for pinned Zensical {actual_text} found."
+    )
+PY
+
 mkdir -p "${CACHE_ROOT}"
 
 if [ ! -d "${SOURCE_DIR}/.git" ]; then
