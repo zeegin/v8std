@@ -2,11 +2,11 @@
 
 set -euo pipefail
 
-ZENSICAL_VERSION="${ZENSICAL_VERSION:-v0.0.24}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+source "${SCRIPT_DIR}/zensical-version.sh"
 CACHE_ROOT="${ZENSICAL_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/v8std/zensical}"
-SOURCE_DIR="${CACHE_ROOT}/${ZENSICAL_VERSION}"
+SOURCE_DIR="${CACHE_ROOT}/${ZENSICAL_VERSION_TAG}-${ZENSICAL_COMMIT_SHORT}"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -29,11 +29,17 @@ require_command rustc
 mkdir -p "${CACHE_ROOT}"
 
 if [ ! -d "${SOURCE_DIR}/.git" ]; then
-  printf 'Cloning Zensical %s into %s\n' "${ZENSICAL_VERSION}" "${SOURCE_DIR}"
-  git clone --branch "${ZENSICAL_VERSION}" --depth 1 https://github.com/zensical/zensical.git "${SOURCE_DIR}"
+  printf 'Cloning pinned Zensical %s (%s) into %s\n' "${ZENSICAL_VERSION_TAG}" "${ZENSICAL_COMMIT_SHORT}" "${SOURCE_DIR}"
+  git clone --branch "${ZENSICAL_VERSION_TAG}" --depth 1 https://github.com/zensical/zensical.git "${SOURCE_DIR}"
 fi
 
-printf 'Preparing Zensical templates\n'
+ACTUAL_COMMIT="$(cd "${SOURCE_DIR}" && git rev-parse HEAD)"
+if [ "${ACTUAL_COMMIT}" != "${ZENSICAL_COMMIT_SHA}" ]; then
+  printf 'error: expected Zensical %s at commit %s, got %s\n' "${ZENSICAL_VERSION_TAG}" "${ZENSICAL_COMMIT_SHA}" "${ACTUAL_COMMIT}" >&2
+  exit 1
+fi
+
+printf 'Preparing pinned Zensical %s (%s)\n' "${ZENSICAL_VERSION_TAG}" "${ZENSICAL_COMMIT_SHORT}"
 (
   cd "${SOURCE_DIR}"
   python scripts/prepare.py

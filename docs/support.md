@@ -45,6 +45,7 @@ source .venv/bin/activate
 ```
 
 Скрипт установит Zensical и дополнительные Python-зависимости проекта из `requirements.txt`.
+Версия Zensical в репозитории зафиксирована в `scripts/zensical-version.sh`, поэтому обновление не прилетит незаметно.
 Для локального запуска используйте `./scripts/zensical_docs.sh`: он перед стартом обновляет временные social cards.
 
 ### Вариант 2. Локально через Docker
