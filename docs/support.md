@@ -1,4 +1,5 @@
 ---
+title: Поддержка
 hide:
   - navigation
   - toc
@@ -19,6 +20,8 @@ hide:
 
 Хотите изменить дизайн и посмотреть, как отладить сайт локально?
 
+Основной конфиг проекта: `zensical.toml`.
+
 ### Вариант 1. Локально через `venv`
 
 Выполните следующие операции на своем компьютере:
@@ -38,10 +41,11 @@ source .venv/bin/activate
 
 ./scripts/install_zensical.sh
 
-zensical serve
+./scripts/zensical_docs.sh serve
 ```
 
 Скрипт установит Zensical и дополнительные Python-зависимости проекта из `requirements.txt`.
+Для локального запуска используйте `./scripts/zensical_docs.sh`: он перед стартом обновляет временные social cards.
 
 ### Вариант 2. Локально через Docker
 
@@ -61,6 +65,6 @@ docker compose -f docker-compose/docker-compose.ngnix.yml up --build
 
 Пример production-сборки:
 
-- `MKDOCS_SOCIAL=true zensical build --strict`
+- `./scripts/zensical_docs.sh build --strict`
 
 Теперь по адресу `http://127.0.0.1:8000` можно открыть документацию на своем компьютере.

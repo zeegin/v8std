@@ -35,11 +35,8 @@ jobs:
         run: |
           docker build -f docker-compose/docker/Dockerfile -t v8std-docs .
       - name: Build
-        env:
-          MKDOCS_SOCIAL: "true"
         run: |
           docker run --rm \
-            -e MKDOCS_SOCIAL \
             -v "$PWD:/docs" \
             -w /docs \
             v8std-docs build --strict

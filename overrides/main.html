@@ -19,3 +19,9 @@
   <noscript><div><img src="https://mc.yandex.ru/watch/86674876" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
   <!-- /Yandex.Metrika counter -->
 {% endblock %}
+
+{% block extrahead %}
+  {{ super() }}
+
+  {% include "partials/social_meta.html" ignore missing %}
+{% endblock %}

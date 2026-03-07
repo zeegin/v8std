@@ -3,7 +3,10 @@ site/
 .DS_Store
 .cache/
 .venv/
+docs/assets/social/
+overrides/partials/social_meta.html
 skills/
+.codex*
 
 standards-table.md
 telegram-autopost-queue.md
