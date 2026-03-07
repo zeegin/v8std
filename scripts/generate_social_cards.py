@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import tomllib
 from pathlib import Path
@@ -70,6 +71,34 @@ def load_project(root: Path) -> dict:
     with (root / "zensical.toml").open("rb") as handle:
         config = tomllib.load(handle)
     return config.get("project", config)
+
+
+def discover_project_root() -> Path:
+    candidates: list[Path] = []
+
+    env_root = os.environ.get("V8STD_REPO_ROOT")
+    if env_root:
+        candidates.append(Path(env_root).expanduser())
+
+    cwd = Path.cwd().resolve()
+    candidates.extend([cwd, *cwd.parents])
+
+    script_path = Path(__file__).resolve()
+    candidates.extend([script_path.parent, *script_path.parent.parents])
+
+    seen: set[Path] = set()
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if (resolved / "zensical.toml").is_file():
+            return resolved
+
+    raise FileNotFoundError(
+        "Could not locate project root with zensical.toml. "
+        "Run this command from the repository root or set V8STD_REPO_ROOT."
+    )
 
 
 def strip_markdown(value: str) -> str:
@@ -392,7 +421,7 @@ def clean_empty_dirs(root: Path) -> None:
 
 
 def main() -> int:
-    root = Path(__file__).resolve().parent.parent
+    root = discover_project_root()
     project = load_project(root)
     docs_dir = root / project.get("docs_dir", "docs")
     cards_dir = docs_dir / "assets" / "social"
