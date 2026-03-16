@@ -4,7 +4,7 @@ site/
 .cache/
 .venv/
 docs/assets/social/
-overrides/partials/social_meta.html
+overrides/partials/page_meta.html
 skills/
 .codex*
 

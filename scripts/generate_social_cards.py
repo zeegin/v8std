@@ -7,6 +7,7 @@ import json
 import os
 import re
 import tomllib
+from collections import Counter
 from pathlib import Path
 
 import yaml
@@ -16,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 CARD_WIDTH = 1200
 CARD_HEIGHT = 630
 MANIFEST_NAME = ".manifest.json"
-SOCIAL_PARTIAL = "social_meta.html"
+PAGE_META_PARTIAL = "page_meta.html"
 MAX_TITLE_LINES = 3
 MAX_DESCRIPTION_LINES = 2
 HEADER_TOP = 56
@@ -29,6 +30,7 @@ DESCRIPTION_LEFT = 64
 DESCRIPTION_TOP = 514
 DESCRIPTION_MAX_WIDTH = 1040
 TITLE_FONT_SIZES = (82, 78, 74, 70, 66)
+SEO_DESCRIPTION_LENGTH = 180
 
 FRONT_MATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
 HEADING_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
@@ -36,6 +38,9 @@ LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]+\)")
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\([^)]+\)")
 TAG_RE = re.compile(r"<[^>]+>")
 WHITESPACE_RE = re.compile(r"\s+")
+URL_RE = re.compile(r"^https?://\S+$")
+ACC_TITLE_RE = re.compile(r"\s*\(ACC\s+(?P<code>\d+)\)\s*$", re.IGNORECASE)
+BSLLS_TITLE_RE = re.compile(r"\s*\((?P<code>[A-Za-z][A-Za-z0-9]+)\)\s*$")
 
 
 def find_font(*names: str) -> str | None:
@@ -126,6 +131,7 @@ def extract_description(text: str) -> str:
     lines = text.splitlines()
     paragraph: list[str] = []
     in_code_block = False
+    skip_indented_block = False
 
     for raw_line in lines:
         line = raw_line.strip()
@@ -134,19 +140,118 @@ def extract_description(text: str) -> str:
             continue
         if in_code_block:
             continue
+        if skip_indented_block:
+            if not line:
+                skip_indented_block = False
+                continue
+            if raw_line.startswith(("    ", "\t")):
+                continue
+            skip_indented_block = False
         if not line:
             if paragraph:
                 break
             continue
         if line.startswith("#"):
             continue
-        if line.startswith(("![](", "![", "|", "{", "<!--", "- ", "* ", "1. ")):
+        if line.startswith(("!!!", "???", ":::")):
+            if paragraph:
+                break
+            skip_indented_block = True
+            continue
+        if raw_line.startswith(("    ", "\t")):
+            if paragraph:
+                break
+            continue
+        if line.startswith(("![](", "![", "|", "{", "<", "- ", "* ", "1. ", "1) ", ">")):
             if paragraph:
                 break
             continue
         paragraph.append(line)
 
     return strip_markdown(" ".join(paragraph))
+
+
+def truncate_text(value: str, limit: int) -> str:
+    if len(value) <= limit:
+        return value
+
+    truncated = value[: limit + 1].rsplit(" ", 1)[0].rstrip()
+    if not truncated:
+        truncated = value[:limit].rstrip()
+    return f"{truncated}..."
+
+
+def normalize_description(value: str, limit: int = SEO_DESCRIPTION_LENGTH) -> str:
+    return truncate_text(strip_markdown(value), limit)
+
+
+def looks_like_url(value: str) -> bool:
+    return bool(URL_RE.fullmatch(value.strip()))
+
+
+def extract_list_summary(text: str, *, max_items: int = 3) -> str:
+    lines = text.splitlines()
+    items: list[str] = []
+    in_code_block = False
+    skip_indented_block = False
+
+    for raw_line in lines:
+        line = raw_line.strip()
+        if line.startswith("```") or line.startswith("~~~"):
+            in_code_block = not in_code_block
+            continue
+        if in_code_block:
+            continue
+        if skip_indented_block:
+            if not line:
+                skip_indented_block = False
+                continue
+            if raw_line.startswith(("    ", "\t")):
+                continue
+            skip_indented_block = False
+        if not line:
+            continue
+        if line == "###### Источник":
+            break
+        if line.startswith("#"):
+            continue
+        if line.startswith(("!!!", "???", ":::")):
+            skip_indented_block = True
+            continue
+        if raw_line.startswith(("    ", "\t")):
+            continue
+        if not line.startswith(("- ", "* ")):
+            continue
+        item = strip_markdown(line[2:])
+        if not item or looks_like_url(item):
+            continue
+        items.append(item.rstrip("."))
+        if len(items) >= max_items:
+            break
+
+    return ". ".join(items)
+
+
+def build_seo_title(relative: Path, title: str) -> str:
+    if relative.parts[:2] == ("diagnostics", "acc") and relative.stem.isdigit():
+        normalized = ACC_TITLE_RE.sub("", title).strip()
+        suffix = f"АПК:{relative.stem}"
+        if suffix not in normalized:
+            return f"{normalized} {suffix}"
+        return normalized
+
+    if relative.parts[:2] == ("diagnostics", "bslls"):
+        normalized = BSLLS_TITLE_RE.sub("", title).strip()
+        suffix = f"BSLLS:{relative.stem}"
+        if suffix not in normalized:
+            return f"{normalized} {suffix}"
+        return normalized
+
+    if relative.parts and relative.parts[0] == "std" and relative.stem.isdigit():
+        suffix = f"#std{relative.stem}"
+        if suffix not in title:
+            return f"{title} {suffix}"
+    return title
 
 
 def build_page_metadata(source: Path, docs_dir: Path, project: dict) -> dict:
@@ -161,17 +266,29 @@ def build_page_metadata(source: Path, docs_dir: Path, project: dict) -> dict:
         or (strip_markdown(heading_match.group(1)) if heading_match else None)
         or source.stem.replace("-", " ")
     )
-
-    description = (
-        front_matter.get("description")
-        or front_matter.get("social_description")
-        or extract_description(content)
-        or project.get("site_description", "")
+    seo_title = front_matter.get("seo_title") or build_seo_title(relative, title)
+    extracted_description = extract_description(content)
+    list_summary = extract_list_summary(content)
+    paragraph_description = (
+        extracted_description if extracted_description and not looks_like_url(extracted_description) else ""
     )
-    card_description = (
+
+    if front_matter.get("description") or front_matter.get("social_description"):
+        description_source = front_matter.get("description") or front_matter.get("social_description")
+    elif paragraph_description:
+        description_source = paragraph_description
+    elif list_summary:
+        description_source = f"{seo_title}. {list_summary}"
+    elif relative == Path("index.md"):
+        description_source = project.get("site_description", "") or seo_title
+    else:
+        description_source = seo_title or project.get("site_description", "")
+
+    description = normalize_description(description_source)
+    card_description = normalize_description(
         front_matter.get("social_description")
-        or project.get("site_description")
         or description
+        or project.get("site_description")
     )
 
     if relative.name == "index.md":
@@ -193,6 +310,7 @@ def build_page_metadata(source: Path, docs_dir: Path, project: dict) -> dict:
         "source": str(relative),
         "page_url": relative_url,
         "title": title,
+        "seo_title": seo_title,
         "description": description,
         "card_description": card_description,
         "output": output,
@@ -365,14 +483,14 @@ def build_locale(language: str) -> str:
     return locales.get(normalized, normalized.replace("-", "_") if normalized else "en_US")
 
 
-def build_social_partial(pages: list[dict], project: dict) -> str:
+def build_page_meta_partial(pages: list[dict], project: dict) -> str:
     site_url = project.get("site_url", "").rstrip("/")
-    site_name = project.get("site_name", "")
     theme = project.get("theme", {})
     locale = build_locale(theme.get("language") or project.get("language") or "en")
-    social_pages = {
+    page_meta = {
         page["page_url"]: {
             "title": page["title"],
+            "seo_title": page["seo_title"],
             "description": page["description"] or project.get("site_description", ""),
             "image": f"{site_url}/assets/social/{page['page_url']}index.png"
             if page["page_url"]
@@ -381,33 +499,13 @@ def build_social_partial(pages: list[dict], project: dict) -> str:
         }
         for page in pages
     }
-    pages_literal = json.dumps(social_pages, ensure_ascii=False, indent=2, sort_keys=True)
+    pages_literal = json.dumps(page_meta, ensure_ascii=False, indent=2, sort_keys=True)
 
-    return f"""{{% set social_pages = {pages_literal} %}}
-{{% if config.site_url %}}
-  {{% set social_key = page.url or '' %}}
-  {{% set social_page = social_pages[social_key] %}}
-  {{% set social_title = social_page.title %}}
-  {{% set social_description = social_page.description %}}
-  {{% set social_image = social_page.image %}}
-  {{% set social_url = social_page.url %}}
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="{{{{ {json.dumps(site_name, ensure_ascii=False)} }}}}">
-  <meta property="og:locale" content="{locale}">
-  <meta property="og:title" content="{{{{ social_title | striptags }}}}">
-  <meta property="og:description" content="{{{{ social_description }}}}">
-  <meta property="og:url" content="{{{{ social_url }}}}">
-  <meta property="og:image" content="{{{{ social_image }}}}">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="{CARD_WIDTH}">
-  <meta property="og:image:height" content="{CARD_HEIGHT}">
-  <meta property="og:image:alt" content="{{{{ social_title | striptags }}}}">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{{{ social_title | striptags }}}}">
-  <meta name="twitter:description" content="{{{{ social_description }}}}">
-  <meta name="twitter:url" content="{{{{ social_url }}}}">
-  <meta name="twitter:image" content="{{{{ social_image }}}}">
-  <meta name="twitter:image:alt" content="{{{{ social_title | striptags }}}}">
+    return f"""{{% set page_meta_map = {pages_literal} %}}
+{{% set page_meta_locale = "{locale}" %}}
+{{% set page_meta_key = page.url or '' %}}
+{{% if page_meta_key in page_meta_map %}}
+  {{% set page_meta = page_meta_map[page_meta_key] %}}
 {{% endif %}}
 """
 
@@ -418,6 +516,16 @@ def clean_empty_dirs(root: Path) -> None:
             directory.rmdir()
         except OSError:
             continue
+
+
+def uniquify_descriptions(pages: list[dict]) -> None:
+    counts = Counter(page["description"] for page in pages if page.get("description"))
+
+    for page in pages:
+        description = page.get("description")
+        if not description or counts[description] <= 1:
+            continue
+        page["description"] = normalize_description(f"{page['seo_title']}. {description}")
 
 
 def main() -> int:
@@ -435,7 +543,7 @@ def main() -> int:
         "foreground": layout_options.get("color", "#FFFFFF"),
     }
     logo_path = root / layout_options.get("logo", "docs/assets/images/logo-social.png")
-    social_partial_path = root / "overrides" / "partials" / SOCIAL_PARTIAL
+    page_meta_partial_path = root / "overrides" / "partials" / PAGE_META_PARTIAL
 
     manifest_path = cards_dir / MANIFEST_NAME
     if manifest_path.exists():
@@ -449,6 +557,10 @@ def main() -> int:
     for source in sorted(docs_dir.rglob("*.md")):
         page = build_page_metadata(source, docs_dir, project)
         pages.append(page)
+
+    uniquify_descriptions(pages)
+
+    for page in pages:
         output: Path = page["output"]
         output.parent.mkdir(parents=True, exist_ok=True)
         page_hash = compute_hash(page, project, colors, logo_path)
@@ -470,8 +582,11 @@ def main() -> int:
         json.dumps(next_manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    social_partial_path.parent.mkdir(parents=True, exist_ok=True)
-    social_partial_path.write_text(build_social_partial(pages, project), encoding="utf-8")
+    page_meta_partial_path.parent.mkdir(parents=True, exist_ok=True)
+    page_meta_partial_path.write_text(
+        build_page_meta_partial(pages, project),
+        encoding="utf-8",
+    )
     return 0
 
 

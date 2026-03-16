@@ -1,0 +1,20 @@
+{% include "partials/page_meta.html" ignore missing %}
+{% if config.site_url and page_meta %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:locale" content="{{ page_meta_locale }}">
+  <meta property="og:title" content="{{ page_meta.seo_title | striptags }}">
+  <meta property="og:description" content="{{ page_meta.description }}">
+  <meta property="og:url" content="{{ page_meta.url }}">
+  <meta property="og:image" content="{{ page_meta.image }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ page_meta.seo_title | striptags }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_meta.seo_title | striptags }}">
+  <meta name="twitter:description" content="{{ page_meta.description }}">
+  <meta name="twitter:url" content="{{ page_meta.url }}">
+  <meta name="twitter:image" content="{{ page_meta.image }}">
+  <meta name="twitter:image:alt" content="{{ page_meta.seo_title | striptags }}">
+{% endif %}
