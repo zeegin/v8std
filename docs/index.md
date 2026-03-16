@@ -168,7 +168,7 @@ social:
         <span>Пт</span>
       </div>
       <a
-        class="md-button md-button--primary v8std-home-challenge__cta"
+        class="v8std-home-challenge__cta v8std-announce__cta"
         href="https://t.me/v8std"
         target="_blank"
         rel="noopener"

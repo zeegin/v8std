@@ -602,6 +602,7 @@ html {
 .v8std-announce__cta {
     align-items: center;
     background: #0d6e9f;
+    border: 0;
     border-radius: 999px;
     color: #ffffff;
     display: inline-flex;
@@ -612,6 +613,8 @@ html {
     min-height: 1.7rem;
     padding: 0.38rem 0.72rem;
     text-align: center;
+    text-decoration: none;
+    transition: background-color 0.16s ease, color 0.16s ease;
     white-space: nowrap;
 }
 
@@ -1081,6 +1084,13 @@ body:has(.v8std-home-hero) .md-sidebar--secondary {
     padding-bottom: 4rem;
 }
 
+.v8std-home-page a[target="_blank"]::after,
+body:has(.v8std-home-hero) .v8std-announce a[target="_blank"]::after,
+body:has(.v8std-home-hero) .v8std-home-hero a[target="_blank"]::after {
+    content: none !important;
+    display: none !important;
+}
+
 .v8std-home-page :is(.v8std-home-section, .v8std-home-topic-strip) {
     scroll-margin-top: 1rem;
 }
@@ -1320,11 +1330,27 @@ body:has(.v8std-home-hero) .md-sidebar--secondary {
 }
 
 .v8std-home-challenge__cta {
+    font-size: 0.82rem;
     grid-area: cta;
     justify-self: center;
     margin: 0;
+    min-height: 2rem;
     min-width: 13.5rem;
+    padding: 0.5rem 0.95rem;
     text-align: center;
+}
+
+.v8std-home-challenge__cta,
+.v8std-home-challenge__cta:hover,
+.v8std-home-challenge__cta:focus-visible {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+[data-md-color-scheme=slate] .v8std-home-challenge__cta,
+[data-md-color-scheme=slate] .v8std-home-challenge__cta:hover,
+[data-md-color-scheme=slate] .v8std-home-challenge__cta:focus-visible {
+    color: #072033;
 }
 
 @media screen and (max-width: 44.984375em) {
