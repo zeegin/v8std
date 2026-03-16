@@ -52,6 +52,32 @@
   {% endif %}
 {% endblock %}
 
+{% block announce %}
+  <div class="v8std-announce" data-v8std-announce>
+    <a
+      href="https://t.me/v8std"
+      class="v8std-announce__link"
+      data-v8std-announce-link
+      target="_blank"
+      rel="noopener"
+    >
+      <span class="v8std-announce__text" data-v8std-announce-text>
+        Челлендж в Telegram: по понедельникам, средам и пятницам публикуем стандарт. Учите
+        вместе с нами!
+      </span>
+      <span class="v8std-announce__cta">Подписаться на @v8std</span>
+    </a>
+    <button
+      type="button"
+      class="v8std-announce__dismiss md-icon"
+      data-v8std-announce-dismiss
+      aria-label="Скрыть баннер на неделю"
+    >
+      {% include ".icons/material/close.svg" %}
+    </button>
+  </div>
+{% endblock %}
+
 {% block analytics %}
   {{ super() }}
 

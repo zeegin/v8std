@@ -11,6 +11,10 @@ extra_css = [
     "assets/stylesheets/extra.css",
     "assets/stylesheets/monokai.css",
 ]
+extra_javascript = [
+    "assets/javascripts/announce.js",
+    "assets/javascripts/home-search.js",
+]
 
 [project.theme]
 variant = "classic"

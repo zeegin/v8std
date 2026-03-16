@@ -4,135 +4,59 @@
 {% block tabs %}
   {{ super() }}
 
-  <!-- Additional styles for landing page -->
-  <style>
-
-    /* Position home hero at mobile */
-    .mdx-hero {
-      color: var(--md-primary-bg-color);
-      margin: 0 .8rem;
-    }
-    
-    /* Position home hero at widescreen */
-    @media screen and (min-width: 70em) {
-      .mdx-hero {
-          align-items: stretch;
-          display: flex;
-      }
-    }
-
-    /* Home hero bottom padding at mobile */
-    .mdx-hero__content {
-      padding-bottom: 6rem;
-    }
-
-    /* Home hero bottom padding at widescreen */
-    @media screen and (min-width: 70em) {
-      .mdx-hero__content {
-          margin-top: 3.5rem;
-          max-width: 19rem;
-          padding-bottom: 14vw;
-      }
-    }
-
-    /* Home image size at mobile */
-    .mdx-hero h1 {
-      color: currentColor;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    
-    /* Home image size at widescreen */
-    @media screen and (min-width: 70em) {
-      .mdx-hero__image {
-          order: 1;
-          transform: translateX(4rem);
-          width: 38rem;
-      }
-    }
-    
-    /* Home image size at super widescreen */
-    @media screen and (min-width: 76.25em) {
-      .mdx-hero__image {
-          transform: translateX(8rem);
-      }
-    }
-    
-    /* Application header should be static for the landing page */
-    .md-header {
-      position: initial;
-    }
-
-    /* Remove spacing, as we cannot hide it completely */
-    .md-main__inner {
-      margin: 0;
-    }
-
-    /* Hide main content for now */
-    .md-content {
-      display: none;
-    }
-
-    /* Hide table of contents */
-    @media screen and (min-width: 60em) {
-      .md-sidebar--secondary {
-        display: none;
-      }
-    }
-
-    /* Hide navigation */
-    @media screen and (min-width: 76.25em) {
-      .md-sidebar--primary {
-        display: none;
-      }
-    }
-
-  </style>
-
-  <!-- Hero for landing page -->
-  <section class="mdx-container">
+  <section class="v8std-home-hero">
     <div class="md-grid md-typeset">
-      <div class="mdx-hero">
-
-        <!-- Hero image -->
-        <div class="mdx-hero__image">
-          <img
-            src="assets/images/illustration.png"
-            alt=""
-            width="1659"
-            height="999"
-            draggable="false"
-          >
+      <div class="v8std-home-hero__inner">
+        <div class="v8std-home-hero__lead">
+          <h1>Стандарты разработки 1С, с которыми проще писать, проверять и поддерживать код</h1>
+          <p class="v8std-home-hero__summary">
+            v8std.ru связывает стандарты и диагностики в один рабочий маршрут: от предупреждения
+            линтера до понятного правила и способа исправления.
+          </p>
         </div>
-
-        <!-- Hero content -->
-        <div class="mdx-hero__content">
-          <h1>v8std.ru: Стандарты разработки 1С</h1>
-          <h4>{{ config.site_description }}</h4>
-          <p>Система стандартов и&nbsp;методик разработки конфигураций для платформы 1С:Предприятие 8.
-            Исходные стандарты опубликованы на сайте ИТС <a href=https://its.1c.ru/db/v8std class="out">https://its.1c.ru/db/v8std</a>.<br><br>
-            Этот проект создан для того, чтобы описать эти&nbsp;же стандарты другими словами.<br>
-            Что-то опущено, что-то детализировано. Суть та&nbsp;же.</p>
-          <a
-            href="{{ page.next_page.url | url }}"
-            title="{{ page.next_page.title | e }}"
-            class="md-button md-button--primary"
-          >
-            Читать
-          </a>
-          <a
-            href="https://t.me/v8std"
-            title="Новости в телеграм"
-            class="md-button"
-            target="_blank"
-          >
-            Новости в телеграм
-          </a>
-        </div>
+        <aside class="v8std-home-proof" aria-label="Факты о проекте">
+          <div class="v8std-home-proof__intro">
+            <p class="v8std-home-proof__eyebrow">Что есть на сайте</p>
+          </div>
+          <div class="v8std-home-metrics">
+            <div class="v8std-home-metric">
+              <strong>317</strong>
+              <span>стандартов</span>
+            </div>
+            <div class="v8std-home-metric">
+              <strong>809</strong>
+              <span>диагностик</span>
+            </div>
+          </div>
+          <div class="v8std-home-proof__case">
+            <p class="v8std-home-proof__eyebrow">Пример сценария</p>
+            <h3>Как расшифровать AssignAliasFieldsInQuery</h3>
+            <ol class="v8std-home-case-flow">
+              <li>
+                <a href="{{ 'diagnostics/bslls/AssignAliasFieldsInQuery/' | url }}">
+                  Открыть диагностику
+                </a>
+                <span>Понять, что именно проверяет линтер.</span>
+              </li>
+              <li>
+                <a href="{{ 'std/437/' | url }}">
+                  Перейти к #std437
+                </a>
+                <span>Увидеть правило, примеры и пояснения.</span>
+              </li>
+              <li>
+                <span class="v8std-home-case-flow__result">
+                  Исправить текст запроса так, чтобы его было легче читать и сопровождать.
+                </span>
+              </li>
+            </ol>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
 {% endblock %}
 
-<!-- Content -->
-{% block content %}{% endblock %}
+{% block content %}
+  {{ super() }}
+{% endblock %}
