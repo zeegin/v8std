@@ -12,6 +12,15 @@
     inset: 0 auto auto 0;
 }
 
+/* Keep the header search keycap aligned with the overridden site search shortcut */
+.md-search__button::after {
+    content: "Ctrl+F" !important;
+}
+
+[data-platform^="Mac"] .md-search__button::after {
+    content: "⌘F" !important;
+}
+
 /* disable toc nav*/
 /* .md-nav--secondary {
     display: none;

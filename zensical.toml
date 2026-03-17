@@ -14,6 +14,7 @@ extra_css = [
 extra_javascript = [
     "assets/javascripts/announce.js",
     "assets/javascripts/home-search.js",
+    "assets/javascripts/search-shortcuts.js",
 ]
 
 [project.theme]
