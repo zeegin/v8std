@@ -18,8 +18,8 @@ require_command() {
 python - <<'PY'
 import sys
 
-if sys.version_info < (3, 10):
-    raise SystemExit("error: Python 3.10+ is required to install Zensical.")
+if sys.version_info < (3, 12):
+    raise SystemExit("error: Python 3.12+ is required to install Zensical.")
 PY
 
 require_command git
