@@ -29,7 +29,7 @@
   }
 
   function getShortcutLabel() {
-    return isMacPlatform() ? "⌘K" : "Ctrl+F";
+    return "/";
   }
 
   function getSearchPlaceholder() {
@@ -158,19 +158,17 @@
       return value;
     }
 
-    if (isMacPlatform()) {
-      return value;
-    }
-
     return value
-      .replace(/\bCommand\s*\+\s*K\b/g, "Command+F")
-      .replace(/\bCommand\s+K\b/g, "Command F")
-      .replace(/\bCmd\s*\+\s*K\b/g, "Cmd+F")
-      .replace(/\bCmd\s+K\b/g, "Cmd F")
-      .replace(/\bCtrl\s*\+\s*K\b/g, "Ctrl+F")
-      .replace(/\bCtrl\s+K\b/g, "Ctrl F")
-      .replace(/⌘\s*\+\s*K/g, "⌘+F")
-      .replace(/⌘\s*K/g, "⌘ F");
+      .replace(/\bCommand\s*\+\s*K\b/g, "/")
+      .replace(/\bCommand\s+K\b/g, "/")
+      .replace(/\bCmd\s*\+\s*K\b/g, "/")
+      .replace(/\bCmd\s+K\b/g, "/")
+      .replace(/\bCtrl\s*\+\s*K\b/g, "/")
+      .replace(/\bCtrl\s+K\b/g, "/")
+      .replace(/\bCtrl\s*\+\s*F\b/g, "/")
+      .replace(/\bCtrl\s+F\b/g, "/")
+      .replace(/⌘\s*\+\s*K/g, "/")
+      .replace(/⌘\s*K/g, "/");
   }
 
   function syncSearchUiInput(input) {
@@ -360,11 +358,23 @@
   }
 
   function handleShortcut(event) {
-    if (event.defaultPrevented || event.altKey || event.shiftKey) {
+    if (event.defaultPrevented || event.altKey) {
       return;
     }
 
     if (isEditableTarget(event.target)) {
+      return;
+    }
+
+    if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.key === "/") {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      openSearch();
+      return;
+    }
+
+    if (event.shiftKey) {
       return;
     }
 
