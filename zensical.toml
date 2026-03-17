@@ -804,6 +804,78 @@ analytics = "Yandex.Metrika"
 
 [[project.nav]]
 
+[[project.nav."Паттерны"]]
+"Паттерны" = "patterns/index.md"
+
+[[project.nav."Паттерны"]]
+"Принципы ООП" = [
+    { "Принципы ООП" = "patterns/principles/index.md" },
+]
+
+[[project.nav."Паттерны"]]
+"SOLID" = [
+    { "SOLID" = "patterns/solid/index.md" },
+    { "Single Responsibility Principle" = "patterns/solid/single-responsibility/index.md" },
+    { "Open/Closed Principle" = "patterns/solid/open-closed/index.md" },
+    { "Liskov Substitution Principle" = "patterns/solid/liskov-substitution/index.md" },
+    { "Interface Segregation Principle" = "patterns/solid/interface-segregation/index.md" },
+    { "Dependency Inversion Principle" = "patterns/solid/dependency-inversion/index.md" },
+]
+
+[[project.nav."Паттерны"]]
+"GOF" = [
+    { "Паттерны GOF" = "patterns/gof/index.md" },
+    { "Абстрактная фабрика" = "patterns/gof/abstract-factory/index.md" },
+    { "Адаптер" = "patterns/gof/adapter/index.md" },
+    { "Мост" = "patterns/gof/bridge/index.md" },
+    { "Строитель" = "patterns/gof/builder/index.md" },
+    { "Цепочка обязанностей" = "patterns/gof/chain-of-responsibility/index.md" },
+    { "Команда" = "patterns/gof/command/index.md" },
+    { "Компоновщик" = "patterns/gof/composite/index.md" },
+    { "Декоратор" = "patterns/gof/decorator/index.md" },
+    { "Фасад" = "patterns/gof/facade/index.md" },
+    { "Фабричный метод" = "patterns/gof/factory-method/index.md" },
+    { "Приспособленец" = "patterns/gof/flyweight/index.md" },
+    { "Интерпретатор" = "patterns/gof/interpreter/index.md" },
+    { "Итератор" = "patterns/gof/iterator/index.md" },
+    { "Посредник" = "patterns/gof/mediator/index.md" },
+    { "Снимок" = "patterns/gof/memento/index.md" },
+    { "Наблюдатель" = "patterns/gof/observer/index.md" },
+    { "Прототип" = "patterns/gof/prototype/index.md" },
+    { "Заместитель" = "patterns/gof/proxy/index.md" },
+    { "Одиночка" = "patterns/gof/singleton/index.md" },
+    { "Состояние" = "patterns/gof/state/index.md" },
+    { "Стратегия" = "patterns/gof/strategy/index.md" },
+    { "Шаблонный метод" = "patterns/gof/template-method/index.md" },
+    { "Посетитель" = "patterns/gof/visitor/index.md" },
+]
+
+[[project.nav."Паттерны"]]
+"GRASP" = [
+    { "Паттерны GRASP" = "patterns/grasp/index.md" },
+    { "Информационный эксперт" = "patterns/grasp/information-expert/index.md" },
+    { "Создатель" = "patterns/grasp/creator/index.md" },
+    { "Контроллер" = "patterns/grasp/controller/index.md" },
+    { "Низкая связанность" = "patterns/grasp/low-coupling/index.md" },
+    { "Высокая связность" = "patterns/grasp/high-cohesion/index.md" },
+    { "Полиморфизм" = "patterns/grasp/polymorphism/index.md" },
+    { "Чистая выдумка" = "patterns/grasp/pure-fabrication/index.md" },
+    { "Посредничество" = "patterns/grasp/indirection/index.md" },
+    { "Защищенные вариации" = "patterns/grasp/protected-variations/index.md" },
+]
+
+[[project.nav."Паттерны"]]
+"Инженерные принципы" = [
+    { "Инженерные принципы" = "patterns/engineering/index.md" },
+    { "DRY" = "patterns/engineering/dry/index.md" },
+    { "KISS" = "patterns/engineering/kiss/index.md" },
+    { "YAGNI" = "patterns/engineering/yagni/index.md" },
+    { "Rule of Three" = "patterns/engineering/rule-of-three/index.md" },
+    { "Separation of Concerns" = "patterns/engineering/separation-of-concerns/index.md" },
+]
+
+[[project.nav]]
+
 [[project.nav."Диагностики"]]
 "Диагностики" = "diagnostics/index.md"
 
