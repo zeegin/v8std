@@ -3,6 +3,15 @@
     background-color: #16171D;
 }
 
+/* Keep palette radios anchored to the toggle container to avoid browser scroll jumps */
+.md-header__option {
+    position: relative;
+}
+
+.md-header__option > .md-option {
+    inset: 0 auto auto 0;
+}
+
 /* disable toc nav*/
 /* .md-nav--secondary {
     display: none;
