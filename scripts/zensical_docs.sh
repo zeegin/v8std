@@ -53,4 +53,20 @@ if actual != expected:
 PY
 
 python "${SCRIPT_DIR}/generate_social_cards.py"
+
+if [ "${1:-}" = "build" ] && [ -d "${REPO_ROOT}/site" ]; then
+  python3 - "${REPO_ROOT}/site" <<'PY'
+import shutil
+import sys
+import uuid
+from pathlib import Path
+
+site_dir = Path(sys.argv[1])
+if site_dir.is_dir():
+    cleanup_dir = site_dir.with_name(f".site-cleanup-{uuid.uuid4().hex}")
+    site_dir.rename(cleanup_dir)
+    shutil.rmtree(cleanup_dir, ignore_errors=True)
+PY
+fi
+
 exec zensical "$@"

@@ -14,9 +14,9 @@ hide:
 
 ### Хотите внести исправление?
 
-Можно просто нажать на иконку `Редактировать` и прислать Pull Request.
+Можно просто нажать на иконку :material-file-edit-outline: `Редактировать` и прислать Pull Request.
 
-Основной конфиг проекта: `zensical.toml`.
+Основной конфиг проекта: [`zensical.toml`](https://github.com/zeegin/v8std/blob/main/zensical.toml).
 
 ### Как развернуть локально?
 
@@ -35,7 +35,6 @@ hide:
     ```
 
 === ":fontawesome-brands-windows: windows"
-    Рекомендуется `WSL 2`: установочные и служебные скрипты репозитория написаны на Bash.
 
     ```bash
     git clone https://github.com/zeegin/v8std.git
@@ -47,6 +46,8 @@ hide:
     ./scripts/install_zensical.sh
     ./scripts/zensical_docs.sh serve
     ```
+
+    Рекомендуется `WSL 2`: установочные и служебные скрипты репозитория написаны на Bash.
 
 === ":fontawesome-brands-linux: linux"
     ```bash
@@ -74,9 +75,9 @@ hide:
     docker compose -f docker-compose/docker-compose.ngnix.yml up --build
     ```
 
-Скрипт `./scripts/install_zensical.sh` устанавливает зафиксированную версию Zensical и Python-зависимости проекта из `requirements.txt`.
+Скрипт [`./scripts/install_zensical.sh`](https://github.com/zeegin/v8std/blob/main/scripts/install_zensical.sh) устанавливает зафиксированную версию Zensical и Python-зависимости проекта из [`requirements.txt`](https://github.com/zeegin/v8std/blob/main/requirements.txt).
 
-Скрипт `./scripts/zensical_docs.sh` перед `serve` и `build` обновляет временные social cards. Пример production-сборки:
+Скрипт [`./scripts/zensical_docs.sh`](https://github.com/zeegin/v8std/blob/main/scripts/zensical_docs.sh) перед `serve` и `build` обновляет временные social cards. Пример production-сборки:
 
 ```bash
 ./scripts/zensical_docs.sh build --strict
