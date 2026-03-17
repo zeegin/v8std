@@ -29,7 +29,7 @@
   }
 
   function getShortcutLabel() {
-    return isMacPlatform() ? "⌘F" : "Ctrl+F";
+    return isMacPlatform() ? "⌘K" : "Ctrl+F";
   }
 
   function getSearchPlaceholder() {
@@ -155,6 +155,10 @@
 
   function replaceShortcutText(value) {
     if (typeof value !== "string" || value === "") {
+      return value;
+    }
+
+    if (isMacPlatform()) {
       return value;
     }
 
@@ -365,13 +369,16 @@
     }
 
     const key = event.key.toLowerCase();
-    const modifierPressed = isMacPlatform() ? event.metaKey : event.ctrlKey;
+    const isMac = isMacPlatform();
+    const modifierPressed = isMac ? event.metaKey : event.ctrlKey;
+    const shortcutKey = isMac ? "k" : "f";
+    const blockedLegacyKey = isMac ? null : "k";
 
     if (!modifierPressed) {
       return;
     }
 
-    if (key === "f") {
+    if (key === shortcutKey) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
@@ -379,7 +386,7 @@
       return;
     }
 
-    if (key === "k") {
+    if (blockedLegacyKey && key === blockedLegacyKey) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();

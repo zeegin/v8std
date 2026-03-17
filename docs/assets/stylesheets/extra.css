@@ -18,7 +18,7 @@
 }
 
 [data-platform^="Mac"] .md-search__button::after {
-    content: "⌘F" !important;
+    content: "⌘K" !important;
 }
 
 /* disable toc nav*/
