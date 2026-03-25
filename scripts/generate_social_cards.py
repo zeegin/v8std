@@ -38,10 +38,17 @@ HEADING_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
 LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]+\)")
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\([^)]+\)")
 TAG_RE = re.compile(r"<[^>]+>")
+INLINE_CODE_RE = re.compile(r"`([^`]+)`")
+INLINEHILITE_RE = re.compile(r"^#![A-Za-z0-9_-]+\s+(?P<content>.+)$", re.DOTALL)
 WHITESPACE_RE = re.compile(r"\s+")
 URL_RE = re.compile(r"^https?://\S+$")
 ACC_TITLE_RE = re.compile(r"\s*\(ACC\s+(?P<code>\d+)\)\s*$", re.IGNORECASE)
 BSLLS_TITLE_RE = re.compile(r"\s*\((?P<code>[A-Za-z][A-Za-z0-9]+)\)\s*$")
+STRONG_EMPHASIS_RE = re.compile(r"(\*\*|__)(?=\S)(.+?)(?<=\S)\1", re.DOTALL)
+EMPHASIS_RE = re.compile(r"(?<!\*)\*(?=\S)(.+?)(?<=\S)\*(?!\*)", re.DOTALL)
+UNDERSCORE_EMPHASIS_RE = re.compile(r"(?<!_)_(?=\S)(.+?)(?<=\S)_(?!_)", re.DOTALL)
+STRIKETHROUGH_RE = re.compile(r"~~(?=\S)(.+?)(?<=\S)~~", re.DOTALL)
+SUBSCRIPT_RE = re.compile(r"(?<!~)~(?=\S)(.+?)(?<=\S)~(?!~)", re.DOTALL)
 
 
 def find_font(*names: str) -> str | None:
@@ -111,8 +118,25 @@ def strip_markdown(value: str) -> str:
     text = IMAGE_RE.sub("", value)
     text = LINK_RE.sub(r"\1", text)
     text = TAG_RE.sub("", text)
-    text = text.replace("`", "").replace("*", "").replace("_", "")
-    text = text.replace("~", "").replace("#", "").replace(">", "")
+
+    def normalize_inline_code(match: re.Match[str]) -> str:
+        code = match.group(1).strip()
+        inlinehilite = INLINEHILITE_RE.match(code)
+        if inlinehilite:
+            return inlinehilite.group("content").strip()
+        return code
+
+    text = INLINE_CODE_RE.sub(normalize_inline_code, text)
+
+    previous = None
+    while text != previous:
+        previous = text
+        text = STRONG_EMPHASIS_RE.sub(r"\2", text)
+        text = EMPHASIS_RE.sub(r"\1", text)
+        text = UNDERSCORE_EMPHASIS_RE.sub(r"\1", text)
+        text = STRIKETHROUGH_RE.sub(r"\1", text)
+        text = SUBSCRIPT_RE.sub(r"\1", text)
+
     return WHITESPACE_RE.sub(" ", text).strip()
 
 
