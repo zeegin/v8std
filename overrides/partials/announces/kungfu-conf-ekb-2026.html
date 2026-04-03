@@ -1,0 +1,80 @@
+<style>
+  .md-banner:has(.v8std-announce--kungfu-conf) {
+    background: rgb(255, 196, 44);
+    border-bottom-color: rgba(109, 78, 0, 0.22);
+  }
+
+  .v8std-announce--kungfu-conf .v8std-announce__image {
+    display: block;
+    flex: 0 0 auto;
+    height: 2rem;
+    object-fit: contain;
+    width: 2rem;
+  }
+
+  .v8std-announce--kungfu-conf .v8std-announce__link:hover,
+  .v8std-announce--kungfu-conf .v8std-announce__link:focus-visible {
+    color: #6d4e00;
+  }
+
+  .v8std-announce--kungfu-conf .v8std-announce__text {
+    color: rgb(17, 17, 17);
+  }
+
+  .v8std-announce--kungfu-conf .v8std-announce__cta,
+  .v8std-announce--kungfu-conf .v8std-announce__cta:hover,
+  .v8std-announce--kungfu-conf .v8std-announce__cta:focus-visible {
+    background: #ffffff;
+    border: 1px solid rgb(215, 215, 215);
+    color: rgb(17, 17, 17);
+  }
+
+  .v8std-announce--kungfu-conf .v8std-announce__dismiss {
+    color: #6d4e00;
+  }
+
+  .v8std-announce--kungfu-conf .v8std-announce__dismiss:hover,
+  .v8std-announce--kungfu-conf .v8std-announce__dismiss:focus-visible {
+    background: rgba(109, 78, 0, 0.08);
+    border-color: rgba(109, 78, 0, 0.18);
+    color: #3b2b00;
+  }
+
+  @media screen and (max-width: 44.984375em) {
+    .v8std-announce--kungfu-conf .v8std-announce__image {
+      height: 1.8rem;
+      width: 1.8rem;
+    }
+  }
+</style>
+
+<div class="v8std-announce v8std-announce--kungfu-conf" data-v8std-announce>
+  <a
+    href="https://kungfu-conf.ru/ekb2026?utm_source=v8std.ru&utm_medium=website&utm_campaign=news&utm_content=top_banner&from=v8std.ru"
+    class="v8std-announce__link"
+    data-v8std-announce-link
+    target="_blank"
+    rel="noopener"
+  >
+    <img
+      src="{{ 'assets/images/kungfu-conf.png' | url }}"
+      class="v8std-announce__image"
+      alt=""
+      width="100"
+      height="100"
+      decoding="async"
+    >
+    <span class="v8std-announce__text" data-v8std-announce-text>
+      От создателя v8std.ru: Мы организуем встречу 1Сников на Урале. Екатеринбург 16 мая 2026.
+    </span>
+    <span class="v8std-announce__cta">Подробнее</span>
+  </a>
+  <button
+    type="button"
+    class="v8std-announce__dismiss md-icon"
+    data-v8std-announce-dismiss
+    aria-label="Скрыть баннер на неделю"
+  >
+    {% include ".icons/material/close.svg" %}
+  </button>
+</div>
