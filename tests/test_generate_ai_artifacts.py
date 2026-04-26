@@ -66,6 +66,100 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertGreater(len(rows), 1000)
         self.assertTrue(all(row["body_markdown"] for row in rows))
 
+    def test_llms_full_excludes_pages_with_front_matter_flag_only(self):
+        payload = self.module.build_llms_full_txt(self.index)
+        jsonl_rows = [
+            json.loads(line)
+            for line in self.module.build_pages_jsonl(self.index["pages"]).splitlines()
+        ]
+        jsonl_ids = {row["id"] for row in jsonl_rows}
+
+        excluded_ids = {
+            "home",
+            "diagnostics",
+            "diagnostics:acc",
+            "diagnostics:bslls",
+            "diagnostics:v8_code_style",
+        }
+
+        for page_id in excluded_ids:
+            self.assertNotIn(f"### {page_id} - ", payload)
+            self.assertIn(page_id, jsonl_ids)
+
+        self.assertIn("### std437 - ", payload)
+        self.assertIn("### bslls:AssignAliasFieldsInQuery - ", payload)
+
+    def test_normalizes_internal_markdown_links_to_absolute_urls(self):
+        std437 = self.pages_by_id["std437"]["body_markdown"]
+        search_help = self.pages_by_id["search_help"]["body_markdown"]
+
+        self.assertIn(
+            "[#bslls:AssignAliasFieldsInQuery](https://v8std.ru/diagnostics/bslls/AssignAliasFieldsInQuery/)",
+            std437,
+        )
+        self.assertIn("[/llms.txt](https://v8std.ru/llms.txt)", search_help)
+        self.assertNotIn("../diagnostics/bslls/AssignAliasFieldsInQuery.md", std437)
+
+    def test_llms_full_uses_readable_metadata_and_has_no_relative_links(self):
+        payload = self.module.build_llms_full_txt(self.index)
+
+        self.assertNotIn("#!bsl", payload)
+        self.assertNotIn('=== ":fontawesome-brands-linux: linux"', payload)
+        self.assertNotIn("!!! success", payload)
+        self.assertNotIn("{ width=", payload)
+        self.assertNotIn("\ntype=\"button\"\n", payload)
+        self.assertNotRegex(payload, r"\]\((?!https?://|mailto:)[^)]+\.md(?:#[^)]+)?\)")
+        self.assertLess(max(len(line) for line in payload.splitlines()), 500)
+
+    def test_cleans_theme_markup_for_public_llm_body(self):
+        raw = """###### #std999
+
+Текст `#!bsl &НаКлиенте` и `#!sdbl РАЗРЕШЕННЫЕ`.
+
+=== ":fontawesome-brands-linux: linux"
+
+    !!! failure "Неправильно"
+
+        ```bsl hl_lines="1 9"
+        Сообщить("Плохо");
+        ```
+
+~[#bslls:AssignAliasFieldsInQuery](../diagnostics/bslls/AssignAliasFieldsInQuery.md)~
+
+![Карта маршрута](480.img1.jpg){ width="565" }
+| ++ctrl+shift+f++<br>++enter++ | Действие |
+<span class="std-rgb-dot" title="RGB: 1,2,3"></span>
+"""
+
+        cleaned = self.module.clean_llm_markdown(raw)
+
+        self.assertIn("ID: #std999", cleaned)
+        self.assertIn("`&НаКлиенте`", cleaned)
+        self.assertIn("`РАЗРЕШЕННЫЕ`", cleaned)
+        self.assertIn("#### linux", cleaned)
+        self.assertIn("#### Неправильно", cleaned)
+        self.assertIn("```bsl\nСообщить", cleaned)
+        self.assertIn("[#bslls:AssignAliasFieldsInQuery]", cleaned)
+        self.assertIn("Изображение: Карта маршрута (480.img1.jpg)", cleaned)
+        self.assertIn("Ctrl+Shift+F; Enter", cleaned)
+        self.assertNotIn("#!bsl", cleaned)
+        self.assertNotIn("===", cleaned)
+        self.assertNotIn("!!!", cleaned)
+        self.assertNotIn("fontawesome", cleaned)
+        self.assertNotIn("{ width=", cleaned)
+        self.assertNotIn("<span", cleaned)
+
+    def test_public_pages_use_cleaned_markdown_body(self):
+        std437 = self.pages_by_id["std437"]["body_markdown"]
+        support = self.pages_by_id["support"]["body_markdown"]
+
+        self.assertIn("`КАК`", std437)
+        self.assertIn("#### Правильно", std437)
+        self.assertIn("#### linux", support)
+        self.assertNotIn("#!sdbl", std437)
+        self.assertNotIn("!!! success", std437)
+        self.assertNotIn('=== ":fontawesome-brands-linux: linux"', support)
+
     def test_llms_txt_contains_required_shape_and_acceptance_relation(self):
         payload = self.module.build_llms_txt(self.index)
 

@@ -1,5 +1,7 @@
 ---
 title: Диагностики EDT v8-code-style и стандарты
+llms:
+  full: false
 ---
 
 # Диагностики EDT v8-code-style и стандарты

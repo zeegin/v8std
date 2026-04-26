@@ -22,7 +22,9 @@ hide:
 | Файл | Назначение |
 | --- | --- |
 | [/llms.txt](/llms.txt) | Компактная карта сайта со стандартами, диагностиками и ссылками на машинные индексы |
-| [/llms-full.txt](/llms-full.txt) | Полный Markdown-корпус страниц без front matter |
-| [/ai/pages.jsonl](/ai/pages.jsonl) | JSONL-индекс страниц, алиасов, связей и исходного Markdown |
+| [/llms-full.txt](/llms-full.txt) | Очищенный полный Markdown-корпус страниц без front matter и служебной разметки темы |
+| [/ai/pages.jsonl](/ai/pages.jsonl) | JSONL-индекс страниц, алиасов, связей и очищенного Markdown |
 | [/ai/graph.json](/ai/graph.json) | Граф связей стандартов, диагностик, EDT-проверок и внешних источников |
 | [/ai/search-aliases.json](/ai/search-aliases.json) | Нормализованные поисковые алиасы для стандартов и диагностик |
+
+`/llms-full.txt` включает контентные страницы. Навигационные и сводные страницы могут оставаться в JSONL-индексе, но исключаться из полного корпуса через front matter `llms.full: false`.

@@ -1,5 +1,7 @@
 ---
 title: Диагностики BSL Language Server и стандарты
+llms:
+  full: false
 ---
 
 # Диагностики BSL Language Server и стандарты

@@ -5,9 +5,11 @@ from __future__ import annotations
 import json
 import re
 import sys
+import textwrap
+from html import unescape
 from collections import defaultdict
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
@@ -37,6 +39,43 @@ MARKER_RE = re.compile(
     re.MULTILINE,
 )
 ACC_TITLE_CODE_RE = re.compile(r"\(ACC\s+(?P<code>\d+)\)", re.IGNORECASE)
+ADMONITION_RE = re.compile(
+    r"^!!!\s+(?P<kind>[A-Za-z0-9_-]+)(?:\s+(?P<title>.+?))?\s*$"
+)
+TAB_RE = re.compile(r"^===\s+(?P<label>.+?)\s*$")
+CODE_FENCE_RE = re.compile(r"^```(?P<language>[A-Za-z0-9_-]+)?(?:\s+.*)?$")
+INLINEHILITE_CODE_RE = re.compile(r"`#![A-Za-z0-9_-]+(?:\s+([^`]+))?`")
+ICON_SHORTCODE_RE = re.compile(r":[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+:")
+IMAGE_WITH_ATTRS_RE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)(?:\{[^}]+\})?")
+MARKDOWN_ATTR_RE = re.compile(r"(?<=\))\{[^}\n]+\}|\{\s*\.[^}\n]+\}")
+STRIKE_LINK_RE = re.compile(r"~(\[[^\]]+\]\([^)]+\))~")
+HTML_ANCHOR_RE = re.compile(
+    r"<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
+    re.IGNORECASE,
+)
+HTML_HEADING_RE = re.compile(
+    r"^\s*<h(?P<level>[1-6])\b[^>]*>(?P<content>.*?)</h[1-6]>\s*$",
+    re.IGNORECASE,
+)
+HTML_ARIA_LABEL_RE = re.compile(
+    r"<[^>]+\baria-label=[\"']([^\"']+)[\"'][^>]*>.*?</[^>]+>",
+    re.IGNORECASE,
+)
+HTML_TAG_RE = re.compile(r"<[^>]+>")
+HTML_WRAPPER_LINE_RE = re.compile(
+    r"^\s*</?(?:div|span|section|p|button|table|thead|tbody|tr|td|th|script|html|body|svg|path|use)\b[^>]*>\s*$",
+    re.IGNORECASE,
+)
+HTML_OPEN_TAG_START_RE = re.compile(
+    r"^\s*<(?:a|button|div|span|section|p|table|thead|tbody|tr|td|th|script|svg|path|use)\b[^>]*$",
+    re.IGNORECASE,
+)
+REDIRECT_RE = re.compile(r"window\.location\.replace\([\"']([^\"']+)[\"']\);")
+KEYBOARD_KEY_RE = re.compile(r"\+\+([^\n]+?)\+\+")
+MARKER_HEADING_RE = re.compile(
+    r"^#{6}\s+(?P<marker>#std\d+|(?:bslls|acc|v8cs):[A-Za-z0-9_-]+)\s*$"
+)
+DEEP_HEADING_RE = re.compile(r"^#{6}\s+(.+?)\s*$")
 
 TYPE_ORDER = {
     "standard": 0,
@@ -63,6 +102,199 @@ def dedupe(values: list[str]) -> list[str]:
 def normalize_body(raw: str) -> str:
     _, content = extract_front_matter(raw)
     return content.replace("\r\n", "\n").replace("\r", "\n").strip()
+
+
+def llms_full_enabled(front_matter: dict) -> bool:
+    llms = front_matter.get("llms")
+    if isinstance(llms, dict):
+        return llms.get("full") is not False
+    return True
+
+
+def clean_label(value: str) -> str:
+    label = value.strip().strip('"').strip("'")
+    label = ICON_SHORTCODE_RE.sub("", label)
+    label = strip_markdown(label)
+    return re.sub(r"\s+", " ", label).strip()
+
+
+def leading_spaces(value: str) -> int:
+    return len(value) - len(value.lstrip(" "))
+
+
+def clean_keyboard_key(match: re.Match[str]) -> str:
+    key_map = {
+        "ctrl": "Ctrl",
+        "shift": "Shift",
+        "alt": "Alt",
+        "cmd": "Cmd",
+        "command": "Cmd",
+        "enter": "Enter",
+        "space": "Space",
+        "up": "Up",
+        "down": "Down",
+        "left": "Left",
+        "right": "Right",
+        "tab": "Tab",
+        "esc": "Esc",
+    }
+    parts = []
+    for part in match.group(1).split("+"):
+        lower = part.lower()
+        if lower in key_map:
+            parts.append(key_map[lower])
+        elif re.fullmatch(r"f\d{1,2}", part, re.I) or re.fullmatch(r"[a-z]", part, re.I):
+            parts.append(part.upper())
+        else:
+            parts.append(part)
+    return "+".join(parts)
+
+
+def clean_inline_markup(line: str) -> str:
+    def replace_inlinehilite(match: re.Match[str]) -> str:
+        content = (match.group(1) or "").strip()
+        return f"`{content}`" if content else "`#!`"
+
+    line = INLINEHILITE_CODE_RE.sub(replace_inlinehilite, line)
+    line = STRIKE_LINK_RE.sub(r"\1", line)
+    line = KEYBOARD_KEY_RE.sub(clean_keyboard_key, line)
+    line = IMAGE_WITH_ATTRS_RE.sub(
+        lambda match: f"Изображение: {clean_label(match.group(1)) or match.group(2)} ({match.group(2)})",
+        line,
+    )
+    line = MARKDOWN_ATTR_RE.sub("", line)
+    line = ICON_SHORTCODE_RE.sub("", line)
+    return line
+
+
+def clean_html_markup(line: str) -> str | None:
+    redirect_match = REDIRECT_RE.search(line)
+    if redirect_match:
+        return f"Redirect: {redirect_match.group(1)}"
+
+    heading_match = HTML_HEADING_RE.match(line)
+    if heading_match:
+        level = min(int(heading_match.group("level")) + 2, 6)
+        content = clean_label(heading_match.group("content"))
+        return f"{'#' * level} {content}" if content else None
+
+    if HTML_WRAPPER_LINE_RE.match(line):
+        return None
+
+    line = re.sub(r"<br\s*/?>", "; ", line, flags=re.IGNORECASE)
+    line = HTML_ANCHOR_RE.sub(
+        lambda match: f"[{clean_label(match.group(2))}]({match.group(1)})",
+        line,
+    )
+    line = HTML_ARIA_LABEL_RE.sub(lambda match: match.group(1), line)
+    line = HTML_TAG_RE.sub("", line)
+    line = unescape(line)
+    return line
+
+
+def normalize_blank_lines(lines: list[str]) -> list[str]:
+    result: list[str] = []
+    previous_blank = False
+
+    for line in lines:
+        stripped = line.rstrip()
+        if not stripped:
+            if not previous_blank:
+                result.append("")
+            previous_blank = True
+            continue
+        result.append(stripped)
+        previous_blank = False
+
+    while result and not result[0]:
+        result.pop(0)
+    while result and not result[-1]:
+        result.pop()
+
+    return result
+
+
+def clean_llm_markdown(content: str) -> str:
+    lines: list[str] = []
+    dedent_stack: list[int] = []
+    in_code_block = False
+    in_multiline_html_tag = False
+    code_block_indent = 0
+
+    for raw_line in content.splitlines():
+        if raw_line.strip():
+            while dedent_stack and leading_spaces(raw_line) < sum(dedent_stack):
+                dedent_stack.pop()
+
+        dedent = sum(dedent_stack)
+        line = raw_line[dedent:] if raw_line.startswith(" " * dedent) else raw_line.lstrip()
+        stripped_line = line.lstrip()
+
+        if stripped_line.strip() == "```":
+            in_code_block = not in_code_block
+            code_block_indent = 0
+            lines.append("```")
+            continue
+
+        fence_match = CODE_FENCE_RE.match(stripped_line)
+        if not in_code_block and fence_match:
+            language = fence_match.group("language") or ""
+            code_block_indent = leading_spaces(line)
+            lines.append(f"```{language}")
+            in_code_block = not in_code_block
+            continue
+
+
+        if in_code_block:
+            if code_block_indent and line.startswith(" " * code_block_indent):
+                line = line[code_block_indent:]
+            lines.append(line.rstrip())
+            continue
+
+        if in_multiline_html_tag:
+            if ">" in line:
+                in_multiline_html_tag = False
+            continue
+
+        if HTML_OPEN_TAG_START_RE.match(line):
+            in_multiline_html_tag = True
+            continue
+
+        marker_match = MARKER_HEADING_RE.match(line)
+        if marker_match:
+            lines.append(f"ID: {marker_match.group('marker')}")
+            continue
+
+        deep_heading_match = DEEP_HEADING_RE.match(line)
+        if deep_heading_match:
+            lines.append(f"#### {deep_heading_match.group(1).strip()}")
+            continue
+
+        tab_match = TAB_RE.match(line)
+        if tab_match:
+            label = clean_label(tab_match.group("label"))
+            lines.append(f"#### {label}" if label else "#### Вкладка")
+            dedent_stack.append(4)
+            continue
+
+        admonition_match = ADMONITION_RE.match(line)
+        if admonition_match:
+            title = clean_label(admonition_match.group("title") or admonition_match.group("kind"))
+            lines.append(f"#### {title}")
+            dedent_stack.append(4)
+            continue
+
+        line = clean_inline_markup(line)
+        cleaned_html = clean_html_markup(line)
+        if cleaned_html is None:
+            continue
+        line = cleaned_html
+        if line.strip():
+            lines.append(line.rstrip())
+        else:
+            lines.append("")
+
+    return "\n".join(normalize_blank_lines(lines)).strip()
 
 
 def relative_route(relative: Path) -> str:
@@ -198,6 +430,133 @@ def local_link_target(source: Path, docs_dir: Path, target: str) -> Path | None:
         return None
 
 
+def canonical_page_url(project: dict, relative: Path) -> str:
+    site_url = (project.get("site_url") or "").rstrip("/")
+    route = relative_route(relative)
+    path = f"/{route}" if route else "/"
+    return f"{site_url}{path}" if site_url else path
+
+
+def absolute_internal_url(source: Path, docs_dir: Path, project: dict, target: str) -> str | None:
+    target = target.strip()
+    if not target or target.startswith(("http://", "https://", "mailto:")):
+        return None
+
+    if target.startswith("#"):
+        return f"{canonical_page_url(project, source.relative_to(docs_dir))}{target}"
+
+    if target.startswith("/") and not target.startswith("//"):
+        site_url = (project.get("site_url") or "").rstrip("/")
+        return f"{site_url}{target}" if site_url else target
+
+    relative_target = local_link_target(source, docs_dir, target)
+    if relative_target is None:
+        return None
+
+    parsed = urlsplit(target)
+    suffix = ""
+    if parsed.query:
+        suffix += f"?{parsed.query}"
+    if parsed.fragment:
+        suffix += f"#{parsed.fragment}"
+    return f"{canonical_page_url(project, relative_target)}{suffix}"
+
+
+def normalize_internal_markdown_links(
+    markdown: str,
+    source: Path,
+    docs_dir: Path,
+    project: dict,
+) -> str:
+    lines: list[str] = []
+    in_code_block = False
+
+    for line in markdown.splitlines():
+        if line.lstrip().startswith("```"):
+            lines.append(line)
+            in_code_block = not in_code_block
+            continue
+
+        if in_code_block:
+            lines.append(line)
+            continue
+
+        def replace_link(match: re.Match[str]) -> str:
+            absolute_url = absolute_internal_url(source, docs_dir, project, match.group(2))
+            if absolute_url is None:
+                return match.group(0)
+            return f"[{match.group(1)}]({absolute_url})"
+
+        lines.append(MARKDOWN_LINK_RE.sub(replace_link, line))
+
+    return "\n".join(lines).strip()
+
+
+def normalize_title_for_compare(value: str) -> str:
+    text = clean_label(value)
+    text = re.sub(r"^#?std\d+\s*[:.-]?\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"^(?:bslls|acc|v8cs):[A-Za-z0-9_-]+\s*[:.-]?\s*", "", text, flags=re.IGNORECASE)
+    return re.sub(r"\s+", " ", text).strip().casefold()
+
+
+def remove_duplicate_title_heading(markdown: str, title: str) -> str:
+    title_key = normalize_title_for_compare(title)
+    if not title_key:
+        return markdown
+
+    lines = markdown.splitlines()
+    for index, line in enumerate(lines[:5]):
+        if not line.startswith("# "):
+            continue
+
+        heading_key = normalize_title_for_compare(line.removeprefix("# "))
+        if heading_key and (heading_key == title_key or title_key.endswith(heading_key)):
+            del lines[index]
+            if index < len(lines) and not lines[index].strip():
+                del lines[index]
+            break
+
+    return "\n".join(lines).strip()
+
+
+def wrap_llm_markdown_lines(markdown: str, width: int = 480) -> str:
+    lines: list[str] = []
+    in_code_block = False
+
+    for line in markdown.splitlines():
+        if line.lstrip().startswith("```"):
+            lines.append(line)
+            in_code_block = not in_code_block
+            continue
+
+        if in_code_block or len(line) <= width or not line.strip():
+            lines.append(line)
+            continue
+
+        list_match = re.match(r"^((?:[-*+]|\d+[.)])\s+)(.+)$", line)
+        if list_match:
+            prefix = list_match.group(1)
+            wrapped = textwrap.wrap(
+                list_match.group(2),
+                width=width,
+                initial_indent=prefix,
+                subsequent_indent=" " * len(prefix),
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+        else:
+            wrapped = textwrap.wrap(
+                line,
+                width=width,
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+
+        lines.extend(wrapped or [line])
+
+    return "\n".join(lines).strip()
+
+
 def relation_kind(page: dict, target: dict) -> str:
     page_type = page["type"]
     target_type = target["type"]
@@ -241,10 +600,15 @@ def sort_pages(pages: list[dict]) -> list[dict]:
 def build_ai_page(source: Path, docs_dir: Path, project: dict) -> dict:
     relative = source.relative_to(docs_dir)
     raw = source.read_text(encoding="utf-8")
-    content = normalize_body(raw)
+    front_matter, content = extract_front_matter(raw)
+    content = content.replace("\r\n", "\n").replace("\r", "\n").strip()
     page_type = classify_page(relative)
     page_id = build_page_id(relative, content, page_type)
     metadata = build_page_metadata(source, docs_dir, project)
+    body_markdown = clean_llm_markdown(content)
+    body_markdown = normalize_internal_markdown_links(body_markdown, source, docs_dir, project)
+    body_markdown = remove_duplicate_title_heading(body_markdown, metadata["seo_title"])
+    body_markdown = wrap_llm_markdown_lines(body_markdown)
 
     return {
         "id": page_id,
@@ -256,7 +620,8 @@ def build_ai_page(source: Path, docs_dir: Path, project: dict) -> dict:
         "aliases": build_aliases(page_id, relative, page_type, metadata["seo_title"]),
         "related": [],
         "source_urls": extract_source_urls(content),
-        "body_markdown": content,
+        "body_markdown": body_markdown,
+        "_llms_full_enabled": llms_full_enabled(front_matter),
         "_links": extract_markdown_links(content),
     }
 
@@ -362,6 +727,26 @@ def page_link(page: dict, label: str | None = None) -> str:
     return f"[{label or page['title']}]({page['url']})"
 
 
+def append_metadata_values(
+    lines: list[str],
+    label: str,
+    values: list[str],
+    *,
+    inline_limit: int = 180,
+) -> None:
+    if not values:
+        lines.append(f"{label}: нет")
+        return
+
+    inline = ", ".join(values)
+    if len(inline) <= inline_limit:
+        lines.append(f"{label}: {inline}")
+        return
+
+    lines.append(f"{label}:")
+    lines.extend(f"- {value}" for value in values)
+
+
 def build_llms_txt(index: dict) -> str:
     project = index["project"]
     pages = index["pages"]
@@ -380,8 +765,8 @@ def build_llms_txt(index: dict) -> str:
         "Этот файл является компактной картой сайта для LLM. Полный корпус и машинные индексы лежат в отдельных статических файлах.",
         "",
         "## Machine-Readable Files",
-        f"- [Full Markdown corpus]({site_url}/{LLMS_FULL_TXT}): полный текст всех Markdown-страниц без front matter.",
-        f"- [Pages JSONL]({site_url}/{AI_DIR}/{PAGES_JSONL}): JSONL-индекс страниц, алиасов, связей и исходных Markdown-текстов.",
+        f"- [Full Markdown corpus]({site_url}/{LLMS_FULL_TXT}): очищенный полный текст всех Markdown-страниц без front matter и служебной разметки темы.",
+        f"- [Pages JSONL]({site_url}/{AI_DIR}/{PAGES_JSONL}): JSONL-индекс страниц, алиасов, связей и очищенных Markdown-текстов.",
         f"- [Graph JSON]({site_url}/{AI_DIR}/{GRAPH_JSON}): граф связей стандартов, диагностик, EDT-проверок и внешних источников.",
         f"- [Search aliases JSON]({site_url}/{AI_DIR}/{SEARCH_ALIASES_JSON}): нормализованные формы запросов для стандартов и диагностик.",
         "",
@@ -424,32 +809,29 @@ def build_llms_full_txt(index: dict) -> str:
     lines = [
         f"# {project.get('site_name', 'v8std.ru')} - полный корпус",
         "",
-        "> Полный Markdown/plain-text корпус сайта для LLM и локальной индексации.",
+        "> Очищенный Markdown/plain-text корпус сайта для LLM и локальной индексации.",
         "",
     ]
 
     current_type = None
-    for page in index["pages"]:
+    pages = [page for page in index["pages"] if page.get("_llms_full_enabled", True)]
+    for page in pages:
         if page["type"] != current_type:
             current_type = page["type"]
             lines.extend(["", f"## {current_type}", ""])
 
-        related = ", ".join(f"{item['relation']}:{item['id']}" for item in page["related"]) or "нет"
-        sources = ", ".join(page["source_urls"]) or "нет"
-        aliases = ", ".join(page["aliases"]) or "нет"
+        related = [f"{item['relation']}:{item['id']}" for item in page["related"]]
         lines.extend(
             [
                 f"### {page['id']} - {page['title']}",
                 f"URL: {page['url']}",
                 f"Source path: {page['source_path']}",
-                f"Aliases: {aliases}",
-                f"Related: {related}",
-                f"External sources: {sources}",
-                "",
-                page["body_markdown"],
-                "",
             ]
         )
+        append_metadata_values(lines, "Aliases", page["aliases"])
+        append_metadata_values(lines, "Related", related)
+        append_metadata_values(lines, "External sources", page["source_urls"])
+        lines.extend(["", page["body_markdown"], ""])
 
     return "\n".join(lines).rstrip() + "\n"
 
