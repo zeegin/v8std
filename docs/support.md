@@ -20,7 +20,7 @@ hide:
 
 ### Как развернуть локально?
 
-Для локального запуска без Docker требуются `Python 3.12`, `Rust toolchain 1.86+` (`cargo`, `rustc`) и `git`.
+Для локального запуска без Docker требуется `Python 3.12`. Zensical устанавливается из PyPI в зафиксированной версии.
 
 === ":fontawesome-brands-apple: mac"
     ```bash
@@ -75,7 +75,7 @@ hide:
     docker compose -f docker-compose/docker-compose.ngnix.yml up --build
     ```
 
-Скрипт [`./scripts/install_zensical.sh`](https://github.com/zeegin/v8std/blob/main/scripts/install_zensical.sh) устанавливает зафиксированную версию Zensical и Python-зависимости проекта из [`requirements.txt`](https://github.com/zeegin/v8std/blob/main/requirements.txt).
+Скрипт [`./scripts/install_zensical.sh`](https://github.com/zeegin/v8std/blob/main/scripts/install_zensical.sh) устанавливает зафиксированную версию Zensical из PyPI и Python-зависимости проекта из [`requirements.txt`](https://github.com/zeegin/v8std/blob/main/requirements.txt).
 
 Скрипт [`./scripts/zensical_docs.sh`](https://github.com/zeegin/v8std/blob/main/scripts/zensical_docs.sh) перед `serve` и `build` обновляет временные social cards. Пример production-сборки:
 

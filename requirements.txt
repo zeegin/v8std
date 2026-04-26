@@ -1,2 +1,3 @@
 Pillow
+PyYAML
 pygments-bsl

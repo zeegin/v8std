@@ -5,6 +5,36 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/zensical-version.sh"
 
+python_supports_project() {
+  "$1" - <<'PY'
+import sys
+
+raise SystemExit(0 if sys.version_info >= (3, 12) else 1)
+PY
+}
+
+find_python() {
+  local candidate
+
+  if [ -n "${VIRTUAL_ENV:-}" ]; then
+    candidate="${VIRTUAL_ENV}/bin/python"
+    if [ -x "${candidate}" ] && python_supports_project "${candidate}"; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  fi
+
+  for candidate in python python3.12; do
+    if command -v "${candidate}" >/dev/null 2>&1 && python_supports_project "${candidate}"; then
+      command -v "${candidate}"
+      return 0
+    fi
+  done
+
+  printf 'error: Python 3.12+ is required to run documentation scripts. Activate a Python 3.12 virtual environment or install python3.12.\n' >&2
+  return 1
+}
+
 find_repo_root() {
   local current
 
@@ -34,8 +64,9 @@ find_repo_root() {
 REPO_ROOT="$(find_repo_root)"
 export V8STD_REPO_ROOT="${REPO_ROOT}"
 cd "${REPO_ROOT}"
+PYTHON_BIN="$(find_python)"
 
-python - "${ZENSICAL_VERSION_PYTHON}" <<'PY'
+"${PYTHON_BIN}" - "${ZENSICAL_VERSION_PYTHON}" <<'PY'
 import importlib.metadata
 import sys
 
@@ -52,21 +83,18 @@ if actual != expected:
     )
 PY
 
-python "${SCRIPT_DIR}/generate_social_cards.py"
+"${PYTHON_BIN}" "${SCRIPT_DIR}/generate_social_cards.py"
 
 if [ "${1:-}" = "build" ] && [ -d "${REPO_ROOT}/site" ]; then
-  python3 - "${REPO_ROOT}/site" <<'PY'
+  "${PYTHON_BIN}" - "${REPO_ROOT}/site" <<'PY'
 import shutil
 import sys
-import uuid
 from pathlib import Path
 
 site_dir = Path(sys.argv[1])
 if site_dir.is_dir():
-    cleanup_dir = site_dir.with_name(f".site-cleanup-{uuid.uuid4().hex}")
-    site_dir.rename(cleanup_dir)
-    shutil.rmtree(cleanup_dir, ignore_errors=True)
+    shutil.rmtree(site_dir)
 PY
 fi
 
-exec zensical "$@"
+exec "${PYTHON_BIN}" -m zensical "$@"
