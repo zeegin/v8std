@@ -84,6 +84,7 @@ if actual != expected:
 PY
 
 "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_social_cards.py"
+"${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py"
 
 if [ "${1:-}" = "build" ] && [ -d "${REPO_ROOT}/site" ]; then
   "${PYTHON_BIN}" - "${REPO_ROOT}/site" <<'PY'

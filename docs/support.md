@@ -77,10 +77,22 @@ hide:
 
 Скрипт [`./scripts/install_zensical.sh`](https://github.com/zeegin/v8std/blob/main/scripts/install_zensical.sh) устанавливает зафиксированную версию Zensical из PyPI и Python-зависимости проекта из [`requirements.txt`](https://github.com/zeegin/v8std/blob/main/requirements.txt).
 
-Скрипт [`./scripts/zensical_docs.sh`](https://github.com/zeegin/v8std/blob/main/scripts/zensical_docs.sh) перед `serve` и `build` обновляет временные social cards. Пример production-сборки:
+Скрипт [`./scripts/zensical_docs.sh`](https://github.com/zeegin/v8std/blob/main/scripts/zensical_docs.sh) перед `serve` и `build` обновляет временные social cards и AI-артефакты. Пример production-сборки:
 
 ```bash
 ./scripts/zensical_docs.sh build --strict
 ```
 
 Документация будет доступна по адресу `http://127.0.0.1:8000`.
+
+### Поиск и LLM-индексы
+
+Форматы запросов описаны на странице [Поиск по сайту](search-help.md).
+
+При `serve` и `build` автоматически генерируются статические AI-артефакты:
+
+- [`/llms.txt`](/llms.txt) — компактная карта сайта для LLM;
+- [`/llms-full.txt`](/llms-full.txt) — полный Markdown-корпус;
+- [`/ai/pages.jsonl`](/ai/pages.jsonl) — индекс страниц, алиасов и связей;
+- [`/ai/graph.json`](/ai/graph.json) — граф связей стандартов, диагностик и источников;
+- [`/ai/search-aliases.json`](/ai/search-aliases.json) — нормализованные поисковые алиасы.

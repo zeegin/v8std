@@ -547,7 +547,15 @@ def build_robots_txt(project: dict) -> str:
         lines.extend(
             [
                 "",
+                f"# LLM entry point: {site_url}/llms.txt",
                 f"Sitemap: {site_url}/sitemap.xml",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "",
+                "# LLM entry point: /llms.txt",
             ]
         )
 

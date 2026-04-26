@@ -3,8 +3,12 @@ site/
 .DS_Store
 .cache/
 .venv/
+__pycache__/
 docs/assets/social/
 docs/robots.txt
+docs/llms.txt
+docs/llms-full.txt
+docs/ai/
 overrides/partials/page_meta.html
 skills/
 .codex*

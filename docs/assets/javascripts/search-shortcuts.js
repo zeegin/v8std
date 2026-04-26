@@ -18,6 +18,9 @@
   const ATTEMPT_DELAY_MS = 75;
   const SEARCH_UI_FILTERS_SELECTOR = ".F";
   const SEARCH_UI_TAGS_SELECTOR = ".I";
+  const SEARCH_NORMALIZE_DELAY_MS = 120;
+  const normalizedSearchInputs = new WeakSet();
+  const normalizationTimers = new WeakMap();
 
   function isMacPlatform() {
     const userAgentDataPlatform = navigator.userAgentData?.platform;
@@ -180,6 +183,102 @@
     if (input.getAttribute("aria-label") !== "Поиск по сайту") {
       input.setAttribute("aria-label", "Поиск по сайту");
     }
+
+    bindSearchInputNormalization(input);
+  }
+
+  function normalizeSearchQuery(value) {
+    const query = value.trim();
+    let match = query.match(/^(?:#?\s*std|стд|стандарт)\s*#?\s*(\d{2,5})$/i);
+    if (match) {
+      return `#std${match[1]}`;
+    }
+
+    match = query.match(/^(?:#?\s*acc|апк)\s*:?\s*(\d{1,5})$/i);
+    if (match) {
+      return `acc:${match[1]}`;
+    }
+
+    match = query.match(/^#?\s*bslls\s*:?\s*([A-Za-z][A-Za-z0-9_]*)$/i);
+    if (match) {
+      return `bslls:${match[1]}`;
+    }
+
+    match = query.match(/^#?\s*(?:v8cs|edt)\s*:?\s*([A-Za-z0-9][A-Za-z0-9_-]*)$/i);
+    if (match) {
+      return `v8cs:${match[1]}`;
+    }
+
+    return query;
+  }
+
+  function setInputValue(input, value) {
+    const prototype =
+      input instanceof HTMLTextAreaElement
+        ? HTMLTextAreaElement.prototype
+        : HTMLInputElement.prototype;
+    const descriptor = Object.getOwnPropertyDescriptor(prototype, "value");
+
+    if (descriptor && typeof descriptor.set === "function") {
+      descriptor.set.call(input, value);
+      return;
+    }
+
+    input.value = value;
+  }
+
+  function emitSearchInputEvents(input) {
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+  }
+
+  function applyNormalizedSearchQuery(input) {
+    const original = input.value;
+    const normalized = normalizeSearchQuery(original);
+
+    if (normalized === original.trim() || normalized === original) {
+      return;
+    }
+
+    setInputValue(input, normalized);
+    emitSearchInputEvents(input);
+    input.setSelectionRange?.(normalized.length, normalized.length);
+  }
+
+  function scheduleSearchNormalization(input) {
+    const previousTimer = normalizationTimers.get(input);
+    if (previousTimer) {
+      window.clearTimeout(previousTimer);
+    }
+
+    const nextTimer = window.setTimeout(() => {
+      applyNormalizedSearchQuery(input);
+      normalizationTimers.delete(input);
+    }, SEARCH_NORMALIZE_DELAY_MS);
+
+    normalizationTimers.set(input, nextTimer);
+  }
+
+  function bindSearchInputNormalization(input) {
+    if (normalizedSearchInputs.has(input)) {
+      return;
+    }
+
+    normalizedSearchInputs.add(input);
+    input.addEventListener("input", () => {
+      scheduleSearchNormalization(input);
+    });
+    input.addEventListener("change", () => {
+      applyNormalizedSearchQuery(input);
+    });
+    input.addEventListener("blur", () => {
+      applyNormalizedSearchQuery(input);
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        applyNormalizedSearchQuery(input);
+      }
+    });
   }
 
   function syncSearchUiHeadings(root) {
