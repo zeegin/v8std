@@ -40,6 +40,18 @@ jobs:
             -v "$PWD:/docs" \
             -w /docs \
             v8std-docs build --strict
+      - name: Test MCP retrieval
+        run: |
+          docker run --rm \
+            -v "$PWD:/docs" \
+            -w /docs \
+            --entrypoint python \
+            v8std-docs -m unittest tests.test_v8std_mcp_index
+          docker run --rm \
+            -v "$PWD:/docs" \
+            -w /docs \
+            --entrypoint python \
+            v8std-docs scripts/search_benchmark.py
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

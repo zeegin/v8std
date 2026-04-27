@@ -85,6 +85,7 @@ PY
 
 "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_social_cards.py"
 "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py"
+"${PYTHON_BIN}" "${SCRIPT_DIR}/generate_search_vectors.py"
 
 if { [ "${1:-}" = "build" ] || [ "${1:-}" = "serve" ]; } && [ -d "${REPO_ROOT}/site" ]; then
   "${PYTHON_BIN}" - "${REPO_ROOT}/site" <<'PY'
@@ -141,6 +142,7 @@ PY
 if [ "${1:-}" = "build" ]; then
   "${PYTHON_BIN}" -m zensical "$@"
   "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py" --write-site-markdown "${REPO_ROOT}/site"
+  "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_search_vectors.py"
 elif [ "${1:-}" = "serve" ]; then
   "${PYTHON_BIN}" -m zensical "$@" &
   serve_pid="$!"

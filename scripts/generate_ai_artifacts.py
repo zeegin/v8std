@@ -23,6 +23,7 @@ from generate_social_cards import (  # noqa: E402
     normalize_description,
     strip_markdown,
 )
+from v8std_retrieval_rules import RetrievalRules  # noqa: E402
 
 
 LLMS_TXT = "llms.txt"
@@ -345,7 +346,13 @@ def build_page_id(relative: Path, content: str, page_type: str) -> str:
     return fallback_page_id(relative, page_type)
 
 
-def build_aliases(page_id: str, relative: Path, page_type: str, title: str) -> list[str]:
+def build_aliases(
+    page_id: str,
+    relative: Path,
+    page_type: str,
+    title: str,
+    retrieval_rules: RetrievalRules | None = None,
+) -> list[str]:
     aliases = [page_id]
 
     if page_type == "standard" and page_id.startswith("std"):
@@ -389,6 +396,9 @@ def build_aliases(page_id: str, relative: Path, page_type: str, title: str) -> l
 
     if page_type not in {"standard", "diagnostic"} and relative.name != "index.md":
         aliases.append(relative.stem)
+
+    if retrieval_rules is not None:
+        aliases.extend(retrieval_rules.aliases_for_page(page_id))
 
     return dedupe(aliases)
 
@@ -603,7 +613,12 @@ def sort_pages(pages: list[dict]) -> list[dict]:
     )
 
 
-def build_ai_page(source: Path, docs_dir: Path, project: dict) -> dict:
+def build_ai_page(
+    source: Path,
+    docs_dir: Path,
+    project: dict,
+    retrieval_rules: RetrievalRules | None = None,
+) -> dict:
     relative = source.relative_to(docs_dir)
     raw = source.read_text(encoding="utf-8")
     front_matter, content = extract_front_matter(raw)
@@ -624,7 +639,13 @@ def build_ai_page(source: Path, docs_dir: Path, project: dict) -> dict:
         "url": metadata["canonical"],
         "markdown_url": canonical_markdown_url(project, relative),
         "source_path": str(relative),
-        "aliases": build_aliases(page_id, relative, page_type, metadata["seo_title"]),
+        "aliases": build_aliases(
+            page_id,
+            relative,
+            page_type,
+            metadata["seo_title"],
+            retrieval_rules,
+        ),
         "related": [],
         "source_urls": extract_source_urls(content),
         "body_markdown": body_markdown,
@@ -951,9 +972,10 @@ def build_pages_jsonl(pages: list[dict]) -> str:
 def build_site_ai_index(root: Path) -> dict:
     project = load_project(root)
     docs_dir = root / project.get("docs_dir", "docs")
+    retrieval_rules = RetrievalRules.load(root / "retrieval-rules.yml")
     pages = sort_pages(
         [
-            build_ai_page(source, docs_dir, project)
+            build_ai_page(source, docs_dir, project, retrieval_rules)
             for source in sorted(docs_dir.rglob("*.md"))
         ]
     )

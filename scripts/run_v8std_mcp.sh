@@ -4,6 +4,7 @@ set -euo pipefail
 
 REPO_ROOT="${V8STD_REPO_ROOT:-/docs}"
 PAGES_PATH="${V8STD_MCP_PAGES:-${REPO_ROOT}/docs/ai/pages.jsonl}"
+VECTORS_PATH="${V8STD_MCP_VECTORS:-${REPO_ROOT}/docs/ai/search-vectors.jsonl}"
 GENERATE_INDEX="${V8STD_MCP_GENERATE_INDEX:-auto}"
 MCP_HOST="${V8STD_MCP_HOST:-0.0.0.0}"
 MCP_PORT="${V8STD_MCP_PORT:-8765}"
@@ -18,6 +19,9 @@ if [ "${GENERATE_INDEX}" = "always" ] || {
 }; then
     python /tmp/scripts/generate_social_cards.py
     python /tmp/scripts/generate_ai_artifacts.py
+    python /tmp/scripts/generate_search_vectors.py --pages "${PAGES_PATH}" --output "${VECTORS_PATH}"
+elif [ ! -s "${VECTORS_PATH}" ]; then
+    python /tmp/scripts/generate_search_vectors.py --pages "${PAGES_PATH}" --output "${VECTORS_PATH}"
 fi
 
 if [ ! -s "${PAGES_PATH}" ]; then
@@ -28,6 +32,7 @@ fi
 
 exec python /tmp/scripts/v8std_mcp_server.py \
     --pages "${PAGES_PATH}" \
+    --vectors "${VECTORS_PATH}" \
     --cache-dir "${MCP_CACHE_DIR}" \
     --host "${MCP_HOST}" \
     --port "${MCP_PORT}" \

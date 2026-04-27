@@ -1,0 +1,84 @@
+version: 1
+rules:
+  - id: acc_code_aliases
+    primary: ""
+    description: "ACC/АПК diagnostic code spelling is normalized generically by the index."
+    aliases: []
+
+  - id: modal_windows
+    primary: "bslls:UsingModalWindows"
+    diagnostics:
+      - "bslls:UsingModalWindows"
+    standards:
+      - "std404"
+      - "std487"
+      - "std519"
+    aliases:
+      - "ОткрытьФормуМодально"
+      - "ОткрытьМодально"
+      - "Форма.ОткрытьМодально"
+      - "Предупреждение"
+      - "Вопрос"
+      - "модальные окна"
+      - "модальное окно"
+      - "использование модальных окон"
+      - "UsingModalWindows"
+
+  - id: write_log_event
+    primary: "std498"
+    diagnostics:
+      - "acc:152"
+      - "acc:153"
+      - "acc:154"
+      - "acc:156"
+      - "acc:157"
+      - "acc:161"
+      - "acc:370"
+      - "bslls:UsageWriteLogEvent"
+    standards:
+      - "std498"
+      - "std784"
+    aliases:
+      - "ЗаписьЖурналаРегистрации"
+      - "ЗаписьЖурналаРегистрации()"
+      - "журнал регистрации"
+      - "запись журнала регистрации"
+      - "UsageWriteLogEvent"
+
+  - id: privileged_mode
+    primary: "std485"
+    standards:
+      - "std485"
+    aliases:
+      - "УстановитьПривилегированныйРежим"
+      - "УстановитьПривилегированныйРежим()"
+      - "привилегированный режим"
+      - "использование привилегированного режима"
+      - "отключаем проверку прав"
+
+  - id: query_select_allowed
+    primary: "std415"
+    standards:
+      - "std415"
+      - "std437"
+      - "std444"
+    aliases:
+      - "ВЫБРАТЬ РАЗРЕШЕННЫЕ"
+      - "выбрать разрешенные"
+      - "Новый Запрос ВЫБРАТЬ РАЗРЕШЕННЫЕ"
+      - "ключевое слово РАЗРЕШЕННЫЕ"
+
+  - id: separation_of_concerns_form_logic
+    primary: "patterns:engineering:separation_of_concerns"
+    standards:
+      - "std487"
+      - "std737"
+    aliases:
+      - "форма не должна содержать бизнес-логику"
+      - "форма не должна содержать доступ к данным"
+      - "форма не должна содержать бизнес-логику и доступ к данным"
+      - "бизнес-логика в форме"
+      - "доступ к данным в форме"
+      - "разделение ответственности"
+      - "разделение ответственностей"
+      - "separation of concerns"

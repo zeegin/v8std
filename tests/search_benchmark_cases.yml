@@ -1,0 +1,28 @@
+cases:
+  - query: "std437"
+    expected: "std437"
+    required_top: 1
+
+  - query: "acc:1245"
+    expected: "acc:1245"
+    required_top: 1
+
+  - query: "форма не должна содержать бизнес-логику и доступ к данным"
+    expected: "patterns:engineering:separation_of_concerns"
+    required_top: 3
+
+  - query: "Новый Запрос(\"ВЫБРАТЬ РАЗРЕШЕННЫЕ ...\")"
+    expected: "std415"
+    required_top: 3
+
+  - query: "ОткрытьФормуМодально Предупреждение Вопрос"
+    expected: "bslls:UsingModalWindows"
+    required_top: 3
+
+  - query: "ЗаписьЖурналаРегистрации"
+    expected: "std498"
+    required_top: 3
+
+thresholds:
+  mrr: 0.85
+  p95_latency_ms: 500

@@ -87,9 +87,10 @@ codex mcp add v8std-local --url http://127.0.0.1:8765/mcp
 claude mcp add --transport http v8std-local http://127.0.0.1:8765/mcp
 ```
 
-Локальный контейнер монтирует репозиторий в `/docs` и читает файл
-`/docs/docs/ai/pages.jsonl`. При `V8STD_MCP_GENERATE_INDEX=auto` индекс
-генерируется при старте контейнера, если файл отсутствует.
+Локальный контейнер монтирует репозиторий в `/docs` и читает файлы
+`/docs/docs/ai/pages.jsonl` и `/docs/docs/ai/search-vectors.jsonl`.
+При `V8STD_MCP_GENERATE_INDEX=auto` индекс и векторы генерируются при старте
+контейнера, если файлы отсутствуют.
 
 Полезные команды:
 
@@ -103,23 +104,27 @@ docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
 
 ### `v8std.search`
 
-Ищет страницы по идентификатору, алиасу, названию, коду диагностики или тексту.
+Ищет страницы гибридным ранжированием: точные алиасы и коды диагностик,
+BM25 по заголовкам и тексту, статический векторный индекс и доменные правила.
 
 Подходит для сценариев:
 
 - найти стандарт по `std437`, `#std437`, `стандарт 437`;
 - найти диагностику по `acc:1245`, `апк 1245`, `AssignAliasFieldsInQuery`;
-- найти материалы по теме: `запросы`, `регламентные задания`, `права`.
+- найти материалы по теме: `запросы`, `регламентные задания`, `права`;
+- найти смысловой запрос: `форма не должна содержать бизнес-логику и доступ к данным`;
+- разобрать кодовый фрагмент: `Новый Запрос("ВЫБРАТЬ РАЗРЕШЕННЫЕ ...")`.
 
 Основные параметры:
 
 | Параметр | Назначение |
 | --- | --- |
 | `query` | Строка поиска |
-| `type` | Необязательный фильтр: `standard`, `diagnostic`, `pattern`, `service` |
-| `limit` | Количество результатов, не больше 20 |
+| `types` | Необязательный список типов: `standard`, `diagnostic`, `pattern`, `service` |
+| `mode` | `hybrid`, `exact`, `bm25` или `semantic` |
+| `limit` | Количество результатов, не больше 50 |
 
-### `v8std.get`
+### `v8std.page`
 
 Возвращает страницу по идентификатору, алиасу, пути или URL.
 
@@ -134,7 +139,7 @@ docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
 | Параметр | Назначение |
 | --- | --- |
 | `id_or_alias_or_url` | Идентификатор, алиас, путь, HTML URL или Markdown URL |
-| `max_body_chars` | Ограничение размера возвращаемого Markdown |
+| `body_limit` | Ограничение размера возвращаемого Markdown |
 
 ### `v8std.related`
 
@@ -151,24 +156,45 @@ docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
 | Параметр | Назначение |
 | --- | --- |
 | `id_or_alias_or_url` | Исходная страница |
-| `relation` | Необязательный фильтр связи, например `standard`, `diagnostic`, `edt_check` |
+| `relations` | Необязательный список связей, например `standard`, `diagnostic`, `edt_check` |
+| `limit` | Количество связей |
 
-### `v8std.explain_diagnostic`
+### `v8std.explain_snippet`
 
-Объясняет диагностику и возвращает связанные стандарты.
+Разбирает короткий фрагмент BSL/SDBL и возвращает распознанные токены,
+сигналы, вероятные диагностики, стандарты и confidence.
 
 Подходит для сценариев:
 
-- после запуска [`bsl-analyzer`](https://github.com/itrous/bsl-analyzer)
-  объяснить предупреждение разработчику;
-- дополнить отчет анализатора ссылкой на стандарт;
-- выбрать исправление, которое устраняет причину нарушения.
+- передать `Запрос = Новый Запрос("ВЫБРАТЬ РАЗРЕШЕННЫЕ ...")` и получить `std415`;
+- передать `ОткрытьФормуМодально`, `Предупреждение`, `Вопрос` и получить
+  `bslls:UsingModalWindows`;
+- отделить кодовые токены от обычного текстового поиска.
 
 Основные параметры:
 
 | Параметр | Назначение |
 | --- | --- |
-| `code` | Код диагностики или алиас: `acc 1245`, `bslls:AssignAliasFieldsInQuery`, `v8cs:...` |
+| `snippet` | Фрагмент кода до 4000 символов |
+| `language` | `auto`, `bsl` или `sdbl` |
+| `limit` | Количество вероятных страниц |
+
+### `v8std.explain_diagnostics`
+
+Объясняет список диагностик и группирует связанные стандарты.
+
+Подходит для сценариев:
+
+- после запуска [`bsl-analyzer`](https://github.com/itrous/bsl-analyzer)
+  объяснить пачку предупреждений;
+- сгруппировать отчет BSL Language Server по стандартам;
+- выбрать исправления, которые устраняют причины нарушений.
+
+Основные параметры:
+
+| Параметр | Назначение |
+| --- | --- |
+| `codes` | Список кодов: `acc 1245`, `bslls:AssignAliasFieldsInQuery`, `v8cs:...`; максимум 500 |
 
 ## Файлы для ИИ-инструментов
 
@@ -179,6 +205,7 @@ docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
 | [`/llms.txt`](/llms.txt) | Компактная карта сайта: разделы, страницы, ссылки на корпус и индекс |
 | [`/llms-full.txt`](/llms-full.txt) | Полный очищенный Markdown-корпус страниц без front matter и служебной разметки темы |
 | [`/ai/pages.jsonl`](/ai/pages.jsonl) | Машинный JSONL-индекс страниц, алиасов, связей, источников и очищенного Markdown |
+| [`/ai/search-vectors.jsonl`](/ai/search-vectors.jsonl) | Статический векторный индекс для semantic-слоя MCP |
 | `/*.md` | Очищенная Markdown-версия публичной страницы по исходному пути, например [`/std/437.md`](/std/437.md) |
 
 `/ai/pages.jsonl` является основным источником данных для MCP. Каждая строка —
@@ -198,6 +225,19 @@ docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
 | `source_urls` | Внешние источники страницы |
 | `body_markdown` | Очищенное содержимое страницы |
 
+`/ai/search-vectors.jsonl` строится из `pages.jsonl`. MCP читает этот файл как
+готовый read-only индекс; если файл временно недоступен, сервер продолжает
+работать через точные правила и BM25, а `/healthz` показывает
+`semantic_enabled: false`.
+
+Через MCP resources доступны:
+
+```text
+v8std://llms.txt
+v8std://llms-full.txt
+v8std://ai/pages.jsonl
+```
+
 Страницы с front matter `llms.ignore: true` исключаются из `/llms.txt`,
 `/llms-full.txt` и `/ai/pages.jsonl`, но остаются обычными страницами сайта.
 
@@ -209,7 +249,10 @@ docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
 | --- | --- |
 | `scripts/v8std_mcp_index.py` | Загрузка индекса, нормализация алиасов, поиск, связи |
 | `scripts/v8std_mcp_server.py` | HTTP MCP-сервер и регистрация инструментов |
+| `scripts/generate_search_vectors.py` | Генерация статического векторного индекса |
+| `scripts/search_benchmark.py` | Регрессионный benchmark поиска |
 | `scripts/run_v8std_mcp.sh` | Docker-entrypoint для автономного локального запуска |
+| `retrieval-rules.yml` | Доменные алиасы, синонимы и code-aware mappings |
 | `requirements-mcp.txt` | Зависимости MCP-сервера |
 | `tests/test_v8std_mcp_index.py` | Unit-тесты поиска и нормализации |
 
@@ -218,6 +261,7 @@ docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
 | Переменная | Значение по умолчанию | Назначение |
 | --- | --- | --- |
 | `V8STD_MCP_PAGES` | `/docs/docs/ai/pages.jsonl` | Локальный JSONL-индекс |
+| `V8STD_MCP_VECTORS` | `/docs/docs/ai/search-vectors.jsonl` | Локальный векторный индекс |
 | `V8STD_MCP_GENERATE_INDEX` | `auto` | `auto` генерирует индекс только при отсутствии файла, `always` всегда обновляет |
 | `V8STD_MCP_HOST` | `0.0.0.0` | Адрес, на котором слушает контейнер |
 | `V8STD_MCP_PORT` | `8765` | Порт MCP-сервера |
@@ -231,10 +275,19 @@ source .venv/bin/activate
 
 pip install -r requirements.txt -r requirements-mcp.txt
 python scripts/generate_ai_artifacts.py
+python scripts/generate_search_vectors.py
 python scripts/v8std_mcp_server.py \
   --pages docs/ai/pages.jsonl \
+  --vectors docs/ai/search-vectors.jsonl \
   --host 127.0.0.1 \
   --port 8765
+```
+
+Проверка качества поиска:
+
+```bash
+python -m unittest tests.test_v8std_mcp_index
+python scripts/search_benchmark.py
 ```
 
 MCP-сервер intentionally read-only: он не изменяет код пользователя, не запускает
