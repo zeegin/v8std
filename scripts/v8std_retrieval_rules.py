@@ -36,6 +36,7 @@ class RetrievalRule:
     id: str
     primary: str
     aliases: tuple[str, ...]
+    snippet_calls: tuple[str, ...]
     diagnostics: tuple[str, ...]
     standards: tuple[str, ...]
     description: str = ""
@@ -59,11 +60,16 @@ class RetrievalRules:
     def __init__(self, rules: list[RetrievalRule]) -> None:
         self.rules = rules
         self._alias_index: list[tuple[str, str, RetrievalRule]] = []
+        self._snippet_call_index: list[tuple[re.Pattern[str], str, RetrievalRule]] = []
         for rule in rules:
             for alias in rule.aliases:
                 normalized = normalize_text(alias)
                 if normalized:
                     self._alias_index.append((normalized, alias, rule))
+            for call in rule.snippet_calls:
+                pattern = compile_call_pattern(call)
+                if pattern is not None:
+                    self._snippet_call_index.append((pattern, call, rule))
         self._alias_index.sort(key=lambda item: len(item[0]), reverse=True)
 
     @classmethod
@@ -82,6 +88,9 @@ class RetrievalRules:
                     id=str(raw.get("id", "")).strip(),
                     primary=str(raw.get("primary", "")).strip(),
                     aliases=tuple(str(item) for item in raw.get("aliases", []) if str(item).strip()),
+                    snippet_calls=tuple(
+                        str(item) for item in raw.get("snippet_calls", []) if str(item).strip()
+                    ),
                     diagnostics=tuple(
                         str(item) for item in raw.get("diagnostics", []) if str(item).strip()
                     ),
@@ -115,6 +124,18 @@ class RetrievalRules:
                     seen.add(key)
         return matches
 
+    def match_snippet_calls(self, value: str) -> list[RuleMatch]:
+        matches: list[RuleMatch] = []
+        seen: set[tuple[str, str]] = set()
+        for pattern, call, rule in self._snippet_call_index:
+            if not pattern.search(value):
+                continue
+            key = (rule.id, call)
+            if key not in seen:
+                matches.append(RuleMatch(rule=rule, alias=call))
+                seen.add(key)
+        return matches
+
     def analyze_snippet(self, snippet: str) -> dict[str, Any]:
         tokens = dedupe(tokenize(snippet))
         normalized = normalize_text(snippet)
@@ -132,10 +153,10 @@ class RetrievalRules:
                     }
                 )
 
-        for match in self.match_text(snippet):
+        for match in self.match_snippet_calls(snippet):
             signals.append(
                 {
-                    "type": "rule",
+                    "type": "snippet_call",
                     "rule": match.rule.id,
                     "value": match.alias,
                     "target_ids": list(match.rule.target_ids),
@@ -157,6 +178,18 @@ def dedupe(values: list[str] | tuple[str, ...]) -> list[str]:
             result.append(value)
             seen.add(value)
     return result
+
+
+def compile_call_pattern(call: str) -> re.Pattern[str] | None:
+    name = call.strip().removesuffix("()").strip()
+    if not name:
+        return None
+    identifier = r"A-Za-zА-Яа-яЁё0-9_"
+    escaped = re.escape(name)
+    return re.compile(
+        rf"(?<![{identifier}])(?:[{identifier}]+\s*\.\s*)?{escaped}\s*\(",
+        re.IGNORECASE,
+    )
 
 
 def extract_query_strings(snippet: str) -> list[str]:

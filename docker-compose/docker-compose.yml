@@ -19,7 +19,11 @@ services:
       dockerfile: docker-compose/docker/Dockerfile
     restart: always
     ports:
-      - "8765:8765"
+      - "127.0.0.1:8765:8765"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ../:/docs
     working_dir: /docs
@@ -27,4 +31,4 @@ services:
       V8STD_MCP_GENERATE_INDEX: auto
       V8STD_MCP_HOST: 0.0.0.0
       V8STD_MCP_PORT: "8765"
-    entrypoint: ["/tmp/scripts/run_v8std_mcp.sh"]
+    entrypoint: ["/opt/v8std/scripts/run_v8std_mcp.sh"]

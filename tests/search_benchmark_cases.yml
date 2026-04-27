@@ -1,28 +1,1568 @@
 cases:
-  - query: "std437"
-    expected: "std437"
-    required_top: 1
+- scenario: exact standard id
+  query: std437
+  expected: std437
+  required_top: 1
+- scenario: exact standard marker
+  query: '#std437'
+  expected: std437
+  required_top: 1
+- scenario: localized standard alias
+  query: стандарт 485
+  expected: std485
+  required_top: 1
+- scenario: acc diagnostic canonical
+  query: acc:1245
+  expected: acc:1245
+  required_top: 1
+- scenario: acc diagnostic compact
+  query: acc361
+  expected: acc:361
+  required_top: 1
+- scenario: acc diagnostic russian
+  query: АПК 361
+  expected: acc:361
+  required_top: 1
+- scenario: bslls diagnostic code
+  query: AssignAliasFieldsInQuery
+  expected: bslls:AssignAliasFieldsInQuery
+  required_top: 1
+- scenario: edt diagnostic alias
+  query: edt common-module-name-client-server
+  expected: v8cs:common-module-name-client-server
+  required_top: 1
+- scenario: semantic architecture query
+  query: форма не должна содержать бизнес-логику и доступ к данным
+  expected: patterns:engineering:separation_of_concerns
+  required_top: 3
+- scenario: privileged mode concept
+  query: привилегированный режим
+  expected: std485
+  required_top: 1
+- scenario: privileged mode method
+  query: использование привилегированного режима
+  expected: std485
+  required_top: 1
+- scenario: sdbl keyword concept
+  query: ключевое слово РАЗРЕШЕННЫЕ и права доступа в запросе
+  expected: std415
+  required_top: 1
+- scenario: bsl query snippet as search
+  query: Новый Запрос("ВЫБРАТЬ РАЗРЕШЕННЫЕ ...")
+  expected: std415
+  required_top: 3
+- scenario: modal methods as search
+  query: использование модальных окон
+  expected: bslls:UsingModalWindows
+  required_top: 3
+- scenario: write log method
+  query: журнал регистрации
+  expected: std498
+  required_top: 3
+- scenario: write log diagnostic detail
+  query: нелокализован параметр Комментарий ЗаписьЖурналаРегистрации
+  expected: acc:153
+  required_top: 3
+- scenario: external resource timeout
+  query: таймаут HTTPСоединение внешние ресурсы
+  expected: std748
+  required_top: 1
+- scenario: server execute/evaluate
+  query: не использовать выполнить вычислить на сервере
+  expected: std770
+  required_top: 1
+- scenario: data exchange business logic
+  query: обмен данными загрузка отключить бизнес логику
+  expected: std773
+  required_top: 1
+- scenario: diagnostic type filter
+  query: общий модуль клиент сервер должен оканчиваться на КлиентСервер
+  types:
+  - diagnostic
+  expected: v8cs:common-module-name-client-server
+  required_top: 1
+- scenario: standard type filter
+  query: полный доступ общий модуль
+  types:
+  - standard
+  expected: std469
+  required_top: 1
+- scenario: pattern type filter dry
+  query: DRY повторение кода
+  types:
+  - pattern
+  expected: patterns:engineering:dry
+  required_top: 1
+- scenario: pattern type filter yagni
+  query: YAGNI не делать заранее
+  types:
+  - pattern
+  expected: patterns:engineering:yagni
+  required_top: 1
+- scenario: pattern concrete above section
+  query: цепочка обязанностей обработчики
+  types:
+  - pattern
+  expected: patterns:gof:chain_of_responsibility
+  required_top: 3
+- scenario: semantic mode only
+  query: Separation of Concerns
+  mode: semantic
+  types:
+  - pattern
+  expected: patterns:engineering:separation_of_concerns
+  required_top: 3
+- scenario: snippet sdbl select allowed
+  tool: snippet
+  snippet: 'Запрос = Новый Запрос("ВЫБРАТЬ РАЗРЕШЕННЫЕ
 
-  - query: "acc:1245"
-    expected: "acc:1245"
-    required_top: 1
+    | Ссылка
 
-  - query: "форма не должна содержать бизнес-логику и доступ к данным"
-    expected: "patterns:engineering:separation_of_concerns"
-    required_top: 3
+    |ИЗ Документ.ЗаказКлиента");'
+  expected_field: standards
+  expected: std415
+  required_top: 1
+- scenario: snippet modal methods
+  tool: snippet
+  snippet: 'ОткрытьФормуМодально("Документ.ЗаказКлиента.ФормаОбъекта");
 
-  - query: "Новый Запрос(\"ВЫБРАТЬ РАЗРЕШЕННЫЕ ...\")"
-    expected: "std415"
-    required_top: 3
+    Предупреждение("Нельзя");'
+  expected_field: diagnostics
+  expected: bslls:UsingModalWindows
+  required_top: 1
+- scenario: snippet modal identifier is not call
+  tool: snippet
+  snippet: Предупреждение = Новый Структура;
+  expected_field: diagnostics
+  expected_absent: bslls:UsingModalWindows
+- scenario: snippet write log
+  tool: snippet
+  snippet: ЗаписьЖурналаРегистрации(НСтр("ru = 'Обмен.Действие'"), УровеньЖурналаРегистрации.Ошибка);
+  expected_field: standards
+  expected: std498
+  required_top: 1
+- scenario: snippet privileged mode
+  tool: snippet
+  snippet: "УстановитьПривилегированныйРежим(Истина);\nПопытка\n    Объект.Записать();\nКонецПопытки;"
+  expected_field: standards
+  expected: std485
+  required_top: 1
+- scenario: batch diagnostics
+  tool: diagnostics
+  codes:
+  - acc 1245
+  - АПК:361
+  - bad
+  expected_diagnostics:
+  - acc:1245
+  - acc:361
+  expected_standards:
+  - std469
+  - std680
+  expected_unknown:
+  - bad
+- scenario: 'natural query: query must be sorted for UI result'
+  query: результат запроса выводится пользователю нужен порядок строк
+  types:
+  - standard
+  expected: std412
+  required_top: 3
+- scenario: 'natural query: do not use allowed for business operation'
+  query: РАЗРЕШЕННЫЕ скрывает данные и ломает расчет операции
+  types:
+  - standard
+  expected: std415
+  required_top: 3
+- scenario: 'natural query: repeated select in loop'
+  query: запрос выполняется в цикле для каждой строки надо одним запросом
+  types:
+  - standard
+  expected: std436
+  required_top: 3
+- scenario: 'natural query: check empty query result'
+  query: проверить пустой результат запроса без выгрузки в таблицу значений
+  types:
+  - standard
+  expected: std438
+  required_top: 3
+- scenario: 'natural query: form data to value'
+  query: в модуле формы лучше РеквизитФормыВЗначение чем ДанныеФормыВЗначение
+  types:
+  - standard
+  expected: std409
+  required_top: 3
+- scenario: 'natural query: session parameters'
+  query: параметры сеанса влияют на ограничения доступа и производительность
+  types:
+  - standard
+  expected: std491
+  required_top: 3
+- scenario: 'natural query: object lock before edit'
+  query: перед изменением существующего объекта установить блокировку данных
+  types:
+  - standard
+  expected: std490
+  required_top: 3
+- scenario: 'natural query: do not swallow exception'
+  query: не надо перехватывать исключение без обработки и причины
+  types:
+  - standard
+  expected: std499
+  required_top: 3
+- scenario: 'natural query: common module server call'
+  query: не ставить вызов сервера у всех серверных общих модулей по умолчанию
+  types:
+  - standard
+  expected: std679
+  required_top: 3
+- scenario: 'natural query: public server API security'
+  query: серверный экспортный метод можно вызвать с клиента нужно проверять параметры
+  types:
+  - standard
+  expected: std678
+  required_top: 3
+- scenario: 'natural query: hardcoded password'
+  query: пароль логин секрет нельзя хранить в информационной базе
+  types:
+  - standard
+  expected: std740
+  required_top: 3
+- scenario: 'natural query: run external application'
+  query: ЗапуститьПриложение командная строка только из проверенных частей
+  types:
+  - standard
+  expected: std774
+  required_top: 3
+- scenario: 'natural query: external components restriction'
+  query: не использовать внешние компоненты если есть средства платформы
+  types:
+  - standard
+  expected: std794
+  required_top: 3
+- scenario: 'natural query: data exchange loading guard'
+  query: ПередЗаписью при обмене данными сначала проверить ОбменДанными.Загрузка
+  types:
+  - standard
+  expected: std773
+  required_top: 3
+- scenario: 'natural query: refusal flag handler'
+  query: параметру Отказ нельзя присваивать Ложь в обработчике событий
+  types:
+  - standard
+  expected: std686
+  required_top: 3
+- scenario: 'natural query: value table search'
+  query: много поисков в ТаблицаЗначений нужен индекс или соответствие
+  types:
+  - standard
+  expected: std452
+  required_top: 3
+- scenario: 'natural query: string concatenation mass'
+  query: массовая конкатенация строк СтрСоединить СтрРазделить
+  types:
+  - standard
+  expected: std782
+  required_top: 3
+- scenario: 'natural query: additional indexes'
+  query: дополнительный индекс по нескольким полям объекта метаданных
+  types:
+  - standard
+  expected: std791
+  required_top: 3
+- scenario: 'natural query: register records in loop'
+  query: не записывать наборы записей регистра в цикле по одной записи
+  types:
+  - standard
+  expected: std792
+  required_top: 3
+- scenario: 'natural query: role visibility in forms'
+  query: видимость элементов формы по ролям при большом количестве ролей
+  types:
+  - standard
+  expected: std737
+  required_top: 3
+- scenario: 'natural query: standard roles'
+  query: настраивать доступ только ролями профили доступа ПолныеПрава
+  types:
+  - standard
+  expected: std488
+  required_top: 3
+- scenario: 'natural query: Linux and macOS paths'
+  query: конфигурация должна работать в Linux macOS пути регистр файлов
+  types:
+  - standard
+  expected: std723
+  required_top: 3
+- scenario: 'natural query: temporary tables'
+  query: временные таблицы для производительности и стабильности сложных запросов
+  types:
+  - standard
+  expected: std777
+  required_top: 3
+- scenario: 'natural query: count records'
+  query: в запросе количество записей использовать КОЛИЧЕСТВО а не СУММА
+  types:
+  - standard
+  expected: std787
+  required_top: 3
+- scenario: 'natural query: localization interface texts'
+  query: сообщения пользователю в коде локализовать через НСтр
+  types:
+  - standard
+  expected: std761
+  required_top: 3
+- scenario: 'natural query: query literals localization'
+  query: строковые литералы из текста запроса выводятся пользователю локализация
+  types:
+  - standard
+  expected: std762
+  required_top: 3
+- scenario: 'natural query: autogenerated data localization'
+  query: автогенерируемый комментарий проводки надо формировать на языке базы
+  types:
+  - standard
+  expected: std784
+  required_top: 3
+- scenario: 'natural query: enterprise data integration'
+  query: обмен между конфигурациями БСП формат EnterpriseData правила конвертации
+  types:
+  - standard
+  expected: std771
+  required_top: 3
+- scenario: 'natural query: bots processing job'
+  query: регламентное задание вызывает СистемаВзаимодействия ВыполнитьОбработкуБотов
+  types:
+  - standard
+  expected: std798
+  required_top: 3
+- scenario: snippet union all query
+  tool: snippet
+  snippet: 'Запрос.Текст = "ВЫБРАТЬ Ссылка ИЗ Документ.ЗаказКлиента
 
-  - query: "ОткрытьФормуМодально Предупреждение Вопрос"
-    expected: "bslls:UsingModalWindows"
-    required_top: 3
+    |ОБЪЕДИНИТЬ
 
-  - query: "ЗаписьЖурналаРегистрации"
-    expected: "std498"
-    required_top: 3
+    |ВЫБРАТЬ Ссылка ИЗ Документ.ЗаказПоставщику";'
+  expected_field: standards
+  expected: std434
+  required_top: 3
+- scenario: snippet full outer join query
+  tool: snippet
+  snippet: 'Запрос.Текст = "ВЫБРАТЬ Товары.Ссылка
 
+    |ИЗ Справочник.Номенклатура КАК Товары
+
+    |ПОЛНОЕ ВНЕШНЕЕ СОЕДИНЕНИЕ РегистрСведений.Остатки КАК Остатки
+
+    |ПО Товары.Ссылка = Остатки.Номенклатура";'
+  expected_field: standards
+  expected: std435
+  required_top: 3
+- scenario: snippet query aliases
+  tool: snippet
+  snippet: 'Запрос.Текст = "ВЫБРАТЬ
+
+    | Касса.Валюта
+
+    |ИЗ Справочник.Кассы КАК Касса";'
+  expected_field: standards
+  expected: std437
+  required_top: 3
+- scenario: snippet form data conversion
+  tool: snippet
+  snippet: 'ТаблицаПодписей = ДанныеФормыВЗначение(ТаблицаПодписей, Тип("ТаблицаЗначений"));
+
+    Объект = РеквизитФормыВЗначение("Объект");'
+  expected_field: standards
+  expected: std409
+  required_top: 3
+- scenario: snippet data exchange loading
+  tool: snippet
+  snippet: "Процедура ПередЗаписью(Отказ)\n    Если ОбменДанными.Загрузка Тогда\n        Возврат;\n    КонецЕсли;\nКонецПроцедуры"
+  expected_field: standards
+  expected: std773
+  required_top: 3
+- scenario: snippet execute on server
+  tool: snippet
+  snippet: "&НаСервере\nПроцедура ВыполнитьКоманду(ТекстКоманды)\n    Выполнить(ТекстКоманды);\n    Результат = Вычислить(ТекстКоманды);\n\
+    КонецПроцедуры"
+  expected_field: standards
+  expected: std770
+  required_top: 3
+- scenario: snippet hardcoded secret
+  tool: snippet
+  snippet: 'ПарольSMTP = "qwerty123";
+
+    Соединение = Новый HTTPСоединение(Сервер, 443,,,, ПарольSMTP);'
+  expected_field: standards
+  expected: std740
+  required_top: 3
+- scenario: snippet register write in loop
+  tool: snippet
+  snippet: "Для Каждого Строка Из Таблица Цикл\n    Набор = РегистрыНакопления.Товары.СоздатьНаборЗаписей();\n    Набор.Записать();\n\
+    КонецЦикла;"
+  expected_field: standards
+  expected: std792
+  required_top: 3
+- scenario: snippet localized user message
+  tool: snippet
+  snippet: 'Сообщение = Новый СообщениеПользователю;
+
+    Сообщение.Текст = НСтр("ru = ''Документ не проведен''");
+
+    Сообщение.Сообщить();'
+  expected_field: standards
+  expected: std761
+  required_top: 3
+- scenario: snippet modal question diagnostic
+  tool: snippet
+  snippet: "Если Вопрос(\"Продолжить?\", РежимДиалогаВопрос.ДаНет) = КодВозвратаДиалога.Да Тогда\n    ОткрытьФормуМодально(\"\
+    Обработка.Помощник.Форма\");\nКонецЕсли;"
+  expected_field: diagnostics
+  expected: bslls:UsingModalWindows
+  required_top: 1
+- scenario: 'pattern phrase: single responsibility'
+  query: у класса или модуля должна быть одна причина для изменения
+  types:
+  - pattern
+  expected: patterns:solid:single_responsibility
+  required_top: 5
+- scenario: 'pattern phrase: dependency inversion'
+  query: зависеть от абстракций а не от конкретных реализаций
+  types:
+  - pattern
+  expected: patterns:solid:dependency_inversion
+  required_top: 5
+- scenario: 'pattern phrase: low coupling'
+  query: снизить связанность между модулями и объектами
+  types:
+  - pattern
+  expected: patterns:grasp:low_coupling
+  required_top: 5
+- scenario: 'pattern phrase: high cohesion'
+  query: высокая связность обязанностей внутри одного компонента
+  types:
+  - pattern
+  expected: patterns:grasp:high_cohesion
+  required_top: 5
+- scenario: 'pattern phrase: information expert'
+  query: ответственность должен выполнять объект который владеет нужной информацией
+  types:
+  - pattern
+  expected: patterns:grasp:information_expert
+  required_top: 5
+- scenario: 'pattern phrase: strategy'
+  query: выбрать алгоритм во время выполнения без условных операторов
+  types:
+  - pattern
+  expected: patterns:gof:strategy
+  required_top: 5
+- scenario: 'pattern phrase: observer'
+  query: подписчики получают уведомления об изменении состояния
+  types:
+  - pattern
+  expected: patterns:gof:observer
+  required_top: 5
+- scenario: 'pattern phrase: adapter'
+  query: привести несовместимый интерфейс к ожидаемому клиентом
+  types:
+  - pattern
+  expected: patterns:gof:adapter
+  required_top: 5
+- scenario: 'pattern phrase: facade'
+  query: единая точка входа к сложной подсистеме
+  types:
+  - pattern
+  expected: patterns:gof:facade
+  required_top: 5
+- scenario: batch diagnostics group 1
+  tool: diagnostics
+  codes:
+  - acc:152
+  - acc:153
+  - acc:154
+  - acc:156
+  - acc:157
+  - acc:161
+  - unknown-demo-code
+  expected_diagnostics:
+  - acc:152
+  - acc:153
+  - acc:154
+  - acc:156
+  - acc:157
+  - acc:161
+  expected_standards:
+  - std498
+  - std784
+  expected_unknown:
+  - unknown-demo-code
+- scenario: batch diagnostics group 2
+  tool: diagnostics
+  codes:
+  - acc:486
+  - acc:487
+  - acc:488
+  - acc:489
+  - acc:490
+  - unknown-demo-code
+  expected_diagnostics:
+  - acc:486
+  - acc:487
+  - acc:488
+  - acc:489
+  - acc:490
+  expected_standards:
+  - std770
+  expected_unknown:
+  - unknown-demo-code
+- scenario: batch diagnostics group 3
+  tool: diagnostics
+  codes:
+  - acc:397
+  - acc:398
+  - unknown-demo-code
+  expected_diagnostics:
+  - acc:397
+  - acc:398
+  expected_standards:
+  - std748
+  expected_unknown:
+  - unknown-demo-code
+- scenario: batch diagnostics group 4
+  tool: diagnostics
+  codes:
+  - acc:75
+  - v8cs:data-exchange-load
+  - bslls:DataExchangeLoading
+  - unknown-demo-code
+  expected_diagnostics:
+  - acc:75
+  - v8cs:data-exchange-load
+  - bslls:DataExchangeLoading
+  expected_standards:
+  - std773
+  expected_unknown:
+  - unknown-demo-code
+- scenario: batch diagnostics group 5
+  tool: diagnostics
+  codes:
+  - acc:101
+  - acc:102
+  - acc:103
+  - bslls:IncorrectLineBreak
+  - unknown-demo-code
+  expected_diagnostics:
+  - acc:101
+  - acc:102
+  - acc:103
+  - bslls:IncorrectLineBreak
+  expected_standards:
+  - std444
+  expected_unknown:
+  - unknown-demo-code
+- scenario: 'acc diagnostic exact: acc:254'
+  query: acc:254
+  types:
+  - diagnostic
+  expected: acc:254
+  required_top: 1
+- scenario: 'acc diagnostic compact: acc:254'
+  query: acc254
+  types:
+  - diagnostic
+  expected: acc:254
+  required_top: 1
+- scenario: 'acc diagnostic russian: acc:254'
+  query: АПК 254
+  types:
+  - diagnostic
+  expected: acc:254
+  required_top: 1
+- scenario: 'diagnostic title: acc:254'
+  query: Ключевое слово запроса написано не канонически.
+  types:
+  - diagnostic
+  expected: acc:254
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:AssignAliasFieldsInQuery'
+  query: bslls:AssignAliasFieldsInQuery
+  types:
+  - diagnostic
+  expected: bslls:AssignAliasFieldsInQuery
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:AssignAliasFieldsInQuery'
+  query: AssignAliasFieldsInQuery
+  types:
+  - diagnostic
+  expected: bslls:AssignAliasFieldsInQuery
+  required_top: 3
+- scenario: 'diagnostic title: bslls:AssignAliasFieldsInQuery'
+  query: Назначение псевдонимов выбранным полям в запросе BSLLS:AssignAliasFieldsInQuery
+  types:
+  - diagnostic
+  expected: bslls:AssignAliasFieldsInQuery
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:QueryParseError'
+  query: bslls:QueryParseError
+  types:
+  - diagnostic
+  expected: bslls:QueryParseError
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:QueryParseError'
+  query: QueryParseError
+  types:
+  - diagnostic
+  expected: bslls:QueryParseError
+  required_top: 3
+- scenario: 'diagnostic title: bslls:QueryParseError'
+  query: Ошибка разбора текста запроса BSLLS:QueryParseError
+  types:
+  - diagnostic
+  expected: bslls:QueryParseError
+  required_top: 3
+- scenario: 'acc diagnostic exact: acc:540'
+  query: acc:540
+  types:
+  - diagnostic
+  expected: acc:540
+  required_top: 1
+- scenario: 'acc diagnostic compact: acc:540'
+  query: acc540
+  types:
+  - diagnostic
+  expected: acc:540
+  required_top: 1
+- scenario: 'acc diagnostic russian: acc:540'
+  query: АПК 540
+  types:
+  - diagnostic
+  expected: acc:540
+  required_top: 1
+- scenario: 'diagnostic title: acc:540'
+  query: В запросе отсутствует проверка на NULL для поля, которое может потенциально содержать NULL.
+  types:
+  - diagnostic
+  expected: acc:540
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:SelectTopWithoutOrderBy'
+  query: bslls:SelectTopWithoutOrderBy
+  types:
+  - diagnostic
+  expected: bslls:SelectTopWithoutOrderBy
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:SelectTopWithoutOrderBy'
+  query: SelectTopWithoutOrderBy
+  types:
+  - diagnostic
+  expected: bslls:SelectTopWithoutOrderBy
+  required_top: 3
+- scenario: 'diagnostic title: bslls:SelectTopWithoutOrderBy'
+  query: Использование 'ВЫБРАТЬ ПЕРВЫЕ' без 'УПОРЯДОЧИТЬ ПО' BSLLS:SelectTopWithoutOrderBy
+  types:
+  - diagnostic
+  expected: bslls:SelectTopWithoutOrderBy
+  required_top: 3
+- scenario: 'acc diagnostic exact: acc:96'
+  query: acc:96
+  types:
+  - diagnostic
+  expected: acc:96
+  required_top: 1
+- scenario: 'acc diagnostic compact: acc:96'
+  query: acc96
+  types:
+  - diagnostic
+  expected: acc:96
+  required_top: 1
+- scenario: 'acc diagnostic russian: acc:96'
+  query: АПК 96
+  types:
+  - diagnostic
+  expected: acc:96
+  required_top: 1
+- scenario: 'diagnostic title: acc:96'
+  query: Использована конструкция "ОБЪЕДИНИТЬ".
+  types:
+  - diagnostic
+  expected: acc:96
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:UnionAll'
+  query: bslls:UnionAll
+  types:
+  - diagnostic
+  expected: bslls:UnionAll
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:UnionAll'
+  query: UnionAll
+  types:
+  - diagnostic
+  expected: bslls:UnionAll
+  required_top: 3
+- scenario: 'diagnostic title: bslls:UnionAll'
+  query: Использование ключевого слова "ОБЪЕДИНИТЬ" в запросах BSLLS:UnionAll
+  types:
+  - diagnostic
+  expected: bslls:UnionAll
+  required_top: 3
+- scenario: 'acc diagnostic exact: acc:70'
+  query: acc:70
+  types:
+  - diagnostic
+  expected: acc:70
+  required_top: 1
+- scenario: 'acc diagnostic compact: acc:70'
+  query: acc70
+  types:
+  - diagnostic
+  expected: acc:70
+  required_top: 1
+- scenario: 'acc diagnostic russian: acc:70'
+  query: АПК 70
+  types:
+  - diagnostic
+  expected: acc:70
+  required_top: 1
+- scenario: 'diagnostic title: acc:70'
+  query: Использована конструкция "ПОЛНОЕ ВНЕШНЕЕ СОЕДИНЕНИЕ".
+  types:
+  - diagnostic
+  expected: acc:70
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:FullOuterJoinQuery'
+  query: bslls:FullOuterJoinQuery
+  types:
+  - diagnostic
+  expected: bslls:FullOuterJoinQuery
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:FullOuterJoinQuery'
+  query: FullOuterJoinQuery
+  types:
+  - diagnostic
+  expected: bslls:FullOuterJoinQuery
+  required_top: 3
+- scenario: 'diagnostic title: bslls:FullOuterJoinQuery'
+  query: Использование конструкции "ПОЛНОЕ ВНЕШНЕЕ СОЕДИНЕНИЕ" в запросах BSLLS:FullOuterJoinQuery
+  types:
+  - diagnostic
+  expected: bslls:FullOuterJoinQuery
+  required_top: 3
+- scenario: 'acc diagnostic exact: acc:101'
+  query: acc:101
+  types:
+  - diagnostic
+  expected: acc:101
+  required_top: 1
+- scenario: 'acc diagnostic compact: acc:101'
+  query: acc101
+  types:
+  - diagnostic
+  expected: acc:101
+  required_top: 1
+- scenario: 'acc diagnostic russian: acc:101'
+  query: АПК 101
+  types:
+  - diagnostic
+  expected: acc:101
+  required_top: 1
+- scenario: 'diagnostic title: acc:101'
+  query: Длина выражения превышает 120 символов.
+  types:
+  - diagnostic
+  expected: acc:101
+  required_top: 3
+- scenario: 'acc diagnostic exact: acc:102'
+  query: acc:102
+  types:
+  - diagnostic
+  expected: acc:102
+  required_top: 1
+- scenario: 'acc diagnostic compact: acc:102'
+  query: acc102
+  types:
+  - diagnostic
+  expected: acc:102
+  required_top: 1
+- scenario: 'acc diagnostic russian: acc:102'
+  query: АПК 102
+  types:
+  - diagnostic
+  expected: acc:102
+  required_top: 1
+- scenario: 'diagnostic title: acc:102'
+  query: Неправильный перенос текста в выражении.
+  types:
+  - diagnostic
+  expected: acc:102
+  required_top: 3
+- scenario: 'acc diagnostic exact: acc:103'
+  query: acc:103
+  types:
+  - diagnostic
+  expected: acc:103
+  required_top: 1
+- scenario: 'acc diagnostic compact: acc:103'
+  query: acc103
+  types:
+  - diagnostic
+  expected: acc:103
+  required_top: 1
+- scenario: 'acc diagnostic russian: acc:103'
+  query: АПК 103
+  types:
+  - diagnostic
+  expected: acc:103
+  required_top: 1
+- scenario: 'diagnostic title: acc:103'
+  query: Строка должна находиться в конце предыдущей.
+  types:
+  - diagnostic
+  expected: acc:103
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:IncorrectLineBreak'
+  query: bslls:IncorrectLineBreak
+  types:
+  - diagnostic
+  expected: bslls:IncorrectLineBreak
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:IncorrectLineBreak'
+  query: IncorrectLineBreak
+  types:
+  - diagnostic
+  expected: bslls:IncorrectLineBreak
+  required_top: 3
+- scenario: 'diagnostic title: bslls:IncorrectLineBreak'
+  query: Неправильный перенос выражения BSLLS:IncorrectLineBreak
+  types:
+  - diagnostic
+  expected: bslls:IncorrectLineBreak
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:UsingLikeInQuery'
+  query: bslls:UsingLikeInQuery
+  types:
+  - diagnostic
+  expected: bslls:UsingLikeInQuery
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:UsingLikeInQuery'
+  query: UsingLikeInQuery
+  types:
+  - diagnostic
+  expected: bslls:UsingLikeInQuery
+  required_top: 3
+- scenario: 'diagnostic title: bslls:UsingLikeInQuery'
+  query: Использование 'ПОДОБНО' в запросе BSLLS:UsingLikeInQuery
+  types:
+  - diagnostic
+  expected: bslls:UsingLikeInQuery
+  required_top: 3
+- scenario: 'v8cs diagnostic exact: v8cs:ql-constants-in-binary-operation'
+  query: v8cs:ql-constants-in-binary-operation
+  types:
+  - diagnostic
+  expected: v8cs:ql-constants-in-binary-operation
+  required_top: 1
+- scenario: 'v8cs diagnostic short: v8cs:ql-constants-in-binary-operation'
+  query: ql-constants-in-binary-operation
+  types:
+  - diagnostic
+  expected: v8cs:ql-constants-in-binary-operation
+  required_top: 3
+- scenario: 'diagnostic title: v8cs:ql-constants-in-binary-operation'
+  query: В запросе в бинарной операции используются константные значения или параметры. (ql-constants-in-binary-operation)
+  types:
+  - diagnostic
+  expected: v8cs:ql-constants-in-binary-operation
+  required_top: 3
+- scenario: 'bslls diagnostic exact: bslls:VirtualTableCallWithoutParameters'
+  query: bslls:VirtualTableCallWithoutParameters
+  types:
+  - diagnostic
+  expected: bslls:VirtualTableCallWithoutParameters
+  required_top: 1
+- scenario: 'bslls diagnostic short: bslls:VirtualTableCallWithoutParameters'
+  query: VirtualTableCallWithoutParameters
+  types:
+  - diagnostic
+  expected: bslls:VirtualTableCallWithoutParameters
+  required_top: 3
+- scenario: 'diagnostic title: bslls:VirtualTableCallWithoutParameters'
+  query: Обращение к виртуальной таблице без параметров BSLLS:VirtualTableCallWithoutParameters
+  types:
+  - diagnostic
+  expected: bslls:VirtualTableCallWithoutParameters
+  required_top: 3
+- scenario: 'pattern title: patterns:engineering:separation_of_concerns'
+  query: Separation of Concerns
+  types:
+  - pattern
+  expected: patterns:engineering:separation_of_concerns
+  required_top: 3
+- scenario: 'pattern title: patterns:engineering:dry'
+  query: DRY
+  types:
+  - pattern
+  expected: patterns:engineering:dry
+  required_top: 3
+- scenario: 'pattern title: patterns:engineering:kiss'
+  query: KISS
+  types:
+  - pattern
+  expected: patterns:engineering:kiss
+  required_top: 3
+- scenario: 'pattern title: patterns:engineering:yagni'
+  query: YAGNI
+  types:
+  - pattern
+  expected: patterns:engineering:yagni
+  required_top: 3
+- scenario: 'pattern title: patterns:engineering:rule_of_three'
+  query: Rule of Three
+  types:
+  - pattern
+  expected: patterns:engineering:rule_of_three
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:strategy'
+  query: Strategy
+  types:
+  - pattern
+  expected: patterns:gof:strategy
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:factory_method'
+  query: Factory Method
+  types:
+  - pattern
+  expected: patterns:gof:factory_method
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:abstract_factory'
+  query: Abstract Factory
+  types:
+  - pattern
+  expected: patterns:gof:abstract_factory
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:builder'
+  query: Builder
+  types:
+  - pattern
+  expected: patterns:gof:builder
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:adapter'
+  query: Adapter
+  types:
+  - pattern
+  expected: patterns:gof:adapter
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:facade'
+  query: Facade
+  types:
+  - pattern
+  expected: patterns:gof:facade
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:observer'
+  query: Observer
+  types:
+  - pattern
+  expected: patterns:gof:observer
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:chain_of_responsibility'
+  query: Chain of Responsibility
+  types:
+  - pattern
+  expected: patterns:gof:chain_of_responsibility
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:command'
+  query: Command
+  types:
+  - pattern
+  expected: patterns:gof:command
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:template_method'
+  query: Template Method
+  types:
+  - pattern
+  expected: patterns:gof:template_method
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:iterator'
+  query: Iterator
+  types:
+  - pattern
+  expected: patterns:gof:iterator
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:singleton'
+  query: Singleton
+  types:
+  - pattern
+  expected: patterns:gof:singleton
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:decorator'
+  query: Decorator
+  types:
+  - pattern
+  expected: patterns:gof:decorator
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:proxy'
+  query: Proxy
+  types:
+  - pattern
+  expected: patterns:gof:proxy
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:state'
+  query: State
+  types:
+  - pattern
+  expected: patterns:gof:state
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:mediator'
+  query: Mediator
+  types:
+  - pattern
+  expected: patterns:gof:mediator
+  required_top: 3
+- scenario: 'pattern title: patterns:gof:visitor'
+  query: Visitor
+  types:
+  - pattern
+  expected: patterns:gof:visitor
+  required_top: 3
+- scenario: 'pattern title: patterns:grasp:controller'
+  query: Controller
+  types:
+  - pattern
+  expected: patterns:grasp:controller
+  required_top: 3
+- scenario: 'pattern title: patterns:grasp:information_expert'
+  query: Information Expert
+  types:
+  - pattern
+  expected: patterns:grasp:information_expert
+  required_top: 3
+- scenario: 'pattern title: patterns:grasp:low_coupling'
+  query: Low Coupling
+  types:
+  - pattern
+  expected: patterns:grasp:low_coupling
+  required_top: 3
+- scenario: 'pattern title: patterns:grasp:high_cohesion'
+  query: High Cohesion
+  types:
+  - pattern
+  expected: patterns:grasp:high_cohesion
+  required_top: 3
+- scenario: 'pattern title: patterns:grasp:creator'
+  query: Creator
+  types:
+  - pattern
+  expected: patterns:grasp:creator
+  required_top: 3
+- scenario: 'pattern title: patterns:grasp:polymorphism'
+  query: Polymorphism
+  types:
+  - pattern
+  expected: patterns:grasp:polymorphism
+  required_top: 3
+- scenario: 'pattern title: patterns:solid:single_responsibility'
+  query: Single Responsibility Principle
+  types:
+  - pattern
+  expected: patterns:solid:single_responsibility
+  required_top: 3
+- scenario: 'pattern title: patterns:solid:open_closed'
+  query: Open/Closed Principle
+  types:
+  - pattern
+  expected: patterns:solid:open_closed
+  required_top: 3
+- scenario: 'pattern title: patterns:solid:dependency_inversion'
+  query: Dependency Inversion Principle
+  types:
+  - pattern
+  expected: patterns:solid:dependency_inversion
+  required_top: 3
+- scenario: 'pattern title: patterns:solid:interface_segregation'
+  query: Interface Segregation Principle
+  types:
+  - pattern
+  expected: patterns:solid:interface_segregation
+  required_top: 3
+- scenario: 'pattern title: patterns:solid:liskov_substitution'
+  query: Liskov Substitution Principle
+  types:
+  - pattern
+  expected: patterns:solid:liskov_substitution
+  required_top: 3
+- scenario: 'pattern title: patterns:engineering'
+  query: Инженерные принципы
+  types:
+  - pattern
+  expected: patterns:engineering
+  required_top: 3
+- scenario: 'standard title: std415'
+  query: Ограничения на использование ключевого слова РАЗРЕШЕННЫЕ в запросах
+  types:
+  - standard
+  expected: std415
+  required_top: 3
+- scenario: 'standard title: std437'
+  query: Оформление текстов запросов
+  types:
+  - standard
+  expected: std437
+  required_top: 3
+- scenario: 'standard title: std412'
+  query: Упорядочивание результатов запроса
+  types:
+  - standard
+  expected: std412
+  required_top: 3
+- scenario: 'standard title: std434'
+  query: Использование ключевых слов "ОБЪЕДИНИТЬ" и "ОБЪЕДИНИТЬ ВСЕ" в запросах
+  types:
+  - standard
+  expected: std434
+  required_top: 3
+- scenario: 'standard title: std435'
+  query: Ограничение на использование конструкции "ПОЛНОЕ ВНЕШНЕЕ СОЕДИНЕНИЕ" в запросах
+  types:
+  - standard
+  expected: std435
+  required_top: 3
+- scenario: 'standard title: std436'
+  query: Многократное выполнение однотипных запросов
+  types:
+  - standard
+  expected: std436
+  required_top: 3
+- scenario: 'standard title: std438'
+  query: Проверка на пустой результат выполнения запроса
+  types:
+  - standard
+  expected: std438
+  required_top: 3
+- scenario: 'standard title: std444'
+  query: Перенос выражений
+  types:
+  - standard
+  expected: std444
+  required_top: 3
+- scenario: 'standard title: std758'
+  query: Псевдонимы источников данных в запросах
+  types:
+  - standard
+  expected: std758
+  required_top: 3
+- scenario: 'standard title: std726'
+  query: Особенности использования в запросах оператора ПОДОБНО
+  types:
+  - standard
+  expected: std726
+  required_top: 3
+- scenario: 'standard title: std729'
+  query: Общие требования по разработке оптимальных запросов
+  types:
+  - standard
+  expected: std729
+  required_top: 3
+- scenario: 'standard title: std733'
+  query: Эффективное обращение к виртуальной таблице «Остатки»
+  types:
+  - standard
+  expected: std733
+  required_top: 3
+- scenario: 'standard title: std777'
+  query: Использование временных таблиц
+  types:
+  - standard
+  expected: std777
+  required_top: 3
+- scenario: 'standard title: std787'
+  query: Вычисление количества записей в запросах
+  types:
+  - standard
+  expected: std787
+  required_top: 3
+- scenario: 'standard title: std409'
+  query: Использование РеквизитФормыВЗначение и ДанныеФормыВЗначение
+  types:
+  - standard
+  expected: std409
+  required_top: 3
+- scenario: 'standard title: std411'
+  query: Установка параметров выбора и связей параметров выбора для объектов метаданных
+  types:
+  - standard
+  expected: std411
+  required_top: 3
+- scenario: 'standard title: std443'
+  query: Получение предопределенных значений на клиенте
+  types:
+  - standard
+  expected: std443
+  required_top: 3
+- scenario: 'standard title: std487'
+  query: Минимизация количества серверных вызовов и трафика
+  types:
+  - standard
+  expected: std487
+  required_top: 3
+- scenario: 'standard title: std492'
+  query: Обработчики событий модуля формы, подключаемые из кода
+  types:
+  - standard
+  expected: std492
+  required_top: 3
+- scenario: 'standard title: std724'
+  query: Использование модулей с повторным использованием возвращаемых значений
+  types:
+  - standard
+  expected: std724
+  required_top: 3
+- scenario: 'standard title: std746'
+  query: Обработчики событий ОбработкаПолученияПредставления и ОбработкаПолученияПолейПредставления
+  types:
+  - standard
+  expected: std746
+  required_top: 3
+- scenario: 'standard title: std761'
+  query: 'Интерфейсные тексты в коде: требования по локализации'
+  types:
+  - standard
+  expected: std761
+  required_top: 3
+- scenario: 'standard title: std762'
+  query: 'Запросы, динамические списки и отчеты на СКД: требования по локализации'
+  types:
+  - standard
+  expected: std762
+  required_top: 3
+- scenario: 'standard title: std763'
+  query: 'Форматирование даты, числа, Булево: требования по локализации'
+  types:
+  - standard
+  expected: std763
+  required_top: 3
+- scenario: 'standard title: std765'
+  query: 'Элементы форм: требования по локализации'
+  types:
+  - standard
+  expected: std765
+  required_top: 3
+- scenario: 'standard title: std766'
+  query: 'Макеты: требования по локализации и поддержке разных языков интерфейса'
+  types:
+  - standard
+  expected: std766
+  required_top: 3
+- scenario: 'standard title: std767'
+  query: 'Регламентные задания: требования по локализации'
+  types:
+  - standard
+  expected: std767
+  required_top: 3
+- scenario: 'standard title: std784'
+  query: 'Автогенерированные данные в информационной базе: требования по локализации'
+  types:
+  - standard
+  expected: std784
+  required_top: 3
+- scenario: 'standard title: std396'
+  query: Обработчик события ОбработкаЗаполнения
+  types:
+  - standard
+  expected: std396
+  required_top: 3
+- scenario: 'standard title: std450'
+  query: Порядок записи движений документов
+  types:
+  - standard
+  expected: std450
+  required_top: 3
+- scenario: 'standard title: std463'
+  query: Обработчик события ОбработкаПроверкиЗаполнения
+  types:
+  - standard
+  expected: std463
+  required_top: 3
+- scenario: 'standard title: std464'
+  query: Обработчик события ПередЗаписью
+  types:
+  - standard
+  expected: std464
+  required_top: 3
+- scenario: 'standard title: std465'
+  query: Обработчик события ПриЗаписи
+  types:
+  - standard
+  expected: std465
+  required_top: 3
+- scenario: 'standard title: std466'
+  query: Обработчик события ПриКопировании
+  types:
+  - standard
+  expected: std466
+  required_top: 3
+- scenario: 'standard title: std686'
+  query: Работа с параметром "Отказ" в обработчиках событий
+  types:
+  - standard
+  expected: std686
+  required_top: 3
+- scenario: 'standard title: std752'
+  query: Обработчик события ПередУдалением
+  types:
+  - standard
+  expected: std752
+  required_top: 3
+- scenario: 'standard title: std773'
+  query: Использование признака ОбменДанными.Загрузка в обработчиках событий объекта
+  types:
+  - standard
+  expected: std773
+  required_top: 3
+- scenario: 'standard title: std469'
+  query: Правила создания общих модулей
+  types:
+  - standard
+  expected: std469
+  required_top: 3
+- scenario: 'standard title: std485'
+  query: Использование привилегированного режима
+  types:
+  - standard
+  expected: std485
+  required_top: 3
+- scenario: 'standard title: std488'
+  query: Стандартные роли
+  types:
+  - standard
+  expected: std488
+  required_top: 3
+- scenario: 'standard title: std678'
+  query: Безопасность прикладного программного интерфейса сервера
+  types:
+  - standard
+  expected: std678
+  required_top: 3
+- scenario: 'standard title: std679'
+  query: Ограничение на установку признака «Вызов сервера» у общих модулей
+  types:
+  - standard
+  expected: std679
+  required_top: 3
+- scenario: 'standard title: std680'
+  query: Поддержка толстого клиента, управляемое приложение, клиент-сервер
+  types:
+  - standard
+  expected: std680
+  required_top: 3
+- scenario: 'standard title: std689'
+  query: Настройка ролей и прав доступа
+  types:
+  - standard
+  expected: std689
+  required_top: 3
+- scenario: 'standard title: std737'
+  query: Проверка прав доступа
+  types:
+  - standard
+  expected: std737
+  required_top: 3
+- scenario: 'standard title: std740'
+  query: Безопасное хранение паролей
+  types:
+  - standard
+  expected: std740
+  required_top: 3
+- scenario: 'standard title: std748'
+  query: Таймауты при работе с внешними ресурсами
+  types:
+  - standard
+  expected: std748
+  required_top: 3
+- scenario: 'standard title: std770'
+  query: Ограничения на использование Выполнить и Вычислить на сервере
+  types:
+  - standard
+  expected: std770
+  required_top: 3
+- scenario: 'standard title: std774'
+  query: Безопасность запуска приложений
+  types:
+  - standard
+  expected: std774
+  required_top: 3
+- scenario: 'standard title: std775'
+  query: Безопасность программного обеспечения, вызываемого через открытые интерфейсы
+  types:
+  - standard
+  expected: std775
+  required_top: 3
+- scenario: 'standard title: std794'
+  query: Ограничения на использование внешних ресурсов
+  types:
+  - standard
+  expected: std794
+  required_top: 3
+- scenario: 'standard title: std440'
+  query: Использование дублирующего кода
+  types:
+  - standard
+  expected: std440
+  required_top: 3
+- scenario: 'standard title: std441'
+  query: Общие требования к построению конструкций встроенного языка
+  types:
+  - standard
+  expected: std441
+  required_top: 3
+- scenario: 'standard title: std442'
+  query: Определение типа значения переменной
+  types:
+  - standard
+  expected: std442
+  required_top: 3
+- scenario: 'standard title: std453'
+  query: Описание процедур и функций
+  types:
+  - standard
+  expected: std453
+  required_top: 3
+- scenario: 'standard description: std415'
+  query: РАЗРЕШЕННЫЕ скрывает недоступные пользователю данные
+  types:
+  - standard
+  expected: std415
+  required_top: 3
+- scenario: 'standard description: std437'
+  query: Все ключевые слова языка запросов пишутся заглавными буквами
+  types:
+  - standard
+  expected: std437
+  required_top: 3
+- scenario: 'standard description: std412'
+  query: Если алгоритм обработки зависит от порядка записей или результат показывается пользователю, в тексте запроса следует
+    использовать УПОРЯДОЧИТЬ ПО
+  types:
+  - standard
+  expected: std412
+  required_top: 3
+- scenario: 'standard description: std434'
+  query: В общем случае при объединении результатов нескольких запросов используйте ОБЪЕДИНИТЬ ВСЕ, а не ОБЪЕДИНИТЬ
+  types:
+  - standard
+  expected: std434
+  required_top: 3
+- scenario: 'standard description: std435'
+  query: При разработке запросов учитывайте, что в клиент-серверном варианте с СУБД PostgreSQL производительность запросов
+    с конструкцией ПОЛНОЕ ВНЕШНЕЕ СОЕДИНЕНИЕ
+  types:
+  - standard
+  expected: std435
+  required_top: 3
+- scenario: 'standard description: std436'
+  query: Старайтесь получать однотипные данные одним запросом, а не серией запросов в цикле
+  types:
+  - standard
+  expected: std436
+  required_top: 3
+- scenario: 'standard description: std438'
+  query: Используйте метод Пустой, чтобы проверить, есть ли выбранные строки в результате запроса
+  types:
+  - standard
+  expected: std438
+  required_top: 3
+- scenario: 'standard description: std444'
+  query: Если длина строки больше 120 символов, используйте переносы
+  types:
+  - standard
+  expected: std444
+  required_top: 3
+- scenario: 'standard description: std758'
+  query: Псевдоним источника данных должен быть осмысленным и отражать назначение источника в текущем контексте
+  types:
+  - standard
+  expected: std758
+  required_top: 3
+- scenario: 'standard description: std726'
+  query: Оператор ПОДОБНО в тексте запроса используйте только
+  types:
+  - standard
+  expected: std726
+  required_top: 3
+- scenario: 'standard description: std729'
+  query: Прежде чем переходить к продвинутым приемам оптимизации, убедитесь, что сам запрос адекватен задаче
+  types:
+  - standard
+  expected: std729
+  required_top: 3
+- scenario: 'standard description: std733'
+  query: 'Эта рекомендация дополняет #std657: Обращения к виртуальным таблицам и описывает практики для виртуальной таблицы
+    Остатки регистров накопления и'
+  types:
+  - standard
+  expected: std733
+  required_top: 3
+- scenario: 'standard description: std777'
+  query: В общем случае временные таблицы рекомендуется использовать для повышения производительности и стабильности запросов
+  types:
+  - standard
+  expected: std777
+  required_top: 3
+- scenario: 'standard description: std787'
+  query: При вычислении количества записей в запросе всегда используйте функцию КОЛИЧЕСТВО, а не СУММА
+  types:
+  - standard
+  expected: std787
+  required_top: 3
+- scenario: 'standard description: std409'
+  query: В большинстве случаев в модулях форм используйте метод формы РеквизитФормыВЗначение() вместо метода ДанныеФормыВЗначение()
+  types:
+  - standard
+  expected: std409
+  required_top: 3
+- scenario: 'standard description: std411'
+  query: Ограничения бизнес-логики, например ограничения выбора, обычно должны работать одинаково во всех формах редактирования
+    объекта
+  types:
+  - standard
+  expected: std411
+  required_top: 3
+- scenario: 'standard description: std443'
+  query: В клиентском коде (тонкий клиент, веб-клиент), где недоступны менеджеры вида СправочникМенеджер
+  types:
+  - standard
+  expected: std443
+  required_top: 3
+- scenario: 'standard description: std487'
+  query: Контролируйте количество серверных вызовов из клиентского кода
+  types:
+  - standard
+  expected: std487
+  required_top: 3
+- scenario: 'standard description: std492'
+  query: Если обработчик формы назначается программно через УстановитьДействие, у процедуры должен быть префикс Подключаемый_
+    (англ
+  types:
+  - standard
+  expected: std492
+  required_top: 3
+- scenario: 'standard description: std724'
+  query: 'Общие модули с повторным использованием возвращаемых значений (кеш) применяйте для кеширования результатов функций:'
+  types:
+  - standard
+  expected: std724
+  required_top: 3
+- scenario: 'standard description: std746'
+  query: С помощью данных обработчиков модуля менеджера объекта можно переопределить представление объекта информационной
+    базы, которое выводится в полях форм
+  types:
+  - standard
+  expected: std746
+  required_top: 3
+- scenario: 'standard description: std761'
+  query: Если в модулях конфигурации есть строки для интерфейса пользователя (сообщения, надписи на формах, тексты команд,
+    выражения в настройках
+  types:
+  - standard
+  expected: std761
+  required_top: 3
 thresholds:
   mrr: 0.85
   p95_latency_ms: 500

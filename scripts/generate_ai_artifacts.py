@@ -573,21 +573,16 @@ def wrap_llm_markdown_lines(markdown: str, width: int = 480) -> str:
 
 
 def relation_kind(page: dict, target: dict) -> str:
-    page_type = page["type"]
     target_type = target["type"]
     page_id = page["id"]
     target_id = target["id"]
 
-    if page_type == "standard" and target_type == "diagnostic":
-        return "diagnostic"
-    if page_type == "diagnostic" and target_type == "standard":
-        return "standard"
     if page_id.startswith("acc:") and target_id.startswith("v8cs:"):
         return "edt_check"
-    if page_type == "diagnostic" and target_type == "diagnostic":
-        return "related_diagnostic"
     if target_type == "standard":
-        return "related_standard"
+        return "standard"
+    if target_type == "diagnostic":
+        return "diagnostic"
     return "related"
 
 

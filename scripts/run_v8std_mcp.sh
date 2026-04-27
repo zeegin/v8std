@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${V8STD_REPO_ROOT:-/docs}"
 PAGES_PATH="${V8STD_MCP_PAGES:-${REPO_ROOT}/docs/ai/pages.jsonl}"
 VECTORS_PATH="${V8STD_MCP_VECTORS:-${REPO_ROOT}/docs/ai/search-vectors.jsonl}"
@@ -17,11 +18,11 @@ cd "${REPO_ROOT}"
 if [ "${GENERATE_INDEX}" = "always" ] || {
     [ "${GENERATE_INDEX}" = "auto" ] && [ ! -s "${PAGES_PATH}" ]
 }; then
-    python /tmp/scripts/generate_social_cards.py
-    python /tmp/scripts/generate_ai_artifacts.py
-    python /tmp/scripts/generate_search_vectors.py --pages "${PAGES_PATH}" --output "${VECTORS_PATH}"
+    python "${SCRIPT_DIR}/generate_social_cards.py"
+    python "${SCRIPT_DIR}/generate_ai_artifacts.py"
+    python "${SCRIPT_DIR}/generate_search_vectors.py" --pages "${PAGES_PATH}" --output "${VECTORS_PATH}"
 elif [ ! -s "${VECTORS_PATH}" ]; then
-    python /tmp/scripts/generate_search_vectors.py --pages "${PAGES_PATH}" --output "${VECTORS_PATH}"
+    python "${SCRIPT_DIR}/generate_search_vectors.py" --pages "${PAGES_PATH}" --output "${VECTORS_PATH}"
 fi
 
 if [ ! -s "${PAGES_PATH}" ]; then
@@ -30,7 +31,7 @@ if [ ! -s "${PAGES_PATH}" ]; then
     exit 1
 fi
 
-exec python /tmp/scripts/v8std_mcp_server.py \
+exec python "${SCRIPT_DIR}/v8std_mcp_server.py" \
     --pages "${PAGES_PATH}" \
     --vectors "${VECTORS_PATH}" \
     --cache-dir "${MCP_CACHE_DIR}" \
