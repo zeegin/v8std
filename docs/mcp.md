@@ -1,5 +1,9 @@
 ---
 title: MCP для ИИ-инструментов
+hide:
+  - navigation
+  - toc
+  - feedback
 ---
 
 # MCP для ИИ-инструментов
