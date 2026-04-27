@@ -11,3 +11,20 @@ services:
       - ../:/docs
     working_dir: /docs
     command: serve --dev-addr=0.0.0.0:8000
+
+  v8std-mcp:
+    container_name: v8std-mcp
+    build:
+      context: ..
+      dockerfile: docker-compose/docker/Dockerfile
+    restart: always
+    ports:
+      - "8765:8765"
+    volumes:
+      - ../:/docs
+    working_dir: /docs
+    environment:
+      V8STD_MCP_GENERATE_INDEX: auto
+      V8STD_MCP_HOST: 0.0.0.0
+      V8STD_MCP_PORT: "8765"
+    entrypoint: ["/tmp/scripts/run_v8std_mcp.sh"]

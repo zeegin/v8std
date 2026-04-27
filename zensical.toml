@@ -896,6 +896,9 @@ analytics = "Yandex.Metrika"
 ]
 
 [[project.nav]]
+"MCP для ИИ-инструментов" = "mcp.md"
+
+[[project.nav]]
 "Поддержка" = "support.md"
 
 [project.plugins.meta]
