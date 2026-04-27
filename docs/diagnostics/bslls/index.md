@@ -1,7 +1,7 @@
 ---
 title: Диагностики BSL Language Server и стандарты
 llms:
-  full: false
+  ignore: true
 ---
 
 # Диагностики BSL Language Server и стандарты

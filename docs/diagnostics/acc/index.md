@@ -1,7 +1,7 @@
 ---
 title: Диагностики АПК (ACC) и стандарты
 llms:
-  full: false
+  ignore: true
 ---
 
 # Диагностики АПК (ACC) и стандарты

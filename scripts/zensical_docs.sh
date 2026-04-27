@@ -86,7 +86,7 @@ PY
 "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_social_cards.py"
 "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py"
 
-if [ "${1:-}" = "build" ] && [ -d "${REPO_ROOT}/site" ]; then
+if { [ "${1:-}" = "build" ] || [ "${1:-}" = "serve" ]; } && [ -d "${REPO_ROOT}/site" ]; then
   "${PYTHON_BIN}" - "${REPO_ROOT}/site" <<'PY'
 import shutil
 import sys
@@ -98,4 +98,67 @@ if site_dir.is_dir():
 PY
 fi
 
-exec "${PYTHON_BIN}" -m zensical "$@"
+write_site_markdown_watch() {
+  "${PYTHON_BIN}" - "${SCRIPT_DIR}" "${REPO_ROOT}/site" <<'PY'
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+script_dir = Path(sys.argv[1])
+site_dir = Path(sys.argv[2])
+generator = script_dir / "generate_ai_artifacts.py"
+
+
+def signature() -> int | None:
+    markers = [
+        site_dir / "index.html",
+        site_dir / "search.json",
+        site_dir / "sitemap.xml",
+    ]
+    mtimes = [path.stat().st_mtime_ns for path in markers if path.exists()]
+    return max(mtimes) if mtimes else None
+
+
+last_signature = None
+while True:
+    current_signature = signature()
+    if current_signature is not None and current_signature != last_signature:
+        last_signature = current_signature
+        subprocess.run(
+            [
+                sys.executable,
+                str(generator),
+                "--write-site-markdown",
+                str(site_dir),
+            ],
+            check=False,
+        )
+    time.sleep(1)
+PY
+}
+
+if [ "${1:-}" = "build" ]; then
+  "${PYTHON_BIN}" -m zensical "$@"
+  "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py" --write-site-markdown "${REPO_ROOT}/site"
+elif [ "${1:-}" = "serve" ]; then
+  "${PYTHON_BIN}" -m zensical "$@" &
+  serve_pid="$!"
+  write_site_markdown_watch &
+  watch_pid="$!"
+
+  cleanup() {
+    kill "${watch_pid}" 2>/dev/null || true
+    kill "${serve_pid}" 2>/dev/null || true
+  }
+
+  trap cleanup INT TERM
+
+  wait "${serve_pid}"
+  status="$?"
+  kill "${watch_pid}" 2>/dev/null || true
+  wait "${watch_pid}" 2>/dev/null || true
+  exit "${status}"
+else
+  exec "${PYTHON_BIN}" -m zensical "$@"
+fi

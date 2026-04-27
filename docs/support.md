@@ -94,12 +94,12 @@ hide:
 - [`/llms.txt`](/llms.txt) — компактная карта сайта для LLM;
 - [`/llms-full.txt`](/llms-full.txt) — очищенный полный Markdown-корпус;
 - [`/ai/pages.jsonl`](/ai/pages.jsonl) — индекс страниц, алиасов, связей и очищенного Markdown;
-- [`/ai/graph.json`](/ai/graph.json) — граф связей стандартов, диагностик и источников;
-- [`/ai/search-aliases.json`](/ai/search-aliases.json) — нормализованные поисковые алиасы.
 
-Чтобы исключить страницу только из полного корпуса `/llms-full.txt`, добавьте в её front matter:
+Чтобы исключить страницу из публичных LLM-артефактов (`/llms.txt`, `/llms-full.txt`, `/ai/pages.jsonl`), добавьте в её front matter:
 
 ```yaml
 llms:
-  full: false
+  ignore: true
 ```
+
+Это не влияет на обычную сборку сайта, навигацию и поиск Zensical.

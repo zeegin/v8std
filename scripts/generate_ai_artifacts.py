@@ -6,8 +6,8 @@ import json
 import re
 import sys
 import textwrap
+from argparse import ArgumentParser
 from html import unescape
-from collections import defaultdict
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -29,8 +29,7 @@ LLMS_TXT = "llms.txt"
 LLMS_FULL_TXT = "llms-full.txt"
 AI_DIR = "ai"
 PAGES_JSONL = "pages.jsonl"
-GRAPH_JSON = "graph.json"
-SEARCH_ALIASES_JSON = "search-aliases.json"
+REMOVED_AI_ARTIFACTS = ("graph.json", "search-aliases.json")
 
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
 DIRECT_URL_RE = re.compile(r"https?://[^\s)>\"']+")
@@ -104,11 +103,11 @@ def normalize_body(raw: str) -> str:
     return content.replace("\r\n", "\n").replace("\r", "\n").strip()
 
 
-def llms_full_enabled(front_matter: dict) -> bool:
+def llms_ignored(front_matter: dict) -> bool:
     llms = front_matter.get("llms")
     if isinstance(llms, dict):
-        return llms.get("full") is not False
-    return True
+        return llms.get("ignore") is True
+    return False
 
 
 def clean_label(value: str) -> str:
@@ -437,6 +436,12 @@ def canonical_page_url(project: dict, relative: Path) -> str:
     return f"{site_url}{path}" if site_url else path
 
 
+def canonical_markdown_url(project: dict, relative: Path) -> str:
+    site_url = (project.get("site_url") or "").rstrip("/")
+    path = f"/{relative.as_posix()}"
+    return f"{site_url}{path}" if site_url else path
+
+
 def absolute_internal_url(source: Path, docs_dir: Path, project: dict, target: str) -> str | None:
     target = target.strip()
     if not target or target.startswith(("http://", "https://", "mailto:")):
@@ -583,6 +588,7 @@ def related_entry(relation: str, target: dict) -> dict:
         "type": target["type"],
         "title": target["title"],
         "url": target["url"],
+        "markdown_url": target["markdown_url"],
         "source_path": target["source_path"],
     }
 
@@ -616,12 +622,13 @@ def build_ai_page(source: Path, docs_dir: Path, project: dict) -> dict:
         "title": metadata["seo_title"],
         "description": metadata["description"],
         "url": metadata["canonical"],
+        "markdown_url": canonical_markdown_url(project, relative),
         "source_path": str(relative),
         "aliases": build_aliases(page_id, relative, page_type, metadata["seo_title"]),
         "related": [],
         "source_urls": extract_source_urls(content),
         "body_markdown": body_markdown,
-        "_llms_full_enabled": llms_full_enabled(front_matter),
+        "_llms_ignored": llms_ignored(front_matter),
         "_links": extract_markdown_links(content),
     }
 
@@ -655,62 +662,6 @@ def resolve_relations(pages: list[dict], docs_dir: Path) -> None:
         del page["_links"]
 
 
-def build_graph(pages: list[dict]) -> dict:
-    standard_to_diagnostics: dict[str, set[str]] = defaultdict(set)
-    diagnostic_to_standards: dict[str, set[str]] = defaultdict(set)
-    diagnostic_to_sources: dict[str, list[str]] = {}
-    acc_to_edt: dict[str, set[str]] = defaultdict(set)
-
-    for page in pages:
-        if page["type"] == "standard":
-            standard_to_diagnostics.setdefault(page["id"], set())
-        if page["type"] == "diagnostic":
-            diagnostic_to_standards.setdefault(page["id"], set())
-            diagnostic_to_sources[page["id"]] = page["source_urls"]
-
-        for item in page["related"]:
-            if page["type"] == "standard" and item["type"] == "diagnostic":
-                standard_to_diagnostics[page["id"]].add(item["id"])
-                diagnostic_to_standards[item["id"]].add(page["id"])
-            elif page["type"] == "diagnostic" and item["type"] == "standard":
-                diagnostic_to_standards[page["id"]].add(item["id"])
-                standard_to_diagnostics[item["id"]].add(page["id"])
-            elif page["id"].startswith("acc:") and item["id"].startswith("v8cs:"):
-                acc_to_edt[page["id"]].add(item["id"])
-
-    diagnostics = {}
-    for page in pages:
-        if page["type"] != "diagnostic":
-            continue
-        diagnostics[page["id"]] = {
-            "standards": sorted(diagnostic_to_standards.get(page["id"], set())),
-            "sources": diagnostic_to_sources.get(page["id"], []),
-            "edt_checks": sorted(acc_to_edt.get(page["id"], set())),
-        }
-
-    return {
-        "standards": {
-            key: sorted(value)
-            for key, value in sorted(standard_to_diagnostics.items())
-        },
-        "diagnostics": dict(sorted(diagnostics.items())),
-        "acc_to_edt": {
-            key: sorted(value)
-            for key, value in sorted(acc_to_edt.items())
-        },
-        "nodes": [
-            {
-                "id": page["id"],
-                "type": page["type"],
-                "title": page["title"],
-                "url": page["url"],
-                "source_path": page["source_path"],
-            }
-            for page in pages
-        ],
-    }
-
-
 def related_ids(page: dict, relation: str) -> list[str]:
     return [item["id"] for item in page["related"] if item["relation"] == relation]
 
@@ -723,8 +674,138 @@ def format_id_list(ids: list[str], limit: int = 8) -> str:
     return ", ".join(visible) + suffix
 
 
-def page_link(page: dict, label: str | None = None) -> str:
-    return f"[{label or page['title']}]({page['url']})"
+def page_markdown_link(page: dict, label: str | None = None) -> str:
+    return f"[{label or page['title']}]({page['markdown_url']})"
+
+
+def canonical_url(value: str) -> str:
+    return value.split("#", 1)[0].rstrip("/")
+
+
+def ignored_text_refs(page: dict) -> list[str]:
+    return [f"#{page['id']}"]
+
+
+def build_ignored_ref_context(ignored_pages: list[dict]) -> dict:
+    quick_refs = []
+    pages = []
+    for page in ignored_pages:
+        quick_refs.append(page["url"])
+        text_refs = ignored_text_refs(page)
+        quick_refs.extend(text_refs)
+        pages.append({**page, "_ignored_text_refs": text_refs})
+
+    return {
+        "pages": pages,
+        "urls": {canonical_url(page["url"]) for page in ignored_pages},
+        "quick_re": re.compile("|".join(re.escape(ref) for ref in quick_refs))
+        if quick_refs
+        else None,
+    }
+
+
+def strip_ignored_plain_text_refs(value: str, ignored_refs: dict) -> str:
+    quick_re = ignored_refs["quick_re"]
+    if not quick_re or not quick_re.search(value):
+        return value
+
+    result = value
+
+    for page in ignored_refs["pages"]:
+        title = re.escape(page["title"])
+
+        for text_ref in page["_ignored_text_refs"]:
+            result = re.sub(
+                rf"\s*{re.escape(text_ref)}:?\s*{title}",
+                "",
+                result,
+                flags=re.IGNORECASE,
+            )
+            result = re.sub(
+                rf"\s*{re.escape(text_ref)}\b",
+                "",
+                result,
+                flags=re.IGNORECASE,
+            )
+
+    return re.sub(r"\s+", " ", result).strip(" ,;.")
+
+
+def strip_ignored_markdown_refs(markdown: str, ignored_refs: dict) -> str:
+    quick_re = ignored_refs["quick_re"]
+    if not quick_re or not quick_re.search(markdown):
+        return markdown
+
+    ignored_urls = ignored_refs["urls"]
+    lines: list[str] = []
+    in_code_block = False
+
+    def is_ignored_target(target: str) -> bool:
+        return canonical_url(target) in ignored_urls
+
+    def replace_link(match: re.Match) -> str:
+        if is_ignored_target(match.group(2)):
+            return ""
+        return match.group(0)
+
+    def replace_url(match: re.Match) -> str:
+        if is_ignored_target(match.group(0)):
+            return ""
+        return match.group(0)
+
+    for line in markdown.splitlines():
+        if line.lstrip().startswith("```"):
+            lines.append(line)
+            in_code_block = not in_code_block
+            continue
+
+        if in_code_block:
+            lines.append(line)
+            continue
+
+        if not quick_re.search(line):
+            lines.append(line)
+            continue
+
+        cleaned = MARKDOWN_LINK_RE.sub(replace_link, line)
+        cleaned = DIRECT_URL_RE.sub(replace_url, cleaned)
+        cleaned = strip_ignored_plain_text_refs(cleaned, ignored_refs)
+        cleaned = re.sub(r"\s+([,.;:])", r"\1", cleaned).strip()
+        cleaned = re.sub(r"^[-*+]\s*$", "", cleaned).strip()
+
+        if cleaned in {"", "См", "См.", "см", "см."}:
+            continue
+
+        lines.append(cleaned)
+
+    return "\n".join(lines).strip()
+
+
+def llm_visible_pages(pages: list[dict]) -> list[dict]:
+    ignored_pages = [page for page in pages if page.get("_llms_ignored", False)]
+    ignored_ids = {page["id"] for page in ignored_pages}
+    ignored_refs = build_ignored_ref_context(ignored_pages)
+    visible_pages = []
+
+    for page in pages:
+        if page["id"] in ignored_ids:
+            continue
+
+        visible_page = dict(page)
+        visible_page["description"] = strip_ignored_plain_text_refs(
+            page["description"],
+            ignored_refs,
+        )
+        visible_page["body_markdown"] = strip_ignored_markdown_refs(
+            page["body_markdown"],
+            ignored_refs,
+        )
+        visible_page["related"] = [
+            item for item in page["related"] if item["id"] not in ignored_ids
+        ]
+        visible_pages.append(visible_page)
+
+    return visible_pages
 
 
 def append_metadata_values(
@@ -749,7 +830,7 @@ def append_metadata_values(
 
 def build_llms_txt(index: dict) -> str:
     project = index["project"]
-    pages = index["pages"]
+    pages = llm_visible_pages(index["pages"])
     site_url = (project.get("site_url") or "").rstrip("/")
 
     standards = [page for page in pages if page["type"] == "standard"]
@@ -762,13 +843,12 @@ def build_llms_txt(index: dict) -> str:
         "",
         f"> {project.get('site_description', '').strip()}",
         "",
-        "Этот файл является компактной картой сайта для LLM. Полный корпус и машинные индексы лежат в отдельных статических файлах.",
+        "Этот файл является компактной картой сайта для LLM. Полный корпус и машинный индекс лежат в отдельных статических файлах.",
+        "Для каждой публичной страницы также публикуется очищенная Markdown-версия по исходному пути `.md`: например, HTML `https://v8std.ru/std/437/` соответствует Markdown `https://v8std.ru/std/437.md`.",
         "",
         "## Machine-Readable Files",
         f"- [Full Markdown corpus]({site_url}/{LLMS_FULL_TXT}): очищенный полный текст всех Markdown-страниц без front matter и служебной разметки темы.",
         f"- [Pages JSONL]({site_url}/{AI_DIR}/{PAGES_JSONL}): JSONL-индекс страниц, алиасов, связей и очищенных Markdown-текстов.",
-        f"- [Graph JSON]({site_url}/{AI_DIR}/{GRAPH_JSON}): граф связей стандартов, диагностик, EDT-проверок и внешних источников.",
-        f"- [Search aliases JSON]({site_url}/{AI_DIR}/{SEARCH_ALIASES_JSON}): нормализованные формы запросов для стандартов и диагностик.",
         "",
         "## Standards",
     ]
@@ -776,7 +856,8 @@ def build_llms_txt(index: dict) -> str:
     for page in standards:
         diagnostics_ids = related_ids(page, "diagnostic")
         lines.append(
-            f"- {page_link(page, '#' + page['id'])}: {page['title']}. "
+            f"- {page_markdown_link(page, '#' + page['id'])}: {page['title']}. "
+            f"HTML: {page['url']}. "
             f"Diagnostics: {format_id_list(diagnostics_ids)}. "
             f"{normalize_description(page['description'], 140)}"
         )
@@ -789,17 +870,24 @@ def build_llms_txt(index: dict) -> str:
         if edt_ids:
             details.append(f"EDT: {format_id_list(edt_ids)}")
         lines.append(
-            f"- {page_link(page, page['id'])}: {'; '.join(details)}. "
+            f"- {page_markdown_link(page, page['id'])}: HTML: {page['url']}. "
+            f"{'; '.join(details)}. "
             f"{normalize_description(page['description'], 140)}"
         )
 
     lines.extend(["", "## Patterns"])
     for page in patterns:
-        lines.append(f"- {page_link(page)}: {normalize_description(page['description'], 140)}")
+        lines.append(
+            f"- {page_markdown_link(page)}: HTML: {page['url']}. "
+            f"{normalize_description(page['description'], 140)}"
+        )
 
     lines.extend(["", "## Service Pages"])
     for page in services:
-        lines.append(f"- {page_link(page)}: {normalize_description(page['description'], 140)}")
+        lines.append(
+            f"- {page_markdown_link(page)}: HTML: {page['url']}. "
+            f"{normalize_description(page['description'], 140)}"
+        )
 
     return "\n".join(lines).rstrip() + "\n"
 
@@ -814,7 +902,7 @@ def build_llms_full_txt(index: dict) -> str:
     ]
 
     current_type = None
-    pages = [page for page in index["pages"] if page.get("_llms_full_enabled", True)]
+    pages = llm_visible_pages(index["pages"])
     for page in pages:
         if page["type"] != current_type:
             current_type = page["type"]
@@ -825,6 +913,7 @@ def build_llms_full_txt(index: dict) -> str:
             [
                 f"### {page['id']} - {page['title']}",
                 f"URL: {page['url']}",
+                f"Markdown URL: {page['markdown_url']}",
                 f"Source path: {page['source_path']}",
             ]
         )
@@ -838,7 +927,7 @@ def build_llms_full_txt(index: dict) -> str:
 
 def build_pages_jsonl(pages: list[dict]) -> str:
     lines = []
-    for page in pages:
+    for page in llm_visible_pages(pages):
         payload = {
             key: page[key]
             for key in (
@@ -847,6 +936,7 @@ def build_pages_jsonl(pages: list[dict]) -> str:
                 "title",
                 "description",
                 "url",
+                "markdown_url",
                 "source_path",
                 "aliases",
                 "related",
@@ -856,30 +946,6 @@ def build_pages_jsonl(pages: list[dict]) -> str:
         }
         lines.append(json.dumps(payload, ensure_ascii=False, sort_keys=True))
     return "\n".join(lines) + "\n"
-
-
-def build_search_aliases(pages: list[dict]) -> dict:
-    aliases = []
-    seen: set[tuple[str, str]] = set()
-
-    for page in pages:
-        for alias in page["aliases"]:
-            key = (alias.casefold(), page["id"])
-            if key in seen:
-                continue
-            seen.add(key)
-            aliases.append(
-                {
-                    "query": alias,
-                    "target_id": page["id"],
-                    "type": page["type"],
-                    "title": page["title"],
-                    "url": page["url"],
-                }
-            )
-
-    aliases.sort(key=lambda item: (item["query"].casefold(), item["target_id"]))
-    return {"aliases": aliases}
 
 
 def build_site_ai_index(root: Path) -> dict:
@@ -897,7 +963,6 @@ def build_site_ai_index(root: Path) -> dict:
         "project": project,
         "docs_dir": docs_dir,
         "pages": pages,
-        "graph": build_graph(pages),
     }
 
 
@@ -909,19 +974,57 @@ def write_ai_artifacts(index: dict) -> None:
     (docs_dir / LLMS_TXT).write_text(build_llms_txt(index), encoding="utf-8")
     (docs_dir / LLMS_FULL_TXT).write_text(build_llms_full_txt(index), encoding="utf-8")
     (ai_dir / PAGES_JSONL).write_text(build_pages_jsonl(index["pages"]), encoding="utf-8")
-    (ai_dir / GRAPH_JSON).write_text(
-        json.dumps(index["graph"], ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    (ai_dir / SEARCH_ALIASES_JSON).write_text(
-        json.dumps(build_search_aliases(index["pages"]), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    for filename in REMOVED_AI_ARTIFACTS:
+        (ai_dir / filename).unlink(missing_ok=True)
+
+
+def build_page_markdown(page: dict) -> str:
+    lines = [
+        f"# {page['title']}",
+        "",
+        f"> {page['description']}",
+        "",
+        f"ID: {page['id']}",
+        f"Type: {page['type']}",
+        f"Canonical HTML: {page['url']}",
+        f"Markdown URL: {page['markdown_url']}",
+        f"Source path: {page['source_path']}",
+    ]
+
+    append_metadata_values(lines, "Aliases", page["aliases"])
+    related = [
+        f"{item['relation']}:{item['id']} ({item['markdown_url']}; HTML: {item['url']})"
+        for item in page["related"]
+    ]
+    append_metadata_values(lines, "Related", related)
+    append_metadata_values(lines, "External sources", page["source_urls"])
+    lines.extend(["", "## Content", "", page["body_markdown"]])
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def write_site_markdown_pages(index: dict, site_dir: Path) -> None:
+    for page in llm_visible_pages(index["pages"]):
+        output_path = site_dir / page["source_path"]
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(build_page_markdown(page), encoding="utf-8")
 
 
 def main() -> int:
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--write-site-markdown",
+        type=Path,
+        help="Write public per-page Markdown files into an already built site directory.",
+    )
+    args = parser.parse_args()
+
     root = discover_project_root()
-    write_ai_artifacts(build_site_ai_index(root))
+    index = build_site_ai_index(root)
+    write_ai_artifacts(index)
+
+    if args.write_site_markdown:
+        write_site_markdown_pages(index, args.write_site_markdown)
+
     return 0
 
 

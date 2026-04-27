@@ -2,7 +2,7 @@
 template: home.html
 title: v8std.ru
 llms:
-  full: false
+  ignore: true
 hide:
   - title
 seo_title: Стандарты разработки 1С для практической разработки

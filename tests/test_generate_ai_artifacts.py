@@ -1,11 +1,19 @@
 import importlib.util
 import json
+import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "generate_ai_artifacts.py"
+UI_DESIGN_NAV_SECTIONS = {
+    "Общее",
+    "Проектирование интерфейсов для 8.3",
+    "Проектирование интерфейсов для 8.2",
+    "Проектирование интерфейсов для обычного приложения",
+}
 
 
 def load_module():
@@ -14,6 +22,38 @@ def load_module():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def iter_nav_items(node, path=()):
+    if isinstance(node, dict):
+        for key, value in node.items():
+            yield from iter_nav_items(value, path + (key,))
+    elif isinstance(node, list):
+        for item in node:
+            yield from iter_nav_items(item, path)
+    elif isinstance(node, str):
+        yield path, node
+
+
+def collect_ui_design_standard_ids():
+    with (REPO_ROOT / "zensical.toml").open("rb") as handle:
+        config = tomllib.load(handle)
+
+    result = []
+    for path, target in iter_nav_items(config["project"]["nav"]):
+        if "Разработка пользовательских интерфейсов" not in path:
+            continue
+
+        section_index = path.index("Разработка пользовательских интерфейсов") + 1
+        if section_index >= len(path) or path[section_index] not in UI_DESIGN_NAV_SECTIONS:
+            continue
+
+        if target.startswith("std/") and target.endswith(".md"):
+            page_id = f"std{Path(target).stem}"
+            if page_id not in result:
+                result.append(page_id)
+
+    return result
 
 
 class GenerateAiArtifactsTests(unittest.TestCase):
@@ -39,11 +79,14 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         std437 = self.pages_by_id["std437"]
         bslls = self.pages_by_id["bslls:AssignAliasFieldsInQuery"]
         acc = self.pages_by_id["acc:1245"]
-        graph = self.index["graph"]
 
         self.assertIn(
             "bslls:AssignAliasFieldsInQuery",
             [item["id"] for item in std437["related"] if item["relation"] == "diagnostic"],
+        )
+        self.assertIn(
+            "https://v8std.ru/diagnostics/bslls/AssignAliasFieldsInQuery.md",
+            [item["markdown_url"] for item in std437["related"]],
         )
         self.assertIn(
             "std437",
@@ -53,9 +96,6 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             "v8cs:common-module-name-client-server",
             [item["id"] for item in acc["related"] if item["relation"] == "edt_check"],
         )
-        self.assertIn("bslls:AssignAliasFieldsInQuery", graph["standards"]["std437"])
-        self.assertIn("std469", graph["diagnostics"]["acc:1245"]["standards"])
-        self.assertIn("v8cs:common-module-name-client-server", graph["acc_to_edt"]["acc:1245"])
 
     def test_pages_jsonl_is_valid_and_urls_are_unique(self):
         payload = self.module.build_pages_jsonl(self.index["pages"])
@@ -65,9 +105,47 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertEqual(len(urls), len(set(urls)))
         self.assertGreater(len(rows), 1000)
         self.assertTrue(all(row["body_markdown"] for row in rows))
+        self.assertTrue(all("aliases" in row for row in rows))
+        self.assertTrue(all("related" in row for row in rows))
+        self.assertTrue(all("markdown_url" in row for row in rows))
+        self.assertEqual(
+            self.pages_by_id["std437"]["markdown_url"],
+            "https://v8std.ru/std/437.md",
+        )
 
-    def test_llms_full_excludes_pages_with_front_matter_flag_only(self):
-        payload = self.module.build_llms_full_txt(self.index)
+    def test_writer_removes_retired_machine_artifacts(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            docs_dir = Path(temp_dir)
+            ai_dir = docs_dir / self.module.AI_DIR
+            ai_dir.mkdir()
+            retired_paths = [
+                ai_dir / "graph.json",
+                ai_dir / "search-aliases.json",
+            ]
+            for path in retired_paths:
+                path.write_text("{}\n", encoding="utf-8")
+
+            self.module.write_ai_artifacts(
+                {
+                    "project": {
+                        "site_name": "Test",
+                        "site_description": "Test docs",
+                        "site_url": "https://example.test",
+                    },
+                    "docs_dir": docs_dir,
+                    "pages": [],
+                }
+            )
+
+            self.assertTrue((docs_dir / self.module.LLMS_TXT).is_file())
+            self.assertTrue((docs_dir / self.module.LLMS_FULL_TXT).is_file())
+            self.assertTrue((ai_dir / self.module.PAGES_JSONL).is_file())
+            for path in retired_paths:
+                self.assertFalse(path.exists())
+
+    def test_llms_ignore_excludes_pages_from_public_ai_artifacts(self):
+        llms_txt = self.module.build_llms_txt(self.index)
+        llms_full = self.module.build_llms_full_txt(self.index)
         jsonl_rows = [
             json.loads(line)
             for line in self.module.build_pages_jsonl(self.index["pages"]).splitlines()
@@ -83,11 +161,43 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         }
 
         for page_id in excluded_ids:
-            self.assertNotIn(f"### {page_id} - ", payload)
-            self.assertIn(page_id, jsonl_ids)
+            page = self.pages_by_id[page_id]
+            self.assertTrue(page["_llms_ignored"])
+            self.assertNotIn(f"]({page['url']})", llms_txt)
+            self.assertNotIn(f"]({page['markdown_url']})", llms_txt)
+            self.assertNotIn(f"### {page_id} - ", llms_full)
+            self.assertNotIn(page_id, jsonl_ids)
 
-        self.assertIn("### std437 - ", payload)
-        self.assertIn("### bslls:AssignAliasFieldsInQuery - ", payload)
+        self.assertIn("### std437 - ", llms_full)
+        self.assertIn("### bslls:AssignAliasFieldsInQuery - ", llms_full)
+        self.assertIn("std437", jsonl_ids)
+
+    def test_llms_ignore_excludes_ui_design_standards_from_nav_sections(self):
+        llms_txt = self.module.build_llms_txt(self.index)
+        llms_full = self.module.build_llms_full_txt(self.index)
+        jsonl_rows = [
+            json.loads(line)
+            for line in self.module.build_pages_jsonl(self.index["pages"]).splitlines()
+        ]
+        jsonl_ids = {row["id"] for row in jsonl_rows}
+        page_ids = collect_ui_design_standard_ids()
+
+        self.assertGreater(len(page_ids), 100)
+        for page_id in page_ids:
+            page = self.pages_by_id[page_id]
+            self.assertTrue(page["_llms_ignored"])
+            self.assertNotIn(f"#{page_id}", llms_txt)
+            self.assertNotIn(f"#{page_id}", llms_full)
+            self.assertNotIn(page["url"], llms_txt)
+            self.assertNotIn(page["url"], llms_full)
+            self.assertNotIn(f"### {page_id} - ", llms_full)
+            self.assertNotIn(page_id, jsonl_ids)
+
+        ignored_id_set = set(page_ids)
+        for row in jsonl_rows:
+            self.assertTrue(
+                all(item["id"] not in ignored_id_set for item in row["related"])
+            )
 
     def test_normalizes_internal_markdown_links_to_absolute_urls(self):
         std437 = self.pages_by_id["std437"]["body_markdown"]
@@ -100,9 +210,29 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("[/llms.txt](https://v8std.ru/llms.txt)", search_help)
         self.assertNotIn("../diagnostics/bslls/AssignAliasFieldsInQuery.md", std437)
 
+    def test_writes_public_per_page_markdown_files(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir)
+            self.module.write_site_markdown_pages(self.index, site_dir)
+
+            std437 = site_dir / "std" / "437.md"
+            self.assertTrue(std437.is_file())
+            payload = std437.read_text(encoding="utf-8")
+
+            self.assertIn("# Оформление текстов запросов #std437", payload)
+            self.assertIn("Canonical HTML: https://v8std.ru/std/437/", payload)
+            self.assertIn("Markdown URL: https://v8std.ru/std/437.md", payload)
+            self.assertIn("## Content", payload)
+            self.assertIn("ID: #std437", payload)
+
+            ignored_id = collect_ui_design_standard_ids()[0]
+            ignored_source_path = self.pages_by_id[ignored_id]["source_path"]
+            self.assertFalse((site_dir / ignored_source_path).exists())
+
     def test_llms_full_uses_readable_metadata_and_has_no_relative_links(self):
         payload = self.module.build_llms_full_txt(self.index)
 
+        self.assertIn("Markdown URL: https://v8std.ru/std/437.md", payload)
         self.assertNotIn("#!bsl", payload)
         self.assertNotIn('=== ":fontawesome-brands-linux: linux"', payload)
         self.assertNotIn("!!! success", payload)
@@ -167,6 +297,10 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("\n> Система стандартов", payload)
         self.assertIn("\n## Machine-Readable Files\n", payload)
         self.assertIn("\n## Standards\n", payload)
+        self.assertNotIn("graph.json", payload)
+        self.assertNotIn("search-aliases.json", payload)
+        self.assertIn("[#std437](https://v8std.ru/std/437.md)", payload)
+        self.assertIn("HTML: https://v8std.ru/std/437/", payload)
         self.assertIn("AssignAliasFieldsInQuery", payload)
         self.assertIn("std437", payload)
 
