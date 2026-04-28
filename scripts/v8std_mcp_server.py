@@ -50,7 +50,7 @@ def build_server(
     )
 
     @server.tool(
-        name="v8std.search",
+        name="v8std_search",
         description=(
             "Hybrid search over v8std.ru standards, diagnostics, patterns, and service pages."
         ),
@@ -64,14 +64,14 @@ def build_server(
         return index.search(query, types=types, mode=mode, limit=limit)
 
     @server.tool(
-        name="v8std.page",
+        name="v8std_get_page",
         description="Get a v8std.ru page by id, alias, source path, HTML URL, or Markdown URL.",
     )
     def page(id_or_alias_or_url: str, body_limit: int = MAX_BODY_CHARS) -> dict[str, Any]:
         return index.page(id_or_alias_or_url, body_limit=body_limit)
 
     @server.tool(
-        name="v8std.related",
+        name="v8std_get_related",
         description="Return related standards, diagnostics, and EDT checks for a v8std.ru page.",
     )
     def related(
@@ -82,7 +82,7 @@ def build_server(
         return index.related(id_or_alias_or_url, relations=relations, limit=limit)
 
     @server.tool(
-        name="v8std.explain_snippet",
+        name="v8std_explain_snippet",
         description=(
             "Analyze a short BSL/SDBL snippet and return recognized tokens, likely diagnostics, "
             "standards, and confidence."
@@ -96,7 +96,7 @@ def build_server(
         return index.explain_snippet(snippet, language=language, limit=limit)
 
     @server.tool(
-        name="v8std.explain_diagnostics",
+        name="v8std_explain_diagnostics",
         description=(
             "Explain a batch of BSLLS, ACC, or v8-code-style diagnostics and group linked standards."
         ),
