@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import html
+import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -10,7 +12,7 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from starlette.requests import Request
-from starlette.responses import JSONResponse, RedirectResponse, Response
+from starlette.responses import JSONResponse, Response
 
 from v8std_mcp_index import (
     DEFAULT_CACHE_DIR,
@@ -20,6 +22,154 @@ from v8std_mcp_index import (
     MAX_BODY_CHARS,
     V8StdIndex,
 )
+
+
+MCP_SELF_DOC_MESSAGE = "This is a MCP Streamable HTTP endpoint"
+MCP_DOCUMENTATION_URL = "https://v8std.ru/mcp/"
+MCP_PUBLIC_ENDPOINT = "https://ai.v8std.ru/mcp"
+MCP_HEALTH_PATH = "/healthz"
+MCP_VERSION_PATH = "/version"
+MCP_CODEX_CONFIG = """[mcp_servers.v8std]
+url = "https://ai.v8std.ru/mcp"
+"""
+MCP_CURL_EXAMPLE = (
+    "curl -H 'Accept: application/json, text/event-stream' "
+    "-H 'Content-Type: application/json' "
+    "-X POST https://ai.v8std.ru/mcp "
+    "-d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{"
+    "\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},"
+    "\"clientInfo\":{\"name\":\"curl\",\"version\":\"1\"}}}'"
+)
+
+
+def normalize_mcp_path(mcp_path: str) -> str:
+    normalized = "/" + mcp_path.strip("/")
+    return normalized if normalized != "/" else "/mcp"
+
+
+class SelfDocumentingMcpApp:
+    def __init__(self, downstream: Any, *, mcp_path: str) -> None:
+        self.downstream = downstream
+        self.mcp_path = normalize_mcp_path(mcp_path)
+        self.slash_path = f"{self.mcp_path}/"
+
+    async def __call__(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
+        if scope.get("type") != "http":
+            await self.downstream(scope, receive, send)
+            return
+
+        method = scope.get("method", "").upper()
+        path = scope.get("path", "")
+
+        if path == self.slash_path:
+            status = 303 if method in {"GET", "HEAD"} else 308
+            await self._send_empty_response(send, status, [(b"location", self.mcp_path.encode("ascii"))])
+            return
+
+        if path == self.mcp_path and method == "HEAD":
+            await self._send_self_documentation(send, prefer_json=False, include_body=False)
+            return
+
+        if path == self.mcp_path and method == "GET" and not self._accepts_event_stream(scope):
+            await self._send_self_documentation(send, prefer_json=self._prefers_json(scope), include_body=True)
+            return
+
+        await self.downstream(scope, receive, send)
+
+    def _accept_header(self, scope: dict[str, Any]) -> str:
+        for key, value in scope.get("headers", []):
+            if key.lower() == b"accept":
+                return value.decode("latin-1").lower()
+        return ""
+
+    def _accepts_event_stream(self, scope: dict[str, Any]) -> bool:
+        return "text/event-stream" in self._accept_header(scope)
+
+    def _prefers_json(self, scope: dict[str, Any]) -> bool:
+        accept = self._accept_header(scope)
+        if "application/json" not in accept:
+            return False
+        if "text/html" not in accept:
+            return True
+        return accept.find("application/json") < accept.find("text/html")
+
+    def _payload(self) -> dict[str, str]:
+        return {
+            "message": MCP_SELF_DOC_MESSAGE,
+            "endpoint": MCP_PUBLIC_ENDPOINT,
+            "documentation": MCP_DOCUMENTATION_URL,
+            "health": MCP_HEALTH_PATH,
+            "version": MCP_VERSION_PATH,
+            "codex_config": MCP_CODEX_CONFIG,
+            "curl": MCP_CURL_EXAMPLE,
+        }
+
+    def _html_body(self) -> str:
+        payload = self._payload()
+        return (
+            "<!doctype html>\n"
+            '<html lang="en">\n'
+            "<head><meta charset=\"utf-8\"><title>v8std MCP</title></head>\n"
+            "<body>\n"
+            f"<h1>{html.escape(payload['message'])}</h1>\n"
+            "<p>The MCP endpoint is healthy, but MCP clients must use the "
+            "<code>Accept: application/json, text/event-stream</code> header.</p>\n"
+            "<dl>\n"
+            f"<dt>Documentation</dt><dd><a href=\"{payload['documentation']}\">{payload['documentation']}</a></dd>\n"
+            f"<dt>Health</dt><dd><a href=\"{payload['health']}\">{payload['health']}</a></dd>\n"
+            f"<dt>Version</dt><dd><a href=\"{payload['version']}\">{payload['version']}</a></dd>\n"
+            "</dl>\n"
+            "<h2>Codex configuration</h2>\n"
+            f"<pre><code>{html.escape(payload['codex_config'], quote=False)}</code></pre>\n"
+            "<h2>Protocol check</h2>\n"
+            f"<pre><code>{html.escape(payload['curl'], quote=False)}</code></pre>\n"
+            "</body>\n"
+            "</html>\n"
+        )
+
+    async def _send_self_documentation(self, send: Any, *, prefer_json: bool, include_body: bool) -> None:
+        if prefer_json:
+            body = json.dumps(self._payload(), indent=2).encode("utf-8")
+            content_type = b"application/json; charset=utf-8"
+        else:
+            body = self._html_body().encode("utf-8")
+            content_type = b"text/html; charset=utf-8"
+        await self._send_response(
+            send,
+            200,
+            [],
+            content_type,
+            body if include_body else b"",
+        )
+
+    async def _send_empty_response(self, send: Any, status: int, extra_headers: list[tuple[bytes, bytes]]) -> None:
+        await self._send_response(send, status, extra_headers, b"text/plain; charset=utf-8", b"")
+
+    async def _send_response(
+        self,
+        send: Any,
+        status: int,
+        extra_headers: list[tuple[bytes, bytes]],
+        content_type: bytes,
+        body: bytes,
+    ) -> None:
+        headers = [
+            (b"cache-control", b"no-store"),
+            (b"content-type", content_type),
+            (b"content-length", str(len(body)).encode("ascii")),
+            *extra_headers,
+        ]
+        await send({"type": "http.response.start", "status": status, "headers": headers})
+        await send({"type": "http.response.body", "body": body})
+
+
+def install_self_documenting_mcp_app(server: FastMCP, *, mcp_path: str) -> None:
+    original_streamable_http_app = server.streamable_http_app
+
+    def streamable_http_app_with_self_documentation():
+        return SelfDocumentingMcpApp(original_streamable_http_app(), mcp_path=mcp_path)
+
+    server.streamable_http_app = streamable_http_app_with_self_documentation  # type: ignore[method-assign]
 
 
 def build_server(
@@ -178,9 +328,7 @@ def build_server(
     async def version(_: Request) -> Response:
         return JSONResponse({"service": "v8std-mcp", "api": "v2", **index.status()})
 
-    @server.custom_route(f"{mcp_path.rstrip('/')}/", methods=["GET", "POST", "DELETE"], include_in_schema=False)
-    async def mcp_slash_redirect(_: Request) -> Response:
-        return RedirectResponse(mcp_path.rstrip("/") or "/mcp", status_code=308)
+    install_self_documenting_mcp_app(server, mcp_path=mcp_path)
 
     return server
 
