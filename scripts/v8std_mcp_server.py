@@ -34,8 +34,15 @@ def build_server(
     server = FastMCP(
         "v8std",
         instructions=(
-            "Read-only access to v8std.ru standards, diagnostics, aliases, "
-            "relations, source URLs, and cleaned Markdown."
+            "Use this read-only MCP as a v8std.ru knowledge source for 1C:Enterprise "
+            "BSL/SDBL standards, diagnostics, aliases, relations, source URLs, and "
+            "clean Markdown. It does not run analyzers, inspect projects, or change code. "
+            "Tool selection: use v8std_explain_snippet for a short BSL/SDBL snippet; "
+            "use v8std_explain_diagnostics for ACC, BSLLS, or EDT/v8-code-style "
+            "diagnostic codes; use v8std_get_page when you already have an id, alias, "
+            "path, or URL and need the full clean Markdown page; use v8std_get_related "
+            "to move between a known standard and linked diagnostics or standards; "
+            "use v8std_search for arbitrary prose search or unknown ids."
         ),
         host=host,
         port=port,
@@ -52,7 +59,13 @@ def build_server(
     @server.tool(
         name="v8std_search",
         description=(
-            "Hybrid search over v8std.ru standards, diagnostics, patterns, and service pages."
+            "Use this when the user asks an arbitrary phrase question or topic search "
+            "over v8std.ru standards, diagnostics, patterns, or service pages, including "
+            "natural Russian phrases, standard ids such as std437, and diagnostic names "
+            "when no exact list is available. Do not use this first for code snippets "
+            "or diagnostic-code lists; prefer v8std_explain_snippet or "
+            "v8std_explain_diagnostics, then use search only if those results are "
+            "insufficient. Returns ranked ids, aliases, URLs, snippets, and match reasons."
         ),
     )
     def search(
@@ -65,14 +78,29 @@ def build_server(
 
     @server.tool(
         name="v8std_get_page",
-        description="Get a v8std.ru page by id, alias, source path, HTML URL, or Markdown URL.",
+        description=(
+            "Use this when you already have an exact id, alias, source path, HTML URL, "
+            "or Markdown URL and need the full clean Markdown page text for a standard, "
+            "diagnostic, pattern, or service page. After v8std_search, "
+            "v8std_explain_snippet, v8std_explain_diagnostics, or v8std_get_related "
+            "returns an id, call this to read the authoritative content before "
+            "explaining or fixing code. Not for discovery; use search, snippet, "
+            "or diagnostics tools first."
+        ),
     )
     def page(id_or_alias_or_url: str, body_limit: int = MAX_BODY_CHARS) -> dict[str, Any]:
         return index.page(id_or_alias_or_url, body_limit=body_limit)
 
     @server.tool(
         name="v8std_get_related",
-        description="Return related standards, diagnostics, and EDT checks for a v8std.ru page.",
+        description=(
+            "Use this when you need to move from a known standard or diagnostic to "
+            "related standards, diagnostics, or EDT/v8-code-style checks. Typical flow: "
+            "after search, snippet, diagnostics, or page lookup gives an id, call this "
+            "to collect surrounding rule context for code review, explanation, or "
+            "remediation planning. Not for arbitrary search; use v8std_search first "
+            "when no starting id is known."
+        ),
     )
     def related(
         id_or_alias_or_url: str,
@@ -84,8 +112,12 @@ def build_server(
     @server.tool(
         name="v8std_explain_snippet",
         description=(
-            "Analyze a short BSL/SDBL snippet and return recognized tokens, likely diagnostics, "
-            "standards, and confidence."
+            "Use this when the input is a short BSL or SDBL code fragment and the goal "
+            "is to identify applicable standards, likely diagnostics, and confidence "
+            "from code tokens or calls, for example ВЫБРАТЬ РАЗРЕШЕННЫЕ, "
+            "ОткрытьФормуМодально, Предупреждение, or Вопрос. Do not use it for ordinary "
+            "prose such as 'модальные окна'; use v8std_search for prose. For full rule "
+            "text, call v8std_get_page on returned ids."
         ),
     )
     def explain_snippet(
@@ -98,7 +130,12 @@ def build_server(
     @server.tool(
         name="v8std_explain_diagnostics",
         description=(
-            "Explain a batch of BSLLS, ACC, or v8-code-style diagnostics and group linked standards."
+            "Use this when the user has a list of analyzer diagnostic codes from ACC/АПК, "
+            "BSLLS, EDT, or v8-code-style and needs diagnostic descriptions grouped with "
+            "linked standard clauses. Accepts values like acc 1245, АПК:361, "
+            "bslls:AssignAliasFieldsInQuery, or v8cs:*. For the full Markdown text of "
+            "a diagnostic or standard, call v8std_get_page on returned ids; do not use "
+            "for raw code snippets."
         ),
     )
     def explain_diagnostics(codes: list[str]) -> dict[str, Any]:
