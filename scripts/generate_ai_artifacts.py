@@ -824,6 +824,39 @@ def llm_visible_pages(pages: list[dict]) -> list[dict]:
     return visible_pages
 
 
+def mcp_index_includes_page(page: dict) -> bool:
+    if not page.get("_llms_ignored", False):
+        return True
+    return page.get("type") == "standard"
+
+
+def mcp_index_pages(pages: list[dict]) -> list[dict]:
+    indexed_ids = {page["id"] for page in pages if mcp_index_includes_page(page)}
+    excluded_pages = [page for page in pages if page["id"] not in indexed_ids]
+    excluded_refs = build_ignored_ref_context(excluded_pages)
+    indexed_pages = []
+
+    for page in pages:
+        if page["id"] not in indexed_ids:
+            continue
+
+        indexed_page = dict(page)
+        indexed_page["description"] = strip_ignored_plain_text_refs(
+            page["description"],
+            excluded_refs,
+        )
+        indexed_page["body_markdown"] = strip_ignored_markdown_refs(
+            page["body_markdown"],
+            excluded_refs,
+        )
+        indexed_page["related"] = [
+            item for item in page["related"] if item["id"] in indexed_ids
+        ]
+        indexed_pages.append(indexed_page)
+
+    return indexed_pages
+
+
 def append_metadata_values(
     lines: list[str],
     label: str,
@@ -943,7 +976,7 @@ def build_llms_full_txt(index: dict) -> str:
 
 def build_pages_jsonl(pages: list[dict]) -> str:
     lines = []
-    for page in llm_visible_pages(pages):
+    for page in mcp_index_pages(pages):
         payload = {
             key: page[key]
             for key in (

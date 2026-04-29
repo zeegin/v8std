@@ -46,7 +46,10 @@ jobs:
             -v "$PWD:/docs" \
             -w /docs \
             --entrypoint python \
-            v8std-docs -m unittest tests.test_v8std_mcp_index
+            v8std-docs -m unittest \
+            tests.test_v8std_mcp_index \
+            tests.test_v8std_mcp_server \
+            tests.test_v8std_mcp_monitoring
           docker run --rm \
             -v "$PWD:/docs" \
             -w /docs \

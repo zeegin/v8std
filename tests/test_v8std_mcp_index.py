@@ -55,6 +55,17 @@ class V8StdMcpIndexTests(unittest.TestCase):
         self.assertIn("match_reasons", std_results[0])
         self.assertIn("score_details", std_results[0])
 
+    def test_hybrid_search_finds_ui_design_standards(self):
+        exact_results = self.index.search("std500", types=["standard"], limit=3)["results"]
+        title_results = self.index.search(
+            "общие правила построения интерфейсов",
+            types=["standard"],
+            limit=5,
+        )["results"]
+
+        self.assertEqual(exact_results[0]["id"], "std500")
+        self.assertEqual(title_results[0]["id"], "std500")
+
     def test_rules_cover_semantic_and_code_like_queries(self):
         separation = self.index.search(
             "форма не должна содержать бизнес-логику и доступ к данным",

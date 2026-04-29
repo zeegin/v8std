@@ -1,0 +1,10 @@
+/var/lib/v8std-mcp/tool-usage.jsonl {
+    daily
+    rotate 365
+    compress
+    missingok
+    notifempty
+    copytruncate
+    su v8std-mcp v8std-mcp
+    create 0640 v8std-mcp v8std-mcp
+}

@@ -68,6 +68,34 @@ rules:
       - "Новый Запрос ВЫБРАТЬ РАЗРЕШЕННЫЕ"
       - "ключевое слово РАЗРЕШЕННЫЕ"
 
+  - id: common_module_full_access
+    primary: "std469"
+    standards:
+      - "std469"
+      - "std488"
+    aliases:
+      - "полный доступ общий модуль"
+      - "общий модуль полный доступ"
+      - "общий модуль с полным доступом"
+      - "правила создания общих модулей полный доступ"
+
+  - id: localized_interface_texts
+    primary: "std761"
+    standards:
+      - "std761"
+      - "std762"
+      - "std765"
+    aliases:
+      - "интерфейсные тексты"
+      - "локализация интерфейсных текстов"
+      - "сообщения пользователю локализовать"
+      - "сообщение пользователю НСтр"
+      - "НСтр сообщение пользователю"
+    snippet_calls:
+      - "НСтр"
+      - "Сообщить"
+      - "ПоказатьПредупреждение"
+
   - id: separation_of_concerns_form_logic
     primary: "patterns:engineering:separation_of_concerns"
     standards:

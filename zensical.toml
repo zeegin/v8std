@@ -896,7 +896,7 @@ analytics = "Yandex.Metrika"
 ]
 
 [[project.nav]]
-"MCP для ИИ-инструментов" = "mcp.md"
+"MCP для ИИ-помощников" = "mcp.md"
 
 [[project.nav]]
 "Поддержка" = "support.md"

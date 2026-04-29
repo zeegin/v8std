@@ -143,7 +143,7 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             for path in retired_paths:
                 self.assertFalse(path.exists())
 
-    def test_llms_ignore_excludes_pages_from_public_ai_artifacts(self):
+    def test_llms_ignore_excludes_service_pages_from_mcp_index(self):
         llms_txt = self.module.build_llms_txt(self.index)
         llms_full = self.module.build_llms_full_txt(self.index)
         jsonl_rows = [
@@ -172,7 +172,7 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("### bslls:AssignAliasFieldsInQuery - ", llms_full)
         self.assertIn("std437", jsonl_ids)
 
-    def test_llms_ignore_excludes_ui_design_standards_from_nav_sections(self):
+    def test_llms_ignore_excludes_ui_design_standards_from_llms_but_keeps_them_searchable_by_mcp(self):
         llms_txt = self.module.build_llms_txt(self.index)
         llms_full = self.module.build_llms_full_txt(self.index)
         jsonl_rows = [
@@ -191,13 +191,15 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             self.assertNotIn(page["url"], llms_txt)
             self.assertNotIn(page["url"], llms_full)
             self.assertNotIn(f"### {page_id} - ", llms_full)
-            self.assertNotIn(page_id, jsonl_ids)
+            self.assertIn(page_id, jsonl_ids)
 
         ignored_id_set = set(page_ids)
-        for row in jsonl_rows:
-            self.assertTrue(
-                all(item["id"] not in ignored_id_set for item in row["related"])
+        self.assertTrue(
+            any(
+                any(item["id"] in ignored_id_set for item in row["related"])
+                for row in jsonl_rows
             )
+        )
 
     def test_normalizes_internal_markdown_links_to_absolute_urls(self):
         std437 = self.pages_by_id["std437"]["body_markdown"]

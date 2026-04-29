@@ -5,7 +5,10 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import logging
 import sys
+from contextvars import ContextVar
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +43,273 @@ MCP_CURL_EXAMPLE = (
     "\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},"
     "\"clientInfo\":{\"name\":\"curl\",\"version\":\"1\"}}}'"
 )
+MAX_USAGE_TEXT_CHARS = 240
+MAX_USAGE_RESULTS = 50
+MAX_USAGE_CODES = 500
+DEFAULT_LOG_LEVEL = "WARNING"
+CLIENT_SYSTEM_CONTEXT: ContextVar[str] = ContextVar("v8std_client_system", default="unknown")
+ALLOWED_CLIENT_SYSTEMS = {
+    "codex",
+    "claude",
+    "cursor",
+    "jetbrains",
+    "vscode",
+    "curl",
+    "browser",
+    "unknown",
+    "other",
+}
+
+
+def configure_runtime_logging(log_level: str) -> None:
+    level = getattr(logging, log_level.upper(), logging.WARNING)
+    for logger_name in ("mcp", "uvicorn", "uvicorn.access", "uvicorn.error"):
+        logging.getLogger(logger_name).setLevel(level)
+
+
+def classify_client_system(user_agent: str) -> str:
+    ua = user_agent.strip().lower()
+    if not ua or ua == "-":
+        return "unknown"
+    if "codex" in ua or "openai" in ua:
+        return "codex"
+    if "claude" in ua or "anthropic" in ua:
+        return "claude"
+    if "cursor" in ua:
+        return "cursor"
+    if "jetbrains" in ua or "intellij" in ua or "pycharm" in ua or "webstorm" in ua:
+        return "jetbrains"
+    if "vscode" in ua or "visual studio code" in ua:
+        return "vscode"
+    if "curl" in ua:
+        return "curl"
+    if "mozilla/" in ua or "safari/" in ua or "chrome/" in ua or "firefox/" in ua:
+        return "browser"
+    return "other"
+
+
+def current_client_system() -> str:
+    return CLIENT_SYSTEM_CONTEXT.get()
+
+
+def _usage_system(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    system = value.strip().lower()
+    if system not in ALLOWED_CLIENT_SYSTEMS:
+        return None
+    return system
+
+
+def _usage_text(value: Any, *, limit: int = MAX_USAGE_TEXT_CHARS) -> str | None:
+    if not isinstance(value, str):
+        return None
+    normalized = " ".join(value.split())
+    if not normalized:
+        return None
+    return normalized[:limit]
+
+
+def _usage_url(value: Any) -> str | None:
+    text = _usage_text(value, limit=500)
+    if text is None:
+        return None
+    if text.startswith("https://v8std.ru/"):
+        return text
+    return None
+
+
+def _usage_result(item: Any) -> dict[str, str] | None:
+    if not isinstance(item, dict):
+        return None
+    url = _usage_url(item.get("url"))
+    if url is None:
+        return None
+    result: dict[str, str] = {"url": url}
+    page_id = _usage_text(item.get("id"), limit=120)
+    title = _usage_text(item.get("title"))
+    if page_id:
+        result["id"] = page_id
+    if title:
+        result["title"] = title
+    return result
+
+
+def _usage_public_item(item: Any) -> dict[str, str] | None:
+    if not isinstance(item, dict):
+        return None
+    result: dict[str, str] = {}
+    page_id = _usage_text(item.get("id"), limit=120)
+    code = _usage_text(item.get("code"), limit=120)
+    title = _usage_text(item.get("title"))
+    raw_url = _usage_text(item.get("url"), limit=500)
+    url = _usage_url(item.get("url"))
+    if raw_url and url is None:
+        return None
+    if page_id:
+        result["id"] = page_id
+    elif code:
+        result["code"] = code
+    if title:
+        result["title"] = title
+    if url:
+        result["url"] = url
+    return result or None
+
+
+def _usage_results(items: Any) -> list[dict[str, str]]:
+    if not isinstance(items, list):
+        return []
+    results = []
+    seen_urls = set()
+    for item in items:
+        result = _usage_result(item)
+        if result is None:
+            continue
+        if result["url"] in seen_urls:
+            continue
+        seen_urls.add(result["url"])
+        results.append(result)
+        if len(results) >= MAX_USAGE_RESULTS:
+            break
+    return results
+
+
+def _usage_frequency(value: Any) -> int:
+    if isinstance(value, int) and not isinstance(value, bool):
+        return max(1, min(value, MAX_USAGE_CODES))
+    return 1
+
+
+def _usage_diagnostic(item: Any) -> dict[str, str | int] | None:
+    result = _usage_public_item(item)
+    if result is None:
+        return None
+    result["frequency"] = _usage_frequency(item.get("frequency") if isinstance(item, dict) else None)
+    return result
+
+
+def _usage_diagnostics(items: Any) -> list[dict[str, str | int]]:
+    if not isinstance(items, list):
+        return []
+    diagnostics = []
+    seen_keys = set()
+    for item in items:
+        diagnostic = _usage_diagnostic(item)
+        if diagnostic is None:
+            continue
+        key = diagnostic.get("url") or diagnostic.get("id") or diagnostic.get("code") or diagnostic.get("title")
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        diagnostics.append(diagnostic)
+        if len(diagnostics) >= MAX_USAGE_RESULTS:
+            break
+    return diagnostics
+
+
+def _usage_unknown_code(item: Any) -> dict[str, str | int] | None:
+    if not isinstance(item, dict):
+        return None
+    code = _usage_text(item.get("code"), limit=120)
+    if code is None:
+        return None
+    return {
+        "code": code,
+        "frequency": _usage_frequency(item.get("frequency")),
+    }
+
+
+def _usage_unknown_codes(items: Any) -> list[dict[str, str | int]]:
+    if not isinstance(items, list):
+        return []
+    codes = []
+    seen_codes = set()
+    for item in items:
+        unknown = _usage_unknown_code(item)
+        if unknown is None or unknown["code"] in seen_codes:
+            continue
+        seen_codes.add(unknown["code"])
+        codes.append(unknown)
+        if len(codes) >= MAX_USAGE_RESULTS:
+            break
+    return codes
+
+
+def _usage_standards_without_page(items: Any) -> list[dict[str, str | int]]:
+    if not isinstance(items, list):
+        return []
+    standards = []
+    seen_keys = set()
+    for item in items:
+        standard = _usage_diagnostic(item)
+        if standard is None or standard.get("url"):
+            continue
+        key = standard.get("id") or standard.get("title")
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        standards.append(standard)
+        if len(standards) >= MAX_USAGE_RESULTS:
+            break
+    return standards
+
+
+class McpToolUsageLogger:
+    def __init__(self, path: Path | None) -> None:
+        self.path = path
+
+    def record(self, tool_name: str, **metadata: Any) -> None:
+        if self.path is None:
+            return
+        payload = {
+            "ts": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            "tool": tool_name,
+        }
+        payload.update(
+            {
+                key: value
+                for key, value in metadata.items()
+                if value is not None and value != "" and value != []
+            }
+        )
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with self.path.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
+        except OSError:
+            return
+
+    def record_search(self, query: str, result: dict[str, Any], *, system: str | None = None) -> None:
+        self.record(
+            "v8std_search",
+            system=_usage_system(system),
+            query=_usage_text(query),
+            normalized_query=_usage_text(result.get("normalized_query")),
+            results=_usage_results(result.get("results")),
+        )
+
+    def record_page(self, requested_page: str, result: dict[str, Any]) -> None:
+        page = result.get("page") if isinstance(result, dict) else None
+        page_result = _usage_result(page)
+        if page_result is None:
+            self.record("v8std_get_page", requested_page=_usage_text(requested_page))
+            return
+        self.record(
+            "v8std_get_page",
+            requested_page=_usage_text(requested_page),
+            page_id=page_result.get("id"),
+            title=page_result.get("title"),
+            url=page_result.get("url"),
+        )
+
+    def record_diagnostics(self, codes: list[str], result: dict[str, Any]) -> None:
+        self.record(
+            "v8std_explain_diagnostics",
+            diagnostics=_usage_diagnostics(result.get("diagnostics") if isinstance(result, dict) else None),
+            unknown_codes=_usage_unknown_codes(result.get("unknown_codes") if isinstance(result, dict) else None),
+            standards_without_page=_usage_standards_without_page(result.get("standards") if isinstance(result, dict) else None),
+        )
 
 
 def normalize_mcp_path(mcp_path: str) -> str:
@@ -74,12 +344,22 @@ class SelfDocumentingMcpApp:
             await self._send_self_documentation(send, prefer_json=self._prefers_json(scope), include_body=True)
             return
 
-        await self.downstream(scope, receive, send)
+        await self._send_to_downstream(scope, receive, send)
+
+    async def _send_to_downstream(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
+        token = CLIENT_SYSTEM_CONTEXT.set(classify_client_system(self._header(scope, b"user-agent")))
+        try:
+            await self.downstream(scope, receive, send)
+        finally:
+            CLIENT_SYSTEM_CONTEXT.reset(token)
 
     def _accept_header(self, scope: dict[str, Any]) -> str:
+        return self._header(scope, b"accept").lower()
+
+    def _header(self, scope: dict[str, Any], header_name: bytes) -> str:
         for key, value in scope.get("headers", []):
-            if key.lower() == b"accept":
-                return value.decode("latin-1").lower()
+            if key.lower() == header_name:
+                return value.decode("latin-1")
         return ""
 
     def _accepts_event_stream(self, scope: dict[str, Any]) -> bool:
@@ -180,9 +460,13 @@ def build_server(
     mcp_path: str,
     allowed_hosts: list[str],
     allowed_origins: list[str],
+    log_level: str = DEFAULT_LOG_LEVEL,
+    usage_logger: McpToolUsageLogger | None = None,
 ) -> FastMCP:
+    tool_usage = usage_logger or McpToolUsageLogger(None)
     server = FastMCP(
         "v8std",
+        log_level=log_level,
         instructions=(
             "Use this read-only MCP as a v8std.ru knowledge source for 1C:Enterprise "
             "BSL/SDBL standards, diagnostics, aliases, relations, source URLs, and "
@@ -224,7 +508,9 @@ def build_server(
         types: list[str] | None = None,
         mode: str = "hybrid",
     ) -> dict[str, Any]:
-        return index.search(query, types=types, mode=mode, limit=limit)
+        result = index.search(query, types=types, mode=mode, limit=limit)
+        tool_usage.record_search(query, result, system=current_client_system())
+        return result
 
     @server.tool(
         name="v8std_get_page",
@@ -239,7 +525,9 @@ def build_server(
         ),
     )
     def page(id_or_alias_or_url: str, body_limit: int = MAX_BODY_CHARS) -> dict[str, Any]:
-        return index.page(id_or_alias_or_url, body_limit=body_limit)
+        result = index.page(id_or_alias_or_url, body_limit=body_limit)
+        tool_usage.record_page(id_or_alias_or_url, result)
+        return result
 
     @server.tool(
         name="v8std_get_related",
@@ -257,6 +545,7 @@ def build_server(
         relations: list[str] | None = None,
         limit: int = 10,
     ) -> dict[str, Any]:
+        tool_usage.record("v8std_get_related")
         return index.related(id_or_alias_or_url, relations=relations, limit=limit)
 
     @server.tool(
@@ -275,6 +564,7 @@ def build_server(
         language: str = "auto",
         limit: int = 10,
     ) -> dict[str, Any]:
+        tool_usage.record("v8std_explain_snippet")
         return index.explain_snippet(snippet, language=language, limit=limit)
 
     @server.tool(
@@ -289,7 +579,9 @@ def build_server(
         ),
     )
     def explain_diagnostics(codes: list[str]) -> dict[str, Any]:
-        return index.explain_diagnostics(codes)
+        result = index.explain_diagnostics(codes)
+        tool_usage.record_diagnostics(codes, result)
+        return result
 
     @server.resource(
         "v8std://llms.txt",
@@ -345,6 +637,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--mcp-path", default="/mcp")
     parser.add_argument(
+        "--log-level",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default=DEFAULT_LOG_LEVEL,
+        help="Runtime log level for MCP SDK and uvicorn loggers. Defaults to WARNING to keep journald small.",
+    )
+    parser.add_argument(
+        "--usage-log",
+        type=Path,
+        default=None,
+        help="Append JSONL tool-call usage events to this path. Disabled by default.",
+    )
+    parser.add_argument(
         "--allowed-host",
         action="append",
         default=["127.0.0.1:*", "localhost:*", "ai.v8std.ru", "ai.v8std.ru:*"],
@@ -366,6 +670,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv if argv is not None else sys.argv[1:])
+    configure_runtime_logging(args.log_level)
     index = V8StdIndex(
         pages_path=args.pages,
         vectors_path=args.vectors,
@@ -383,6 +688,8 @@ def main(argv: list[str] | None = None) -> int:
         mcp_path=args.mcp_path,
         allowed_hosts=args.allowed_host,
         allowed_origins=args.allowed_origin,
+        log_level=args.log_level,
+        usage_logger=McpToolUsageLogger(args.usage_log),
     )
     server.run(transport="streamable-http")
     return 0

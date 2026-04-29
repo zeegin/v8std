@@ -26,4 +26,6 @@ hide:
 | [/ai/pages.jsonl](/ai/pages.jsonl) | JSONL-индекс страниц, алиасов, связей и очищенного Markdown |
 | [/std/437.md](/std/437.md) | Пример очищенной Markdown-версии страницы; для публичных страниц используется исходный путь `.md` |
 
-Страницы с front matter `llms.ignore: true` исключаются из всех публичных LLM-артефактов: `/llms.txt`, `/llms-full.txt` и `/ai/pages.jsonl`. Это не влияет на обычные страницы сайта и поиск Zensical.
+Страницы с front matter `llms.ignore: true` исключаются из `/llms.txt` и `/llms-full.txt`.
+Стандарты с таким флагом остаются в `/ai/pages.jsonl`, чтобы MCP мог искать и возвращать
+их по идентификатору или теме. Это не влияет на обычные страницы сайта и поиск Zensical.

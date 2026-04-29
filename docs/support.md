@@ -85,6 +85,89 @@ hide:
 
 Документация будет доступна по адресу `http://127.0.0.1:8000`.
 
+### Локальный MCP { #local-mcp }
+
+Локальный MCP нужен, если вы не хотите отправлять фрагменты закрытого кода в
+публичный сервис, работаете без доступа к интернету или проверяете изменения
+сайта до публикации.
+
+Самый простой запуск — через Docker:
+
+```bash
+git clone https://github.com/zeegin/v8std.git
+cd v8std
+
+docker compose -f docker-compose/docker-compose.yml up -d v8std-mcp
+```
+
+Локальный адрес MCP:
+
+```text
+http://127.0.0.1:8765/mcp
+```
+
+Подключение к Codex:
+
+```bash
+codex mcp add v8std-local --url http://127.0.0.1:8765/mcp
+```
+
+Подключение к Claude Code:
+
+```bash
+claude mcp add --transport http v8std-local http://127.0.0.1:8765/mcp
+```
+
+Для Cursor и Kiro используйте тот же адрес в `mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "v8std-local": {
+      "url": "http://127.0.0.1:8765/mcp"
+    }
+  }
+}
+```
+
+Для Antigravity используйте `mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "v8std-local": {
+      "serverUrl": "http://127.0.0.1:8765/mcp"
+    }
+  }
+}
+```
+
+Контейнер читает файлы `docs/ai/pages.jsonl` и
+`docs/ai/search-vectors.jsonl`. Если их нет, он сгенерирует индекс при старте.
+
+Без Docker MCP можно запустить так:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt -r requirements-mcp.txt
+python scripts/generate_ai_artifacts.py
+python scripts/generate_search_vectors.py
+python scripts/v8std_mcp_server.py \
+  --pages docs/ai/pages.jsonl \
+  --vectors docs/ai/search-vectors.jsonl \
+  --host 127.0.0.1 \
+  --port 8765
+```
+
+Полезные команды:
+
+```bash
+docker logs v8std-mcp
+docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
+```
+
 ### Поиск и LLM-индексы
 
 Форматы запросов описаны на странице [Поиск по сайту](search-help.md).
@@ -95,11 +178,14 @@ hide:
 - [`/llms-full.txt`](/llms-full.txt) — очищенный полный Markdown-корпус;
 - [`/ai/pages.jsonl`](/ai/pages.jsonl) — индекс страниц, алиасов, связей и очищенного Markdown;
 
-Чтобы исключить страницу из публичных LLM-артефактов (`/llms.txt`, `/llms-full.txt`, `/ai/pages.jsonl`), добавьте в её front matter:
+Чтобы исключить страницу из `/llms.txt` и `/llms-full.txt`, добавьте в её front matter:
 
 ```yaml
 llms:
   ignore: true
 ```
 
-Это не влияет на обычную сборку сайта, навигацию и поиск Zensical.
+Это не влияет на обычную сборку сайта, навигацию и поиск Zensical. Стандарты с
+таким флагом остаются в `/ai/pages.jsonl`, чтобы MCP мог находить их по теме,
+номеру или коду диагностики. Служебные страницы с этим флагом в MCP-индекс не
+попадают.

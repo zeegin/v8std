@@ -3,8 +3,10 @@ from __future__ import annotations
 import ast
 import asyncio
 import json
+import logging
 import re
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -359,6 +361,226 @@ class SelfDocumentingMcpAppTests(unittest.TestCase):
         self.assertEqual(headers["location"], "/mcp")
         self.assertEqual(body, b"")
         self.assertEqual(downstream.calls, [])
+
+
+class RuntimeLoggingTests(unittest.TestCase):
+    def test_default_log_level_is_warning_to_keep_journald_small(self):
+        server_module = load_server_module()
+
+        args = server_module.parse_args([])
+
+        self.assertEqual(args.log_level, "WARNING")
+
+    def test_runtime_logging_suppresses_mcp_and_uvicorn_info_logs(self):
+        server_module = load_server_module()
+        loggers = ["mcp", "uvicorn", "uvicorn.access", "uvicorn.error"]
+        previous_levels = {name: logging.getLogger(name).level for name in loggers}
+
+        try:
+            server_module.configure_runtime_logging("WARNING")
+
+            for name in loggers:
+                self.assertEqual(logging.getLogger(name).level, logging.WARNING)
+        finally:
+            for name, level in previous_levels.items():
+                logging.getLogger(name).setLevel(level)
+
+
+class ClientSystemTrackingTests(unittest.TestCase):
+    def test_classifies_known_mcp_clients(self):
+        server_module = load_server_module()
+
+        self.assertEqual(server_module.classify_client_system("Cursor/0.45"), "cursor")
+        self.assertEqual(server_module.classify_client_system("Claude Desktop"), "claude")
+        self.assertEqual(server_module.classify_client_system("codex-cli/0.8"), "codex")
+        self.assertEqual(server_module.classify_client_system("JetBrains IDE"), "jetbrains")
+        self.assertEqual(server_module.classify_client_system("Visual Studio Code"), "vscode")
+        self.assertEqual(server_module.classify_client_system("curl/8.7.1"), "curl")
+        self.assertEqual(server_module.classify_client_system("Mozilla/5.0"), "browser")
+        self.assertEqual(server_module.classify_client_system("custom-client"), "other")
+        self.assertEqual(server_module.classify_client_system(""), "unknown")
+
+    def test_mcp_request_sets_current_client_system_for_downstream_app(self):
+        server_module = load_server_module()
+        observed_systems = []
+
+        async def downstream(scope, receive, send):
+            observed_systems.append(server_module.current_client_system())
+            await send(
+                {
+                    "type": "http.response.start",
+                    "status": 209,
+                    "headers": [(b"content-type", b"text/plain")],
+                }
+            )
+            await send({"type": "http.response.body", "body": b"downstream"})
+
+        app = server_module.SelfDocumentingMcpApp(downstream, mcp_path="/mcp")
+
+        status, _headers, _body = asyncio.run(
+            asgi_request(app, "POST", "/mcp", {"User-Agent": "Cursor/0.45"})
+        )
+
+        self.assertEqual(status, 209)
+        self.assertEqual(observed_systems, ["cursor"])
+        self.assertEqual(server_module.current_client_system(), "unknown")
+
+
+class McpToolUsageLoggerTests(unittest.TestCase):
+    def test_usage_logger_writes_tool_name_without_arguments_by_default(self):
+        server_module = load_server_module()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "tool-usage.jsonl"
+            logger = server_module.McpToolUsageLogger(log_path)
+
+            logger.record("v8std_search")
+
+            payload = json.loads(log_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["tool"], "v8std_search")
+        self.assertRegex(payload["ts"], r"^\d{4}-\d{2}-\d{2}T")
+        self.assertEqual(set(payload), {"ts", "tool"})
+
+    def test_usage_logger_writes_public_search_and_page_metadata_only(self):
+        server_module = load_server_module()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "tool-usage.jsonl"
+            logger = server_module.McpToolUsageLogger(log_path)
+
+            logger.record_search(
+                "модальные окна\nвызов",
+                {
+                    "normalized_query": "модальные окна вызов",
+                    "results": [
+                        {
+                            "id": "std404",
+                            "title": "Модальные окна",
+                            "url": "https://v8std.ru/std/404/",
+                            "body": "not public",
+                        },
+                        {
+                            "id": "external",
+                            "title": "External",
+                            "url": "https://example.com/",
+                        },
+                    ],
+                },
+                system="cursor",
+            )
+            logger.record_page(
+                "std437",
+                {
+                    "found": True,
+                    "page": {
+                        "id": "std437",
+                        "title": "Оформление текстов запросов",
+                        "url": "https://v8std.ru/std/437/",
+                        "body": "not public",
+                    },
+                },
+            )
+
+            rows = [
+                json.loads(line)
+                for line in log_path.read_text(encoding="utf-8").splitlines()
+            ]
+
+        self.assertEqual(rows[0]["tool"], "v8std_search")
+        self.assertEqual(rows[0]["system"], "cursor")
+        self.assertEqual(rows[0]["query"], "модальные окна вызов")
+        self.assertEqual(rows[0]["results"], [
+            {
+                "id": "std404",
+                "title": "Модальные окна",
+                "url": "https://v8std.ru/std/404/",
+            }
+        ])
+        self.assertNotIn("body", json.dumps(rows, ensure_ascii=False))
+
+        self.assertEqual(rows[1]["tool"], "v8std_get_page")
+        self.assertEqual(rows[1]["requested_page"], "std437")
+        self.assertEqual(rows[1]["page_id"], "std437")
+        self.assertEqual(rows[1]["title"], "Оформление текстов запросов")
+        self.assertEqual(rows[1]["url"], "https://v8std.ru/std/437/")
+
+    def test_usage_logger_writes_public_diagnostic_metadata_only(self):
+        server_module = load_server_module()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "tool-usage.jsonl"
+            logger = server_module.McpToolUsageLogger(log_path)
+
+            logger.record_diagnostics(
+                ["bslls:UsingModalWindows", "bslls:UsingModalWindows", "private\ntext"],
+                {
+                    "diagnostics": [
+                        {
+                            "id": "bslls:UsingModalWindows",
+                            "title": "Использование модальных окон",
+                            "url": "https://v8std.ru/diagnostics/bslls/UsingModalWindows/",
+                            "markdown_url": "https://v8std.ru/diagnostics/bslls/UsingModalWindows.md",
+                            "body": "not public",
+                            "frequency": 2,
+                        },
+                        {
+                            "id": "external",
+                            "title": "External",
+                            "url": "https://example.com/",
+                            "frequency": 99,
+                        },
+                    ],
+                    "unknown_codes": [
+                        {
+                            "code": "v8cs:NewUnknownDiagnostic",
+                            "frequency": 3,
+                        },
+                    ],
+                    "standards": [
+                        {
+                            "id": "std404",
+                            "title": "Modal",
+                            "url": "https://v8std.ru/std/404/",
+                        },
+                        {
+                            "id": "std999",
+                            "title": "Стандарт без страницы",
+                            "frequency": 2,
+                        }
+                    ],
+                },
+            )
+
+            payload = json.loads(log_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["tool"], "v8std_explain_diagnostics")
+        self.assertNotIn("requested_codes", payload)
+        self.assertEqual(
+            payload["diagnostics"],
+            [
+                {
+                    "id": "bslls:UsingModalWindows",
+                    "title": "Использование модальных окон",
+                    "url": "https://v8std.ru/diagnostics/bslls/UsingModalWindows/",
+                    "frequency": 2,
+                }
+            ],
+        )
+        self.assertEqual(payload["unknown_codes"], [{"code": "v8cs:NewUnknownDiagnostic", "frequency": 3}])
+        self.assertEqual(
+            payload["standards_without_page"],
+            [
+                {
+                    "id": "std999",
+                    "title": "Стандарт без страницы",
+                    "frequency": 2,
+                }
+            ],
+        )
+        serialized = json.dumps(payload, ensure_ascii=False)
+        self.assertNotIn("body", serialized)
+        self.assertNotIn("example.com", serialized)
 
 
 if __name__ == "__main__":
