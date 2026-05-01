@@ -38,6 +38,13 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
                 'ts=2026-04-29T11:57:00+00:00 remote=203.0.113.12 method=GET uri=/healthz status=200 request_time=0.002 upstream_time=0.002 bytes=2 ua="Uptime-Kuma/1.23"',
                 'ts=2026-04-29T11:56:00+00:00 remote=203.0.113.13 method=POST uri=/mcp status=503 request_time=0.000 upstream_time=- bytes=197 ua="Claude Desktop"',
                 'ts=2026-04-29T11:55:00+00:00 remote=203.0.113.14 method=POST uri=/mcp status=503 request_time=0.010 upstream_time=0.010 bytes=197 ua="Mozilla/5.0"',
+                'ts=2026-04-29T11:54:50+00:00 remote=203.0.113.18 method=POST uri=/mcp status=200 request_time=0.004 upstream_time=0.004 bytes=438 ua="node"',
+                'ts=2026-04-29T11:54:40+00:00 remote=203.0.113.19 method=POST uri=/mcp status=200 request_time=0.004 upstream_time=0.004 bytes=438 ua="opencode/1.2.27"',
+                'ts=2026-04-29T11:54:30+00:00 remote=203.0.113.20 method=POST uri=/mcp status=200 request_time=0.004 upstream_time=0.004 bytes=438 ua="Go-http-client/1.1"',
+                'ts=2026-04-29T11:54:20+00:00 remote=203.0.113.21 method=POST uri=/mcp status=200 request_time=0.004 upstream_time=0.004 bytes=438 ua="python-httpx/0.28.1"',
+                'ts=2026-04-29T11:54:10+00:00 remote=203.0.113.22 method=POST uri=/mcp status=200 request_time=0.004 upstream_time=0.004 bytes=438 ua="kilo/7.2.25"',
+                'ts=2026-04-29T11:54:05+00:00 remote=203.0.113.23 method=POST uri=/mcp status=200 request_time=0.004 upstream_time=0.004 bytes=438 ua="Java-http-client/17.0.16"',
+                'ts=2026-04-29T11:54:04+00:00 remote=203.0.113.24 method=POST uri=/mcp status=200 request_time=0.004 upstream_time=0.004 bytes=438 ua="undici"',
                 'ts=2026-04-29T11:54:00+00:00 remote=203.0.113.16 method=GET uri=/monitoring/stats.json status=200 request_time=0.000 upstream_time=- bytes=1200 ua="curl/8.7.1"',
                 'ts=2026-04-29T11:53:00+00:00 remote=203.0.113.17 method=GET uri=/wp-login.php status=404 request_time=0.000 upstream_time=- bytes=120 ua="bot"',
                 'ts=2026-04-28T11:59:00+00:00 remote=203.0.113.15 method=POST uri=/mcp status=200 request_time=0.002 upstream_time=0.002 bytes=48 ua="stale-client"',
@@ -45,9 +52,10 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
             usage_lines=[
                 '{"ts":"2026-04-29T11:59:30+00:00","tool":"v8std_search"}',
                 '{"ts":"2026-04-29T11:58:30+00:00","tool":"v8std_search","system":"cursor","query":"модальные окна","results":[{"id":"std404","title":"Модальные окна","url":"https://v8std.ru/std/404/"},{"id":"std519","title":"Оповещения","url":"https://v8std.ru/std/519/"}]}',
-                '{"ts":"2026-04-29T11:57:30+00:00","tool":"v8std_get_page","requested_page":"std437","page_id":"std437","title":"Оформление текстов запросов","url":"https://v8std.ru/std/437/"}',
-                '{"ts":"2026-04-29T11:56:30+00:00","tool":"v8std_get_page","requested_page":"https://v8std.ru/std/437/","page_id":"std437","title":"Оформление текстов запросов","url":"https://v8std.ru/std/437/"}',
-                '{"ts":"2026-04-29T11:55:30+00:00","tool":"v8std_explain_diagnostics","diagnostics":[{"id":"bslls:UsingModalWindows","title":"Использование модальных окон","url":"https://v8std.ru/diagnostics/bslls/UsingModalWindows/","frequency":2},{"id":"acc:1245","title":"Нельзя использовать * в запросах","url":"https://v8std.ru/diagnostics/acc/1245/","frequency":1},{"id":"external","title":"External","url":"https://example.com/","frequency":99}],"unknown_codes":[{"code":"v8cs:NewUnknownDiagnostic","frequency":3}],"standards_without_page":[{"id":"std999","title":"Стандарт без страницы","frequency":2}]}',
+                '{"ts":"2026-04-29T11:57:30+00:00","tool":"v8std_get_page","system":"node","requested_page":"std437","page_id":"std437","title":"Оформление текстов запросов","url":"https://v8std.ru/std/437/"}',
+                '{"ts":"2026-04-29T11:56:30+00:00","tool":"v8std_get_page","system":"node","requested_page":"https://v8std.ru/std/437/","page_id":"std437","title":"Оформление текстов запросов","url":"https://v8std.ru/std/437/"}',
+                '{"ts":"2026-04-29T11:55:30+00:00","tool":"v8std_explain_diagnostics","system":"opencode","diagnostics":[{"id":"bslls:UsingModalWindows","title":"Использование модальных окон","url":"https://v8std.ru/diagnostics/bslls/UsingModalWindows/","frequency":2},{"id":"acc:1245","title":"Нельзя использовать * в запросах","url":"https://v8std.ru/diagnostics/acc/1245/","frequency":1},{"id":"external","title":"External","url":"https://example.com/","frequency":99}],"unknown_codes":[{"code":"v8cs:NewUnknownDiagnostic","frequency":3}],"standards_without_page":[{"id":"std999","title":"Стандарт без страницы","frequency":2}]}',
+                '{"ts":"2026-04-29T11:55:00+00:00","tool":"v8std_explain_snippet","system":"other"}',
                 '{"ts":"2026-04-28T11:57:30+00:00","tool":"v8std_get_page"}',
             ],
             now=NOW,
@@ -60,8 +68,8 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(report["totals"]["mcp_requests"], 3)
-        self.assertEqual(report["totals"]["tool_calls"], 5)
+        self.assertEqual(report["totals"]["mcp_requests"], 6)
+        self.assertEqual(report["totals"]["tool_calls"], 6)
         self.assertEqual(report["totals"]["rate_limited"], 1)
         self.assertNotIn("real_5xx", report["totals"])
         self.assertEqual(report["uptime"]["human"], "19h 33m")
@@ -69,16 +77,26 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
         self.assertNotIn("request_types", report)
 
         systems = {item["key"]: item["count"] for item in report["systems"]}
-        self.assertEqual(systems["codex"], 1)
-        self.assertEqual(systems["curl"], 1)
-        self.assertEqual(systems["claude"], 1)
-        self.assertEqual(systems["browser"], 1)
+        self.assertNotIn("codex", systems)
+        self.assertNotIn("curl", systems)
+        self.assertNotIn("claude", systems)
+        self.assertNotIn("browser", systems)
+        self.assertEqual(systems["node"], 2)
+        self.assertEqual(systems["opencode"], 1)
+        self.assertEqual(systems["cursor"], 1)
+        self.assertNotIn("unknown", systems)
+        self.assertNotIn("other", systems)
+        self.assertNotIn("go", systems)
+        self.assertNotIn("python_httpx", systems)
+        self.assertNotIn("kilo", systems)
+        self.assertNotIn("java", systems)
         self.assertNotIn("monitoring", systems)
 
         tools = {item["key"]: item["count"] for item in report["tools"]}
         self.assertEqual(tools["v8std_search"], 2)
         self.assertEqual(tools["v8std_get_page"], 2)
         self.assertEqual(tools["v8std_explain_diagnostics"], 1)
+        self.assertEqual(tools["v8std_explain_snippet"], 1)
 
         self.assertEqual(report["top_pages"][0]["count"], 2)
         self.assertEqual(report["top_pages"][0]["title"], "Оформление текстов запросов")
@@ -179,6 +197,8 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
             ],
             usage_lines=[
                 '{"ts":"2026-04-29T11:59:30+00:00","tool":"v8std_search","system":"cursor","query":"модальные окна","results":[{"id":"std404","title":"Модальные окна","url":"https://v8std.ru/std/404/"}]}',
+                '{"ts":"2026-04-29T11:59:00+00:00","tool":"v8std_search","query":"привилегированный режим"}',
+                '{"ts":"2026-04-29T11:58:45+00:00","tool":"v8std_search","system":"other","query":"старая методика проведения документов"}',
                 '{"ts":"2026-04-29T11:58:30+00:00","tool":"v8std_get_page","requested_page":"std437","page_id":"std437","title":"Оформление текстов запросов","url":"https://v8std.ru/std/437/"}',
                 '{"ts":"2026-04-29T11:57:30+00:00","tool":"v8std_explain_diagnostics","diagnostics":[{"id":"bslls:UsingModalWindows","title":"Использование модальных окон","url":"https://v8std.ru/diagnostics/bslls/UsingModalWindows/","frequency":2}],"unknown_codes":[{"code":"v8cs:NewUnknownDiagnostic","frequency":1}],"standards_without_page":[{"id":"std999","title":"Стандарт без страницы","frequency":1}]}',
             ],
@@ -191,7 +211,7 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
 
         self.assertIn("Мониторинг v8std MCP", html)
         self.assertIn("MCP запросы", html)
-        self.assertIn("Tool calls", html)
+        self.assertNotIn("Tool calls", html)
         self.assertNotIn("Реальные 5xx", html)
         self.assertIn("Прочие запросы", html)
         self.assertIn("GET /wp-login.php -&gt; 404", html)
@@ -205,6 +225,8 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
         self.assertIn("https://v8std.ru/diagnostics/bslls/UsingModalWindows/", html)
         self.assertIn("Использование модальных окон", html)
         self.assertIn("Cursor", html)
+        self.assertNotIn("Unknown · запрос v8std_search", html)
+        self.assertNotIn("Other · запрос v8std_search", html)
         self.assertIn("Неизвестная диагностика: v8cs:NewUnknownDiagnostic", html)
         self.assertIn("Стандарт без страницы: Стандарт без страницы", html)
         self.assertIn('<section class="rank-stack">', html)
@@ -221,6 +243,8 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
         self.assertIn('rel="icon" href="data:,"', html)
         self.assertNotIn("MCP обращения", html)
         self.assertNotIn("Коды MCP", html)
+        self.assertNotIn("User-Agent по MCP", html)
+        self.assertIn("Системы считаются по MCP tool calls", html)
         self.assertNotIn("203.0.113.10", html)
         self.assertNotIn("codex-cli/0.8", html)
         self.assertNotIn("nginx", html.lower())
@@ -229,6 +253,7 @@ class V8StdMcpMonitoringTests(unittest.TestCase):
         report = monitoring.build_report(
             [
                 'ts=2026-04-29T11:59:00+00:00 remote=203.0.113.10 method=POST uri=/mcp status=200 request_time=0.001 upstream_time=0.001 bytes=2 ua="curl/8.7.1"',
+                'ts=2026-04-29T11:58:00+00:00 remote=203.0.113.10 method=POST uri=/mcp status=200 request_time=0.001 upstream_time=0.001 bytes=2 ua="curl/8.7.1"',
             ],
             usage_lines=['{"ts":"2026-04-29T11:59:30+00:00","tool":"v8std_search"}'],
             now=NOW,

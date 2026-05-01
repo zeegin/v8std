@@ -32,9 +32,16 @@ SYSTEM_LABELS = {
     "monitoring": "Monitoring",
     "curl": "curl",
     "browser": "Browser",
+    "node": "Node",
+    "opencode": "opencode",
+    "go": "Go",
+    "python_httpx": "Python httpx",
+    "kilo": "Kilo",
+    "java": "Java",
     "unknown": "Unknown",
     "other": "Other",
 }
+UNIDENTIFIED_CLIENT_SYSTEMS = {"unknown", "other"}
 
 TOOL_LABELS = {
     "v8std_search": "v8std_search",
@@ -86,29 +93,6 @@ def classify_other_request(method: str, uri: str, status: int | None) -> str:
         path = f"{path[:77]}..."
     status_text = str(status) if status is not None else "unknown"
     return f"{method.upper() or 'UNKNOWN'} {path} -> {status_text}"
-
-
-def classify_system(user_agent: str) -> str:
-    ua = user_agent.strip().lower()
-    if not ua or ua == "-":
-        return "unknown"
-    if "codex" in ua or "openai" in ua:
-        return "codex"
-    if "claude" in ua or "anthropic" in ua:
-        return "claude"
-    if "cursor" in ua:
-        return "cursor"
-    if "jetbrains" in ua or "intellij" in ua or "pycharm" in ua or "webstorm" in ua:
-        return "jetbrains"
-    if "vscode" in ua or "visual studio code" in ua:
-        return "vscode"
-    if "uptime" in ua or "health" in ua or "monitor" in ua or "prometheus" in ua:
-        return "monitoring"
-    if "curl" in ua:
-        return "curl"
-    if "mozilla/" in ua or "safari/" in ua or "chrome/" in ua or "firefox/" in ua:
-        return "browser"
-    return "other"
 
 
 def is_rate_limited(fields: dict[str, str], status: int | None) -> bool:
@@ -289,7 +273,6 @@ def build_report(
     search_events: list[tuple[datetime, dict[str, object]]] = []
     diagnostic_requests: Counter[str] = Counter()
     diagnostic_metadata: dict[str, dict[str, str]] = {}
-    mcp_requests = 0
     rate_limited = 0
 
     for line in log_lines:
@@ -313,9 +296,6 @@ def build_report(
             rate_limited += 1
 
         if is_mcp_request(uri):
-            if uri.split("?", 1)[0] == "/mcp" and method.upper() == "POST":
-                mcp_requests += 1
-            systems[classify_system(fields.get("ua", ""))] += 1
             continue
 
         if not is_ignored_non_mcp_request(uri):
@@ -330,6 +310,9 @@ def build_report(
             continue
         tool = usage["tool"]
         tools[tool] += 1
+        system = public_system(usage.get("system"))
+        if system not in UNIDENTIFIED_CLIENT_SYSTEMS:
+            systems[system] += 1
         if tool == "v8std_get_page":
             url = public_url(usage.get("url"))
             page_id = public_text(usage.get("page_id"), limit=120)
@@ -349,7 +332,6 @@ def build_report(
         elif tool == "v8std_search":
             query = public_text(usage.get("query"))
             if query:
-                system = public_system(usage.get("system"))
                 results = []
                 seen = set()
                 raw_results = usage.get("results")
@@ -449,7 +431,7 @@ def build_report(
         "window_hours": window_hours,
         "window_start": window_start.replace(microsecond=0).isoformat(),
         "totals": {
-            "mcp_requests": mcp_requests,
+            "mcp_requests": tool_calls,
             "tool_calls": tool_calls,
             "rate_limited": rate_limited,
         },
@@ -635,13 +617,18 @@ def render_search_ranking(items: list[dict[str, object]]) -> str:
             if result_rows
             else '<div class="rank-row__meta">Результатов в логе нет.</div>'
         )
+        meta_parts = []
+        if item.get("system") not in UNIDENTIFIED_CLIENT_SYSTEMS:
+            meta_parts.append(str(item.get("system_label") or ""))
+        meta_parts.append("запрос v8std_search")
+        meta = " · ".join(part for part in meta_parts if part)
         rows.append(
             '<div class="search-entry">'
             '<div class="rank-row">'
             f'<div class="rank-row__index">{index}</div>'
             '<div class="rank-row__body">'
             f'<div class="rank-row__title">{html.escape(str(item["query"]))}</div>'
-            f'<div class="rank-row__meta">{html.escape(str(item.get("system_label") or "Unknown"))} · запрос v8std_search</div>'
+            f'<div class="rank-row__meta">{html.escape(meta)}</div>'
             "</div>"
             f'<strong class="rank-row__count">{html.escape(render_search_time(item.get("ts")))}</strong>'
             "</div>"
@@ -697,8 +684,7 @@ def render_html(report: dict[str, object]) -> str:
 
     metrics = "\n".join(
         [
-            metric_card("MCP запросы", totals["mcp_requests"], f"Последние {window_hours} часа"),  # type: ignore[index]
-            metric_card("Tool calls", totals["tool_calls"], "вызовы MCP tools"),  # type: ignore[index]
+            metric_card("MCP запросы", totals["mcp_requests"], f"вызовы MCP tools за последние {window_hours} часа"),  # type: ignore[index]
             metric_card("Rate limit", totals["rate_limited"], "отклонено лимитом"),  # type: ignore[index]
             metric_card("Аптайм MCP", uptime.get("human", "unknown"), f'{uptime.get("service", DEFAULT_SERVICE)}: {active}'),  # type: ignore[attr-defined]
         ]
@@ -761,7 +747,7 @@ def render_html(report: dict[str, object]) -> str:
     }}
     .metrics {{
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 16px;
     }}
@@ -997,7 +983,7 @@ def render_html(report: dict[str, object]) -> str:
 
       <section class="panel">
         <h2>Системы</h2>
-        {render_bar_list(systems, "User-Agent по MCP пока не накоплен.")}
+        {render_bar_list(systems, "Клиенты MCP tools пока не накоплены.")}
       </section>
     </section>
 
@@ -1028,7 +1014,7 @@ def render_html(report: dict[str, object]) -> str:
     </section>
 
     <footer>
-      Данные агрегированы без IP-адресов и исходных User-Agent.
+      Данные агрегированы без IP-адресов. Системы считаются по MCP tool calls.
       JSON: <a href="stats.json">stats.json</a>
     </footer>
   </main>

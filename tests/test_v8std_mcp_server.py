@@ -397,6 +397,17 @@ class ClientSystemTrackingTests(unittest.TestCase):
         self.assertEqual(server_module.classify_client_system("Visual Studio Code"), "vscode")
         self.assertEqual(server_module.classify_client_system("curl/8.7.1"), "curl")
         self.assertEqual(server_module.classify_client_system("Mozilla/5.0"), "browser")
+        self.assertEqual(server_module.classify_client_system("node"), "node")
+        self.assertEqual(server_module.classify_client_system("opencode/1.2.27"), "opencode")
+        self.assertEqual(server_module.classify_client_system("Go-http-client/1.1"), "go")
+        self.assertEqual(server_module.classify_client_system("python-httpx/0.28.1"), "python_httpx")
+        self.assertEqual(server_module.classify_client_system("kilo/7.2.25"), "kilo")
+        self.assertEqual(server_module.classify_client_system("Java-http-client/17.0.16"), "java")
+        self.assertEqual(server_module.classify_client_system("undici"), "node")
+        self.assertEqual(
+            server_module.classify_client_system("got (https://github.com/sindresorhus/got)"),
+            "node",
+        )
         self.assertEqual(server_module.classify_client_system("custom-client"), "other")
         self.assertEqual(server_module.classify_client_system(""), "unknown")
 
@@ -480,6 +491,7 @@ class McpToolUsageLoggerTests(unittest.TestCase):
                         "body": "not public",
                     },
                 },
+                system="node",
             )
 
             rows = [
@@ -500,6 +512,7 @@ class McpToolUsageLoggerTests(unittest.TestCase):
         self.assertNotIn("body", json.dumps(rows, ensure_ascii=False))
 
         self.assertEqual(rows[1]["tool"], "v8std_get_page")
+        self.assertEqual(rows[1]["system"], "node")
         self.assertEqual(rows[1]["requested_page"], "std437")
         self.assertEqual(rows[1]["page_id"], "std437")
         self.assertEqual(rows[1]["title"], "Оформление текстов запросов")
@@ -550,11 +563,13 @@ class McpToolUsageLoggerTests(unittest.TestCase):
                         }
                     ],
                 },
+                system="opencode",
             )
 
             payload = json.loads(log_path.read_text(encoding="utf-8"))
 
         self.assertEqual(payload["tool"], "v8std_explain_diagnostics")
+        self.assertEqual(payload["system"], "opencode")
         self.assertNotIn("requested_codes", payload)
         self.assertEqual(
             payload["diagnostics"],

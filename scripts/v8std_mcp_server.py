@@ -56,6 +56,12 @@ ALLOWED_CLIENT_SYSTEMS = {
     "vscode",
     "curl",
     "browser",
+    "node",
+    "opencode",
+    "go",
+    "python_httpx",
+    "kilo",
+    "java",
     "unknown",
     "other",
 }
@@ -81,6 +87,18 @@ def classify_client_system(user_agent: str) -> str:
         return "jetbrains"
     if "vscode" in ua or "visual studio code" in ua:
         return "vscode"
+    if ua == "node" or "node/" in ua or "node.js" in ua or ua == "undici" or ua.startswith("got "):
+        return "node"
+    if "opencode" in ua:
+        return "opencode"
+    if "go-http-client" in ua:
+        return "go"
+    if "python-httpx" in ua:
+        return "python_httpx"
+    if ua.startswith("kilo/"):
+        return "kilo"
+    if "java-http-client" in ua:
+        return "java"
     if "curl" in ua:
         return "curl"
     if "mozilla/" in ua or "safari/" in ua or "chrome/" in ua or "firefox/" in ua:
@@ -289,23 +307,29 @@ class McpToolUsageLogger:
             results=_usage_results(result.get("results")),
         )
 
-    def record_page(self, requested_page: str, result: dict[str, Any]) -> None:
+    def record_page(self, requested_page: str, result: dict[str, Any], *, system: str | None = None) -> None:
         page = result.get("page") if isinstance(result, dict) else None
         page_result = _usage_result(page)
         if page_result is None:
-            self.record("v8std_get_page", requested_page=_usage_text(requested_page))
+            self.record(
+                "v8std_get_page",
+                system=_usage_system(system),
+                requested_page=_usage_text(requested_page),
+            )
             return
         self.record(
             "v8std_get_page",
+            system=_usage_system(system),
             requested_page=_usage_text(requested_page),
             page_id=page_result.get("id"),
             title=page_result.get("title"),
             url=page_result.get("url"),
         )
 
-    def record_diagnostics(self, codes: list[str], result: dict[str, Any]) -> None:
+    def record_diagnostics(self, codes: list[str], result: dict[str, Any], *, system: str | None = None) -> None:
         self.record(
             "v8std_explain_diagnostics",
+            system=_usage_system(system),
             diagnostics=_usage_diagnostics(result.get("diagnostics") if isinstance(result, dict) else None),
             unknown_codes=_usage_unknown_codes(result.get("unknown_codes") if isinstance(result, dict) else None),
             standards_without_page=_usage_standards_without_page(result.get("standards") if isinstance(result, dict) else None),
@@ -526,7 +550,7 @@ def build_server(
     )
     def page(id_or_alias_or_url: str, body_limit: int = MAX_BODY_CHARS) -> dict[str, Any]:
         result = index.page(id_or_alias_or_url, body_limit=body_limit)
-        tool_usage.record_page(id_or_alias_or_url, result)
+        tool_usage.record_page(id_or_alias_or_url, result, system=current_client_system())
         return result
 
     @server.tool(
@@ -545,7 +569,7 @@ def build_server(
         relations: list[str] | None = None,
         limit: int = 10,
     ) -> dict[str, Any]:
-        tool_usage.record("v8std_get_related")
+        tool_usage.record("v8std_get_related", system=_usage_system(current_client_system()))
         return index.related(id_or_alias_or_url, relations=relations, limit=limit)
 
     @server.tool(
@@ -564,7 +588,7 @@ def build_server(
         language: str = "auto",
         limit: int = 10,
     ) -> dict[str, Any]:
-        tool_usage.record("v8std_explain_snippet")
+        tool_usage.record("v8std_explain_snippet", system=_usage_system(current_client_system()))
         return index.explain_snippet(snippet, language=language, limit=limit)
 
     @server.tool(
@@ -580,7 +604,7 @@ def build_server(
     )
     def explain_diagnostics(codes: list[str]) -> dict[str, Any]:
         result = index.explain_diagnostics(codes)
-        tool_usage.record_diagnostics(codes, result)
+        tool_usage.record_diagnostics(codes, result, system=current_client_system())
         return result
 
     @server.resource(
