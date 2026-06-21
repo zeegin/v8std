@@ -10,6 +10,8 @@ llms:
 |---|---|---|---|
 | [AllFunctionPathMustHaveReturn](AllFunctionPathMustHaveReturn.md) | Дефект кода | Важный | — |
 | [AssignAliasFieldsInQuery](AssignAliasFieldsInQuery.md) | Дефект кода | Важный | [#std437: Оформление текстов запросов](../../std/437.md) |
+| [AssignToReadOnlyProperty](AssignToReadOnlyProperty.md) | Ошибка | Важный | — |
+| [BadExceptionCategory](BadExceptionCategory.md) | Дефект кода | Информационный | — |
 | [BadWords](BadWords.md) | Дефект кода | Важный | — |
 | [BeginTransactionBeforeTryCatch](BeginTransactionBeforeTryCatch.md) | Ошибка | Важный | — |
 | [CachedPublic](CachedPublic.md) | Дефект кода | Важный | [#std644: Обеспечение совместимости библиотек](../../std/644.md) |
@@ -32,6 +34,8 @@ llms:
 | [CommonModuleNameGlobalClient](CommonModuleNameGlobalClient.md) | Дефект кода | Важный | [#std469: Правила создания общих модулей](../../std/469.md) |
 | [CommonModuleNameServerCall](CommonModuleNameServerCall.md) | Дефект кода | Незначительный | [#std469: Правила создания общих модулей](../../std/469.md) |
 | [CommonModuleNameWords](CommonModuleNameWords.md) | Дефект кода | Информационный | [#std469: Правила создания общих модулей](../../std/469.md) |
+| [CommonModuleVariables](CommonModuleVariables.md) | Ошибка | Критичный | — |
+| [CompareWithBoolean](CompareWithBoolean.md) | Дефект кода | Незначительный | [#std441: Общие требования к построению конструкций встроенного языка](../../std/441.md) |
 | [CompilationDirectiveLost](CompilationDirectiveLost.md) | Дефект кода | Важный | — |
 | [CompilationDirectiveNeedLess](CompilationDirectiveNeedLess.md) | Дефект кода | Важный | [#std439: Использование директив компиляции и инструкций препроцессора](../../std/439.md) |
 | [ConsecutiveEmptyLines](ConsecutiveEmptyLines.md) | Дефект кода | Информационный | — |
@@ -46,17 +50,17 @@ llms:
 | [DeprecatedFind](DeprecatedFind.md) | Дефект кода | Незначительный | — |
 | [DeprecatedMessage](DeprecatedMessage.md) | Дефект кода | Незначительный | [#std418: Ограничение на использование метода Сообщить](../../std/418.md) |
 | [DeprecatedMethodCall](DeprecatedMethodCall.md) | Дефект кода | Незначительный | — |
-| [DeprecatedMethods8310](DeprecatedMethods8310.md) | Дефект кода | Информационный | — |
-| [DeprecatedMethods8317](DeprecatedMethods8317.md) | Дефект кода | Информационный | — |
 | [DeprecatedTypeManagedForm](DeprecatedTypeManagedForm.md) | Дефект кода | Информационный | — |
 | [DisableSafeMode](DisableSafeMode.md) | Уязвимость | Важный | [#std770: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md) |
 | [DoubleNegatives](DoubleNegatives.md) | Дефект кода | Важный | — |
-| [DuplicatedInsertionIntoCollection](DuplicatedInsertionIntoCollection.md) | Дефект кода | Важный | — |
 | [DuplicateRegion](DuplicateRegion.md) | Дефект кода | Информационный | [#std455: Структура модуля](../../std/455.md) |
 | [DuplicateStringLiteral](DuplicateStringLiteral.md) | Дефект кода | Незначительный | — |
+| [DuplicatedInsertionIntoCollection](DuplicatedInsertionIntoCollection.md) | Дефект кода | Важный | — |
 | [EmptyCodeBlock](EmptyCodeBlock.md) | Дефект кода | Важный | — |
 | [EmptyRegion](EmptyRegion.md) | Дефект кода | Информационный | [#std455: Структура модуля](../../std/455.md) |
 | [EmptyStatement](EmptyStatement.md) | Дефект кода | Информационный | — |
+| [EventHandlerInvalidSignature](EventHandlerInvalidSignature.md) | Ошибка | Важный | [#std455: Структура модуля](../../std/455.md) |
+| [EventHandlerOutsideEventRegion](EventHandlerOutsideEventRegion.md) | Дефект кода | Информационный | [#std455: Структура модуля](../../std/455.md) |
 | [ExcessiveAutoTestCheck](ExcessiveAutoTestCheck.md) | Дефект кода | Незначительный | [#std456: Тексты модулей](../../std/456.md) |
 | [ExecuteExternalCode](ExecuteExternalCode.md) | Уязвимость | Критичный | [#std770: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md) |
 | [ExecuteExternalCodeInCommonModule](ExecuteExternalCodeInCommonModule.md) | Потенциальная уязвимость | Критичный | [#std770: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md) |
@@ -102,8 +106,8 @@ llms:
 | [MissingParameterDescription](MissingParameterDescription.md) | Дефект кода | Важный | [#std453: Описание процедур и функций](../../std/453.md) |
 | [MissingReturnedValueDescription](MissingReturnedValueDescription.md) | Дефект кода | Важный | [#std453: Описание процедур и функций](../../std/453.md) |
 | [MissingSpace](MissingSpace.md) | Дефект кода | Информационный | — |
-| [MissingTemporaryFileDeletion](MissingTemporaryFileDeletion.md) | Ошибка | Важный | [#std542: Доступ к файловой системе из кода конфигурации](../../std/542.md) |
 | [MissingTempStorageDeletion](MissingTempStorageDeletion.md) | Дефект кода | Критичный | [#std487: Минимизация количества серверных вызовов и трафика](../../std/487.md)<br>[#std642: Длительные операции на сервере](../../std/642.md) |
+| [MissingTemporaryFileDeletion](MissingTemporaryFileDeletion.md) | Ошибка | Важный | [#std542: Доступ к файловой системе из кода конфигурации](../../std/542.md) |
 | [MissingVariablesDescription](MissingVariablesDescription.md) | Дефект кода | Незначительный | [#std455: Структура модуля](../../std/455.md) |
 | [MultilineStringInQuery](MultilineStringInQuery.md) | Ошибка | Критичный | — |
 | [MultilingualStringHasAllDeclaredLanguages](MultilingualStringHasAllDeclaredLanguages.md) | Ошибка | Незначительный | — |
@@ -117,10 +121,10 @@ llms:
 | [NumberOfOptionalParams](NumberOfOptionalParams.md) | Дефект кода | Незначительный | [#std640: Параметры процедур и функций](../../std/640.md) |
 | [NumberOfParams](NumberOfParams.md) | Дефект кода | Незначительный | [#std640: Параметры процедур и функций](../../std/640.md) |
 | [NumberOfValuesInStructureConstructor](NumberOfValuesInStructureConstructor.md) | Дефект кода | Незначительный | [#std693: Использование объектов типа Структура](../../std/693.md) |
+| [OSUsersMethod](OSUsersMethod.md) | Потенциальная уязвимость | Критичный | — |
 | [OneStatementPerLine](OneStatementPerLine.md) | Дефект кода | Незначительный | [#std456: Тексты модулей](../../std/456.md) |
 | [OrderOfParams](OrderOfParams.md) | Дефект кода | Важный | [#std640: Параметры процедур и функций](../../std/640.md) |
 | [OrdinaryAppSupport](OrdinaryAppSupport.md) | Дефект кода | Важный | [#std467: Общие требования к конфигурации](../../std/467.md) |
-| [OSUsersMethod](OSUsersMethod.md) | Потенциальная уязвимость | Критичный | — |
 | [PairingBrokenTransaction](PairingBrokenTransaction.md) | Ошибка | Важный | [#std783: Транзакции: правила использования](../../std/783.md) |
 | [ParseError](ParseError.md) | Ошибка | Критичный | [#std439: Использование директив компиляции и инструкций препроцессора](../../std/439.md) |
 | [PrivilegedModuleMethodCall](PrivilegedModuleMethodCall.md) | Потенциальная уязвимость | Важный | — |
@@ -156,7 +160,9 @@ llms:
 | [TryNumber](TryNumber.md) | Дефект кода | Важный | [#std499: Перехват исключений в коде](../../std/499.md) |
 | [Typo](Typo.md) | Дефект кода | Информационный | — |
 | [UnaryPlusInConcatenation](UnaryPlusInConcatenation.md) | Ошибка | Блокирующий | — |
+| [UnavailableMemberCall](UnavailableMemberCall.md) | Ошибка | Важный | — |
 | [UnionAll](UnionAll.md) | Дефект кода | Незначительный | [#std434: Использование ключевых слов "ОБЪЕДИНИТЬ" и "ОБЪЕДИНИТЬ ВСЕ" в запросах](../../std/434.md) |
+| [UnknownMember](UnknownMember.md) | Ошибка | Важный | — |
 | [UnknownPreprocessorSymbol](UnknownPreprocessorSymbol.md) | Ошибка | Критичный | — |
 | [UnreachableCode](UnreachableCode.md) | Ошибка | Незначительный | — |
 | [UnsafeFindByCode](UnsafeFindByCode.md) | Дефект кода | Важный | [#std456: Тексты модулей](../../std/456.md) |
@@ -166,8 +172,8 @@ llms:
 | [UnusedParameters](UnusedParameters.md) | Дефект кода | Важный | — |
 | [UsageWriteLogEvent](UsageWriteLogEvent.md) | Дефект кода | Информационный | [#std498: Использование Журнала регистрации](../../std/498.md)<br>[#std499: Перехват исключений в коде](../../std/499.md) |
 | [UseLessForEach](UseLessForEach.md) | Ошибка | Критичный | — |
-| [UselessTernaryOperator](UselessTernaryOperator.md) | Дефект кода | Информационный | — |
 | [UseSystemInformation](UseSystemInformation.md) | Потенциальная уязвимость | Критичный | — |
+| [UselessTernaryOperator](UselessTernaryOperator.md) | Дефект кода | Информационный | — |
 | [UsingCancelParameter](UsingCancelParameter.md) | Дефект кода | Важный | [#std686: Работа с параметром "Отказ" в обработчиках событий](../../std/686.md) |
 | [UsingExternalCodeTools](UsingExternalCodeTools.md) | Потенциальная уязвимость | Критичный | [#std669: Ограничение на выполнение внешнего кода](../../std/669.md) |
 | [UsingFindElementByString](UsingFindElementByString.md) | Дефект кода | Важный | — |

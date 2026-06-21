@@ -139,7 +139,7 @@ social:
     </div>
     <div class="v8std-home-card-grid v8std-home-card-grid--3">
       <a class="v8std-home-link-card" href="diagnostics/bslls/">
-        <p class="v8std-home-link-card__eyebrow">180 диагностик</p>
+        <p class="v8std-home-link-card__eyebrow">186 диагностик</p>
         <h3>BSL Language Server</h3>
         <p>Проверки по коду встроенного языка с привязкой к стандартам и уровню важности.</p>
       </a>
@@ -149,7 +149,7 @@ social:
         <p>Диагностики АПК, Автоматической проверки конфигурации, для проверки на 1С:Совместимо и Стандарты разработки 1С.</p>
       </a>
       <a class="v8std-home-link-card" href="diagnostics/v8-code-style/">
-        <p class="v8std-home-link-card__eyebrow">156 диагностик</p>
+        <p class="v8std-home-link-card__eyebrow">167 диагностик</p>
         <h3>EDT v8-code-style</h3>
         <p>Проверки плагина EDT, которые удобно использовать как быстрый вход в конкретный стандарт.</p>
       </a>
