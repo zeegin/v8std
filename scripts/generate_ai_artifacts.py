@@ -24,6 +24,7 @@ from generate_social_cards import (  # noqa: E402
     strip_markdown,
 )
 from v8std_retrieval_rules import RetrievalRules  # noqa: E402
+from v8std_search_features import generated_aliases_for_page  # noqa: E402
 
 
 LLMS_TXT = "llms.txt"
@@ -626,7 +627,7 @@ def build_ai_page(
     body_markdown = remove_duplicate_title_heading(body_markdown, metadata["seo_title"])
     body_markdown = wrap_llm_markdown_lines(body_markdown)
 
-    return {
+    page = {
         "id": page_id,
         "type": page_type,
         "title": metadata["seo_title"],
@@ -647,6 +648,8 @@ def build_ai_page(
         "_llms_ignored": llms_ignored(front_matter),
         "_links": extract_markdown_links(content),
     }
+    page["aliases"] = dedupe([*page["aliases"], *generated_aliases_for_page(page)])
+    return page
 
 
 def resolve_relations(pages: list[dict], docs_dir: Path) -> None:
