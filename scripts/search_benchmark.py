@@ -25,12 +25,57 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--vectors", type=Path, default=Path("docs/ai/search-vectors.jsonl"))
     parser.add_argument("--cases", type=Path, default=Path("tests/search_benchmark_cases.yml"))
     parser.add_argument(
+        "--cases-extra",
+        type=Path,
+        default=None,
+        help="Optional additional benchmark cases, for example local log-derived feedback cases.",
+    )
+    parser.add_argument(
         "--report",
         type=Path,
         default=Path("docs/ai/search-benchmark.md"),
         help="Write a Markdown report. Use an ignored path for local runs.",
     )
     return parser.parse_args()
+
+
+def read_case_payloads(cases_path: Path, extra_cases_path: Path | None = None) -> tuple[list[dict], dict[str, Any]]:
+    payload = yaml.safe_load(cases_path.read_text(encoding="utf-8")) or {}
+    cases = [dict(case, _case_source="static") for case in payload.get("cases", [])]
+    thresholds = payload.get("thresholds", {})
+
+    if extra_cases_path is not None and extra_cases_path.exists():
+        extra_payload = yaml.safe_load(extra_cases_path.read_text(encoding="utf-8")) or {}
+        cases.extend(
+            dict(case, _case_source=case.get("_case_source", "feedback"))
+            for case in extra_payload.get("cases", [])
+        )
+
+    return cases, thresholds
+
+
+def ranked_summary(records: list[dict[str, Any]], source: str | None = None) -> dict[str, Any]:
+    ranked_records = [
+        record
+        for record in records
+        if record.get("tool") != "diagnostics"
+        and not record.get("negative")
+        and (source is None or record.get("_case_source") == source)
+    ]
+    reciprocal_ranks = [
+        0.0 if record.get("rank") is None else 1 / int(record["rank"])
+        for record in ranked_records
+    ]
+    top3_hits = sum(
+        1
+        for record in ranked_records
+        if record.get("rank") is not None and int(record["rank"]) <= 3
+    )
+    return {
+        "ranked_cases": len(ranked_records),
+        "top3_hits": top3_hits,
+        "mrr": statistics.mean(reciprocal_ranks) if reciprocal_ranks else 0.0,
+    }
 
 
 def percentile(values: list[float], percent: float) -> float:
@@ -141,6 +186,7 @@ def write_report(
     mrr: float,
     p95_latency: float,
     elapsed_total_ms: float,
+    summaries: dict[str, dict[str, Any]],
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -158,6 +204,8 @@ def write_report(
         f"- MRR: `{mrr:.3f}` / threshold `{float(thresholds.get('mrr', 0.0)):.3f}`",
         f"- p95 latency: `{p95_latency:.1f} ms` / threshold `{float(thresholds.get('p95_latency_ms', 0.0)):.1f} ms`",
         f"- Total benchmark time: `{elapsed_total_ms:.1f} ms`",
+        f"- Static MRR/top-3: `{summaries['static']['mrr']:.3f}` / `{summaries['static']['top3_hits']}/{summaries['static']['ranked_cases']}`",
+        f"- Feedback MRR/top-3: `{summaries['feedback']['mrr']:.3f}` / `{summaries['feedback']['top3_hits']}/{summaries['feedback']['ranked_cases']}`",
         "",
         "## Index",
         "",
@@ -245,9 +293,7 @@ def write_report(
 def main() -> int:
     args = parse_args()
     started_at = time.perf_counter()
-    payload = yaml.safe_load(args.cases.read_text(encoding="utf-8"))
-    cases = payload["cases"]
-    thresholds = payload.get("thresholds", {})
+    cases, thresholds = read_case_payloads(args.cases, args.cases_extra)
 
     index = V8StdIndex(
         pages_path=args.pages,
@@ -286,6 +332,7 @@ def main() -> int:
                     "ok": not case_failures,
                     "latency_ms": elapsed_ms,
                     "top_ids": ids,
+                    "_case_source": case.get("_case_source", "static"),
                 }
             )
             continue
@@ -313,6 +360,7 @@ def main() -> int:
                     "negative": True,
                     "latency_ms": elapsed_ms,
                     "top_ids": ids,
+                    "_case_source": case.get("_case_source", "static"),
                 }
             )
             continue
@@ -337,10 +385,16 @@ def main() -> int:
                 "ok": rank is not None and rank <= required_top,
                 "latency_ms": elapsed_ms,
                 "top_ids": ids,
+                "_case_source": case.get("_case_source", "static"),
             }
         )
 
-    mrr = statistics.mean(reciprocal_ranks) if reciprocal_ranks else 0.0
+    summaries = {
+        "static": ranked_summary(records, source="static"),
+        "feedback": ranked_summary(records, source="feedback"),
+        "all": ranked_summary(records),
+    }
+    mrr = summaries["all"]["mrr"]
     p95_latency = percentile(latencies_ms, 95)
     print(f"MRR={mrr:.3f} p95_latency_ms={p95_latency:.1f}")
 
@@ -361,6 +415,7 @@ def main() -> int:
             mrr=mrr,
             p95_latency=p95_latency,
             elapsed_total_ms=(time.perf_counter() - started_at) * 1000,
+            summaries=summaries,
         )
         print(f"report={args.report}")
 

@@ -55,6 +55,68 @@ class V8StdMcpIndexTests(unittest.TestCase):
         self.assertIn("match_reasons", std_results[0])
         self.assertIn("score_details", std_results[0])
 
+    def test_generated_code_aliases_are_top_ranked(self):
+        layout_results = self.index.search("ыев437", limit=3)["results"]
+        bare_number_results = self.index.search("#437", limit=3)["results"]
+        acc_layout_results = self.index.search("фсс361", limit=3)["results"]
+
+        self.assertEqual(layout_results[0]["id"], "std437")
+        self.assertIn("keyboard_layout", layout_results[0]["score_details"])
+        self.assertEqual(bare_number_results[0]["id"], "std437")
+        self.assertIn("code_variant", bare_number_results[0]["score_details"])
+        self.assertEqual(acc_layout_results[0]["id"], "acc:361")
+        self.assertIn("keyboard_layout", acc_layout_results[0]["score_details"])
+
+    def test_fuzzy_code_lookup_is_limited_to_code_like_queries(self):
+        fuzzy_results = self.index.search("AssignToReadOnlyProperti", limit=3)["results"]
+        prose_results = self.index.search("запрос в цикле производительность", limit=5)["results"]
+
+        self.assertEqual(fuzzy_results[0]["id"], "bslls:AssignToReadOnlyProperty")
+        self.assertIn("fuzzy_code", fuzzy_results[0]["score_details"])
+        self.assertFalse(
+            any("fuzzy_code" in item["score_details"] for item in prose_results)
+        )
+
+    def test_generated_numeric_aliases_do_not_pollute_code_snippet_search(self):
+        results = self.index.search(
+            'ПарольSMTP = "qwerty123";\n'
+            "Соединение = Новый HTTPСоединение(Сервер, 443,,,, ПарольSMTP);",
+            limit=5,
+        )["results"]
+
+        self.assertIn("std740", [item["id"] for item in results[:3]])
+        self.assertFalse(
+            any(item["id"] == "std791" and "alias" in item["score_details"] for item in results)
+        )
+
+    def test_field_aware_scoring_prefers_specific_metadata_match(self):
+        diagnostic_results = self.index.search(
+            "общий модуль клиент сервер должен оканчиваться на КлиентСервер",
+            types=["diagnostic"],
+            limit=3,
+        )["results"]
+        role_results = self.index.search(
+            "видимость элементов формы по ролям при большом количестве ролей",
+            types=["standard"],
+            limit=5,
+        )["results"]
+
+        self.assertEqual(diagnostic_results[0]["id"], "v8cs:common-module-name-client-server")
+        self.assertIn("metadata_coverage", diagnostic_results[0]["score_details"])
+        self.assertIn("std737", [item["id"] for item in role_results[:3]])
+
+    def test_explain_snippet_detects_hardcoded_secret_literal(self):
+        result = self.index.explain_snippet(
+            'ПарольSMTP = "qwerty123";\n'
+            "Соединение = Новый HTTPСоединение(Сервер, 443,,,, ПарольSMTP);",
+            limit=5,
+        )
+
+        self.assertTrue(any(item["id"] == "std740" for item in result["standards"][:3]))
+        self.assertTrue(
+            any(signal["type"] == "secret_literal" for signal in result["signals"])
+        )
+
     def test_hybrid_search_finds_ui_design_standards(self):
         exact_results = self.index.search("std500", types=["standard"], limit=3)["results"]
         title_results = self.index.search(

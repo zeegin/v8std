@@ -9,6 +9,15 @@ import yaml
 
 
 WORD_RE = re.compile(r"[A-Za-zА-Яа-яЁё0-9_:-]+")
+SECRET_IDENTIFIER_RE = re.compile(
+    r"(парол|password|passwd|pwd|secret|token|api[_-]?key)",
+    re.IGNORECASE,
+)
+SECRET_ASSIGNMENT_RE = re.compile(
+    r"(?P<name>[A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)\s*=\s*"
+    r"(?P<quote>\"|')(?P<value>.{4,160}?)(?P=quote)",
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 def repo_root_from(start: Path | None = None) -> Path:
@@ -163,6 +172,15 @@ class RetrievalRules:
                 }
             )
 
+        if has_secret_literal(snippet):
+            signals.append(
+                {
+                    "type": "secret_literal",
+                    "value": "пароль логин секрет хранение",
+                    "target_ids": ["std740"],
+                }
+            )
+
         return {
             "normalized_text": normalized[:1000],
             "tokens": tokens[:80],
@@ -202,3 +220,14 @@ def extract_query_strings(snippet: str) -> list[str]:
         if "выбрать" in text.casefold():
             result.append(text)
     return result
+
+
+def has_secret_literal(snippet: str) -> bool:
+    for match in SECRET_ASSIGNMENT_RE.finditer(snippet):
+        name = match.group("name")
+        value = match.group("value").strip()
+        if not value or value.startswith("&"):
+            continue
+        if SECRET_IDENTIFIER_RE.search(name):
+            return True
+    return False

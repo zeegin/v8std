@@ -10,12 +10,22 @@ import threading
 import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from v8std_retrieval_rules import RetrievalRules, normalize_text, tokenize
+from v8std_search_features import (
+    canonical_search_terms,
+    code_lookup_candidates,
+    fuzzy_code_forms,
+    generated_aliases_for_page,
+    is_code_like_query,
+    search_terms,
+    split_identifier_tokens,
+)
 
 
 DEFAULT_INDEX_URL = "https://v8std.ru/ai/pages.jsonl"
@@ -149,6 +159,21 @@ def normalize_lookup_key(value: str) -> str:
                 return f"v8cs:{code}"
 
     return value.lstrip("#")
+
+
+def useful_partial_alias(alias_norm: str, normalized_query: str) -> bool:
+    if not alias_norm or not normalized_query:
+        return False
+    if len(alias_norm) < 4 or len(normalized_query) < 4:
+        return False
+    if alias_norm.isdigit() or normalized_query.isdigit():
+        return False
+    return alias_norm in normalized_query or normalized_query in alias_norm
+
+
+def useful_lookup_alias(value: str) -> bool:
+    normalized = normalize_query(value)
+    return bool(normalized) and not normalized.isdigit()
 
 
 def clamp_limit(limit: int | None) -> int:
@@ -349,6 +374,7 @@ class V8StdIndex:
         self._vectors: list[VectorEntry] = []
         self._bm25_metadata = BM25Corpus({})
         self._bm25_body = BM25Corpus({})
+        self._metadata_terms_by_id: dict[str, set[str]] = {}
         self._missing_rule_targets: list[dict[str, str]] = []
 
     @property
@@ -431,9 +457,12 @@ class V8StdIndex:
 
         if mode in {"hybrid", "exact"}:
             self._add_exact_scores(candidates, query, normalized_query)
+            self._add_code_lookup_scores(candidates, query)
+            self._add_fuzzy_code_scores(candidates, query)
 
         if mode in {"hybrid", "bm25"}:
             self._add_bm25_scores(candidates, query_tokens)
+            self._add_metadata_coverage_scores(candidates, query)
 
         if mode in {"hybrid", "semantic"}:
             self._add_semantic_scores(candidates, query)
@@ -696,7 +725,9 @@ class V8StdIndex:
     def _query_tokens(self, query: str) -> list[str]:
         analysis = self.rules.analyze_snippet(query)
         signal_values = [signal["value"] for signal in analysis["signals"]]
-        return tokenize(" ".join([query, *signal_values]))
+        identifier_tokens = split_identifier_tokens(query)
+        expanded_terms = search_terms(" ".join([query, *signal_values, *identifier_tokens]))
+        return tokenize(" ".join([query, *signal_values, *identifier_tokens, *expanded_terms]))
 
     def _add_candidate(
         self,
@@ -727,17 +758,24 @@ class V8StdIndex:
         with self._lock:
             for page in self._pages:
                 page_id = normalize_query(page["id"])
+                generated_aliases = {
+                    normalize_query(alias)
+                    for alias in page.get("_generated_aliases", [])
+                    if isinstance(alias, str)
+                }
                 if normalized_query == page_id:
                     self._add_candidate(candidates, page["id"], 4800.0, "exact_id", "exact", 4800.0)
                 for alias in page.get("aliases", []):
                     alias_norm = normalize_query(alias)
+                    detail_key = "generated_alias" if alias_norm in generated_aliases else "exact"
                     if alias_norm == normalized_query:
                         self._add_candidate(
-                            candidates, page["id"], 4400.0, f"exact_alias:{alias}", "exact", 4400.0
+                            candidates, page["id"], 4400.0, f"exact_alias:{alias}", detail_key, 4400.0
                         )
-                    elif alias_norm and (alias_norm in normalized_query or normalized_query in alias_norm):
+                    elif useful_partial_alias(alias_norm, normalized_query):
+                        detail_key = "generated_alias" if alias_norm in generated_aliases else "alias"
                         self._add_candidate(
-                            candidates, page["id"], 900.0, f"alias:{alias}", "alias", 900.0
+                            candidates, page["id"], 900.0, f"alias:{alias}", detail_key, 900.0
                         )
 
         for match in self.rules.match_text(query):
@@ -754,6 +792,59 @@ class V8StdIndex:
                     "rules",
                     score,
                 )
+
+    def _add_code_lookup_scores(self, candidates: dict[str, dict[str, Any]], query: str) -> None:
+        for candidate in code_lookup_candidates(query):
+            page = self.resolve(candidate.key)
+            if page is None:
+                continue
+            score = 4900.0 if candidate.detail == "keyboard_layout" else 4700.0
+            self._add_candidate(
+                candidates,
+                page["id"],
+                score,
+                f"{candidate.detail}:{candidate.source}",
+                candidate.detail,
+                score,
+            )
+
+    def _add_fuzzy_code_scores(self, candidates: dict[str, dict[str, Any]], query: str) -> None:
+        if not is_code_like_query(query):
+            return
+
+        query_forms = fuzzy_code_forms(query)
+        if not query_forms:
+            return
+
+        best_by_page: dict[str, tuple[float, str]] = {}
+        with self._lock:
+            pages = list(self._pages)
+        for page in pages:
+            if page.get("type") != "diagnostic":
+                continue
+            alias_values = [page.get("id", ""), *page.get("aliases", [])]
+            for alias in alias_values:
+                if not isinstance(alias, str):
+                    continue
+                for alias_form in fuzzy_code_forms(alias):
+                    for query_form in query_forms:
+                        ratio = SequenceMatcher(None, query_form, alias_form).ratio()
+                        if ratio < 0.88:
+                            continue
+                        previous = best_by_page.get(page["id"])
+                        if previous is None or ratio > previous[0]:
+                            best_by_page[page["id"]] = (ratio, alias)
+
+        for page_id, (ratio, alias) in best_by_page.items():
+            score = 4300.0 * ratio
+            self._add_candidate(
+                candidates,
+                page_id,
+                score,
+                f"fuzzy_code:{alias}",
+                "fuzzy_code",
+                ratio,
+            )
 
     def _add_bm25_scores(self, candidates: dict[str, dict[str, Any]], query_tokens: list[str]) -> None:
         metadata_scores = self._bm25_metadata.scores(query_tokens)
@@ -781,6 +872,43 @@ class V8StdIndex:
                 "bm25_body",
                 "bm25_body",
                 score,
+            )
+
+    def _add_metadata_coverage_scores(self, candidates: dict[str, dict[str, Any]], query: str) -> None:
+        query_terms = {
+            term
+            for term in canonical_search_terms(query)
+            if len(term) >= 4 and not term.isdigit()
+        }
+        if len(query_terms) < 3:
+            return
+
+        with self._lock:
+            term_sets = dict(self._metadata_terms_by_id)
+            page_types = {
+                page_id: page.get("type")
+                for page_id, page in self._pages_by_id.items()
+            }
+
+        for page_id, terms in term_sets.items():
+            if page_types.get(page_id) == "service":
+                continue
+            matched = query_terms & terms
+            if len(matched) < 3:
+                continue
+            coverage = len(matched) / len(query_terms)
+            if coverage < 0.45:
+                continue
+            score = coverage * 1800.0 + len(matched) * 160.0
+            if coverage >= 0.9:
+                score += 900.0
+            self._add_candidate(
+                candidates,
+                page_id,
+                score,
+                "metadata_coverage",
+                "metadata_coverage",
+                coverage,
             )
 
     def _add_semantic_scores(self, candidates: dict[str, dict[str, Any]], query: str) -> None:
@@ -1055,6 +1183,7 @@ class V8StdIndex:
             if not isinstance(page, dict) or not page.get("id"):
                 raise IndexLoadError(f"invalid page payload at line {line_number}")
             normalized = normalize_page_schema(page)
+            normalized["_generated_aliases"] = generated_aliases_for_page(normalized)
             normalized["aliases"] = self._merged_aliases(normalized)
             pages.append(normalized)
 
@@ -1064,6 +1193,7 @@ class V8StdIndex:
 
     def _merged_aliases(self, page: dict[str, Any]) -> list[str]:
         aliases = list(page.get("aliases", []))
+        aliases.extend(page.get("_generated_aliases", []) or generated_aliases_for_page(page))
         aliases.extend(self.rules.aliases_for_page(page["id"]))
         result = []
         seen = set()
@@ -1180,6 +1310,7 @@ class V8StdIndex:
         pages_by_key: dict[str, dict[str, Any]] = {}
         metadata_docs: dict[str, list[str]] = {}
         body_docs: dict[str, list[str]] = {}
+        metadata_terms_by_id: dict[str, set[str]] = {}
 
         for page in pages:
             pages_by_id[page["id"]] = page
@@ -1189,16 +1320,21 @@ class V8StdIndex:
         for page in pages:
             for value in self._lookup_values(page):
                 pages_by_key.setdefault(normalize_lookup_key(value), page)
-            metadata_docs[page["id"]] = tokenize(
-                " ".join(
-                    [
-                        page.get("id", ""),
-                        page.get("title", ""),
-                        page.get("description", ""),
-                        " ".join(page.get("aliases", [])),
-                    ]
-                )
+            metadata_text = " ".join(
+                [
+                    page.get("id", ""),
+                    page.get("title", ""),
+                    page.get("description", ""),
+                    " ".join(page.get("aliases", [])),
+                ]
             )
+            expanded_metadata_terms = search_terms(metadata_text)
+            metadata_terms_by_id[page["id"]] = {
+                term
+                for term in canonical_search_terms(metadata_text)
+                if len(term) >= 4 and not term.isdigit()
+            }
+            metadata_docs[page["id"]] = tokenize(" ".join([metadata_text, *expanded_metadata_terms]))
             body_docs[page["id"]] = tokenize(page.get("body_markdown", ""))
 
         page_ids = set(pages_by_id)
@@ -1208,6 +1344,7 @@ class V8StdIndex:
         self._pages_by_key = pages_by_key
         self._bm25_metadata = BM25Corpus(metadata_docs)
         self._bm25_body = BM25Corpus(body_docs)
+        self._metadata_terms_by_id = metadata_terms_by_id
         self._vectors = vectors
         self._vector_metadata = vector_metadata if vectors else None
         self._metadata = IndexMetadata(
@@ -1224,5 +1361,9 @@ class V8StdIndex:
             page.get("markdown_url", ""),
             page.get("source_path", ""),
         ]
-        values.extend(page.get("aliases", []))
+        values.extend(
+            alias
+            for alias in page.get("aliases", [])
+            if isinstance(alias, str) and useful_lookup_alias(alias)
+        )
         return [value for value in values if isinstance(value, str) and value.strip()]
