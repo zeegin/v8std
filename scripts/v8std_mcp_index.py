@@ -176,6 +176,14 @@ def useful_lookup_alias(value: str) -> bool:
     return bool(normalized) and not normalized.isdigit()
 
 
+def has_strong_code_match(candidate: dict[str, Any]) -> bool:
+    details = candidate.get("details", {})
+    return any(
+        details.get(key)
+        for key in ("exact", "generated_alias", "code_variant", "keyboard_layout")
+    )
+
+
 def clamp_limit(limit: int | None) -> int:
     if limit is None:
         return DEFAULT_LIMIT
@@ -810,6 +818,8 @@ class V8StdIndex:
 
     def _add_fuzzy_code_scores(self, candidates: dict[str, dict[str, Any]], query: str) -> None:
         if not is_code_like_query(query):
+            return
+        if any(has_strong_code_match(candidate) for candidate in candidates.values()):
             return
 
         query_forms = fuzzy_code_forms(query)

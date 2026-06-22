@@ -69,10 +69,14 @@ class V8StdMcpIndexTests(unittest.TestCase):
 
     def test_fuzzy_code_lookup_is_limited_to_code_like_queries(self):
         fuzzy_results = self.index.search("AssignToReadOnlyProperti", limit=3)["results"]
+        exact_results = self.index.search("AssignAliasFieldsInQuery", limit=3)["results"]
+        compact_results = self.index.search("acc361", limit=3)["results"]
         prose_results = self.index.search("запрос в цикле производительность", limit=5)["results"]
 
         self.assertEqual(fuzzy_results[0]["id"], "bslls:AssignToReadOnlyProperty")
         self.assertIn("fuzzy_code", fuzzy_results[0]["score_details"])
+        self.assertNotIn("fuzzy_code", exact_results[0]["score_details"])
+        self.assertNotIn("fuzzy_code", compact_results[0]["score_details"])
         self.assertFalse(
             any("fuzzy_code" in item["score_details"] for item in prose_results)
         )
