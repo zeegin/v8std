@@ -12,6 +12,4 @@ docs/ai/
 overrides/partials/page_meta.html
 skills/
 .codex*
-
-standards-table.md
-telegram-autopost-queue.md
+telegram*.md
