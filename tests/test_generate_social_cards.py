@@ -70,5 +70,54 @@ class BuildPageMetadataTests(unittest.TestCase):
         self.assertIn("#!sdbl", page["card_description"])
 
 
+class SocialCardSmokeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = load_module()
+        cls.project = cls.module.load_project(REPO_ROOT)
+        cls.docs_dir = REPO_ROOT / cls.project.get("docs_dir", "docs")
+        plugins = cls.project.get("plugins", {})
+        social = plugins.get("social", {})
+        layout_options = social.get("cards_layout_options", {})
+        cls.colors = {
+            "background": layout_options.get("background_color", "#303F8F"),
+            "foreground": layout_options.get("color", "#FFFFFF"),
+        }
+        cls.logo_path = REPO_ROOT / layout_options.get(
+            "logo",
+            "docs/assets/images/logo-social.png",
+        )
+
+    def build_page(self, relative_path: str) -> dict:
+        source = self.docs_dir / relative_path
+        return self.module.build_page_metadata(source, self.docs_dir, self.project)
+
+    def assert_card_is_rendered(self, page: dict) -> None:
+        image = self.module.render_card(page, self.project, self.colors, self.logo_path)
+
+        self.assertEqual("RGB", image.mode)
+        self.assertEqual((1200, 630), image.size)
+        colors = image.convert("RGB").getcolors(maxcolors=1_000_000)
+        self.assertIsNotNone(colors)
+        self.assertGreater(len(colors), 10)
+
+    def test_render_card_smoke_for_homepage(self):
+        self.assert_card_is_rendered(self.build_page("index.md"))
+
+    def test_render_card_smoke_for_std437(self):
+        self.assert_card_is_rendered(self.build_page("std/437.md"))
+
+    def test_page_meta_partial_references_social_cards(self):
+        pages = [
+            self.build_page("index.md"),
+            self.build_page("std/437.md"),
+        ]
+        payload = self.module.build_page_meta_partial(pages, self.project)
+
+        self.assertIn('{% set page_meta_locale = "ru_RU" %}', payload)
+        self.assertIn("https://v8std.ru/assets/social/index.png", payload)
+        self.assertIn("https://v8std.ru/assets/social/std/437/index.png", payload)
+
+
 if __name__ == "__main__":
     unittest.main()
