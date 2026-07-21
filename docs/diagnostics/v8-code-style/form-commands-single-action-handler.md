@@ -33,9 +33,11 @@ sha256=dc6c7f262fa1aadcd6db3832a3434bb8bfcf6a02e40042d0cbdafd9b4e156a15
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к v8std в описании проверки
+- [#std455, п. 2.4.3: Структура модуля](../../std/455.md#243) — Диагностика v8cs:form-commands-single-action-handler проверяет требование пункта 2.4.3 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

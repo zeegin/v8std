@@ -66,9 +66,11 @@ sha256=740644d60b85b2ef76ac4b1bb28ad9f76fd6e9dbfb90cd6654f8df48862b8416
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+- [#std455, п. 1.3: Структура модуля](../../std/455.md#13) — Диагностика «Код расположен вне области (CodeOutOfRegion)» проверяет условие пункта 1.3 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

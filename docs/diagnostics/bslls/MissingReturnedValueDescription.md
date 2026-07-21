@@ -45,9 +45,11 @@ sha256=b02149f0e540192a3a45de390b3201441dfe62bc74d74ce2bef4ad710efa3dc1
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std453: Описание процедур и функций](../../std/453.md)
+- [#std453, п. 5.3: Описание процедур и функций](../../std/453.md#53) — Диагностика «Отсутствует описание возвращаемого значения функции (MissingReturnedValueDescription)» проверяет условие пункта 5.3 стандарта std453.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

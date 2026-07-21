@@ -41,9 +41,11 @@ sha256=5e4aec516e12aac5b68d6065f877b31c71626fbb130ed16c14d5fb84fe1f7e8d
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std469: Правила создания общих модулей](../../std/469.md)
+- [#std469, п. 2.2: Правила создания общих модулей](../../std/469.md#22) — Диагностика «Пропущен постфикс "ВызовСервера" (CommonModuleNameServerCall)» проверяет условие пункта 2.2 стандарта std469.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

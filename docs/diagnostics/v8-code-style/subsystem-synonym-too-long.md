@@ -25,9 +25,11 @@ sha256=1b84bdabcc196cc4dbe7763022cb862fa0b7f415208fafc85eb63036e6b4c86b
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std712: Панель разделов](../../std/712.md)
+- [#std712, п. 2.1: Панель разделов](../../std/712.md#21) — Диагностика v8cs:subsystem-synonym-too-long проверяет требование пункта 2.1 стандарта std712.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

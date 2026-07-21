@@ -28,9 +28,11 @@ sha256=e832ebdd0cd151fdb477f8af39b66eedc1660de83900d994ccd5c1e345561b5f
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std456: Тексты модулей](../../std/456.md)
+- [#std456, п. 4: Тексты модулей](../../std/456.md#4) — Диагностика «Одно выражение в одной строке (OneStatementPerLine)» проверяет условие пункта 4 стандарта std456.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -20,9 +20,11 @@ sha256=46f8463060342c203803d1688c07d9edd3c890e1ba4763a769a5621de883e590
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std674: Заголовок отчета](../../std/674.md)
+- [#std674, п. 4: Заголовок отчета](../../std/674.md#4) — Диагностика v8cs:data-composition-variant-name-default проверяет требование пункта 4 стандарта std674.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

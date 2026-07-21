@@ -36,9 +36,11 @@ sha256=7dab3738a84ed69a9169bff0db3242b61f70a2e0c8476c53402fdc622c9ab725
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std667: Элементы стиля](../../std/667.md)
+- [#std667, п. 1: Элементы стиля](../../std/667.md#1) — Диагностика v8cs:new-font проверяет требование пункта 1 стандарта std667.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

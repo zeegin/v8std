@@ -26,9 +26,11 @@ sha256=dbec4b08c14ee22f28bb9cac265e5dc80ebd1c7a05bd125a49a3461612348692
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std469: Правила создания общих модулей](../../std/469.md)
+Нет подтверждённых связей со стандартами.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

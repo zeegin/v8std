@@ -20,9 +20,11 @@ https://its.1c.ru/db/v8std#content:488:hdoc
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std488: Стандартные роли](../../std/488.md)
+- [#std488, п. 3.9: Стандартные роли](../../std/488.md#39) — Диагностика v8cs:right-update-database-configuration проверяет требование пункта 3.9 стандарта std488.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

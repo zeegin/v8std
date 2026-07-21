@@ -1,4 +1,5 @@
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -9,6 +10,10 @@ from scripts.diagnostic_standard_links import (
     heading_anchor,
     load_reviews,
     parse_v8std_url,
+    render_diagnostic_relations,
+    render_standard_backlinks,
+    rewrite_diagnostic_page,
+    rewrite_standard_page,
     validate_review_coverage,
 )
 
@@ -245,6 +250,216 @@ class LinkReviewTests(unittest.TestCase):
             validate_review_coverage({proposal}, ())
 
 
+class RelationshipRenderingTests(unittest.TestCase):
+    def confirmedReview(self, diagnostic="bslls:UsingModalWindows", standard="std703", clause="1"):
+        return LinkReview.from_dict(
+            {
+                "diagnostic": diagnostic,
+                "standard": standard,
+                "clause": clause,
+                "anchor": heading_anchor(clause),
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "Пункт запрещает диагностируемое использование.",
+                "review": "confirmed",
+            }
+        )
+
+    def test_forward_and_reverse_links_are_generated_from_same_record(self):
+        review = self.confirmedReview()
+
+        forward = render_diagnostic_relations(
+            [review], standard_titles={"std703": "Ограничение модальных окон"}
+        )
+        reverse = render_standard_backlinks([review])
+
+        self.assertIn("../../std/703.md#1", forward)
+        self.assertIn("п. 1", forward)
+        self.assertIn(
+            "../diagnostics/bslls/UsingModalWindows.md", reverse["std703"]["1"]
+        )
+
+    def test_rewrite_diagnostic_page_uses_managed_region_and_reason(self):
+        source = """###### bslls:UsingModalWindows
+
+# Использование модальных окон
+
+<!-- diagnostic-source:start
+-->
+Полная статья.
+<!-- diagnostic-source:end -->
+
+## Соответствие стандартам
+
+- [старая ссылка](../../std/703.md)
+
+## Источник диагностики
+
+- Источник
+"""
+        rewritten = rewrite_diagnostic_page(
+            source,
+            "bslls:UsingModalWindows",
+            [self.confirmedReview()],
+            {"std703": "Ограничение модальных окон"},
+        )
+
+        self.assertIn("<!-- diagnostic-standards:start -->", rewritten)
+        self.assertIn("../../std/703.md#1", rewritten)
+        self.assertIn("Пункт запрещает диагностируемое использование.", rewritten)
+        self.assertNotIn("старая ссылка", rewritten)
+        self.assertEqual(rewrite_diagnostic_page(
+            rewritten,
+            "bslls:UsingModalWindows",
+            [self.confirmedReview()],
+            {"std703": "Ограничение модальных окон"},
+        ), rewritten)
+
+    def test_rewrite_standard_page_places_backlink_at_exact_clause(self):
+        source = """###### #std703
+
+# Ограничение модальных окон
+
+###### 1.
+
+Первый пункт.
+
+###### 2.
+
+Второй пункт.
+
+###### Источник
+
+source
+"""
+        rewritten = rewrite_standard_page(source, "std703", [self.confirmedReview()])
+
+        first_block = rewritten.index("<!-- diagnostic-backlinks:start clause=1 -->")
+        second_heading = rewritten.index("###### 2.")
+        self.assertLess(first_block, second_heading)
+        self.assertIn("../diagnostics/bslls/UsingModalWindows.md", rewritten)
+        self.assertEqual(rewrite_standard_page(rewritten, "std703", [self.confirmedReview()]), rewritten)
+
+    def test_numeric_clause_ends_before_a_new_higher_level_section(self):
+        source = """###### #std703
+
+# Стандарт
+
+###### 1.
+
+Пункт.
+
+## Новый самостоятельный раздел
+
+Текст раздела.
+"""
+        rewritten = rewrite_standard_page(source, "std703", [self.confirmedReview()])
+
+        self.assertLess(
+            rewritten.index("<!-- diagnostic-backlinks:start clause=1 -->"),
+            rewritten.index("## Новый самостоятельный раздел"),
+        )
+
+    def test_rewrite_standard_page_preserves_acc_lines_byte_for_byte(self):
+        source = """###### #std703
+
+# Ограничение модальных окон
+
+###### 1.
+
+Текст.
+
+###### Проверки
+~[#bslls:UsingModalWindows](../diagnostics/bslls/UsingModalWindows.md)~
+~[#acc:17](../diagnostics/acc/17.md)~
+
+###### Источник
+source
+"""
+        before = re.findall(r"^.*#acc:.*$", source, re.MULTILINE)
+        rewritten = rewrite_standard_page(source, "std703", [self.confirmedReview()])
+        after = re.findall(r"^.*#acc:.*$", rewritten, re.MULTILINE)
+
+        self.assertEqual(before, after)
+        self.assertEqual(rewritten.count("#bslls:UsingModalWindows"), 1)
+
+    def test_rewrite_standard_page_rejects_unreviewed_legacy_managed_link(self):
+        source = """###### #std703
+
+# Ограничение модальных окон
+
+###### Проверки
+~[#v8cs:unknown](../diagnostics/v8-code-style/unknown.md)~
+"""
+        with self.assertRaisesRegex(ValueError, "unreviewed legacy backlink"):
+            rewrite_standard_page(source, "std703", [self.confirmedReview()])
+
+
+class GeneratedRelationshipGraphTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.reviews = load_reviews(REPO_ROOT / "data/diagnostic-standard-links.json")
+
+    def diagnosticPath(self, diagnostic):
+        family, identifier = diagnostic.split(":", 1)
+        directory = "bslls" if family == "bslls" else "v8-code-style"
+        return REPO_ROOT / "docs/diagnostics" / directory / f"{identifier}.md"
+
+    def test_every_registry_decision_is_materialized_in_the_forward_graph(self):
+        by_diagnostic = {}
+        for review in self.reviews:
+            by_diagnostic.setdefault(review.diagnostic, []).append(review)
+        for diagnostic, reviews in by_diagnostic.items():
+            source = self.diagnosticPath(diagnostic).read_text(encoding="utf-8")
+            managed = re.search(
+                r"<!-- diagnostic-standards:start -->(.*?)<!-- diagnostic-standards:end -->",
+                source,
+                re.DOTALL,
+            )
+            self.assertIsNotNone(managed, diagnostic)
+            body = managed.group(1)
+            for review in reviews:
+                local_url = f"../../std/{review.standard[3:]}.md"
+                if review.review == "confirmed":
+                    local_url += f"#{review.anchor}"
+                    self.assertIn(local_url, body, diagnostic)
+                    self.assertIn(review.reason, body, diagnostic)
+                else:
+                    self.assertNotIn(local_url + "#", body, diagnostic)
+
+    def test_every_confirmed_review_has_one_exact_reverse_backlink(self):
+        for review in self.reviews:
+            if review.review != "confirmed":
+                continue
+            family, identifier = review.diagnostic.split(":", 1)
+            directory = "bslls" if family == "bslls" else "v8-code-style"
+            backlink = f"../diagnostics/{directory}/{identifier}.md"
+            standard = (REPO_ROOT / "docs/std" / f"{review.standard[3:]}.md").read_text(
+                encoding="utf-8"
+            )
+            blocks = re.findall(
+                rf"<!-- diagnostic-backlinks:start clause={re.escape(review.clause)} -->"
+                rf"(.*?)"
+                rf"<!-- diagnostic-backlinks:end clause={re.escape(review.clause)} -->",
+                standard,
+                re.DOTALL,
+            )
+            self.assertTrue(blocks, f"{review.diagnostic} -> {review.standard}/{review.clause}")
+            self.assertTrue(any(backlink in block for block in blocks), review.diagnostic)
+
+    def test_no_managed_family_backlink_remains_outside_generated_regions(self):
+        pattern = re.compile(r"\[#(?:bslls|v8cs):")
+        for path in sorted((REPO_ROOT / "docs/std").glob("*.md")):
+            source = path.read_text(encoding="utf-8")
+            unmanaged = re.sub(
+                r"<!-- diagnostic-backlinks:start clause=[^\n]+ -->.*?"
+                r"<!-- diagnostic-backlinks:end clause=[^\n]+ -->",
+                "",
+                source,
+                flags=re.DOTALL,
+            )
+            self.assertIsNone(pattern.search(unmanaged), path.name)
+
+
 class BsllsSemanticReviewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -330,6 +545,7 @@ class BsllsSemanticReviewTests(unittest.TestCase):
             ("bslls:ReservedParameterNames", "std454"),
             ("bslls:ReservedParameterNames", "std640"),
             ("bslls:UnsafeFindByCode", "std456"),
+            ("bslls:UsingLikeInQuery", "std726"),
             ("bslls:VirtualTableCallWithoutParameters", "std733"),
         }
         for diagnostic, standard in rejected:
@@ -404,6 +620,7 @@ class V8CodeStyleSemanticReviewTests(unittest.TestCase):
             ("v8cs:db-object-ref-non-ref-type", "std728"): {"1.1"},
             ("v8cs:empty-except-statement", "std499"): {"3.2"},
             ("v8cs:md-standard-attribute-synonym-empty", "std474"): {"1.5"},
+            ("v8cs:md-list-object-presentation", "std468"): {"4"},
             ("v8cs:module-attachable-event-handler-name", "std492"): {"1"},
             ("v8cs:public-method-caching", "std644"): {"3.6"},
             ("v8cs:ql-temp-table-index", "std777"): {"3"},

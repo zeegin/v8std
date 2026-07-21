@@ -49,9 +49,11 @@ sha256=ea2f8ca6b5884194f71c8235ae8e921978b959b467e288c936d9a6ba5632d78b
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к стандарту
+Нет подтверждённых связей со стандартами.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

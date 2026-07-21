@@ -32,9 +32,11 @@ sha256=27e0f4784dd3c99ef5d50dfc7f2c620351f5debd88c374cea8129153d0d2277f
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+Нет подтверждённых связей со стандартами.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

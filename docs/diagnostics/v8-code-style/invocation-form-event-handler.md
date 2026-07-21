@@ -70,9 +70,11 @@ sha256=97a0c3a40a648aefbcf1bfc28b2f0519876676dc7cdb83ab6f9455de9c177662
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+- [#std455, п. 2.4.3: Структура модуля](../../std/455.md#243) — Диагностика v8cs:invocation-form-event-handler проверяет требование пункта 2.4.3 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

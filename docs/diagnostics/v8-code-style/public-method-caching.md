@@ -47,9 +47,11 @@ sha256=783b3713abfb59cbf95ba1d794a28bf459e5cc89ccb75242e9295a5cab224988
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к v8std в описании проверки
+- [#std644, п. 3.6: Обеспечение совместимости библиотек](../../std/644.md#36) — Диагностика v8cs:public-method-caching проверяет требование пункта 3.6 стандарта std644.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

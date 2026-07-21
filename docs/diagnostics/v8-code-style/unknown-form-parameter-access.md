@@ -27,9 +27,11 @@ sha256=ffdff9bb5aae0142b5e8a21351c265619b4f9b2f8cd257f5e2e67f47c046fea7
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std741: Открытие параметризированных форм](../../std/741.md)
+- [#std741, п. 3: Открытие параметризированных форм](../../std/741.md#3) — Диагностика v8cs:unknown-form-parameter-access проверяет требование пункта 3 стандарта std741.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

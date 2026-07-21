@@ -25,9 +25,11 @@ sha256=e936156c64e995eea4942ef8998b2efe107e448ff619e4bbfb0a523c9de982aa
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std469: Правила создания общих модулей](../../std/469.md)
+- [#std469, п. 2.2: Правила создания общих модулей](../../std/469.md#22) — Диагностика v8cs:common-module-name-server-call проверяет требование пункта 2.2 стандарта std469.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -1790,13 +1790,14 @@
     {
       "diagnostic": "bslls:UsingLikeInQuery",
       "standard": "std726",
-      "clause": "std726",
-      "anchor": "std726",
+      "clause": null,
+      "anchor": null,
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingLikeInQuery.md"
       ],
-      "reason": "Диагностика «Использование 'ПОДОБНО' в запросе (UsingLikeInQuery)» проверяет требование всего std726; стандарт не имеет нумерованных пунктов.",
-      "review": "confirmed"
+      "reason": "Диагностика срабатывает на любое ПОДОБНО, тогда как std726 разрешает корректные литералы и параметры.",
+      "review": "rejected",
+      "notes": "Реализация противоречит собственной статье: она срабатывает и на приведённый в статье пример «Правильно»."
     },
     {
       "diagnostic": "bslls:UsingModalWindows",
@@ -2593,13 +2594,13 @@
     {
       "diagnostic": "v8cs:md-list-object-presentation",
       "standard": "std468",
-      "clause": "std468",
-      "anchor": "std468",
+      "clause": "4",
+      "anchor": "4",
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-list-object-presentation.md",
-        "local:docs/std/468.md#std468"
+        "local:docs/std/468.md#4"
       ],
-      "reason": "Диагностика v8cs:md-list-object-presentation проверяет требование пункта std468 стандарта std468.",
+      "reason": "Диагностика проверяет заполнение представления списка по пункту 4 стандарта std468.",
       "review": "confirmed"
     },
     {

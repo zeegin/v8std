@@ -76,9 +76,11 @@ sha256=6b24e81eac32b723ac99ab29364fa41ea970497801ae0bde13d20c502fefa472
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к v8std в описании проверки
+- [#std496: Чтение отдельных реквизитов объекта из базы данных](../../std/496.md#std496) — Диагностика v8cs:reading-attribute-from-database проверяет требование пункта std496 стандарта std496.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

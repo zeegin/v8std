@@ -28,9 +28,11 @@ sha256=a14a8fd4719babbeed0203507f790db2a7a8f02a77335b8f79b8b8385329a4aa
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std737: Проверка прав доступа](../../std/737.md)
+- [#std737, п. 1: Проверка прав доступа](../../std/737.md#1) — Диагностика v8cs:form-item-visible-settings-by-roles проверяет требование пункта 1 стандарта std737.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

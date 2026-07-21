@@ -44,9 +44,11 @@ sha256=ee4a5eacde136ff7fa2a916cfcde2ae5d4827cccfb81bf87feca41a0dedc24cc
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std469: Правила создания общих модулей](../../std/469.md)
+- [#std469, п. 2.3: Правила создания общих модулей](../../std/469.md#23) — Диагностика «Пропущен постфикс "Клиент" (CommonModuleNameClient)» проверяет условие пункта 2.3 стандарта std469.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

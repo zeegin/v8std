@@ -44,9 +44,11 @@ sha256=e112cae01d0e553f8c1eb679e8ebfeb5ca1ed60821980bd4c272a460503cdbcd
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std456: Тексты модулей](../../std/456.md)
+- [#std456, п. 1.2: Тексты модулей](../../std/456.md#12) — Диагностика «Недопустимый символ (InvalidCharacterInFile)» проверяет условие пункта 1.2 стандарта std456.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

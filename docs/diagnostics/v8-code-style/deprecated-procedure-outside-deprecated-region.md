@@ -60,9 +60,11 @@ sha256=48d9b83f5a31c217ebbd0b07ad9c873f9017aa69bc62bba8039033a946d50e11
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std644: Обеспечение совместимости библиотек](../../std/644.md)
+- [#std644, п. 3.1: Обеспечение совместимости библиотек](../../std/644.md#31) — Диагностика v8cs:deprecated-procedure-outside-deprecated-region проверяет требование пункта 3.1 стандарта std644.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

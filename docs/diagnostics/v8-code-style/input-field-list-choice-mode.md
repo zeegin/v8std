@@ -24,9 +24,11 @@ https://its.1c.ru/db/v8std#content:765:hdoc
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std765: Элементы форм: требования по локализации](../../std/765.md)
+- [#std765, п. 5: Элементы форм: требования по локализации](../../std/765.md#5) — Диагностика v8cs:input-field-list-choice-mode проверяет требование пункта 5 стандарта std765.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

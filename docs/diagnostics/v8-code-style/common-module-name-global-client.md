@@ -30,9 +30,11 @@ sha256=5aa4246b5939eb5acf175c84d5bb9838af0eee7dffa6a6148f4453e3d43d4b02
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std469: Правила создания общих модулей](../../std/469.md)
+- [#std469, п. 3.2.1: Правила создания общих модулей](../../std/469.md#321) — Диагностика v8cs:common-module-name-global-client проверяет требование пункта 3.2.1 стандарта std469.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

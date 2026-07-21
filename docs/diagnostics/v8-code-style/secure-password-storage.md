@@ -43,9 +43,11 @@ sha256=603328268eda394e204a35ee83f895bf8f0c039a7d830aec5459a9604991af9f
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std740: Безопасное хранение паролей](../../std/740.md)
+- [#std740, п. 3.3: Безопасное хранение паролей](../../std/740.md#33) — Диагностика v8cs:secure-password-storage проверяет требование пункта 3.3 стандарта std740.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

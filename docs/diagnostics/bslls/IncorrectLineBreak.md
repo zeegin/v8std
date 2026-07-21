@@ -98,9 +98,11 @@ sha256=6ad24a2d936af3fe038a1ed90faa249dfa355b2e89fd315a7441304810a3119e
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std444: Перенос выражений](../../std/444.md)
+- [#std444, п. 6: Перенос выражений](../../std/444.md#6) — Диагностика «Неправильный перенос выражения (IncorrectLineBreak)» проверяет условие пункта 6 стандарта std444.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -41,9 +41,11 @@ sha256=5786080e0ddb846a5966b55733d5991e35a8e15ec32058a54f68a7b1aa9dd6a2
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std467: Общие требования к конфигурации](../../std/467.md)
+- [#std467, п. 2.2: Общие требования к конфигурации](../../std/467.md#22) — Диагностика v8cs:redundant-export-method проверяет требование пункта 2.2 стандарта std467.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

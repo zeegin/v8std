@@ -139,7 +139,15 @@ def render_article(
             ),
             body.strip(),
             "<!-- diagnostic-source:end -->",
-            f"## Соответствие стандартам\n\n{standards}",
+            "\n".join(
+                [
+                    "<!-- diagnostic-standards:start -->",
+                    "## Соответствие стандартам",
+                    "",
+                    standards,
+                    "<!-- diagnostic-standards:end -->",
+                ]
+            ),
             "\n".join(
                 [
                     "## Источник диагностики",
@@ -178,12 +186,20 @@ def extract_local_shell(content: str) -> LocalShell:
         normalized,
         re.MULTILINE | re.DOTALL,
     )
-    managed = re.search(
+    managed_region = re.search(
+        r"^<!-- diagnostic-standards:start -->\s*$\n"
+        r"^##\s+Соответствие стандартам\s*$\n"
+        r"(?P<body>.*?)"
+        r"^<!-- diagnostic-standards:end -->\s*$",
+        normalized,
+        re.MULTILINE | re.DOTALL,
+    )
+    managed_legacy = re.search(
         r"^##\s+Соответствие стандартам\s*$\n(?P<body>.*?)(?=^##\s+Источник диагностики\s*$|\Z)",
         normalized,
         re.MULTILINE | re.DOTALL,
     )
-    section = managed or legacy
+    section = managed_region or managed_legacy or legacy
     standards = section.group("body").strip() + "\n" if section else ""
     return LocalShell(
         marker=marker_match.group(1),

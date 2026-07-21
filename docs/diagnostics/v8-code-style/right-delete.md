@@ -20,9 +20,11 @@ sha256=7c283c1c3e90bdd8ed5276c1f48ce33b39bf2138ab1076e0f3d2674335e35dd7
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std488: Стандартные роли](../../std/488.md)
+- [#std488, п. 5: Стандартные роли](../../std/488.md#5) — Диагностика v8cs:right-delete проверяет требование пункта 5 стандарта std488.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

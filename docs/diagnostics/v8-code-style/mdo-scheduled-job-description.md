@@ -22,9 +22,11 @@ sha256=427b6da2e0c2ac2a60f6db34179595f3ca4a7fab953fc118df61374f0bc7be91
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std767: Регламентные задания: требования по локализации](../../std/767.md)
+- [#std767, п. 1: Регламентные задания: требования по локализации](../../std/767.md#1) — Диагностика v8cs:mdo-scheduled-job-description проверяет требование пункта 1 стандарта std767.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

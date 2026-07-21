@@ -52,9 +52,11 @@ sha256=63024380ff9fa9933741ad2366fbf51749b8bd01a2c60b7d9be726e7949c2738
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std657: Обращения к виртуальным таблицам](../../std/657.md)
+- [#std657, п. 1: Обращения к виртуальным таблицам](../../std/657.md#1) — Диагностика v8cs:ql-virtual-table-filters проверяет требование пункта 1 стандарта std657.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -26,9 +26,11 @@ sha256=0db96fe0b6394aeca9080222865243c06cf09dddadca1f967e2514cc26112f37
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std456: Тексты модулей](../../std/456.md)
+- [#std456, п. 2: Тексты модулей](../../std/456.md#2) — Диагностика «Неиспользуемый локальный метод (UnusedLocalMethod)» проверяет условие пункта 2 стандарта std456.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -74,9 +74,11 @@ sha256=4b050a1bd972678ae503548b714d1b1a6085e84016403807b49df7e284ca7ccd
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+- [#std455, п. 1.1: Структура модуля](../../std/455.md#11) — Диагностика v8cs:module-structure-top-region проверяет требование пункта 1.1 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

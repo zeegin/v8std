@@ -59,9 +59,11 @@ sha256=3be983d5852559c4abdd94a26a376b62f86355a0b6d86f2c023976048095161a
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std456: Тексты модулей](../../std/456.md)
+Нет подтверждённых связей со стандартами.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

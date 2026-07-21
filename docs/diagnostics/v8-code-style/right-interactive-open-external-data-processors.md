@@ -20,9 +20,11 @@ https://its.1c.ru/db/v8std#content:488:hdoc
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std488: Стандартные роли](../../std/488.md)
+- [#std488, п. 2.3: Стандартные роли](../../std/488.md#23) — Диагностика v8cs:right-interactive-open-external-data-processors проверяет требование пункта 2.3 стандарта std488.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

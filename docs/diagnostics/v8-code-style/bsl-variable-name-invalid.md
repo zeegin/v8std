@@ -41,9 +41,11 @@ sha256=2230c613fbbf0b5eb2351b2cb9fec2905ad571d1556393d5eb690ced337f1965
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std454: Правила образования имен переменных](../../std/454.md)
+- [#std454, п. 3: Правила образования имен переменных](../../std/454.md#3) — Диагностика v8cs:bsl-variable-name-invalid проверяет требование пункта 3 стандарта std454.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

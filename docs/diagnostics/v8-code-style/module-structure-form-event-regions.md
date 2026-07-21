@@ -53,9 +53,11 @@ sha256=7ae87835ab42a94138673a1156b796dc050b03a023c56054a633b3a9a2bea651
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+- [#std455, п. 1.6: Структура модуля](../../std/455.md#16) — Диагностика v8cs:module-structure-form-event-regions проверяет требование пункта 1.6 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

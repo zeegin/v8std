@@ -20,9 +20,11 @@ sha256=3663f0e7186eda1611da4577e42df4781a56f8ee629001bd3364926fffac622a
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std710: Условное оформление в формах](../../std/710.md)
+- [#std710, п. 2.1: Условное оформление в формах](../../std/710.md#21) — Диагностика v8cs:data-composition-conditional-appearance-use проверяет требование пункта 2.1 стандарта std710.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

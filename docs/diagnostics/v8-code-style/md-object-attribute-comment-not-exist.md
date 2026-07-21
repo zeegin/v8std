@@ -31,9 +31,11 @@ sha256=20ae0161db083286f1cd44c883b1a3ac2a280b8219e30ca622c9cc27c4076cac
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std531: Реквизит «Комментарий» у документов](../../std/531.md)
+- [#std531, п. 1: Реквизит «Комментарий» у документов](../../std/531.md#1) — Диагностика v8cs:md-object-attribute-comment-not-exist проверяет требование пункта 1 стандарта std531.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

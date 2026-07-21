@@ -81,9 +81,11 @@ sha256=3c127c72069d2f070f7dd2583692fea9d7e6236f6615d464f9df5338a0419903
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std453: Описание процедур и функций](../../std/453.md)
+- [#std453, п. 2: Описание процедур и функций](../../std/453.md#2) — Диагностика v8cs:doc-comment-export-procedure-description-section проверяет требование пункта 2 стандарта std453.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

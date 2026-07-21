@@ -60,9 +60,11 @@ sha256=2a574190d6d22b54e49ec05dbea4b7c0cfc4ae1e37656552a955deab56e9e017
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к v8std в описании проверки
+Нет подтверждённых связей со стандартами.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

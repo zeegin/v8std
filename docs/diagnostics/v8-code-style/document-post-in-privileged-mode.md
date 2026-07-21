@@ -33,9 +33,11 @@ sha256=cc03d492d7b6fad23b51c23e0c4809ced52c70b6706b854f71f0ea1fb35403ec
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std689: Настройка ролей и прав доступа](../../std/689.md)
+- [#std689, п. 1.7: Настройка ролей и прав доступа](../../std/689.md#17) — Диагностика v8cs:document-post-in-privileged-mode проверяет требование пункта 1.7 стандарта std689.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -32,9 +32,11 @@ sha256=763a0af8dc160980c903c6bb293235b26b37bdb79a614170b8c90eb5bf812c8f
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std402: Настройка расписания регламентных заданий](../../std/402.md)
+- [#std402: Настройка расписания регламентных заданий](../../std/402.md#std402) — Диагностика v8cs:scheduled-job-periodicity-too-short проверяет требование пункта std402 стандарта std402.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

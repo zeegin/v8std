@@ -49,9 +49,11 @@ sha256=a8bea9fa27bf5a9d3aae12d0813f9b2004d26483581e2f7b3af3df903b66c634
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std542: Доступ к файловой системе из кода конфигурации](../../std/542.md)
+- [#std542, п. 4: Доступ к файловой системе из кода конфигурации](../../std/542.md#4) — Диагностика v8cs:missing-temporary-file-deletion проверяет требование пункта 4 стандарта std542.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

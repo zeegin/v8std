@@ -67,9 +67,11 @@ https://its.1c.ru/db/pubqlang#content:150:hdoc
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к v8std в описании проверки
+- [#std436, п. 1: Многократное выполнение однотипных запросов](../../std/436.md#1) — Диагностика v8cs:query-in-loop проверяет требование пункта 1 стандарта std436.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

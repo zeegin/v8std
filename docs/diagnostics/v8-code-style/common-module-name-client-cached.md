@@ -25,9 +25,11 @@ sha256=6095027350056813ea7fce10e56163e61054ebcdf97f82ebecc02f70c0785e73
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std469: Правила создания общих модулей](../../std/469.md)
+- [#std469, п. 3.2.3: Правила создания общих модулей](../../std/469.md#323) — Диагностика v8cs:common-module-name-client-cached проверяет требование пункта 3.2.3 стандарта std469.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -25,9 +25,11 @@ sha256=ee355b66bc99c5bb8c58d47a70fa06df41bbb23a88229b214c33a99570685d26
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std740: Безопасное хранение паролей](../../std/740.md)
+- [#std740, п. 2: Безопасное хранение паролей](../../std/740.md#2) — Диагностика v8cs:unsafe-password-ib-storage проверяет требование пункта 2 стандарта std740.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

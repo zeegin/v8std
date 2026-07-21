@@ -62,9 +62,11 @@ sha256=71e87ded3c4bd075465c644d28bbe2e9a8029cf5b5a9b9470e9024c11922f829
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std499: Перехват исключений в коде](../../std/499.md)
+- [#std499, п. 3.2: Перехват исключений в коде](../../std/499.md#32) — Диагностика v8cs:empty-except-statement проверяет требование пункта 3.2 стандарта std499.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

@@ -35,9 +35,11 @@ sha256=d02b67fa9ee54bcdc55afad6fc7d4c37e910d23148cb5c5c2125a06e8b3f1732
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std647: Имена процедур и функций](../../std/647.md)
+- [#std647, п. 6.1: Имена процедур и функций](../../std/647.md#61) — Диагностика «Имя функции не должно начинаться с "Получить" (FunctionNameStartsWithGet)» проверяет условие пункта 6.1 стандарта std647.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

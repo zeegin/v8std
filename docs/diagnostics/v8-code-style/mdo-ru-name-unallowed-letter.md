@@ -25,9 +25,11 @@ sha256=b63a0da4b8ea40c3627ff6774b527ba4f9d85f6a7c0adaa854403594204a11e4
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std474: Имя, синоним, комментарий](../../std/474.md)
+- [#std474, п. 4: Имя, синоним, комментарий](../../std/474.md#4) — Диагностика v8cs:mdo-ru-name-unallowed-letter проверяет требование пункта 4 стандарта std474.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

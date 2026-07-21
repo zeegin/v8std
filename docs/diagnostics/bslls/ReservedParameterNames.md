@@ -34,9 +34,11 @@ sha256=4e5547c8278aa9c74d0d541432d554cff5eb5c264ec825d0c0ebb6dea96a437a
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std454: Правила образования имен переменных](../../std/454.md)
+Нет подтверждённых связей со стандартами.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

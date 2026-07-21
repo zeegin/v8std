@@ -38,9 +38,11 @@ sha256=db8fa3004c6fbe263cdfcc8d4e5b0a0e9e4313091e2180786e9e0ff02774e117
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std669: Ограничение на выполнение внешнего кода](../../std/669.md)
+- [#std669, п. 6.4: Ограничение на выполнение внешнего кода](../../std/669.md#64) — Диагностика v8cs:restriction-execute-external-component-code проверяет требование пункта 6.4 стандарта std669.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

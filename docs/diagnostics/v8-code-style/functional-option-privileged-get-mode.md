@@ -34,9 +34,11 @@ sha256=e4db0914e6b7bc35c04232324c3e89b87bcdbd3ed62abfa8f0e9432d1ee19b92
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std689: Настройка ролей и прав доступа](../../std/689.md)
+- [#std689, п. 1.8: Настройка ролей и прав доступа](../../std/689.md#18) — Диагностика v8cs:functional-option-privileged-get-mode проверяет требование пункта 1.8 стандарта std689.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

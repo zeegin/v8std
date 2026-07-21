@@ -53,9 +53,11 @@ sha256=bea390a43b7a246eaf886b66d93b94d39effc2792e23ef54036fe152f30da6a4
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+- [#std455, п. 1.4: Структура модуля](../../std/455.md#14) — Диагностика «Общий модуль должен иметь программный интерфейс (CommonModuleMissingAPI)» проверяет условие пункта 1.4 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

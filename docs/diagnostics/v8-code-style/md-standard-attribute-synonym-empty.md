@@ -27,9 +27,11 @@ sha256=2e344a08b3e2217ab89093f99f9fa61e5ee1c845d9e5b07def339e7c0dddb3ce
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std474: Имя, синоним, комментарий](../../std/474.md)
+- [#std474, п. 1.5: Имя, синоним, комментарий](../../std/474.md#15) — Диагностика v8cs:md-standard-attribute-synonym-empty проверяет требование пункта 1.5 стандарта std474.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

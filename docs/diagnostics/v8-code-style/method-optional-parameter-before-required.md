@@ -33,9 +33,11 @@ sha256=0f06537fb70b00f024bce544fc112ec270bb77cc3f7b94d4af96e51f0268b8b8
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std640: Параметры процедур и функций](../../std/640.md)
+- [#std640, п. 4: Параметры процедур и функций](../../std/640.md#4) — Диагностика v8cs:method-optional-parameter-before-required проверяет требование пункта 4 стандарта std640.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

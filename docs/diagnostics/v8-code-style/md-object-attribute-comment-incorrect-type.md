@@ -34,9 +34,11 @@ sha256=c6d6720b98861b6b16c88d07e56e34020a9bc5595aedf05504b8755e7513db4a
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std531: Реквизит «Комментарий» у документов](../../std/531.md)
+- [#std531, п. 1: Реквизит «Комментарий» у документов](../../std/531.md#1) — Диагностика v8cs:md-object-attribute-comment-incorrect-type проверяет требование пункта 1 стандарта std531.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

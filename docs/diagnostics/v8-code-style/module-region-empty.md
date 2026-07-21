@@ -44,9 +44,11 @@ sha256=4b8d5a258b3ad724febb6ba901b982a91d29d4f989a3f06e01e173f3777317ea
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+- [#std455, п. 1.8: Структура модуля](../../std/455.md#18) — Диагностика v8cs:module-region-empty проверяет требование пункта 1.8 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

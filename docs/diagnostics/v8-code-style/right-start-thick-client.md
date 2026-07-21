@@ -20,9 +20,11 @@ https://its.1c.ru/db/v8std#content:488:hdoc
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std488: Стандартные роли](../../std/488.md)
+- [#std488, п. 3.6: Стандартные роли](../../std/488.md#36) — Диагностика v8cs:right-start-thick-client проверяет требование пункта 3.6 стандарта std488.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

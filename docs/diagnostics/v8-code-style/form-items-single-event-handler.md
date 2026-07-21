@@ -32,9 +32,11 @@ sha256=aff02a3bbb106f1619fe5009a81775b3fd9db64017dceaffb074a3d0793b342c
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к v8std в описании проверки
+- [#std455, п. 2.4.3: Структура модуля](../../std/455.md#243) — Диагностика v8cs:form-items-single-event-handler проверяет требование пункта 2.4.3 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

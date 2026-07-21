@@ -41,9 +41,11 @@ sha256=4d8cbc1f8eada331fa970dd5ae7b0acd72a46106aae735aaf8c757a78726a3c1
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std456: Тексты модулей](../../std/456.md)
+- [#std456, п. 3: Тексты модулей](../../std/456.md#3) — Диагностика «Избыточная проверка параметра АвтоТест (ExcessiveAutoTestCheck)» проверяет условие пункта 3 стандарта std456.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

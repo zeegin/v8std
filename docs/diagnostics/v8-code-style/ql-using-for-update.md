@@ -45,9 +45,11 @@ sha256=8007c2a9c0acf28ec556c70ce2ffaf6686d0e0d403349c22d9c050dd2da3e14b
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std460: Использование управляемого режима блокировки](../../std/460.md)
+- [#std460: Использование управляемого режима блокировки](../../std/460.md#std460) — Диагностика v8cs:ql-using-for-update проверяет требование пункта std460 стандарта std460.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

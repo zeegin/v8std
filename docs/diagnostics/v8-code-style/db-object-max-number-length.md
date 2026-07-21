@@ -42,9 +42,11 @@ sha256=6880c2368ce192bab7414d5fe8f69de271b7904fa2090dcbad7cf277532e1c7a
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std467: Общие требования к конфигурации](../../std/467.md)
+- [#std467, п. 1.2: Общие требования к конфигурации](../../std/467.md#12) — Диагностика v8cs:db-object-max-number-length проверяет требование пункта 1.2 стандарта std467.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

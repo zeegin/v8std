@@ -58,9 +58,11 @@ sha256=685fbb52bdf17e7cc1b1176f9b668acf8047b53886ace9f049e0fb439e6c0c7a
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- Нет прямой привязки к v8std в описании проверки
+- [#std639, п. 2.1: Использование переменных в программных модулях](../../std/639.md#21) — Диагностика v8cs:object-module-export-variable проверяет требование пункта 2.1 стандарта std639.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

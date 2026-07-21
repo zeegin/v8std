@@ -25,9 +25,11 @@ sha256=610af98e38d6bcebe766cb2140728c79c3c603378c392605b2b4c53a1b5fd216
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std469: Правила создания общих модулей](../../std/469.md)
+- [#std469, п. 3.2.2: Правила создания общих модулей](../../std/469.md#322) — Диагностика v8cs:common-module-name-full-access проверяет требование пункта 3.2.2 стандарта std469.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

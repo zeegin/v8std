@@ -45,9 +45,11 @@ sha256=a05bc12b757ec82483ed37897e28bf0569287b8f35d98725b9264d8b62541f38
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std455: Структура модуля](../../std/455.md)
+- [#std455, п. 1.1: Структура модуля](../../std/455.md#11) — Диагностика v8cs:module-structure-init-code-in-region проверяет требование пункта 1.1 стандарта std455.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

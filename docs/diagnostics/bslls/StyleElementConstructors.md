@@ -34,9 +34,11 @@ sha256=8dd21d7c011ec53980b3a27f573c8785bd2db9b4603561775cc526afd80aac74
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std667: Элементы стиля](../../std/667.md)
+- [#std667, п. 1: Элементы стиля](../../std/667.md#1) — Диагностика «Конструктор элемента стиля (StyleElementConstructors)» проверяет условие пункта 1 стандарта std667.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

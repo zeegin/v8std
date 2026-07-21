@@ -68,9 +68,11 @@ sha256=ea77fd0b07ff52d9392400120fd6236cb87beec9fb169a88a395ce3af8c5dc24
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std453: Описание процедур и функций](../../std/453.md)
+- [#std453, п. 2: Описание процедур и функций](../../std/453.md#2) — Диагностика v8cs:export-procedure-missing-comment проверяет требование пункта 2 стандарта std453.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 

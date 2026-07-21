@@ -61,9 +61,11 @@ sha256=e3f3f80dee33e2c7820854f30c8f75dde6de1cf353235f33741ce23dabdd7472
 
 <!-- diagnostic-source:end -->
 
+<!-- diagnostic-standards:start -->
 ## Соответствие стандартам
 
-- [#std640: Параметры процедур и функций](../../std/640.md)
+- [#std640, п. 5: Параметры процедур и функций](../../std/640.md#5) — Диагностика v8cs:method-too-many-params проверяет требование пункта 5 стандарта std640.
+<!-- diagnostic-standards:end -->
 
 ## Источник диагностики
 
