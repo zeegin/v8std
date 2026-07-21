@@ -75,6 +75,16 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("апк 1245", acc["aliases"])
         self.assertIn("common-module-name-client-server", v8cs["aliases"])
 
+    def test_legacy_v8cs_typos_are_aliases_of_canonical_diagnostics(self):
+        expected_aliases = {
+            "v8cs:event-handler-boolean-param": "v8cs:event-heandler-boolean-param",
+            "v8cs:structure-constructor-too-many-keys": "v8cs:structure-consructor-too-many-keys",
+            "v8cs:structure-constructor-value-type": "v8cs:structure-consructor-value-type",
+        }
+
+        for canonical_id, legacy_id in expected_aliases.items():
+            self.assertIn(legacy_id, self.pages_by_id[canonical_id]["aliases"])
+
     def test_builds_standard_diagnostic_and_edt_relations_from_markdown_links(self):
         std437 = self.pages_by_id["std437"]
         bslls = self.pages_by_id["bslls:AssignAliasFieldsInQuery"]

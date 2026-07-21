@@ -149,7 +149,7 @@ social:
         <p>Диагностики АПК, Автоматической проверки конфигурации, для проверки на 1С:Совместимо и Стандарты разработки 1С.</p>
       </a>
       <a class="v8std-home-link-card" href="diagnostics/v8-code-style/">
-        <p class="v8std-home-link-card__eyebrow">167 диагностик</p>
+        <p class="v8std-home-link-card__eyebrow">172 диагностики</p>
         <h3>EDT v8-code-style</h3>
         <p>Проверки плагина EDT, которые удобно использовать как быстрый вход в конкретный стандарт.</p>
       </a>

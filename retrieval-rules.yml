@@ -110,3 +110,21 @@ rules:
       - "разделение ответственности"
       - "разделение ответственностей"
       - "separation of concerns"
+
+  - id: legacy_v8cs_event_handler_boolean_param
+    primary: "v8cs:event-handler-boolean-param"
+    aliases:
+      - "v8cs:event-heandler-boolean-param"
+      - "event-heandler-boolean-param"
+
+  - id: legacy_v8cs_structure_constructor_too_many_keys
+    primary: "v8cs:structure-constructor-too-many-keys"
+    aliases:
+      - "v8cs:structure-consructor-too-many-keys"
+      - "structure-consructor-too-many-keys"
+
+  - id: legacy_v8cs_structure_constructor_value_type
+    primary: "v8cs:structure-constructor-value-type"
+    aliases:
+      - "v8cs:structure-consructor-value-type"
+      - "structure-consructor-value-type"

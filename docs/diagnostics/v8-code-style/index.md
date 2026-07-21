@@ -26,6 +26,7 @@ llms:
 | [common-module-name-server-call-cached](common-module-name-server-call-cached.md) | `md` | [#std469: Правила создания общих модулей](../../std/469.md) |
 | [common-module-name-server-call](common-module-name-server-call.md) | `md` | [#std469: Правила создания общих модулей](../../std/469.md) |
 | [common-module-named-self-reference](common-module-named-self-reference.md) | `bsl` | — |
+| [common-module-server-call](common-module-server-call.md) | `bsl` | [#std679: Ограничение на установку признака «Вызов сервера» у общих модулей](../../std/679.md) |
 | [common-module-type](common-module-type.md) | `md` | — |
 | [configuration-data-lock-mode](configuration-data-lock-mode.md) | `md` | — |
 | [constructor-function-return-section](constructor-function-return-section.md) | `bsl` | — |
@@ -57,7 +58,7 @@ llms:
 | [dont-use-modality-mode](dont-use-modality-mode.md) | `bsl` | [#std703: Ограничение на использование модальных окон и синхронных вызовов](../../std/703.md) |
 | [dynamic-access-method-not-found](dynamic-access-method-not-found.md) | `bsl` | — |
 | [empty-except-statement](empty-except-statement.md) | `bsl` | [#std499: Перехват исключений в коде](../../std/499.md) |
-| [event-heandler-boolean-param](event-heandler-boolean-param.md) | `bsl` | [#std400: Информирование пользователя](../../std/400.md)<br>[#std686: Работа с параметром "Отказ" в обработчиках событий](../../std/686.md) |
+| [event-handler-boolean-param](event-handler-boolean-param.md) | `bsl` | [#std400: Информирование пользователя](../../std/400.md)<br>[#std686: Работа с параметром "Отказ" в обработчиках событий](../../std/686.md) |
 | [export-method-in-command-form-module](export-method-in-command-form-module.md) | `bsl` | [#std544: Ограничения на использование экспортных процедур и функций](../../std/544.md)<br>[#std630: Правила создания модулей форм](../../std/630.md)<br>[#std404: Открытие форм](../../std/404.md) |
 | [export-procedure-missing-comment](export-procedure-missing-comment.md) | `bsl` | [#std453: Описание процедур и функций](../../std/453.md) |
 | [extension-md-object-prefix](extension-md-object-prefix.md) | `md` | [#std469: Правила создания общих модулей](../../std/469.md) |
@@ -132,6 +133,8 @@ llms:
 | [reading-attribute-from-database](reading-attribute-from-database.md) | `bsl` | — |
 | [redundant-export-method](redundant-export-method.md) | `bsl` | [#std467: Общие требования к конфигурации](../../std/467.md) |
 | [register-resource-precision](register-resource-precision.md) | `md` | — |
+| [restriction-execute-external-code](restriction-execute-external-code.md) | `bsl` | [#std669: Ограничение на выполнение внешнего кода](../../std/669.md) |
+| [restriction-execute-external-component-code](restriction-execute-external-component-code.md) | `bsl` | [#std669: Ограничение на выполнение внешнего кода](../../std/669.md) |
 | [right-active-users](right-active-users.md) | `right` | [#std488: Стандартные роли](../../std/488.md) |
 | [right-administration](right-administration.md) | `right` | [#std488: Стандартные роли](../../std/488.md) |
 | [right-all-functions-mode](right-all-functions-mode.md) | `right` | [#std488: Стандартные роли](../../std/488.md) |
@@ -158,13 +161,15 @@ llms:
 | [role-right-has-rls](role-right-has-rls.md) | `right` | — |
 | [rollback-transaction](rollback-transaction.md) | `bsl` | [#std499: Перехват исключений в коде](../../std/499.md)<br>[#std783: Транзакции: правила использования](../../std/783.md) |
 | [scheduled-job-periodicity-too-short](scheduled-job-periodicity-too-short.md) | `md` | [#std402: Настройка расписания регламентных заданий](../../std/402.md) |
+| [secure-password-storage](secure-password-storage.md) | `bsl` | [#std740: Безопасное хранение паролей](../../std/740.md) |
+| [security-software-call](security-software-call.md) | `bsl` | [#std775: Безопасность программного обеспечения, вызываемого через открытые интерфейсы](../../std/775.md) |
 | [self-assign](self-assign.md) | `bsl` | — |
 | [semicolon-missing](semicolon-missing.md) | `bsl` | — |
 | [server-execution-safe-mode](server-execution-safe-mode.md) | `bsl` | [#std770: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md) |
 | [statement-type-change](statement-type-change.md) | `bsl` | — |
 | [string-literal-type-annotation-invalid-place](string-literal-type-annotation-invalid-place.md) | `bsl` | — |
-| [structure-consructor-too-many-keys](structure-consructor-too-many-keys.md) | `bsl` | — |
-| [structure-consructor-value-type](structure-consructor-value-type.md) | `bsl` | — |
+| [structure-constructor-too-many-keys](structure-constructor-too-many-keys.md) | `bsl` | [#std640: Параметры процедур и функций](../../std/640.md)<br>[#std693: Использование объектов типа Структура](../../std/693.md) |
+| [structure-constructor-value-type](structure-constructor-value-type.md) | `bsl` | — |
 | [structure-key-modification](structure-key-modification.md) | `bsl` | — |
 | [subsystem-synonym-too-long](subsystem-synonym-too-long.md) | `md` | [#std712: Панель разделов](../../std/712.md) |
 | [typed-value-adding-to-untyped-collection](typed-value-adding-to-untyped-collection.md) | `bsl` | — |

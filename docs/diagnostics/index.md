@@ -11,7 +11,7 @@ llms:
 | [#std396: Обработчик события ОбработкаЗаполнения](../std/396.md) | Нет диагностик |
 | [#std397: Организация работы со списками данных с помощью общих команд](../std/397.md) | Нет диагностик |
 | [#std399: Запрет редактирования полей таблицы по условию](../std/399.md) | Нет диагностик |
-| [#std400: Информирование пользователя](../std/400.md) | [v8cs:event-heandler-boolean-param](v8-code-style/event-heandler-boolean-param.md) |
+| [#std400: Информирование пользователя](../std/400.md) | [v8cs:event-handler-boolean-param](v8-code-style/event-handler-boolean-param.md) |
 | [#std401: Размещение большого количества команд в основном окне приложения](../std/401.md) | Нет диагностик |
 | [#std402: Настройка расписания регламентных заданий](../std/402.md) | [acc:319](acc/319.md) <br> [v8cs:scheduled-job-periodicity-too-short](v8-code-style/scheduled-job-periodicity-too-short.md) |
 | [#std404: Открытие форм](../std/404.md) | [acc:346](acc/346.md) <br> [acc:65](acc/65.md) <br> [v8cs:export-method-in-command-form-module](v8-code-style/export-method-in-command-form-module.md) <br> [v8cs:use-non-recommended-method](v8-code-style/use-non-recommended-method.md) |
@@ -199,7 +199,7 @@ llms:
 | [#std637: Настройка обмена данными для классификаторов между различными информационными базами](../std/637.md) | Нет диагностик |
 | [#std638: Работа с неактуальными (недействительными) объектами](../std/638.md) | Нет диагностик |
 | [#std639: Использование переменных в программных модулях](../std/639.md) | [bslls:ExportVariables](bslls/ExportVariables.md) |
-| [#std640: Параметры процедур и функций](../std/640.md) | [acc:134](acc/134.md) <br> [acc:1383](acc/1383.md) <br> [acc:1386](acc/1386.md) <br> [acc:141](acc/141.md) <br> [acc:142](acc/142.md) <br> [acc:267](acc/267.md) <br> [acc:269](acc/269.md) <br> [acc:271](acc/271.md) <br> [acc:287](acc/287.md) <br> [acc:293](acc/293.md) <br> [acc:294](acc/294.md) <br> [acc:295](acc/295.md) <br> [acc:548](acc/548.md) <br> [acc:549](acc/549.md) <br> [bslls:ExtraCommas](bslls/ExtraCommas.md) <br> [bslls:MissedRequiredParameter](bslls/MissedRequiredParameter.md) <br> [bslls:NestedFunctionInParameters](bslls/NestedFunctionInParameters.md) <br> [bslls:NumberOfOptionalParams](bslls/NumberOfOptionalParams.md) <br> [bslls:NumberOfParams](bslls/NumberOfParams.md) <br> [bslls:OrderOfParams](bslls/OrderOfParams.md) <br> [v8cs:method-optional-parameter-before-required](v8-code-style/method-optional-parameter-before-required.md) <br> [v8cs:method-too-many-params](v8-code-style/method-too-many-params.md) |
+| [#std640: Параметры процедур и функций](../std/640.md) | [acc:134](acc/134.md) <br> [acc:1383](acc/1383.md) <br> [acc:1386](acc/1386.md) <br> [acc:141](acc/141.md) <br> [acc:142](acc/142.md) <br> [acc:267](acc/267.md) <br> [acc:269](acc/269.md) <br> [acc:271](acc/271.md) <br> [acc:287](acc/287.md) <br> [acc:293](acc/293.md) <br> [acc:294](acc/294.md) <br> [acc:295](acc/295.md) <br> [acc:548](acc/548.md) <br> [acc:549](acc/549.md) <br> [bslls:ExtraCommas](bslls/ExtraCommas.md) <br> [bslls:MissedRequiredParameter](bslls/MissedRequiredParameter.md) <br> [bslls:NestedFunctionInParameters](bslls/NestedFunctionInParameters.md) <br> [bslls:NumberOfOptionalParams](bslls/NumberOfOptionalParams.md) <br> [bslls:NumberOfParams](bslls/NumberOfParams.md) <br> [bslls:OrderOfParams](bslls/OrderOfParams.md) <br> [v8cs:method-optional-parameter-before-required](v8-code-style/method-optional-parameter-before-required.md) <br> [v8cs:method-too-many-params](v8-code-style/method-too-many-params.md) <br> [v8cs:structure-constructor-too-many-keys](v8-code-style/structure-constructor-too-many-keys.md) |
 | [#std641: Структуры и таблицы значений в качестве параметров процедур и функций](../std/641.md) | Нет диагностик |
 | [#std642: Длительные операции на сервере](../std/642.md) | [bslls:MissingTempStorageDeletion](bslls/MissingTempStorageDeletion.md) |
 | [#std643: Работа в разных часовых поясах](../std/643.md) | [acc:143](acc/143.md) <br> [v8cs:use-non-recommended-method](v8-code-style/use-non-recommended-method.md) |
@@ -224,7 +224,7 @@ llms:
 | [#std665: Горячие клавиши](../std/665.md) | Нет диагностик |
 | [#std667: Элементы стиля](../std/667.md) | [acc:1326](acc/1326.md) <br> [acc:1331](acc/1331.md) <br> [acc:1332](acc/1332.md) <br> [acc:1333](acc/1333.md) <br> [acc:1345](acc/1345.md) <br> [acc:1346](acc/1346.md) <br> [acc:1347](acc/1347.md) <br> [bslls:StyleElementConstructors](bslls/StyleElementConstructors.md) <br> [v8cs:new-color](v8-code-style/new-color.md) <br> [v8cs:new-font](v8-code-style/new-font.md) |
 | [#std668: Разработка ролей в библиотеках](../std/668.md) | Нет диагностик |
-| [#std669: Ограничение на выполнение внешнего кода](../std/669.md) | [acc:1324](acc/1324.md) <br> [acc:472](acc/472.md) <br> [acc:552](acc/552.md) <br> [acc:553](acc/553.md) <br> [acc:554](acc/554.md) <br> [acc:555](acc/555.md) <br> [acc:556](acc/556.md) <br> [bslls:UsingExternalCodeTools](bslls/UsingExternalCodeTools.md) |
+| [#std669: Ограничение на выполнение внешнего кода](../std/669.md) | [acc:1324](acc/1324.md) <br> [acc:472](acc/472.md) <br> [acc:552](acc/552.md) <br> [acc:553](acc/553.md) <br> [acc:554](acc/554.md) <br> [acc:555](acc/555.md) <br> [acc:556](acc/556.md) <br> [bslls:UsingExternalCodeTools](bslls/UsingExternalCodeTools.md) <br> [v8cs:restriction-execute-external-code](v8-code-style/restriction-execute-external-code.md) <br> [v8cs:restriction-execute-external-component-code](v8-code-style/restriction-execute-external-component-code.md) |
 | [#std670: Содержание отчета](../std/670.md) | Нет диагностик |
 | [#std671: Варианты отчетов](../std/671.md) | Нет диагностик |
 | [#std672: Поля периодов](../std/672.md) | Нет диагностик |
@@ -234,17 +234,17 @@ llms:
 | [#std676: Отчеты вида "таблица", "список"](../std/676.md) | Нет диагностик |
 | [#std677: Использование общих реквизитов](../std/677.md) | Нет диагностик |
 | [#std678: Безопасность прикладного программного интерфейса сервера](../std/678.md) | [bslls:SetPrivilegedMode](bslls/SetPrivilegedMode.md) |
-| [#std679: Ограничение на установку признака «Вызов сервера» у общих модулей](../std/679.md) | Нет диагностик |
+| [#std679: Ограничение на установку признака «Вызов сервера» у общих модулей](../std/679.md) | [v8cs:common-module-server-call](v8-code-style/common-module-server-call.md) |
 | [#std680: Поддержка толстого клиента, управляемое приложение, клиент-сервер](../std/680.md) | [acc:256](acc/256.md) <br> [acc:361](acc/361.md) <br> [acc:362](acc/362.md) <br> [v8cs:module-accessibility-at-client](v8-code-style/module-accessibility-at-client.md) |
 | [#std681: Размеры](../std/681.md) | Нет диагностик |
 | [#std682: Порядок полей](../std/682.md) | Нет диагностик |
 | [#std683: Общие сведения об организации хранения данных](../std/683.md) | Нет диагностик |
 | [#std684: Список, открываемый из панели навигации формы объекта](../std/684.md) | Нет диагностик |
-| [#std686: Работа с параметром "Отказ" в обработчиках событий](../std/686.md) | [acc:144](acc/144.md) <br> [bslls:UsingCancelParameter](bslls/UsingCancelParameter.md) <br> [v8cs:event-heandler-boolean-param](v8-code-style/event-heandler-boolean-param.md) |
+| [#std686: Работа с параметром "Отказ" в обработчиках событий](../std/686.md) | [acc:144](acc/144.md) <br> [bslls:UsingCancelParameter](bslls/UsingCancelParameter.md) <br> [v8cs:event-handler-boolean-param](v8-code-style/event-handler-boolean-param.md) |
 | [#std687: Шрифты](../std/687.md) | Нет диагностик |
 | [#std689: Настройка ролей и прав доступа](../std/689.md) | [acc:1375](acc/1375.md) <br> [acc:226](acc/226.md) <br> [acc:227](acc/227.md) <br> [acc:228](acc/228.md) <br> [acc:229](acc/229.md) <br> [acc:232](acc/232.md) <br> [acc:233](acc/233.md) <br> [acc:234](acc/234.md) <br> [acc:290](acc/290.md) <br> [acc:291](acc/291.md) <br> [acc:336](acc/336.md) <br> [acc:359](acc/359.md) <br> [acc:360](acc/360.md) <br> [acc:375](acc/375.md) <br> [acc:419](acc/419.md) <br> [acc:420](acc/420.md) <br> [acc:421](acc/421.md) <br> [acc:422](acc/422.md) <br> [acc:423](acc/423.md) <br> [acc:424](acc/424.md) <br> [acc:442](acc/442.md) <br> [acc:443](acc/443.md) <br> [acc:507](acc/507.md) <br> [acc:508](acc/508.md) <br> [acc:510](acc/510.md) <br> [acc:511](acc/511.md) <br> [acc:512](acc/512.md) <br> [acc:513](acc/513.md) <br> [acc:541](acc/541.md) <br> [v8cs:document-post-in-privileged-mode](v8-code-style/document-post-in-privileged-mode.md) <br> [v8cs:functional-option-privileged-get-mode](v8-code-style/functional-option-privileged-get-mode.md) <br> [v8cs:using-isinrole](v8-code-style/using-isinrole.md) |
 | [#std690: Обработчики обновления информационной базы](../std/690.md) | [acc:1363](acc/1363.md) |
-| [#std693: Использование объектов типа Структура](../std/693.md) | [acc:293](acc/293.md) <br> [acc:294](acc/294.md) <br> [acc:295](acc/295.md) <br> [bslls:NumberOfValuesInStructureConstructor](bslls/NumberOfValuesInStructureConstructor.md) |
+| [#std693: Использование объектов типа Структура](../std/693.md) | [acc:293](acc/293.md) <br> [acc:294](acc/294.md) <br> [acc:295](acc/295.md) <br> [bslls:NumberOfValuesInStructureConstructor](bslls/NumberOfValuesInStructureConstructor.md) <br> [v8cs:structure-constructor-too-many-keys](v8-code-style/structure-constructor-too-many-keys.md) |
 | [#std694: Подменю](../std/694.md) | Нет диагностик |
 | [#std695: Командные панели табличных частей](../std/695.md) | Нет диагностик |
 | [#std696: Формы пошаговых помощников (мастеров)](../std/696.md) | Нет диагностик |
@@ -284,7 +284,7 @@ llms:
 | [#std734: Использование режима вертикальной прокрутки форм](../std/734.md) | Нет диагностик |
 | [#std737: Проверка прав доступа](../std/737.md) | [acc:336](acc/336.md) <br> [acc:341](acc/341.md) <br> [acc:393](acc/393.md) <br> [acc:394](acc/394.md) <br> [acc:395](acc/395.md) <br> [acc:457](acc/457.md) <br> [acc:460](acc/460.md) <br> [acc:461](acc/461.md) <br> [acc:514](acc/514.md) <br> [acc:515](acc/515.md) <br> [bslls:IsInRoleMethod](bslls/IsInRoleMethod.md) <br> [v8cs:form-item-visible-settings-by-roles](v8-code-style/form-item-visible-settings-by-roles.md) <br> [v8cs:using-isinrole](v8-code-style/using-isinrole.md) |
 | [#std739: Размещение сведений о настройках подсистемы](../std/739.md) | Нет диагностик |
-| [#std740: Безопасное хранение паролей](../std/740.md) | [acc:345](acc/345.md) <br> [bslls:UsingHardcodeSecretInformation](bslls/UsingHardcodeSecretInformation.md) <br> [v8cs:unsafe-password-ib-storage](v8-code-style/unsafe-password-ib-storage.md) |
+| [#std740: Безопасное хранение паролей](../std/740.md) | [acc:345](acc/345.md) <br> [bslls:UsingHardcodeSecretInformation](bslls/UsingHardcodeSecretInformation.md) <br> [v8cs:secure-password-storage](v8-code-style/secure-password-storage.md) <br> [v8cs:unsafe-password-ib-storage](v8-code-style/unsafe-password-ib-storage.md) |
 | [#std741: Открытие параметризированных форм](../std/741.md) | [v8cs:optional-form-parameter-access](v8-code-style/optional-form-parameter-access.md) <br> [v8cs:unknown-form-parameter-access](v8-code-style/unknown-form-parameter-access.md) |
 | [#std742: Блокирующее или независимое открытие форм объектов](../std/742.md) | Нет диагностик |
 | [#std744: История выбора при вводе](../std/744.md) | [acc:412](acc/412.md) <br> [acc:413](acc/413.md) <br> [acc:414](acc/414.md) |
@@ -310,7 +310,7 @@ llms:
 | [#std771: Интеграция прикладных решений через формат EnterpriseData](../std/771.md) | [acc:518](acc/518.md) <br> [acc:519](acc/519.md) <br> [acc:520](acc/520.md) |
 | [#std773: Использование признака ОбменДанными.Загрузка в обработчиках событий объекта](../std/773.md) | [acc:75](acc/75.md) <br> [bslls:DataExchangeLoading](bslls/DataExchangeLoading.md) <br> [v8cs:data-exchange-load](v8-code-style/data-exchange-load.md) |
 | [#std774: Безопасность запуска приложений](../std/774.md) | [acc:534](acc/534.md) <br> [bslls:FileSystemAccess](bslls/FileSystemAccess.md) |
-| [#std775: Безопасность программного обеспечения, вызываемого через открытые интерфейсы](../std/775.md) | [acc:536](acc/536.md) <br> [acc:537](acc/537.md) |
+| [#std775: Безопасность программного обеспечения, вызываемого через открытые интерфейсы](../std/775.md) | [acc:536](acc/536.md) <br> [acc:537](acc/537.md) <br> [v8cs:security-software-call](v8-code-style/security-software-call.md) |
 | [#std777: Использование временных таблиц](../std/777.md) | Нет диагностик |
 | [#std778: Денежные поля: требования по локализации](../std/778.md) | Нет диагностик |
 | [#std781: Особенности сортировки в таблице значений](../std/781.md) | Нет диагностик |

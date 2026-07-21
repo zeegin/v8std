@@ -47,6 +47,8 @@ jobs:
             -w /docs \
             --entrypoint python \
             v8std-docs -m unittest \
+            tests.test_v8_code_style_diagnostics \
+            tests.test_generate_ai_artifacts \
             tests.test_v8std_mcp_index \
             tests.test_v8std_mcp_server \
             tests.test_v8std_mcp_monitoring
