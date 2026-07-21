@@ -127,9 +127,9 @@ Each review record contains:
 - `standard`: `stdNNN`;
 - `clause`: normalized visible clause number such as `2.4.3`, required for a
   confirmed record and optional for a rejected proposal;
-- `anchor`: rendered Markdown/HTML anchor such as `243`, required for a
-  confirmed record and absent when a rejected proposal has no meaningful
-  clause;
+- `anchor`: verified rendered Markdown/HTML anchor such as `243` or `31_1`,
+  required for a confirmed record and absent when a rejected proposal has no
+  meaningful clause;
 - `evidence`: one or more immutable source URLs or a local-standard citation;
 - `reason`: concise explanation of why the diagnostic enforces that clause;
 - `review`: `confirmed` or `rejected`;
@@ -139,6 +139,17 @@ Only `confirmed` records are rendered. Rejected upstream suggestions remain in
 the registry so they are not reintroduced during later synchronization. A
 rejected record still names the proposed standard and evidence, and its
 `reason` explains why the proposal is not normative.
+
+A diagnostic may enforce several clauses of the same standard. Such records
+are unique by `(diagnostic, standard, anchor)`. All records for one
+`(diagnostic, standard)` pair must have the same decision: mixing confirmed and
+rejected records for a pair is invalid.
+
+The anchor is not derived from the visible number alone. Some consolidated
+standards repeat visible clause numbers in independent sections, and Zensical
+adds suffixes such as `_1`; `std437` also contains visible clauses `2а` and
+`2б`. Validation therefore checks the committed anchor against the rendered
+heading sequence.
 
 A confirmed relationship without a clause is invalid. If a whole standard
 genuinely applies but no numbered clause exists, the registry uses the

@@ -16,7 +16,7 @@ except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
 
 STANDARD_RE = re.compile(r"^std\d+$")
 DIAGNOSTIC_RE = re.compile(r"^(?:bslls|v8cs):[^\s:]+$")
-NUMERIC_CLAUSE_RE = re.compile(r"^\d+(?:\.\d+)*$")
+NUMERIC_CLAUSE_RE = re.compile(r"^\d+(?:\.\d+)*(?:[а-яa-z])?$", re.IGNORECASE)
 IMMUTABLE_GITHUB_RE = re.compile(
     r"^https://github\.com/[^/]+/[^/]+/blob/[0-9a-f]{40}/.+$"
 )
@@ -102,7 +102,10 @@ class LinkReview:
             expected_anchor = heading_anchor(clause)
             if clause.startswith("std") and clause != standard:
                 raise ValueError("top-level clause must match standard")
-            if anchor != expected_anchor:
+            valid_anchor = isinstance(anchor, str) and bool(
+                re.fullmatch(re.escape(expected_anchor) + r"(?:_[1-9]\d*)?", anchor)
+            )
+            if not valid_anchor or (clause.startswith("std") and anchor != expected_anchor):
                 raise ValueError(f"anchor must be {expected_anchor} for clause {clause}")
         elif anchor is not None:
             raise ValueError("anchor must be null when clause is null")
@@ -139,12 +142,19 @@ def _is_immutable_evidence(value: Any) -> bool:
     )
 
 
-def heading_anchor(clause: str) -> str:
+def heading_anchor(clause: str, occurrence: int = 0) -> str:
+    if not isinstance(occurrence, int) or occurrence < 0:
+        raise ValueError("heading occurrence must be a non-negative integer")
     if STANDARD_RE.fullmatch(clause):
+        if occurrence:
+            raise ValueError("top-level standard heading cannot be duplicated")
         return clause
     if not NUMERIC_CLAUSE_RE.fullmatch(clause):
         raise ValueError(f"unsupported clause: {clause}")
-    return clause.replace(".", "")
+    # Zensical drops Cyrillic suffixes such as ``а``/``б`` from slugs. The
+    # explicit occurrence disambiguates those headings from the numeric one.
+    base = re.sub(r"[^0-9a-z]", "", clause, flags=re.IGNORECASE)
+    return f"{base}_{occurrence}" if occurrence else base
 
 
 def _normalize_source_clause(raw: str | None) -> str | None:
@@ -197,14 +207,34 @@ def load_reviews(path: Path) -> tuple[LinkReview, ...]:
         raise ValueError("relationship registry requires version 1 and a reviews array")
 
     reviews = tuple(LinkReview.from_dict(item) for item in payload["reviews"])
-    seen: set[tuple[str, str]] = set()
+    seen: set[tuple[str, str, str | None]] = set()
+    decisions: dict[tuple[str, str], set[str]] = {}
     for review in reviews:
-        key = (review.diagnostic, review.standard)
+        pair = (review.diagnostic, review.standard)
+        key = (*pair, review.anchor)
         if key in seen:
-            raise ValueError(f"duplicate relationship: {review.diagnostic} -> {review.standard}")
+            raise ValueError(
+                "duplicate relationship: "
+                f"{review.diagnostic} -> {review.standard} / {review.anchor}"
+            )
         seen.add(key)
-    if tuple(sorted(reviews, key=lambda item: (item.diagnostic, item.standard))) != reviews:
-        raise ValueError("relationship reviews must use stable diagnostic/standard sorting")
+        decisions.setdefault(pair, set()).add(review.review)
+    mixed = [pair for pair, values in decisions.items() if len(values) > 1]
+    if mixed:
+        diagnostic, standard = sorted(mixed)[0]
+        raise ValueError(f"mixed review decisions: {diagnostic} -> {standard}")
+    if tuple(
+        sorted(
+            reviews,
+            key=lambda item: (
+                item.diagnostic,
+                item.standard,
+                item.clause or "",
+                item.anchor or "",
+            ),
+        )
+    ) != reviews:
+        raise ValueError("relationship reviews must use stable diagnostic/standard/clause sorting")
     return reviews
 
 
@@ -255,11 +285,6 @@ def validate_review_coverage(
             raise ValueError(
                 "unreviewed source proposal: "
                 f"{proposal.diagnostic} -> {proposal.standard} ({proposal.referenced_url})"
-            )
-        if len(matches) != 1:
-            raise ValueError(
-                "source proposal has multiple reviews: "
-                f"{proposal.diagnostic} -> {proposal.standard}"
             )
 
 

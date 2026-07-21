@@ -4,14 +4,35 @@
     {
       "diagnostic": "bslls:AssignAliasFieldsInQuery",
       "standard": "std437",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignAliasFieldsInQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Назначение псевдонимов выбранным полям в запросе (AssignAliasFieldsInQuery)» проверяет условие пункта 2 стандарта std437.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:AssignAliasFieldsInQuery",
+      "standard": "std437",
+      "clause": "2а",
+      "anchor": "2_1",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignAliasFieldsInQuery.md"
+      ],
+      "reason": "Диагностика «Назначение псевдонимов выбранным полям в запросе (AssignAliasFieldsInQuery)» проверяет условие пункта 2а стандарта std437.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:AssignAliasFieldsInQuery",
+      "standard": "std437",
+      "clause": "2б",
+      "anchor": "2_2",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignAliasFieldsInQuery.md"
+      ],
+      "reason": "Диагностика «Назначение псевдонимов выбранным полям в запросе (AssignAliasFieldsInQuery)» проверяет условие пункта 2б стандарта std437.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:AssignAliasFieldsInQuery",
@@ -21,9 +42,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignAliasFieldsInQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:BadExceptionCategory",
@@ -33,21 +54,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/BadExceptionCategory.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:BeginTransactionBeforeTryCatch",
       "standard": "std783",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.3",
+      "anchor": "13",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/BeginTransactionBeforeTryCatch.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Нарушение правил работы с транзакциями для метода 'НачатьТранзакцию' (BeginTransactionBeforeTryCatch)» проверяет условие пункта 1.3 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CachedPublic",
@@ -57,21 +77,19 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CachedPublic.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Кеширование программного интерфейса (CachedPublic)» проверяет условие пункта 3.6 стандарта std644.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CanonicalSpellingKeywords",
       "standard": "std441",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CanonicalSpellingKeywords.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Каноническое написание ключевых слов (CanonicalSpellingKeywords)» проверяет условие пункта 1 стандарта std441.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CodeAfterAsyncCall",
@@ -81,69 +99,64 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeAfterAsyncCall.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:CodeBlockBeforeSub",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeBlockBeforeSub.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Определения методов должны размещаться перед операторами тела модуля (CodeBlockBeforeSub)» проверяет условие пункта 1.1 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CodeOutOfRegion",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.3",
+      "anchor": "13",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeOutOfRegion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Код расположен вне области (CodeOutOfRegion)» проверяет условие пункта 1.3 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommandModuleExportMethods",
       "standard": "std544",
-      "clause": null,
-      "anchor": null,
+      "clause": "std544",
+      "anchor": "std544",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommandModuleExportMethods.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Экспортные методы в модулях команд и общих команд (CommandModuleExportMethods)» проверяет требование всего std544; стандарт не имеет нумерованных пунктов.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommentedCode",
       "standard": "std456",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommentedCode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Закомментированный фрагмент кода (CommentedCode)» проверяет условие пункта 3 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommitTransactionOutsideTryCatch",
       "standard": "std783",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.3",
+      "anchor": "13",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommitTransactionOutsideTryCatch.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Нарушение правил работы с транзакциями для метода 'ЗафиксироватьТранзакцию' (CommitTransactionOutsideTryCatch)» проверяет условие пункта 1.3 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleInvalidType",
@@ -153,21 +166,19 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleInvalidType.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Общий модуль недопустимого типа (CommonModuleInvalidType)» проверяет условие пункта 1.2 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleMissingAPI",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.4",
+      "anchor": "14",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleMissingAPI.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Общий модуль должен иметь программный интерфейс (CommonModuleMissingAPI)» проверяет условие пункта 1.4 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameCached",
@@ -177,9 +188,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameCached.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пропущен постфикс \"ПовтИсп\" (CommonModuleNameCached)» проверяет условие пункта 3.2.3 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameClient",
@@ -189,9 +199,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameClient.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пропущен постфикс \"Клиент\" (CommonModuleNameClient)» проверяет условие пункта 2.3 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameClientServer",
@@ -201,9 +210,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameClientServer.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пропущен постфикс \"КлиентСервер\" (CommonModuleNameClientServer)» проверяет условие пункта 2.4 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameFullAccess",
@@ -213,9 +221,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameFullAccess.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пропущен постфикс \"ПолныеПрава\" (CommonModuleNameFullAccess)» проверяет условие пункта 3.2.2 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameGlobal",
@@ -225,9 +232,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameGlobal.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пропущен постфикс \"Глобальный\" (CommonModuleNameGlobal)» проверяет условие пункта 3.2.1 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameGlobalClient",
@@ -237,9 +243,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameGlobalClient.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Глобальный модуль с постфиксом \"Клиент\" (CommonModuleNameGlobalClient)» проверяет условие пункта 3.2.1 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameServerCall",
@@ -249,9 +254,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameServerCall.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пропущен постфикс \"ВызовСервера\" (CommonModuleNameServerCall)» проверяет условие пункта 2.2 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleNameWords",
@@ -261,9 +265,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameWords.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Нерекомендуемое имя общего модуля (CommonModuleNameWords)» проверяет условие пункта 3.1 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CommonModuleVariables",
@@ -273,33 +276,31 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleVariables.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:CompareWithBoolean",
       "standard": "std441",
-      "clause": null,
-      "anchor": null,
+      "clause": "4",
+      "anchor": "4",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CompareWithBoolean.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Сравнение с булевой константой (CompareWithBoolean)» проверяет условие пункта 4 стандарта std441.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CompilationDirectiveNeedLess",
       "standard": "std439",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CompilationDirectiveNeedLess.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Лишняя директива компиляции (CompilationDirectiveNeedLess)» проверяет условие пункта 1 стандарта std439.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:CrazyMultilineString",
@@ -309,57 +310,53 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CrazyMultilineString.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DataExchangeLoading",
       "standard": "std464",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует проверка признака ОбменДанными.Загрузка в обработчике событий объекта (DataExchangeLoading)» проверяет условие пункта 2 стандарта std464.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:DataExchangeLoading",
       "standard": "std465",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует проверка признака ОбменДанными.Загрузка в обработчике событий объекта (DataExchangeLoading)» проверяет условие пункта 2 стандарта std465.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:DataExchangeLoading",
       "standard": "std752",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует проверка признака ОбменДанными.Загрузка в обработчике событий объекта (DataExchangeLoading)» проверяет условие пункта 2 стандарта std752.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:DataExchangeLoading",
       "standard": "std773",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует проверка признака ОбменДанными.Загрузка в обработчике событий объекта (DataExchangeLoading)» проверяет условие пункта 1 стандарта std773.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:DenyIncompleteValues",
@@ -369,45 +366,54 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DenyIncompleteValues.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DeprecatedCurrentDate",
       "standard": "std643",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedCurrentDate.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование устаревшего метода \"ТекущаяДата\" (DeprecatedCurrentDate)» проверяет условие пункта 2.1 стандарта std643.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:DeprecatedCurrentDate",
+      "standard": "std643",
+      "clause": "3.1",
+      "anchor": "31",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedCurrentDate.md"
+      ],
+      "reason": "Диагностика «Использование устаревшего метода \"ТекущаяДата\" (DeprecatedCurrentDate)» проверяет условие пункта 3.1 стандарта std643.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:DeprecatedMessage",
       "standard": "std418",
-      "clause": null,
-      "anchor": null,
+      "clause": "std418",
+      "anchor": "std418",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedMessage.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Ограничение на использование устаревшего метода \"Сообщить\" (DeprecatedMessage)» проверяет требование всего std418; стандарт не имеет нумерованных пунктов.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:DeprecatedMethodCall",
       "standard": "std453",
-      "clause": null,
-      "anchor": null,
+      "clause": "5.7",
+      "anchor": "57",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedMethodCall.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Устаревшие методы не должны использоваться (DeprecatedMethodCall)» проверяет условие пункта 5.7 стандарта std453.",
+      "review": "confirmed",
+      "notes": "Пункт 5.7 задаёт конвенцию Устарела/Deprecated; запрет вызова является защитным расширением диагностики."
     },
     {
       "diagnostic": "bslls:DisableSafeMode",
@@ -417,9 +423,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DisableSafeMode",
@@ -429,21 +435,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт о привилегированном режиме не регулирует отключение безопасного режима внешнего кода.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DisableSafeMode",
       "standard": "std669",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.2",
+      "anchor": "32",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отключение безопасного режима (DisableSafeMode)» проверяет условие пункта 3.2 стандарта std669.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:DisableSafeMode",
@@ -453,9 +458,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Пункт 2 описывает угрозу внешнего кода, но не устанавливает проверяемый запрет отключения безопасного режима.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DisableSafeMode",
@@ -465,9 +470,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт регулирует Выполнить и Вычислить на сервере, а диагностика проверяет отключение безопасного режима независимо от этих методов.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DuplicateRegion",
@@ -477,9 +482,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicateRegion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт задаёт состав и порядок областей, но не содержит отдельного требования об уникальности каждой области.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DuplicateStringLiteral",
@@ -489,9 +494,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicateStringLiteral.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:DuplicatedInsertionIntoCollection",
@@ -501,21 +506,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicatedInsertionIntoCollection.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:EmptyRegion",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.8",
+      "anchor": "18",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EmptyRegion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Область не должна быть пустой (EmptyRegion)» проверяет условие пункта 1.8 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:EventHandlerInvalidSignature",
@@ -525,21 +529,31 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EventHandlerInvalidSignature.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт описывает размещение обработчиков, но не задаёт их платформенные сигнатуры; контракт берётся из синтакс-помощника.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:EventHandlerOutsideEventRegion",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.5",
+      "anchor": "15",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EventHandlerOutsideEventRegion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Обработчик события вне стандартной области (EventHandlerOutsideEventRegion)» проверяет условие пункта 1.5 стандарта std455.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:EventHandlerOutsideEventRegion",
+      "standard": "std455",
+      "clause": "1.6",
+      "anchor": "16",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EventHandlerOutsideEventRegion.md"
+      ],
+      "reason": "Диагностика «Обработчик события вне стандартной области (EventHandlerOutsideEventRegion)» проверяет условие пункта 1.6 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ExcessiveAutoTestCheck",
@@ -549,45 +563,41 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExcessiveAutoTestCheck.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Избыточная проверка параметра АвтоТест (ExcessiveAutoTestCheck)» проверяет условие пункта 3 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ExecuteExternalCode",
       "standard": "std770",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Выполнение произвольного кода на сервере (ExecuteExternalCode)» проверяет условие пункта 1 стандарта std770.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ExecuteExternalCodeInCommonModule",
       "standard": "std770",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCodeInCommonModule.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Выполнение произвольного кода в общем модуле на сервере (ExecuteExternalCodeInCommonModule)» проверяет условие пункта 3 стандарта std770.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ExportVariables",
       "standard": "std639",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExportVariables.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Запрет экспортных глобальных переменных модуля (ExportVariables)» проверяет условие пункта 2.1 стандарта std639.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ExternalAppStarting",
@@ -597,9 +607,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExternalAppStarting.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:ExternalAppStarting",
@@ -609,33 +619,31 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExternalAppStarting.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт регулирует исполнение внешнего кода, а не сам по себе запуск приложений из доверенного кода конфигурации.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:ExternalAppStarting",
       "standard": "std774",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExternalAppStarting.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Запуск внешних приложений (ExternalAppStarting)» проверяет условие пункта 1 стандарта std774.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ExtraCommas",
       "standard": "std640",
-      "clause": null,
-      "anchor": null,
+      "clause": "7",
+      "anchor": "7",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExtraCommas.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Запятые без указания параметра в конце вызова метода (ExtraCommas)» проверяет условие пункта 7 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:FieldsFromJoinsWithoutIsNull",
@@ -645,9 +653,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FieldsFromJoinsWithoutIsNull.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Пункт 1.2 требует учитывать NULL только при сортировке; диагностика существенно шире и проверяет все поля внешних соединений.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:FieldsFromJoinsWithoutIsNull",
@@ -657,9 +665,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FieldsFromJoinsWithoutIsNull.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:FileSystemAccess",
@@ -669,21 +677,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FileSystemAccess.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:FileSystemAccess",
       "standard": "std542",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FileSystemAccess.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Доступ к файловой системе (FileSystemAccess)» проверяет условие пункта 1 стандарта std542.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:FileSystemAccess",
@@ -693,9 +700,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FileSystemAccess.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт регулирует запуск внешних приложений, тогда как диагностика помечает любые операции файловой системы для ручного аудита.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:ForbiddenMetadataName",
@@ -705,9 +712,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ForbiddenMetadataName.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:ForbiddenMetadataName",
@@ -717,45 +724,41 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ForbiddenMetadataName.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Объекту метаданных присвоено запрещенное имя (ForbiddenMetadataName)» проверяет условие пункта 2.5 стандарта std474.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:FormDataToValue",
       "standard": "std409",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FormDataToValue.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование метода ДанныеФормыВЗначение (FormDataToValue)» проверяет условие пункта 1 стандарта std409.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:FullOuterJoinQuery",
       "standard": "std435",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FullOuterJoinQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование конструкции \"ПОЛНОЕ ВНЕШНЕЕ СОЕДИНЕНИЕ\" в запросах (FullOuterJoinQuery)» проверяет условие пункта 1.1 стандарта std435.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:FunctionNameStartsWithGet",
       "standard": "std647",
-      "clause": null,
-      "anchor": null,
+      "clause": "6.1",
+      "anchor": "61",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionNameStartsWithGet.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Имя функции не должно начинаться с \"Получить\" (FunctionNameStartsWithGet)» проверяет условие пункта 6.1 стандарта std647.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:FunctionOutParameter",
@@ -765,21 +768,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionOutParameter.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:GetFormMethod",
       "standard": "std404",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/GetFormMethod.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование метода ПолучитьФорму (GetFormMethod)» проверяет условие пункта 1 стандарта std404.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:GlobalContextMethodCollision8312",
@@ -789,21 +791,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/GlobalContextMethodCollision8312.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:IncorrectLineBreak",
       "standard": "std444",
-      "clause": null,
-      "anchor": null,
+      "clause": "6",
+      "anchor": "6",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectLineBreak.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Неправильный перенос выражения (IncorrectLineBreak)» проверяет условие пункта 6 стандарта std444.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:IncorrectUseLikeInQuery",
@@ -813,21 +814,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseLikeInQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:IncorrectUseLikeInQuery",
       "standard": "std726",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseLikeInQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Некорректное использование 'ПОДОБНО' (IncorrectUseLikeInQuery)» проверяет условие пункта 1 стандарта std726.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:IncorrectUseOfStrTemplate",
@@ -837,9 +837,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseOfStrTemplate.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:IncorrectUseOfStrTemplate",
@@ -849,9 +849,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseOfStrTemplate.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт приводит СтрШаблон лишь в примере локализации и не нормирует количество параметров или синтаксис плейсхолдеров.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:InternetAccess",
@@ -861,33 +861,32 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/InternetAccess.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:InvalidCharacterInFile",
       "standard": "std456",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.2",
+      "anchor": "12",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/InvalidCharacterInFile.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Недопустимый символ (InvalidCharacterInFile)» проверяет условие пункта 1.2 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:IsInRoleMethod",
       "standard": "std737",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IsInRoleMethod.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование метода РольДоступна (IsInRoleMethod)» проверяет условие пункта 3 стандарта std737.",
+      "review": "confirmed",
+      "notes": "Общий запрет задан пунктом 3; исключения для ролей-маркеров описаны в пунктах 4.1–4.2."
     },
     {
       "diagnostic": "bslls:JoinWithSubQuery",
@@ -897,21 +896,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithSubQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:JoinWithSubQuery",
       "standard": "std655",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithSubQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Соединение с вложенными запросами (JoinWithSubQuery)» проверяет условие пункта 1.1 стандарта std655.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:JoinWithVirtualTable",
@@ -921,21 +919,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithVirtualTable.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:JoinWithVirtualTable",
       "standard": "std655",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithVirtualTable.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Соединение с виртуальными таблицами (JoinWithVirtualTable)» проверяет условие пункта 2 стандарта std655.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:LatinAndCyrillicSymbolInWord",
@@ -945,45 +942,43 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LatinAndCyrillicSymbolInWord.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:LineLength",
       "standard": "std456",
-      "clause": null,
-      "anchor": null,
+      "clause": "6",
+      "anchor": "6",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LineLength.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Ограничение на длину строки (LineLength)» проверяет условие пункта 6 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:LogicalOrInJoinQuerySection",
       "standard": "std658",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LogicalOrInJoinQuerySection.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Логическое 'ИЛИ' в соединениях запроса (LogicalOrInJoinQuerySection)» проверяет условие пункта 2.1 стандарта std658.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:LogicalOrInTheWhereSectionOfQuery",
       "standard": "std658",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LogicalOrInTheWhereSectionOfQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование логического \"ИЛИ\" в секции \"ГДЕ\" запроса (LogicalOrInTheWhereSectionOfQuery)» проверяет условие пункта 2.1 стандарта std658.",
+      "review": "confirmed",
+      "notes": "Текущая реализация шире пункта 2.1 и может срабатывать на допустимые ИЛИ; статья диагностики явно предупреждает о ложных срабатываниях."
     },
     {
       "diagnostic": "bslls:MetadataObjectNameLength",
@@ -993,33 +988,30 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MetadataObjectNameLength.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Имена объектов метаданных не должны превышать допустимой длины наименования (MetadataObjectNameLength)» проверяет условие пункта 2.3 стандарта std474.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MissedRequiredParameter",
       "standard": "std640",
-      "clause": null,
-      "anchor": null,
+      "clause": "7",
+      "anchor": "7",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissedRequiredParameter.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пропущен обязательный параметр метода (MissedRequiredParameter)» проверяет условие пункта 7 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MissingCodeTryCatchEx",
       "standard": "std499",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.2",
+      "anchor": "32",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingCodeTryCatchEx.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Конструкция \"Попытка...Исключение...КонецПопытки\" не содержит кода в исключении (MissingCodeTryCatchEx)» проверяет условие пункта 3.2 стандарта std499.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MissingCommonModuleMethod",
@@ -1029,9 +1021,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingCommonModuleMethod.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:MissingEventSubscriptionHandler",
@@ -1041,21 +1033,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingEventSubscriptionHandler.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:MissingParameterDescription",
       "standard": "std453",
-      "clause": null,
-      "anchor": null,
+      "clause": "5.2",
+      "anchor": "52",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingParameterDescription.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует описание параметров метода (MissingParameterDescription)» проверяет условие пункта 5.2 стандарта std453.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MissingParameterDescription",
@@ -1065,21 +1056,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingParameterDescription.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:MissingReturnedValueDescription",
       "standard": "std453",
-      "clause": null,
-      "anchor": null,
+      "clause": "5.3",
+      "anchor": "53",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingReturnedValueDescription.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует описание возвращаемого значения функции (MissingReturnedValueDescription)» проверяет условие пункта 5.3 стандарта std453.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MissingReturnedValueDescription",
@@ -1089,9 +1079,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingReturnedValueDescription.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:MissingTempStorageDeletion",
@@ -1101,57 +1091,54 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTempStorageDeletion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:MissingTempStorageDeletion",
       "standard": "std487",
-      "clause": null,
-      "anchor": null,
+      "clause": "8.3",
+      "anchor": "83",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTempStorageDeletion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует удаление данных из временного хранилища после использования (MissingTempStorageDeletion)» проверяет условие пункта 8.3 стандарта std487.",
+      "review": "confirmed",
+      "notes": "Upstream называет устаревший пункт 7.3; в текущем тексте правило очистки находится в пункте 8.3."
     },
     {
       "diagnostic": "bslls:MissingTempStorageDeletion",
       "standard": "std642",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.1",
+      "anchor": "31",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTempStorageDeletion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует удаление данных из временного хранилища после использования (MissingTempStorageDeletion)» проверяет условие пункта 3.1 стандарта std642.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MissingTemporaryFileDeletion",
       "standard": "std542",
-      "clause": null,
-      "anchor": null,
+      "clause": "4",
+      "anchor": "4",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTemporaryFileDeletion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Отсутствует удаление временного файла после использования (MissingTemporaryFileDeletion)» проверяет условие пункта 4 стандарта std542.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MissingVariablesDescription",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.2",
+      "anchor": "22",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingVariablesDescription.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Все объявления переменных должны иметь описание (MissingVariablesDescription)» проверяет условие пункта 2.2 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:MultilineStringInQuery",
@@ -1161,9 +1148,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilineStringInQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:MultilingualStringHasAllDeclaredLanguages",
@@ -1173,9 +1160,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilingualStringHasAllDeclaredLanguages.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт не требует наличия в НСтр фрагментов для каждого объявленного языка.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:MultilingualStringUsingWithTemplate",
@@ -1185,141 +1172,163 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilingualStringUsingWithTemplate.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт не устанавливает проверяемое условие полноты НСтр при совместном использовании со СтрШаблон.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:NestedFunctionInParameters",
       "standard": "std640",
-      "clause": null,
-      "anchor": null,
+      "clause": "6.1",
+      "anchor": "61",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NestedFunctionInParameters.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Инициализация параметров методов и конструкторов вызовом вложенных методов (NestedFunctionInParameters)» проверяет условие пункта 6.1 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:NonExportMethodsInApiRegion",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.4",
+      "anchor": "14",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonExportMethodsInApiRegion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Неэкспортные методы в областях ПрограммныйИнтерфейс и СлужебныйПрограммныйИнтерфейс (NonExportMethodsInApiRegion)» проверяет условие пункта 1.4 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:NonStandardRegion",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.4",
+      "anchor": "14",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Нестандартные разделы модуля (NonStandardRegion)» проверяет условие пункта 1.4 стандарта std455.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:NonStandardRegion",
+      "standard": "std455",
+      "clause": "1.5",
+      "anchor": "15",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md"
+      ],
+      "reason": "Диагностика «Нестандартные разделы модуля (NonStandardRegion)» проверяет условие пункта 1.5 стандарта std455.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:NonStandardRegion",
+      "standard": "std455",
+      "clause": "1.6",
+      "anchor": "16",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md"
+      ],
+      "reason": "Диагностика «Нестандартные разделы модуля (NonStandardRegion)» проверяет условие пункта 1.6 стандарта std455.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:NonStandardRegion",
+      "standard": "std455",
+      "clause": "1.7",
+      "anchor": "17",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md"
+      ],
+      "reason": "Диагностика «Нестандартные разделы модуля (NonStandardRegion)» проверяет условие пункта 1.7 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:NumberOfOptionalParams",
       "standard": "std640",
-      "clause": null,
-      "anchor": null,
+      "clause": "5",
+      "anchor": "5",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfOptionalParams.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Ограничение на количество не обязательных параметров метода (NumberOfOptionalParams)» проверяет условие пункта 5 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:NumberOfParams",
       "standard": "std640",
-      "clause": null,
-      "anchor": null,
+      "clause": "5",
+      "anchor": "5",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfParams.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Ограничение на количество параметров метода (NumberOfParams)» проверяет условие пункта 5 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:NumberOfValuesInStructureConstructor",
       "standard": "std693",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfValuesInStructureConstructor.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Ограничение на количество значений свойств, передаваемых в конструктор структуры (NumberOfValuesInStructureConstructor)» проверяет условие пункта 1 стандарта std693.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:OneStatementPerLine",
       "standard": "std456",
-      "clause": null,
-      "anchor": null,
+      "clause": "4",
+      "anchor": "4",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OneStatementPerLine.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Одно выражение в одной строке (OneStatementPerLine)» проверяет условие пункта 4 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:OrderOfParams",
       "standard": "std640",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OrderOfParams.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Порядок параметров метода (OrderOfParams)» проверяет условие пункта 3 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:OrdinaryAppSupport",
       "standard": "std467",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.4",
+      "anchor": "14",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OrdinaryAppSupport.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Поддержка обычного приложения (OrdinaryAppSupport)» проверяет условие пункта 1.4 стандарта std467.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:PairingBrokenTransaction",
       "standard": "std783",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.2",
+      "anchor": "12",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PairingBrokenTransaction.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Нарушение парности использования методов \"НачатьТранзакцию()\" и \"ЗафиксироватьТранзакцию()\" / \"ОтменитьТранзакцию()\" (PairingBrokenTransaction)» проверяет условие пункта 1.2 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ParseError",
       "standard": "std439",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ParseError.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Ошибка разбора исходного кода (ParseError)» проверяет условие пункта 3 стандарта std439.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:PrivilegedModuleMethodCall",
@@ -1329,9 +1338,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PrivilegedModuleMethodCall.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:ProtectedModule",
@@ -1341,45 +1350,42 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ProtectedModule.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:PublicMethodsDescription",
       "standard": "std453",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PublicMethodsDescription.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Все методы программного интерфейса должны иметь описание (PublicMethodsDescription)» проверяет условие пункта 2 стандарта std453.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:QueryNestedFieldsByDot",
       "standard": "std654",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.2",
+      "anchor": "12",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryNestedFieldsByDot.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Разыменование ссылочных полей запроса через точку (QueryNestedFieldsByDot)» проверяет условие пункта 1.2 стандарта std654.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:QueryParseError",
       "standard": "std437",
-      "clause": null,
-      "anchor": null,
+      "clause": "6.2",
+      "anchor": "62",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryParseError.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Ошибка разбора текста запроса (QueryParseError)» проверяет условие пункта 6.2 стандарта std437.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:QueryParseError",
@@ -1389,9 +1395,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryParseError.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:QueryToMissingMetadata",
@@ -1401,9 +1407,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryToMissingMetadata.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:RefOveruse",
@@ -1413,21 +1419,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/RefOveruse.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:RefOveruse",
       "standard": "std654",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/RefOveruse.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Избыточное использование \"Ссылка\" в запросе (RefOveruse)» проверяет условие пункта 1.1 стандарта std654.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ReservedParameterNames",
@@ -1437,9 +1442,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ReservedParameterNames.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт регулирует форму имён переменных, но не запрещает совпадение параметров с системными перечислениями.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:ReservedParameterNames",
@@ -1449,9 +1454,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ReservedParameterNames.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт регулирует порядок и количество параметров, но не содержит перечня зарезервированных имён.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:SameMetadataObjectAndChildNames",
@@ -1461,9 +1466,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SameMetadataObjectAndChildNames.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:SameMetadataObjectAndChildNames",
@@ -1473,9 +1478,8 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SameMetadataObjectAndChildNames.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Совпадает имя объекта метаданного и его дочернего (SameMetadataObjectAndChildNames)» проверяет условие пункта 2.4 стандарта std474.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:ScheduledJobHandler",
@@ -1485,21 +1489,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ScheduledJobHandler.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:SelectTopWithoutOrderBy",
       "standard": "std412",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SelectTopWithoutOrderBy.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование 'ВЫБРАТЬ ПЕРВЫЕ' без 'УПОРЯДОЧИТЬ ПО' (SelectTopWithoutOrderBy)» проверяет условие пункта 1.1 стандарта std412.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:SelectTopWithoutOrderBy",
@@ -1509,9 +1512,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SelectTopWithoutOrderBy.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:ServerSideExportFormMethod",
@@ -1521,21 +1524,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ServerSideExportFormMethod.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:SetPermissionsForNewObjects",
       "standard": "std532",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPermissionsForNewObjects.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Флажок «Устанавливать права для новых объектов» должен быть установлен только у роли ПолныеПрава (SetPermissionsForNewObjects)» проверяет условие пункта 2 стандарта std532.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:SetPrivilegedMode",
@@ -1545,21 +1547,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:SetPrivilegedMode",
       "standard": "std485",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование привилегированного режима (SetPrivilegedMode)» проверяет условие пункта 3 стандарта std485.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:SetPrivilegedMode",
@@ -1569,69 +1570,64 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт относится к внешнему коду; диагностика проверяет установку привилегированного режима во всём анализируемом коде.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:SetPrivilegedMode",
       "standard": "std678",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.3",
+      "anchor": "13",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование привилегированного режима (SetPrivilegedMode)» проверяет условие пункта 1.3 стандарта std678.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:SpaceAtStartComment",
       "standard": "std456",
-      "clause": null,
-      "anchor": null,
+      "clause": "7.3",
+      "anchor": "73",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SpaceAtStartComment.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Пробел в начале комментария (SpaceAtStartComment)» проверяет условие пункта 7.3 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:StyleElementConstructors",
       "standard": "std667",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/StyleElementConstructors.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Конструктор элемента стиля (StyleElementConstructors)» проверяет условие пункта 1 стандарта std667.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:TempFilesDir",
       "standard": "std542",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1_1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TempFilesDir.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Вызов функции КаталогВременныхФайлов() (TempFilesDir)» проверяет условие пункта 1 стандарта std542.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:TimeoutsInExternalResources",
       "standard": "std748",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TimeoutsInExternalResources.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Таймауты при работе с внешними ресурсами (TimeoutsInExternalResources)» проверяет условие пункта 1 стандарта std748.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:TransferringParametersBetweenClientAndServer",
@@ -1641,33 +1637,31 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TransferringParametersBetweenClientAndServer.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:TryNumber",
       "standard": "std499",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TryNumber.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Приведение к числу в попытке (TryNumber)» проверяет условие пункта 1 стандарта std499.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UnionAll",
       "standard": "std434",
-      "clause": null,
-      "anchor": null,
+      "clause": "std434",
+      "anchor": "std434",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnionAll.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование ключевого слова \"ОБЪЕДИНИТЬ\" в запросах (UnionAll)» проверяет требование всего std434; стандарт не имеет нумерованных пунктов.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UnsafeFindByCode",
@@ -1677,21 +1671,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnsafeFindByCode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:UnusedLocalMethod",
       "standard": "std456",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnusedLocalMethod.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Неиспользуемый локальный метод (UnusedLocalMethod)» проверяет условие пункта 2 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsageWriteLogEvent",
@@ -1701,81 +1694,86 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:UsageWriteLogEvent",
       "standard": "std498",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.2",
+      "anchor": "22",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Неверное использование метода \"ЗаписьЖурналаРегистрации\" (UsageWriteLogEvent)» проверяет условие пункта 2.2 стандарта std498.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "bslls:UsageWriteLogEvent",
+      "standard": "std498",
+      "clause": "2.3",
+      "anchor": "23",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md"
+      ],
+      "reason": "Диагностика «Неверное использование метода \"ЗаписьЖурналаРегистрации\" (UsageWriteLogEvent)» проверяет условие пункта 2.3 стандарта std498.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsageWriteLogEvent",
       "standard": "std499",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.2",
+      "anchor": "22",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Неверное использование метода \"ЗаписьЖурналаРегистрации\" (UsageWriteLogEvent)» проверяет условие пункта 2.2 стандарта std499.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsingCancelParameter",
       "standard": "std686",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingCancelParameter.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Работа с параметром \"Отказ\" (UsingCancelParameter)» проверяет условие пункта 1 стандарта std686.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsingExternalCodeTools",
       "standard": "std669",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingExternalCodeTools.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование возможностей выполнения внешнего кода (UsingExternalCodeTools)» проверяет условие пункта 1 стандарта std669.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsingGoto",
       "standard": "std547",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingGoto.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Оператор \"Перейти\" не должен использоваться (UsingGoto)» проверяет условие пункта 1 стандарта std547.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsingHardcodeSecretInformation",
       "standard": "std740",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.2",
+      "anchor": "32",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingHardcodeSecretInformation.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Хранение конфиденциальной информации в коде (UsingHardcodeSecretInformation)» проверяет условие пункта 3.2 стандарта std740.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsingLikeInQuery",
@@ -1785,57 +1783,53 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingLikeInQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:UsingLikeInQuery",
       "standard": "std726",
-      "clause": null,
-      "anchor": null,
+      "clause": "std726",
+      "anchor": "std726",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingLikeInQuery.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование 'ПОДОБНО' в запросе (UsingLikeInQuery)» проверяет требование всего std726; стандарт не имеет нумерованных пунктов.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsingModalWindows",
       "standard": "std703",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingModalWindows.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование модальных окон (UsingModalWindows)» проверяет условие пункта 1 стандарта std703.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:UsingSynchronousCalls",
       "standard": "std703",
-      "clause": null,
-      "anchor": null,
+      "clause": "5",
+      "anchor": "5",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingSynchronousCalls.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование синхронных вызовов (UsingSynchronousCalls)» проверяет условие пункта 5 стандарта std703.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:VirtualTableCallWithoutParameters",
       "standard": "std657",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/VirtualTableCallWithoutParameters.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Обращение к виртуальной таблице без параметров (VirtualTableCallWithoutParameters)» проверяет условие пункта 1 стандарта std657.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:VirtualTableCallWithoutParameters",
@@ -1845,9 +1839,9 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/VirtualTableCallWithoutParameters.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Стандарт относится только к виртуальной таблице Остатки и не устанавливает общее правило переноса условий из ГДЕ в параметры.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:WrongDataPathForFormElements",
@@ -1857,21 +1851,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongDataPathForFormElements.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:WrongDataPathForFormElements",
       "standard": "std467",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.3",
+      "anchor": "13",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongDataPathForFormElements.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «У полей формы не указан путь к данным (WrongDataPathForFormElements)» проверяет условие пункта 1.3 стандарта std467.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:WrongHttpServiceHandler",
@@ -1881,21 +1874,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongHttpServiceHandler.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:WrongUseOfRollbackTransactionMethod",
       "standard": "std783",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.3",
+      "anchor": "13",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongUseOfRollbackTransactionMethod.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Некорректное использование метода ОтменитьТранзакцию() (WrongUseOfRollbackTransactionMethod)» проверяет условие пункта 1.3 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "bslls:WrongWebServiceHandler",
@@ -1905,21 +1897,20 @@
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongWebServiceHandler.md"
       ],
-      "reason": "Unreviewed bootstrap record",
+      "reason": "Ссылка на std456 перенесена из шаблонного списка upstream, но текст стандарта не устанавливает проверяемое диагностикой условие.",
       "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "notes": "Предложение источника сохранено, чтобы ошибочная связь не вернулась при синхронизации."
     },
     {
       "diagnostic": "bslls:YoLetterUsage",
       "standard": "std456",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
         "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/YoLetterUsage.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика «Использование буквы \"ё\" в текстах модулей (YoLetterUsage)» проверяет условие пункта 1.1 стандарта std456.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:begin-transaction",

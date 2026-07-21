@@ -417,10 +417,12 @@ Expected: `ModuleNotFoundError: No module named 'scripts.diagnostic_standard_lin
 - [ ] **Step 3: Implement strict URL parsing, dataclasses, JSON schema, and proposal coverage**
 
 The registry is a JSON object with `version: 1` and `reviews: []`. Enforce exact
-field sets. Confirmed records require `clause`, derived `anchor`, non-empty
+field sets. Confirmed records require `clause`, verified rendered `anchor`, non-empty
 `reason`, and at least one immutable `evidence` URL. Rejected records require a
 non-empty reason and evidence but may have null clause/anchor. A
-`(diagnostic, standard, evidence proposal)` must have exactly one review.
+`(diagnostic, standard, evidence proposal)` must have at least one review;
+multiple confirmed clauses of the same standard are allowed, while mixed
+confirmed/rejected decisions for a pair are forbidden.
 
 - [ ] **Step 4: Bootstrap the candidate registry without confirming anything automatically**
 
