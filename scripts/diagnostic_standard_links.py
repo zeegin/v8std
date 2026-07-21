@@ -15,7 +15,7 @@ except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
 
 
 STANDARD_RE = re.compile(r"^std\d+$")
-DIAGNOSTIC_RE = re.compile(r"^(?:bslls|v8cs):[^\s:]+$")
+DIAGNOSTIC_RE = re.compile(r"^(?:acc|bslls|v8cs):[^\s:]+$")
 NUMERIC_CLAUSE_RE = re.compile(r"^\d+(?:\.\d+)*(?:[а-яa-z])?$", re.IGNORECASE)
 IMMUTABLE_GITHUB_RE = re.compile(
     r"^https://github\.com/[^/]+/[^/]+/blob/[0-9a-f]{40}/.+$"
@@ -36,7 +36,7 @@ DIAGNOSTIC_BACKLINKS_RE = re.compile(
     re.MULTILINE | re.DOTALL,
 )
 LEGACY_MANAGED_BACKLINK_RE = re.compile(
-    r"^.*\[#(?P<family>bslls|v8cs):(?P<identifier>[^\]]+)\]"
+    r"^.*\[#(?P<family>acc|bslls|v8cs):(?P<identifier>[^\]]+)\]"
     r"\([^\n)]+\)~?[ \t]*\n?",
     re.MULTILINE,
 )
@@ -341,7 +341,11 @@ def render_diagnostic_relations(
 
 def _diagnostic_path(diagnostic: str) -> str:
     family, identifier = diagnostic.split(":", 1)
-    directory = "bslls" if family == "bslls" else "v8-code-style"
+    directory = {
+        "acc": "acc",
+        "bslls": "bslls",
+        "v8cs": "v8-code-style",
+    }[family]
     return f"../diagnostics/{directory}/{identifier}.md"
 
 
@@ -429,11 +433,18 @@ def _standard_heading_anchors(source: str, standard: str) -> dict[str, tuple[int
             anchor = heading_anchor(clause, occurrence=occurrence)
             occurrences[base] = occurrence + 1
         if anchor == standard:
-            # The stable ``stdNNN`` marker precedes the H1 title. Whole-standard
-            # relationships are only used on pages without numbered clauses,
-            # so their content ends at the next level-six structural heading.
-            following = headings[index + 1 :]
-            boundary = following[0].start() if following else len(source)
+            # The stable ``stdNNN`` marker precedes the H1 title. A source may
+            # reference the whole standard even when it has numbered clauses;
+            # keep that backlink after normative content and before provenance.
+            source_heading = next(
+                (
+                    heading
+                    for heading in headings[index + 1 :]
+                    if heading.group("label").strip().startswith("Источник")
+                ),
+                None,
+            )
+            boundary = source_heading.start() if source_heading else len(source)
         else:
             following = [heading for heading in all_headings if heading.start() > match.end()]
             boundary = following[0].start() if following else len(source)
@@ -454,6 +465,8 @@ def rewrite_standard_page(
     def remove_legacy(match: re.Match[str]) -> str:
         diagnostic = f"{match.group('family')}:{match.group('identifier')}"
         if (diagnostic, standard) not in reviewed_pairs:
+            if match.group("family") == "acc":
+                return ""
             raise ValueError(f"unreviewed legacy backlink: {diagnostic} -> {standard}")
         return ""
 
@@ -467,11 +480,14 @@ def rewrite_standard_page(
     missing = sorted(set(blocks) - set(anchors))
     if missing:
         raise ValueError(f"missing standard anchors for {standard}: {', '.join(missing)}")
-    insertions = sorted(
-        ((anchors[anchor][1], block) for anchor, block in blocks.items()),
-        reverse=True,
-    )
-    for position, block in insertions:
+    grouped_insertions: dict[int, list[tuple[str, str]]] = {}
+    for anchor, block in blocks.items():
+        grouped_insertions.setdefault(anchors[anchor][1], []).append((anchor, block))
+    insertions = sorted(grouped_insertions.items(), reverse=True)
+    for position, positioned_blocks in insertions:
+        block = "\n\n".join(
+            value for _, value in sorted(positioned_blocks, key=lambda item: item[0])
+        )
         left = rewritten[:position].rstrip()
         right = rewritten[position:].lstrip("\n")
         rewritten = f"{left}\n\n{block}\n\n{right}"

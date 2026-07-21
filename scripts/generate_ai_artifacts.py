@@ -25,6 +25,7 @@ from generate_social_cards import (  # noqa: E402
 )
 from v8std_retrieval_rules import RetrievalRules  # noqa: E402
 from v8std_search_features import generated_aliases_for_page  # noqa: E402
+from atomic_files import atomic_write_text  # noqa: E402
 
 
 LLMS_TXT = "llms.txt"
@@ -35,6 +36,12 @@ REMOVED_AI_ARTIFACTS = ("graph.json", "search-aliases.json")
 
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
 DIRECT_URL_RE = re.compile(r"https?://[^\s)>\"']+")
+DIAGNOSTIC_BACKLINK_REGION_RE = re.compile(
+    r"^<!-- diagnostic-backlinks:start clause=[^\n]+ -->\n.*?"
+    r"^<!-- diagnostic-backlinks:end clause=[^\n]+ -->\n?",
+    re.MULTILINE | re.DOTALL,
+)
+ACC_BACKLINK_LINE_RE = re.compile(r"^.*\[#acc:[^\n]+\n?", re.MULTILINE)
 MARKER_RE = re.compile(
     r"^#{6}\s+(?P<marker>#std\d+|(?:bslls|acc|v8cs):[A-Za-z0-9_-]+)\s*$",
     re.MULTILINE,
@@ -103,6 +110,14 @@ def dedupe(values: list[str]) -> list[str]:
 def normalize_body(raw: str) -> str:
     _, content = extract_front_matter(raw)
     return content.replace("\r\n", "\n").replace("\r", "\n").strip()
+
+
+def strip_acc_backlinks_from_search_content(content: str) -> str:
+    def replace_region(match: re.Match[str]) -> str:
+        retained = ACC_BACKLINK_LINE_RE.sub("", match.group(0))
+        return retained if MARKDOWN_LINK_RE.search(retained) else ""
+
+    return DIAGNOSTIC_BACKLINK_REGION_RE.sub(replace_region, content)
 
 
 def llms_ignored(front_matter: dict) -> bool:
@@ -628,7 +643,8 @@ def build_ai_page(
     page_type = classify_page(relative)
     page_id = build_page_id(relative, content, page_type)
     metadata = build_page_metadata(source, docs_dir, project)
-    body_markdown = clean_llm_markdown(content)
+    search_content = strip_acc_backlinks_from_search_content(content)
+    body_markdown = clean_llm_markdown(search_content)
     body_markdown = normalize_internal_markdown_links(body_markdown, source, docs_dir, project)
     body_markdown = remove_duplicate_title_heading(body_markdown, metadata["seo_title"])
     body_markdown = wrap_llm_markdown_lines(body_markdown)
@@ -1034,9 +1050,9 @@ def write_ai_artifacts(index: dict) -> None:
     ai_dir = docs_dir / AI_DIR
     ai_dir.mkdir(parents=True, exist_ok=True)
 
-    (docs_dir / LLMS_TXT).write_text(build_llms_txt(index), encoding="utf-8")
-    (docs_dir / LLMS_FULL_TXT).write_text(build_llms_full_txt(index), encoding="utf-8")
-    (ai_dir / PAGES_JSONL).write_text(build_pages_jsonl(index["pages"]), encoding="utf-8")
+    atomic_write_text(docs_dir / LLMS_TXT, build_llms_txt(index))
+    atomic_write_text(docs_dir / LLMS_FULL_TXT, build_llms_full_txt(index))
+    atomic_write_text(ai_dir / PAGES_JSONL, build_pages_jsonl(index["pages"]))
     for filename in REMOVED_AI_ARTIFACTS:
         (ai_dir / filename).unlink(missing_ok=True)
 

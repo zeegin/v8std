@@ -94,6 +94,15 @@ rules:
       - "Сообщить"
       - "ПоказатьПредупреждение"
 
+  - id: localized_query_literals
+    primary: "std762"
+    standards:
+      - "std762"
+    aliases:
+      - "строковые литералы из текста запроса выводятся пользователю"
+      - "локализация строковых литералов запроса"
+      - "локализация запросов и СКД"
+
   - id: separation_of_concerns_form_logic
     primary: "patterns:engineering:separation_of_concerns"
     standards:

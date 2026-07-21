@@ -107,6 +107,15 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             [item["id"] for item in acc["related"] if item["relation"] == "edt_check"],
         )
 
+    def test_acc_backlinks_are_relations_but_do_not_pollute_standard_search_text(self):
+        standard = self.pages_by_id["std762"]
+
+        self.assertIn(
+            "acc:1300",
+            [item["id"] for item in standard["related"] if item["relation"] == "diagnostic"],
+        )
+        self.assertNotIn("acc:1300", standard["body_markdown"])
+
     def test_diagnostic_relations_preserve_exact_standard_anchors(self):
         modal = self.pages_by_id["bslls:UsingModalWindows"]
         relation = next(

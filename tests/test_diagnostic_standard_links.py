@@ -16,6 +16,7 @@ from scripts.diagnostic_standard_links import (
     rewrite_standard_page,
     validate_review_coverage,
 )
+from scripts.generate_diagnostic_standard_links import load_all_reviews, render_registry_index
 
 
 IMMUTABLE_EVIDENCE = (
@@ -123,6 +124,20 @@ class LinkReviewTests(unittest.TestCase):
             }
         )
         self.assertEqual(review.anchor, "31_1")
+
+    def test_acc_diagnostic_is_a_supported_review_family(self):
+        review = LinkReview.from_dict(
+            {
+                "diagnostic": "acc:5",
+                "standard": "std474",
+                "clause": "3.2",
+                "anchor": "32",
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "АПК связывает проверку с пунктом 3.2.",
+                "review": "confirmed",
+            }
+        )
+        self.assertEqual(review.diagnostic, "acc:5")
 
     def test_rejected_review_may_have_no_clause(self):
         review = LinkReview.from_dict(
@@ -278,6 +293,15 @@ class RelationshipRenderingTests(unittest.TestCase):
             "../diagnostics/bslls/UsingModalWindows.md", reverse["std703"]["1"]
         )
 
+    def test_acc_reverse_link_uses_the_acc_directory(self):
+        review = self.confirmedReview(
+            diagnostic="acc:5", standard="std474", clause="3.2"
+        )
+
+        reverse = render_standard_backlinks([review])
+
+        self.assertIn("../diagnostics/acc/5.md", reverse["std474"]["32"])
+
     def test_rewrite_diagnostic_page_uses_managed_region_and_reason(self):
         source = """###### bslls:UsingModalWindows
 
@@ -359,7 +383,57 @@ source
             rewritten.index("## Новый самостоятельный раздел"),
         )
 
-    def test_rewrite_standard_page_preserves_acc_lines_byte_for_byte(self):
+    def test_whole_standard_backlink_is_placed_after_normative_content(self):
+        review = self.confirmedReview(
+            diagnostic="acc:1354", standard="std762", clause="std762"
+        )
+        source = """###### #std762
+
+# Локализация запросов
+
+###### 1.
+
+Нормативный текст.
+
+###### Источник
+
+source
+"""
+
+        rewritten = rewrite_standard_page(source, "std762", [review])
+
+        self.assertLess(rewritten.index("Нормативный текст."), rewritten.index("#acc:1354"))
+        self.assertLess(rewritten.index("#acc:1354"), rewritten.index("###### Источник"))
+
+    def test_whole_standard_and_last_clause_blocks_share_a_boundary_without_corruption(self):
+        whole = self.confirmedReview(
+            diagnostic="acc:68", standard="std409", clause="std409"
+        )
+        exact = self.confirmedReview(
+            diagnostic="v8cs:using-form-data-to-value", standard="std409", clause="1"
+        )
+        source = """###### #std409
+
+# Преобразование данных формы
+
+###### 1.
+
+Нормативный текст.
+
+###### Источник
+
+source
+"""
+
+        rewritten = rewrite_standard_page(source, "std409", [whole, exact])
+
+        self.assertEqual(rewritten.count("<!-- diagnostic-backlinks:start"), 2)
+        self.assertNotIn("\n!-- diagnostic-backlinks:start", rewritten)
+        self.assertEqual(
+            rewrite_standard_page(rewritten, "std409", [whole, exact]), rewritten
+        )
+
+    def test_rewrite_standard_page_moves_acc_links_into_the_exact_managed_clause(self):
         source = """###### #std703
 
 # Ограничение модальных окон
@@ -375,12 +449,23 @@ source
 ###### Источник
 source
 """
-        before = re.findall(r"^.*#acc:.*$", source, re.MULTILINE)
-        rewritten = rewrite_standard_page(source, "std703", [self.confirmedReview()])
-        after = re.findall(r"^.*#acc:.*$", rewritten, re.MULTILINE)
+        acc_review = self.confirmedReview(
+            diagnostic="acc:17", standard="std703", clause="1"
+        )
+        rewritten = rewrite_standard_page(
+            source, "std703", [self.confirmedReview(), acc_review]
+        )
 
-        self.assertEqual(before, after)
         self.assertEqual(rewritten.count("#bslls:UsingModalWindows"), 1)
+        self.assertEqual(rewritten.count("#acc:17"), 1)
+        managed = re.search(
+            r"<!-- diagnostic-backlinks:start clause=1 -->(.*?)"
+            r"<!-- diagnostic-backlinks:end clause=1 -->",
+            rewritten,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(managed)
+        self.assertIn("#acc:17", managed.group(1))
 
     def test_rewrite_standard_page_rejects_unreviewed_legacy_managed_link(self):
         source = """###### #std703
@@ -393,11 +478,66 @@ source
         with self.assertRaisesRegex(ValueError, "unreviewed legacy backlink"):
             rewrite_standard_page(source, "std703", [self.confirmedReview()])
 
+    def test_rewrite_standard_page_removes_obsolete_acc_link_not_in_catalog_reviews(self):
+        source = """###### #std703
+
+# Ограничение модальных окон
+
+###### 1.
+
+Текст.
+
+###### Проверки
+~[#acc:17](../diagnostics/acc/17.md)~
+"""
+
+        rewritten = rewrite_standard_page(source, "std703", [self.confirmedReview()])
+
+        self.assertNotIn("#acc:17", rewritten)
+
 
 class GeneratedRelationshipGraphTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.reviews = load_reviews(REPO_ROOT / "data/diagnostic-standard-links.json")
+
+    def test_generator_loads_acc_reviews_from_the_extracted_catalog(self):
+        reviews = load_all_reviews(REPO_ROOT)
+        acc_reviews = [review for review in reviews if review.diagnostic.startswith("acc:")]
+
+        self.assertEqual(len(acc_reviews), 600)
+        self.assertEqual(sum(review.review == "confirmed" for review in acc_reviews), 598)
+
+    def test_registry_index_is_generated_from_confirmed_exact_reviews(self):
+        confirmed = LinkReview.from_dict(
+            {
+                "diagnostic": "acc:5",
+                "standard": "std474",
+                "clause": "3.2",
+                "anchor": "32",
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "Confirmed.",
+                "review": "confirmed",
+            }
+        )
+        rejected = LinkReview.from_dict(
+            {
+                "diagnostic": "acc:6",
+                "standard": "std474",
+                "clause": None,
+                "anchor": None,
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "Rejected.",
+                "review": "rejected",
+            }
+        )
+
+        rendered = render_registry_index(
+            [confirmed, rejected], {"std474": "Имя, синоним, комментарий"}
+        )
+
+        self.assertIn("[acc:5](acc/5.md)", rendered)
+        self.assertNotIn("acc:6", rendered)
 
     def diagnosticPath(self, diagnostic):
         family, identifier = diagnostic.split(":", 1)
@@ -447,7 +587,7 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
             self.assertTrue(any(backlink in block for block in blocks), review.diagnostic)
 
     def test_no_managed_family_backlink_remains_outside_generated_regions(self):
-        pattern = re.compile(r"\[#(?:bslls|v8cs):")
+        pattern = re.compile(r"\[#(?:acc|bslls|v8cs):")
         for path in sorted((REPO_ROOT / "docs/std").glob("*.md")):
             source = path.read_text(encoding="utf-8")
             unmanaged = re.sub(

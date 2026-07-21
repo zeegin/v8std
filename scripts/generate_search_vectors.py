@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from v8std_retrieval_rules import tokenize
+from atomic_files import atomic_write_text
 
 
 DEFAULT_DIM = 256
@@ -121,8 +122,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     rows = generate_rows(args.pages, dim=args.dim, model=args.model)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    atomic_write_text(args.output, "\n".join(rows) + "\n")
     print(f"wrote {len(rows)} vectors to {args.output}")
     return 0
 
