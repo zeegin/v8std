@@ -12,4 +12,5 @@ docs/ai/
 overrides/partials/page_meta.html
 skills/
 .codex*
+.worktrees/
 telegram*.md
