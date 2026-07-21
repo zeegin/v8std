@@ -1,0 +1,2171 @@
+{
+  "version": 1,
+  "families": [
+    {
+      "family": "bslls",
+      "repository": "https://github.com/1c-syntax/bsl-language-server",
+      "revision": "f4616cda8a216789ee40529ed857e614b9e2ea25",
+      "license": "LGPL-3.0-or-later",
+      "source_root": "docs/diagnostics",
+      "diagnostics": [
+        {
+          "id": "AllFunctionPathMustHaveReturn",
+          "source_path": "docs/diagnostics/AllFunctionPathMustHaveReturn.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AllFunctionPathMustHaveReturn.md",
+          "content_sha256": "cc919fd2b74ecc675efe09bb14960f1f8a8232214d63d574f42e5e1222b588a0"
+        },
+        {
+          "id": "AssignAliasFieldsInQuery",
+          "source_path": "docs/diagnostics/AssignAliasFieldsInQuery.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignAliasFieldsInQuery.md",
+          "content_sha256": "d198c34c70bdb3db793346651a9d554d73a187431f7351424d1c42c04e2fbd2f"
+        },
+        {
+          "id": "AssignToReadOnlyProperty",
+          "source_path": "docs/diagnostics/AssignToReadOnlyProperty.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignToReadOnlyProperty.md",
+          "content_sha256": "ebb466bf8f600d45be5a0d7579668acbaddde879ec2201ede4515dcd2c86627b"
+        },
+        {
+          "id": "BadExceptionCategory",
+          "source_path": "docs/diagnostics/BadExceptionCategory.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/BadExceptionCategory.md",
+          "content_sha256": "8a7d7199bda22421e8a126ea5ca32a2003cb894f667dee79eaf1478531e90b81"
+        },
+        {
+          "id": "BadWords",
+          "source_path": "docs/diagnostics/BadWords.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/BadWords.md",
+          "content_sha256": "fea0a412121f8259c7d3ab3c83d8600917c5c682dd372d054fc08a86a3c94971"
+        },
+        {
+          "id": "BeginTransactionBeforeTryCatch",
+          "source_path": "docs/diagnostics/BeginTransactionBeforeTryCatch.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/BeginTransactionBeforeTryCatch.md",
+          "content_sha256": "553de1f47a9804ff02f6831ee11931d3b1e6d0f8ce7cf4f9e126880d5b74bea9"
+        },
+        {
+          "id": "CachedPublic",
+          "source_path": "docs/diagnostics/CachedPublic.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CachedPublic.md",
+          "content_sha256": "cd4651f28d3bffe941ffa3e3313079e1b85797a83ad9d095ffa74ba98612db62"
+        },
+        {
+          "id": "CanonicalSpellingKeywords",
+          "source_path": "docs/diagnostics/CanonicalSpellingKeywords.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CanonicalSpellingKeywords.md",
+          "content_sha256": "da74fc4d67b2e9a05f23c091be786ca4b49e8f3234c579c46c757be30f7e839e"
+        },
+        {
+          "id": "CodeAfterAsyncCall",
+          "source_path": "docs/diagnostics/CodeAfterAsyncCall.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeAfterAsyncCall.md",
+          "content_sha256": "d62b0b1c88b396f63f4fe69f6388bf862e1234f8c5e49dd46d5e90ff06e105e2"
+        },
+        {
+          "id": "CodeBlockBeforeSub",
+          "source_path": "docs/diagnostics/CodeBlockBeforeSub.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeBlockBeforeSub.md",
+          "content_sha256": "067b3ec755d422c3d03e987d7ee7c80c3b4199c9a8a7fee40a55ee20cc964b0e"
+        },
+        {
+          "id": "CodeOutOfRegion",
+          "source_path": "docs/diagnostics/CodeOutOfRegion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeOutOfRegion.md",
+          "content_sha256": "740644d60b85b2ef76ac4b1bb28ad9f76fd6e9dbfb90cd6654f8df48862b8416"
+        },
+        {
+          "id": "CognitiveComplexity",
+          "source_path": "docs/diagnostics/CognitiveComplexity.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CognitiveComplexity.md",
+          "content_sha256": "89c708fb92530afcd98c5c1481d9f53d7db4bc57dcd5b6bb342ddb065d55d46b"
+        },
+        {
+          "id": "CommandModuleExportMethods",
+          "source_path": "docs/diagnostics/CommandModuleExportMethods.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommandModuleExportMethods.md",
+          "content_sha256": "c84a64a3c1767ae76e934aea18fcd2f8fb9bb374658188773d9ccb5b7260ce48"
+        },
+        {
+          "id": "CommentedCode",
+          "source_path": "docs/diagnostics/CommentedCode.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommentedCode.md",
+          "content_sha256": "678ba0ce52b41cf2ee2d1299c4cd06a0db25992fa8195b9e67b8e4c9f24ace83"
+        },
+        {
+          "id": "CommitTransactionOutsideTryCatch",
+          "source_path": "docs/diagnostics/CommitTransactionOutsideTryCatch.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommitTransactionOutsideTryCatch.md",
+          "content_sha256": "fab3a32cb0e6b4f30b1e512d3bf6aae3b03e6852a40d84e6fb3450c4be5e4de6"
+        },
+        {
+          "id": "CommonModuleAssign",
+          "source_path": "docs/diagnostics/CommonModuleAssign.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleAssign.md",
+          "content_sha256": "735e59d42186cb481a46e143ef2263e3e21d9e55238706f2b733f33c06ab4472"
+        },
+        {
+          "id": "CommonModuleInvalidType",
+          "source_path": "docs/diagnostics/CommonModuleInvalidType.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleInvalidType.md",
+          "content_sha256": "7ecbdf4d06580da7f0028f17f254ac4c310e522dbe9d6205740eecb9e9ab389b"
+        },
+        {
+          "id": "CommonModuleMissingAPI",
+          "source_path": "docs/diagnostics/CommonModuleMissingAPI.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleMissingAPI.md",
+          "content_sha256": "bea390a43b7a246eaf886b66d93b94d39effc2792e23ef54036fe152f30da6a4"
+        },
+        {
+          "id": "CommonModuleNameCached",
+          "source_path": "docs/diagnostics/CommonModuleNameCached.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameCached.md",
+          "content_sha256": "4aa7a6760049ea699868d88ab617f818bc4698740baee255020488b2de8ebe94"
+        },
+        {
+          "id": "CommonModuleNameClient",
+          "source_path": "docs/diagnostics/CommonModuleNameClient.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameClient.md",
+          "content_sha256": "ee4a5eacde136ff7fa2a916cfcde2ae5d4827cccfb81bf87feca41a0dedc24cc"
+        },
+        {
+          "id": "CommonModuleNameClientServer",
+          "source_path": "docs/diagnostics/CommonModuleNameClientServer.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameClientServer.md",
+          "content_sha256": "fb1e3d55d52a699e80ac90b7d19fcd079bbdf9814907867d401a406fe3e5b20d"
+        },
+        {
+          "id": "CommonModuleNameFullAccess",
+          "source_path": "docs/diagnostics/CommonModuleNameFullAccess.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameFullAccess.md",
+          "content_sha256": "472424689238f07e7acac54c3f14f0198a07cb1fd3d472da1d9fb33de384b533"
+        },
+        {
+          "id": "CommonModuleNameGlobal",
+          "source_path": "docs/diagnostics/CommonModuleNameGlobal.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameGlobal.md",
+          "content_sha256": "999a72c20f3c9f709940520ff823c9a509f2757033999361cf5fcfd7819eaf46"
+        },
+        {
+          "id": "CommonModuleNameGlobalClient",
+          "source_path": "docs/diagnostics/CommonModuleNameGlobalClient.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameGlobalClient.md",
+          "content_sha256": "657e336997568733e8bc3a98f9e671a82c349d94c53e9c646fd4786052723fce"
+        },
+        {
+          "id": "CommonModuleNameServerCall",
+          "source_path": "docs/diagnostics/CommonModuleNameServerCall.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameServerCall.md",
+          "content_sha256": "5e4aec516e12aac5b68d6065f877b31c71626fbb130ed16c14d5fb84fe1f7e8d"
+        },
+        {
+          "id": "CommonModuleNameWords",
+          "source_path": "docs/diagnostics/CommonModuleNameWords.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameWords.md",
+          "content_sha256": "2e8c907d3ac73ffb519e6ea4822572f519fb05f279746ab508e5a149c180c5a4"
+        },
+        {
+          "id": "CommonModuleVariables",
+          "source_path": "docs/diagnostics/CommonModuleVariables.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleVariables.md",
+          "content_sha256": "d0c3bfda1ba143197ed74c5cefc8effe62072de51b848297e4cf79d3c9894049"
+        },
+        {
+          "id": "CompareWithBoolean",
+          "source_path": "docs/diagnostics/CompareWithBoolean.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CompareWithBoolean.md",
+          "content_sha256": "a24d90734747eae7e269e3564d9ad6f6ca072e2163228dc53f3400f79e9884d5"
+        },
+        {
+          "id": "CompilationDirectiveLost",
+          "source_path": "docs/diagnostics/CompilationDirectiveLost.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CompilationDirectiveLost.md",
+          "content_sha256": "daa2b48ab17d7956f58a149a7198a2881179293d81792e5e4e07107bebc6b02d"
+        },
+        {
+          "id": "CompilationDirectiveNeedLess",
+          "source_path": "docs/diagnostics/CompilationDirectiveNeedLess.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CompilationDirectiveNeedLess.md",
+          "content_sha256": "71ee198f34b37cdbf8daba9b8045f52dbd9cd64f4202e0a7eb9d2a9f0837d6d9"
+        },
+        {
+          "id": "ConsecutiveEmptyLines",
+          "source_path": "docs/diagnostics/ConsecutiveEmptyLines.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ConsecutiveEmptyLines.md",
+          "content_sha256": "67f1111924b43d07f27eff661ad802e5f326fbac241db49c3012a012c32d3101"
+        },
+        {
+          "id": "CrazyMultilineString",
+          "source_path": "docs/diagnostics/CrazyMultilineString.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CrazyMultilineString.md",
+          "content_sha256": "f46081784db016553588b918d461f0d309fd517aadb3b883e2c98f94326f6599"
+        },
+        {
+          "id": "CreateQueryInCycle",
+          "source_path": "docs/diagnostics/CreateQueryInCycle.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CreateQueryInCycle.md",
+          "content_sha256": "c963458b9a8bf3150d85596a7021214ff3ddc06208803650007bd226adaad74b"
+        },
+        {
+          "id": "CyclomaticComplexity",
+          "source_path": "docs/diagnostics/CyclomaticComplexity.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CyclomaticComplexity.md",
+          "content_sha256": "12d79dd3ad86cf1dc2cff49d901d54b74b878198cb07076c1f86d3136b5b9c14"
+        },
+        {
+          "id": "DataExchangeLoading",
+          "source_path": "docs/diagnostics/DataExchangeLoading.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md",
+          "content_sha256": "0d5dd8b44595d7b925c72e408edc2f11270527b0b23552e7e5a0b119778b7b6d"
+        },
+        {
+          "id": "DeletingCollectionItem",
+          "source_path": "docs/diagnostics/DeletingCollectionItem.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeletingCollectionItem.md",
+          "content_sha256": "296eaaff7d82f6a66960eee29b69684ef543d8da583edd6e93c451ff921a0fef"
+        },
+        {
+          "id": "DenyIncompleteValues",
+          "source_path": "docs/diagnostics/DenyIncompleteValues.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DenyIncompleteValues.md",
+          "content_sha256": "ccd9b721b6f8f3dced184374cea7cb2afb23f3da83291c71f6f850897c351c72"
+        },
+        {
+          "id": "DeprecatedAttributes8312",
+          "source_path": "docs/diagnostics/DeprecatedAttributes8312.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedAttributes8312.md",
+          "content_sha256": "fba5a448d94ba7ea6bdc0323388d9d5bc52ed8a820871d5017a0de925735b2fb"
+        },
+        {
+          "id": "DeprecatedCurrentDate",
+          "source_path": "docs/diagnostics/DeprecatedCurrentDate.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedCurrentDate.md",
+          "content_sha256": "2e9809d2a2190249a31b043969022056b61e2fae887fde8766e0ce9e735ecdad"
+        },
+        {
+          "id": "DeprecatedFind",
+          "source_path": "docs/diagnostics/DeprecatedFind.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedFind.md",
+          "content_sha256": "452a8b31fc58ef9640b656d4967cfd3be04939dbdb16877853b15dcb800b89df"
+        },
+        {
+          "id": "DeprecatedMessage",
+          "source_path": "docs/diagnostics/DeprecatedMessage.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedMessage.md",
+          "content_sha256": "d66d3edba3dffb7f2b3bea89c3a8387dbfa50c5f4f9001329ef174273015e1d4"
+        },
+        {
+          "id": "DeprecatedMethodCall",
+          "source_path": "docs/diagnostics/DeprecatedMethodCall.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedMethodCall.md",
+          "content_sha256": "55428a39a9738a19962a3a4f31488487b8bd90fe0aba61a4b0ae324064fb2232"
+        },
+        {
+          "id": "DeprecatedTypeManagedForm",
+          "source_path": "docs/diagnostics/DeprecatedTypeManagedForm.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedTypeManagedForm.md",
+          "content_sha256": "213b779754cd1b8cc0056e8bb6ae304fb7214733f755fc4f4371a2026c44b417"
+        },
+        {
+          "id": "DisableSafeMode",
+          "source_path": "docs/diagnostics/DisableSafeMode.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md",
+          "content_sha256": "e417a485642b1c51d364ef16c48328490bc8c5ac61e499b045912e40ca1b509a"
+        },
+        {
+          "id": "DoubleNegatives",
+          "source_path": "docs/diagnostics/DoubleNegatives.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DoubleNegatives.md",
+          "content_sha256": "396ef876632db07ad011a004de75f1f97c7ca3b3837e4c98103ba753555a9d65"
+        },
+        {
+          "id": "DuplicatedInsertionIntoCollection",
+          "source_path": "docs/diagnostics/DuplicatedInsertionIntoCollection.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicatedInsertionIntoCollection.md",
+          "content_sha256": "ea641343ea26c023d9c0b8ea719aea5d01c2dd5ef427821fa52d35742b0ecfba"
+        },
+        {
+          "id": "DuplicateRegion",
+          "source_path": "docs/diagnostics/DuplicateRegion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicateRegion.md",
+          "content_sha256": "27e0f4784dd3c99ef5d50dfc7f2c620351f5debd88c374cea8129153d0d2277f"
+        },
+        {
+          "id": "DuplicateStringLiteral",
+          "source_path": "docs/diagnostics/DuplicateStringLiteral.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicateStringLiteral.md",
+          "content_sha256": "b07cf1b7009cc4133b0c6f3b0c5f60933444eee54517e6b62718a8d27efc0f0c"
+        },
+        {
+          "id": "EmptyCodeBlock",
+          "source_path": "docs/diagnostics/EmptyCodeBlock.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EmptyCodeBlock.md",
+          "content_sha256": "844520bbd841880fa34f46665f571d5cb7687e5e50e4e07b738fcdfee34687ea"
+        },
+        {
+          "id": "EmptyRegion",
+          "source_path": "docs/diagnostics/EmptyRegion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EmptyRegion.md",
+          "content_sha256": "5fb3b6d8c3918b44fcec9a0a476e9a9f05ff546691917b3793491758f8d8d74b"
+        },
+        {
+          "id": "EmptyStatement",
+          "source_path": "docs/diagnostics/EmptyStatement.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EmptyStatement.md",
+          "content_sha256": "ed4a3ddeb0f80b6c135fd89a7ea1c3f8997a1bc529381159571534d278c088aa"
+        },
+        {
+          "id": "EventHandlerInvalidSignature",
+          "source_path": "docs/diagnostics/EventHandlerInvalidSignature.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EventHandlerInvalidSignature.md",
+          "content_sha256": "4a8e31f88aef5fcd9b1c8d023d161a4ef0ffac58ac586cff88a5749e192b4d81"
+        },
+        {
+          "id": "EventHandlerOutsideEventRegion",
+          "source_path": "docs/diagnostics/EventHandlerOutsideEventRegion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EventHandlerOutsideEventRegion.md",
+          "content_sha256": "c3cac51d30ea4085dea70d9283cf45a9797ad21940e1cf8b7fd11f4e6bfe231c"
+        },
+        {
+          "id": "ExcessiveAutoTestCheck",
+          "source_path": "docs/diagnostics/ExcessiveAutoTestCheck.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExcessiveAutoTestCheck.md",
+          "content_sha256": "4d8cbc1f8eada331fa970dd5ae7b0acd72a46106aae735aaf8c757a78726a3c1"
+        },
+        {
+          "id": "ExecuteExternalCode",
+          "source_path": "docs/diagnostics/ExecuteExternalCode.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCode.md",
+          "content_sha256": "88b9d4647c64bb144fb57dc900589f9600fc1ca88f9f0aadb23669e35581ecd1"
+        },
+        {
+          "id": "ExecuteExternalCodeInCommonModule",
+          "source_path": "docs/diagnostics/ExecuteExternalCodeInCommonModule.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCodeInCommonModule.md",
+          "content_sha256": "73001ee69aa9c6d2522ce22bf8a6086601fb5af517a1ae31c69711857c2ce7a8"
+        },
+        {
+          "id": "ExportVariables",
+          "source_path": "docs/diagnostics/ExportVariables.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExportVariables.md",
+          "content_sha256": "e1c34a406b99ee62abe829c75b29d9c10360f61417362cf33e97724b62aa0f05"
+        },
+        {
+          "id": "ExternalAppStarting",
+          "source_path": "docs/diagnostics/ExternalAppStarting.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExternalAppStarting.md",
+          "content_sha256": "e22778a1c6a2aa6dc65578a0ca6d075db871fe5da1fd9f8202a1e36f0600f94d"
+        },
+        {
+          "id": "ExtraCommas",
+          "source_path": "docs/diagnostics/ExtraCommas.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExtraCommas.md",
+          "content_sha256": "e41486dfd53e61f43c13d5a498f61de391009236473fd9e3e9b16ae617bf58d1"
+        },
+        {
+          "id": "FieldsFromJoinsWithoutIsNull",
+          "source_path": "docs/diagnostics/FieldsFromJoinsWithoutIsNull.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FieldsFromJoinsWithoutIsNull.md",
+          "content_sha256": "2f515342858e4d74f8fe1d8ff4c68046efa4c366e3f92c59546c1061add3aa2e"
+        },
+        {
+          "id": "FileSystemAccess",
+          "source_path": "docs/diagnostics/FileSystemAccess.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FileSystemAccess.md",
+          "content_sha256": "02f40d8ec9edecd9f4329fdcf87b67e47cf78c61349411eee85acab66083ad30"
+        },
+        {
+          "id": "ForbiddenMetadataName",
+          "source_path": "docs/diagnostics/ForbiddenMetadataName.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ForbiddenMetadataName.md",
+          "content_sha256": "be6fd24327944d72091e8cc93c99a0f51da9c1f048cba4f086f84f9c88c9ae79"
+        },
+        {
+          "id": "FormDataToValue",
+          "source_path": "docs/diagnostics/FormDataToValue.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FormDataToValue.md",
+          "content_sha256": "254520aa944af5cd6723bca9d374e0f384e86ccf7b6c512a16cc8ec2d76450b6"
+        },
+        {
+          "id": "FullOuterJoinQuery",
+          "source_path": "docs/diagnostics/FullOuterJoinQuery.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FullOuterJoinQuery.md",
+          "content_sha256": "b546796f5cc65ecf8678e90a743937848b8812e58e5b082d5821b6617929de96"
+        },
+        {
+          "id": "FunctionNameStartsWithGet",
+          "source_path": "docs/diagnostics/FunctionNameStartsWithGet.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionNameStartsWithGet.md",
+          "content_sha256": "d02b67fa9ee54bcdc55afad6fc7d4c37e910d23148cb5c5c2125a06e8b3f1732"
+        },
+        {
+          "id": "FunctionOutParameter",
+          "source_path": "docs/diagnostics/FunctionOutParameter.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionOutParameter.md",
+          "content_sha256": "9a096b84b9178b39ae70b408edb52979aa9c5a77beb9093ff12836f9ed6d1564"
+        },
+        {
+          "id": "FunctionReturnsSamePrimitive",
+          "source_path": "docs/diagnostics/FunctionReturnsSamePrimitive.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionReturnsSamePrimitive.md",
+          "content_sha256": "86fff1af0de5040630ced1762c9191d82f769319b49d93a6fe4ae6bf4a0bd89d"
+        },
+        {
+          "id": "FunctionShouldHaveReturn",
+          "source_path": "docs/diagnostics/FunctionShouldHaveReturn.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionShouldHaveReturn.md",
+          "content_sha256": "baf7d225e9c5e97d91483ef25616305d4227f60e4436313a8b94b07fe2e166ad"
+        },
+        {
+          "id": "GetFormMethod",
+          "source_path": "docs/diagnostics/GetFormMethod.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/GetFormMethod.md",
+          "content_sha256": "de2af5e46a333720ba0b89ea9c34cd56228cc2c2e4f8d0a8b58711337530621c"
+        },
+        {
+          "id": "GlobalContextMethodCollision8312",
+          "source_path": "docs/diagnostics/GlobalContextMethodCollision8312.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/GlobalContextMethodCollision8312.md",
+          "content_sha256": "cae62c71f1a4bf37413d226a3deff312060cc71a1bc517f335f8e391f59b7d05"
+        },
+        {
+          "id": "IdenticalExpressions",
+          "source_path": "docs/diagnostics/IdenticalExpressions.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IdenticalExpressions.md",
+          "content_sha256": "3398f803a48fcbf08813273dd26937b2ef5d9c678d38335db10a3ab3f208a033"
+        },
+        {
+          "id": "IfConditionComplexity",
+          "source_path": "docs/diagnostics/IfConditionComplexity.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IfConditionComplexity.md",
+          "content_sha256": "33f707c7de0d9e08c41c42311d22dd5c2c351823ba7e44dc74a0fff12450060a"
+        },
+        {
+          "id": "IfElseDuplicatedCodeBlock",
+          "source_path": "docs/diagnostics/IfElseDuplicatedCodeBlock.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IfElseDuplicatedCodeBlock.md",
+          "content_sha256": "c039d73344a49a6fe8e09ebd626151d1e4012bb4f03ca1ee581b2a292ef6e185"
+        },
+        {
+          "id": "IfElseDuplicatedCondition",
+          "source_path": "docs/diagnostics/IfElseDuplicatedCondition.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IfElseDuplicatedCondition.md",
+          "content_sha256": "0a2dda29ee7c83281511f071a606807b3f8c3b8835328a76ea1b5466277d3894"
+        },
+        {
+          "id": "IfElseIfEndsWithElse",
+          "source_path": "docs/diagnostics/IfElseIfEndsWithElse.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IfElseIfEndsWithElse.md",
+          "content_sha256": "84e8a5116694d95c08bf5dcf0c4020bd6ef8084c72f7034fb29cc6a7985333e9"
+        },
+        {
+          "id": "IncorrectLineBreak",
+          "source_path": "docs/diagnostics/IncorrectLineBreak.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectLineBreak.md",
+          "content_sha256": "6ad24a2d936af3fe038a1ed90faa249dfa355b2e89fd315a7441304810a3119e"
+        },
+        {
+          "id": "IncorrectUseLikeInQuery",
+          "source_path": "docs/diagnostics/IncorrectUseLikeInQuery.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseLikeInQuery.md",
+          "content_sha256": "334e380b26437c4eac08438af97250075eb68b3c051ff3fbab82e4c484dc01b3"
+        },
+        {
+          "id": "IncorrectUseOfStrTemplate",
+          "source_path": "docs/diagnostics/IncorrectUseOfStrTemplate.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseOfStrTemplate.md",
+          "content_sha256": "b21b5825567c592eda3971d242c628d9023b995b6845d0f85e1273c42e372b58"
+        },
+        {
+          "id": "InternetAccess",
+          "source_path": "docs/diagnostics/InternetAccess.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/InternetAccess.md",
+          "content_sha256": "13f0383bb6f56b16b4a746ac461d771cf4990fc514bf09543398e968681af5a3"
+        },
+        {
+          "id": "InvalidCharacterInFile",
+          "source_path": "docs/diagnostics/InvalidCharacterInFile.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/InvalidCharacterInFile.md",
+          "content_sha256": "e112cae01d0e553f8c1eb679e8ebfeb5ca1ed60821980bd4c272a460503cdbcd"
+        },
+        {
+          "id": "IsInRoleMethod",
+          "source_path": "docs/diagnostics/IsInRoleMethod.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IsInRoleMethod.md",
+          "content_sha256": "f8d7a379e881d3150163c695966a0aff8476b4ebe3e9894918dd7c6675ccb2cd"
+        },
+        {
+          "id": "JoinWithSubQuery",
+          "source_path": "docs/diagnostics/JoinWithSubQuery.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithSubQuery.md",
+          "content_sha256": "1325ca91a709e622e62bc0f5d05738bfa23d36e01e93e2f211e9539f2f9b7f8a"
+        },
+        {
+          "id": "JoinWithVirtualTable",
+          "source_path": "docs/diagnostics/JoinWithVirtualTable.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithVirtualTable.md",
+          "content_sha256": "314151ad778ac3dafeaf50be84e5d59705896f2ec3b5d3bd33eec1f405687bbf"
+        },
+        {
+          "id": "LatinAndCyrillicSymbolInWord",
+          "source_path": "docs/diagnostics/LatinAndCyrillicSymbolInWord.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LatinAndCyrillicSymbolInWord.md",
+          "content_sha256": "24e335542a3cf1efa96285ca61e8b4ff4e58f2ac6bf1426d413c813be00595a7"
+        },
+        {
+          "id": "LineLength",
+          "source_path": "docs/diagnostics/LineLength.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LineLength.md",
+          "content_sha256": "8e118458212887ef7f592c8c03a2e54d6aef3c587d3460cf6c292ed3a495a0ce"
+        },
+        {
+          "id": "LogicalOrInJoinQuerySection",
+          "source_path": "docs/diagnostics/LogicalOrInJoinQuerySection.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LogicalOrInJoinQuerySection.md",
+          "content_sha256": "49e12c8e567d612dc09f961d380011a5e740624d450f54865d2499ad3dc99535"
+        },
+        {
+          "id": "LogicalOrInTheWhereSectionOfQuery",
+          "source_path": "docs/diagnostics/LogicalOrInTheWhereSectionOfQuery.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LogicalOrInTheWhereSectionOfQuery.md",
+          "content_sha256": "0d26c1b1187204b66352b243d0a8612ff50a18cf83e111f5f71c8550140cfe5f"
+        },
+        {
+          "id": "MagicDate",
+          "source_path": "docs/diagnostics/MagicDate.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MagicDate.md",
+          "content_sha256": "81160550d44b874d9bbe8fd02856c2c83511364a772f3fe57b07875418bac2e8"
+        },
+        {
+          "id": "MagicNumber",
+          "source_path": "docs/diagnostics/MagicNumber.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MagicNumber.md",
+          "content_sha256": "2e5ff1f3a0461f8f1448f43d05d712e84d24e0db1008cd78f898d64ae51e89c0"
+        },
+        {
+          "id": "MetadataObjectNameLength",
+          "source_path": "docs/diagnostics/MetadataObjectNameLength.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MetadataObjectNameLength.md",
+          "content_sha256": "bbbec01476eba6c93b1032b8393316dfa1eeb312513cc386fe62e599c3fd7149"
+        },
+        {
+          "id": "MethodSize",
+          "source_path": "docs/diagnostics/MethodSize.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MethodSize.md",
+          "content_sha256": "b9da1f16be0e09e438ea549dd3cf95bb24a8362bfae539c90e8ca84e4218006d"
+        },
+        {
+          "id": "MissedRequiredParameter",
+          "source_path": "docs/diagnostics/MissedRequiredParameter.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissedRequiredParameter.md",
+          "content_sha256": "43cd0b3c891a26c68ad33444d00db954984631c3969f765fd0fb73b918147886"
+        },
+        {
+          "id": "MissingCodeTryCatchEx",
+          "source_path": "docs/diagnostics/MissingCodeTryCatchEx.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingCodeTryCatchEx.md",
+          "content_sha256": "f17a1b97e003494f9bbbb3fe803fb0ee40f5cc8a9a1ef3bddc56108be5af0651"
+        },
+        {
+          "id": "MissingCommonModuleMethod",
+          "source_path": "docs/diagnostics/MissingCommonModuleMethod.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingCommonModuleMethod.md",
+          "content_sha256": "29266eb1f5bd1f827c8b51f67c8a5192dd42e62a74e62bcdbe6feaf75b0d67fc"
+        },
+        {
+          "id": "MissingEventSubscriptionHandler",
+          "source_path": "docs/diagnostics/MissingEventSubscriptionHandler.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingEventSubscriptionHandler.md",
+          "content_sha256": "b568d321d95f387a87c0ebe3ade36b14240ec2e7c5948cd13dc5087f95098903"
+        },
+        {
+          "id": "MissingParameterDescription",
+          "source_path": "docs/diagnostics/MissingParameterDescription.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingParameterDescription.md",
+          "content_sha256": "ac1552266be15525769f16261a5f7c8c80a7bb15704067774ca549ad9552fe3d"
+        },
+        {
+          "id": "MissingReturnedValueDescription",
+          "source_path": "docs/diagnostics/MissingReturnedValueDescription.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingReturnedValueDescription.md",
+          "content_sha256": "b02149f0e540192a3a45de390b3201441dfe62bc74d74ce2bef4ad710efa3dc1"
+        },
+        {
+          "id": "MissingSpace",
+          "source_path": "docs/diagnostics/MissingSpace.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingSpace.md",
+          "content_sha256": "e2b191b28c5bfb829eabcb5543dabe45f31c69735fe0fcab5e128babaec523c8"
+        },
+        {
+          "id": "MissingTemporaryFileDeletion",
+          "source_path": "docs/diagnostics/MissingTemporaryFileDeletion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTemporaryFileDeletion.md",
+          "content_sha256": "946f2f6416deae7160c55b626a8a829e69fe621283bbcc25d22f8d1f986c54ee"
+        },
+        {
+          "id": "MissingTempStorageDeletion",
+          "source_path": "docs/diagnostics/MissingTempStorageDeletion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTempStorageDeletion.md",
+          "content_sha256": "acde0899bae3625452194f9396d5fc960d95478ff66d3c88e16ff4bbfa3a4838"
+        },
+        {
+          "id": "MissingVariablesDescription",
+          "source_path": "docs/diagnostics/MissingVariablesDescription.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingVariablesDescription.md",
+          "content_sha256": "c44d721a1be1f1d259c600a05bb985e490f6657a98ed6c243857946058616df2"
+        },
+        {
+          "id": "MultilineStringInQuery",
+          "source_path": "docs/diagnostics/MultilineStringInQuery.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilineStringInQuery.md",
+          "content_sha256": "8fd7b34c7faecd591c84e30d5dcb37bd0d8ee7e40a7acbe8e8db0ccace77281c"
+        },
+        {
+          "id": "MultilingualStringHasAllDeclaredLanguages",
+          "source_path": "docs/diagnostics/MultilingualStringHasAllDeclaredLanguages.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilingualStringHasAllDeclaredLanguages.md",
+          "content_sha256": "9f1d05bf489aa266a775adde6d5c3d27a3d68e904b41013dd628763e31dec493"
+        },
+        {
+          "id": "MultilingualStringUsingWithTemplate",
+          "source_path": "docs/diagnostics/MultilingualStringUsingWithTemplate.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilingualStringUsingWithTemplate.md",
+          "content_sha256": "66d89a9408def8e3975bd3bb434e7d89677deccf8aae8183ba316f1e34287117"
+        },
+        {
+          "id": "NestedConstructorsInStructureDeclaration",
+          "source_path": "docs/diagnostics/NestedConstructorsInStructureDeclaration.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NestedConstructorsInStructureDeclaration.md",
+          "content_sha256": "8796752d72981fd29fd7c59d2c76b21dcf1f57520cadd748a781a83a39c1bbc6"
+        },
+        {
+          "id": "NestedFunctionInParameters",
+          "source_path": "docs/diagnostics/NestedFunctionInParameters.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NestedFunctionInParameters.md",
+          "content_sha256": "524308f8e3763ef055b3e1ccb696eeda5cd902573fc3079efb290bf0dc30ffd3"
+        },
+        {
+          "id": "NestedStatements",
+          "source_path": "docs/diagnostics/NestedStatements.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NestedStatements.md",
+          "content_sha256": "716bf8abb7cb6c54fa6121d45a9c55bc1d053a117b6ad92c55c4b807603a8750"
+        },
+        {
+          "id": "NestedTernaryOperator",
+          "source_path": "docs/diagnostics/NestedTernaryOperator.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NestedTernaryOperator.md",
+          "content_sha256": "be68a6edf2210a41e82379e5dc25d33f9dc85e2e24914ac74d50b73a0d06a907"
+        },
+        {
+          "id": "NonExportMethodsInApiRegion",
+          "source_path": "docs/diagnostics/NonExportMethodsInApiRegion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonExportMethodsInApiRegion.md",
+          "content_sha256": "a55f0c3ba38f27aadcc1d970941eef8aa348fae19e34e548aee9c01cdfc33072"
+        },
+        {
+          "id": "NonStandardRegion",
+          "source_path": "docs/diagnostics/NonStandardRegion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md",
+          "content_sha256": "e378b919cda3e4b3aef195dffbbf5f3f51d67ad7a912fa2fe097efe0b161a870"
+        },
+        {
+          "id": "NumberOfOptionalParams",
+          "source_path": "docs/diagnostics/NumberOfOptionalParams.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfOptionalParams.md",
+          "content_sha256": "3b97818be9dab2f80286d2895002faacb80297cb885e5cc146dee302d5aaa3c8"
+        },
+        {
+          "id": "NumberOfParams",
+          "source_path": "docs/diagnostics/NumberOfParams.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfParams.md",
+          "content_sha256": "0596513ebbca03ca3eaaeca0580bc75e44103cdd69a6ce47ef1d9ac2a6c764fe"
+        },
+        {
+          "id": "NumberOfValuesInStructureConstructor",
+          "source_path": "docs/diagnostics/NumberOfValuesInStructureConstructor.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfValuesInStructureConstructor.md",
+          "content_sha256": "2d87252cb9c1a20ef2d17786fb939a464fdbae133c651310b25b2b53b1e3458e"
+        },
+        {
+          "id": "OneStatementPerLine",
+          "source_path": "docs/diagnostics/OneStatementPerLine.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OneStatementPerLine.md",
+          "content_sha256": "e832ebdd0cd151fdb477f8af39b66eedc1660de83900d994ccd5c1e345561b5f"
+        },
+        {
+          "id": "OrderOfParams",
+          "source_path": "docs/diagnostics/OrderOfParams.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OrderOfParams.md",
+          "content_sha256": "14e75417c99cc9e2b7aa921f361cbd61b64b9cfcd019ce208d80d55b23c50237"
+        },
+        {
+          "id": "OrdinaryAppSupport",
+          "source_path": "docs/diagnostics/OrdinaryAppSupport.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OrdinaryAppSupport.md",
+          "content_sha256": "0d90075d6b7fd37c8950c63b5496437960869074072c9425039a0768cd929c9b"
+        },
+        {
+          "id": "OSUsersMethod",
+          "source_path": "docs/diagnostics/OSUsersMethod.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OSUsersMethod.md",
+          "content_sha256": "62f7e9eac47ef9a8b19a7978ac9ce7b51499e9c9783e6248be6519684ab63bc9"
+        },
+        {
+          "id": "PairingBrokenTransaction",
+          "source_path": "docs/diagnostics/PairingBrokenTransaction.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PairingBrokenTransaction.md",
+          "content_sha256": "b9bf438968c594eb5cd563ce2fe4d22523277e9fcc77741315de88367948480b"
+        },
+        {
+          "id": "ParseError",
+          "source_path": "docs/diagnostics/ParseError.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ParseError.md",
+          "content_sha256": "d363f4646f818f0b98958669cdcf1975d46fb8cc04cd3987966c1c44298e4876"
+        },
+        {
+          "id": "PrivilegedModuleMethodCall",
+          "source_path": "docs/diagnostics/PrivilegedModuleMethodCall.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PrivilegedModuleMethodCall.md",
+          "content_sha256": "e739e60f17acdab078b2614b5145d5b6655083557f4c9daab0120a6148f6c640"
+        },
+        {
+          "id": "ProcedureReturnsValue",
+          "source_path": "docs/diagnostics/ProcedureReturnsValue.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ProcedureReturnsValue.md",
+          "content_sha256": "8fc915aa79e971d1e1ab1efecaaebf459c34a36321f77b93e6031665925a3004"
+        },
+        {
+          "id": "ProtectedModule",
+          "source_path": "docs/diagnostics/ProtectedModule.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ProtectedModule.md",
+          "content_sha256": "466e06fcee25dfd802d1ab005ccf44e170f6f98268ad9ecf27f8d49aca588217"
+        },
+        {
+          "id": "PublicMethodsDescription",
+          "source_path": "docs/diagnostics/PublicMethodsDescription.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PublicMethodsDescription.md",
+          "content_sha256": "5c02a2d24085add4b592e02b6e548d9ee88517a706752e9168ba5862799423cf"
+        },
+        {
+          "id": "QueryNestedFieldsByDot",
+          "source_path": "docs/diagnostics/QueryNestedFieldsByDot.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryNestedFieldsByDot.md",
+          "content_sha256": "38e8abf7774994c4a7b08fd1ff5361ce5d14b7bd5ce75dc88d4df91e3456e24a"
+        },
+        {
+          "id": "QueryParseError",
+          "source_path": "docs/diagnostics/QueryParseError.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryParseError.md",
+          "content_sha256": "d5b7c8928a84d338ed8a666d4a97925c55e9973f38dc9cbc4df6c93b57d8f3d1"
+        },
+        {
+          "id": "QueryToMissingMetadata",
+          "source_path": "docs/diagnostics/QueryToMissingMetadata.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryToMissingMetadata.md",
+          "content_sha256": "e275580fae046c97feea4d4f33fbf18ed703103d9643929bfcb2a46729be3abe"
+        },
+        {
+          "id": "RedundantAccessToObject",
+          "source_path": "docs/diagnostics/RedundantAccessToObject.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/RedundantAccessToObject.md",
+          "content_sha256": "e79af16bc8653fa6e81f3a35230341d6367a7eb7b0d28d5ce5e909afd7b5be49"
+        },
+        {
+          "id": "RefOveruse",
+          "source_path": "docs/diagnostics/RefOveruse.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/RefOveruse.md",
+          "content_sha256": "f288a4afabadc406f6d5e1f8efb7e9962e8c49caa5345132113463608c8a077e"
+        },
+        {
+          "id": "ReservedParameterNames",
+          "source_path": "docs/diagnostics/ReservedParameterNames.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ReservedParameterNames.md",
+          "content_sha256": "4e5547c8278aa9c74d0d541432d554cff5eb5c264ec825d0c0ebb6dea96a437a"
+        },
+        {
+          "id": "RewriteMethodParameter",
+          "source_path": "docs/diagnostics/RewriteMethodParameter.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/RewriteMethodParameter.md",
+          "content_sha256": "a5576b038b1a9ff6731c7f007d374d0c50db7842d1e08da991a499f58c08dedc"
+        },
+        {
+          "id": "SameMetadataObjectAndChildNames",
+          "source_path": "docs/diagnostics/SameMetadataObjectAndChildNames.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SameMetadataObjectAndChildNames.md",
+          "content_sha256": "663770b14c27e94948e6994cddfd988e4bd157f8166e6785fd75e0a4c622ded4"
+        },
+        {
+          "id": "ScheduledJobHandler",
+          "source_path": "docs/diagnostics/ScheduledJobHandler.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ScheduledJobHandler.md",
+          "content_sha256": "81c4516f47ae0bbb0d9801c524346b4cd050e80d848bc3f8ec2d30ac20201bda"
+        },
+        {
+          "id": "SelectTopWithoutOrderBy",
+          "source_path": "docs/diagnostics/SelectTopWithoutOrderBy.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SelectTopWithoutOrderBy.md",
+          "content_sha256": "56f582bf66c6a89184080c0aa07b0bc1671c8ae87c9c8995bbdbf07c98e5c799"
+        },
+        {
+          "id": "SelfAssign",
+          "source_path": "docs/diagnostics/SelfAssign.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SelfAssign.md",
+          "content_sha256": "fd643b61fc459fb6842fd740cad30bbac4c0ad10f1cf0ce128156720d70ed5db"
+        },
+        {
+          "id": "SelfInsertion",
+          "source_path": "docs/diagnostics/SelfInsertion.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SelfInsertion.md",
+          "content_sha256": "5789ca850d659dae698c490fb630f4ba2bb5522301173414dc460daca12c1d87"
+        },
+        {
+          "id": "SemicolonPresence",
+          "source_path": "docs/diagnostics/SemicolonPresence.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SemicolonPresence.md",
+          "content_sha256": "f3713e8a01233868d25f7f08861602388dc060624625700db17669026ca3540e"
+        },
+        {
+          "id": "ServerCallsInFormEvents",
+          "source_path": "docs/diagnostics/ServerCallsInFormEvents.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ServerCallsInFormEvents.md",
+          "content_sha256": "9037d4136051c5ce0d4f7679edecf5ad443ceab42f9dc088417e579af2c899f4"
+        },
+        {
+          "id": "ServerSideExportFormMethod",
+          "source_path": "docs/diagnostics/ServerSideExportFormMethod.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ServerSideExportFormMethod.md",
+          "content_sha256": "97e1722d49ff5797306c5ac20bc902d10612fbea9ac3551b9bc4c0973fd804ac"
+        },
+        {
+          "id": "SetPermissionsForNewObjects",
+          "source_path": "docs/diagnostics/SetPermissionsForNewObjects.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPermissionsForNewObjects.md",
+          "content_sha256": "bd0816a1f1102f3de282846565941b8df085cb3eddf31086c3fc0f5e1aa0a657"
+        },
+        {
+          "id": "SetPrivilegedMode",
+          "source_path": "docs/diagnostics/SetPrivilegedMode.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md",
+          "content_sha256": "0318b1a2372997fb9ac078d00e6854cc1fad38cc41eb811728eacf2fdfd2fe37"
+        },
+        {
+          "id": "SeveralCompilerDirectives",
+          "source_path": "docs/diagnostics/SeveralCompilerDirectives.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SeveralCompilerDirectives.md",
+          "content_sha256": "c33f12a187a7942aa4b7b9618c86dcf56409417af2580a4d139b5e2714325052"
+        },
+        {
+          "id": "SpaceAtStartComment",
+          "source_path": "docs/diagnostics/SpaceAtStartComment.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SpaceAtStartComment.md",
+          "content_sha256": "25cfe1533c1b85d068d289beb85933a52c08aff45a5272fd7c070c3588445267"
+        },
+        {
+          "id": "StyleElementConstructors",
+          "source_path": "docs/diagnostics/StyleElementConstructors.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/StyleElementConstructors.md",
+          "content_sha256": "8dd21d7c011ec53980b3a27f573c8785bd2db9b4603561775cc526afd80aac74"
+        },
+        {
+          "id": "TempFilesDir",
+          "source_path": "docs/diagnostics/TempFilesDir.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TempFilesDir.md",
+          "content_sha256": "59cc5affed02d6e74cc112aa559e6361c8e885988ac92783b3f4494d4646a6e1"
+        },
+        {
+          "id": "TernaryOperatorUsage",
+          "source_path": "docs/diagnostics/TernaryOperatorUsage.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TernaryOperatorUsage.md",
+          "content_sha256": "33e542db3cac1650ae0e80009d2aec28d5a0024f32888a1c7432b3ce90a9a845"
+        },
+        {
+          "id": "ThisObjectAssign",
+          "source_path": "docs/diagnostics/ThisObjectAssign.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ThisObjectAssign.md",
+          "content_sha256": "a6380e3562f94dd6027f03d0ad4077cf7306f479b73b39a19ef181dbc78e4c48"
+        },
+        {
+          "id": "TimeoutsInExternalResources",
+          "source_path": "docs/diagnostics/TimeoutsInExternalResources.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TimeoutsInExternalResources.md",
+          "content_sha256": "92f6255088c388ce746c9997ab799600a3a8b67011e88f58cbdeb415ffb156bb"
+        },
+        {
+          "id": "TooManyReturns",
+          "source_path": "docs/diagnostics/TooManyReturns.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TooManyReturns.md",
+          "content_sha256": "2d192bb176820a3deb3d0c82c60730fde924319e0d314a9b08814b244bfda0d1"
+        },
+        {
+          "id": "TransferringParametersBetweenClientAndServer",
+          "source_path": "docs/diagnostics/TransferringParametersBetweenClientAndServer.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TransferringParametersBetweenClientAndServer.md",
+          "content_sha256": "8c3f5fdc07022fd789745bf5fc947eafb56337329e0d0066174aa524cacf14a5"
+        },
+        {
+          "id": "TryNumber",
+          "source_path": "docs/diagnostics/TryNumber.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TryNumber.md",
+          "content_sha256": "ec1c4490676400636afaac7ebc7e19c7fe951e402cc8595e12fba282d1d023cd"
+        },
+        {
+          "id": "Typo",
+          "source_path": "docs/diagnostics/Typo.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/Typo.md",
+          "content_sha256": "f5a7dfe7f03a292dec6fa02aba5a27f0b333a5b9b211c869f098b9c70a7e3a23"
+        },
+        {
+          "id": "UnaryPlusInConcatenation",
+          "source_path": "docs/diagnostics/UnaryPlusInConcatenation.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnaryPlusInConcatenation.md",
+          "content_sha256": "eb9db93963bf0cf83db929c281b9af38b5a94998199112340d706445197c3d25"
+        },
+        {
+          "id": "UnavailableMemberCall",
+          "source_path": "docs/diagnostics/UnavailableMemberCall.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnavailableMemberCall.md",
+          "content_sha256": "be5f74f3af4d8f420e0f7b07686b0de1694939d3a74ef6a085985a8b091ec91e"
+        },
+        {
+          "id": "UnionAll",
+          "source_path": "docs/diagnostics/UnionAll.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnionAll.md",
+          "content_sha256": "3c9b319d028d21d85b282a6a1ffe6bc31b36c56292821f2a489ba477dd702a13"
+        },
+        {
+          "id": "UnknownMember",
+          "source_path": "docs/diagnostics/UnknownMember.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnknownMember.md",
+          "content_sha256": "ea2f8ca6b5884194f71c8235ae8e921978b959b467e288c936d9a6ba5632d78b"
+        },
+        {
+          "id": "UnknownPreprocessorSymbol",
+          "source_path": "docs/diagnostics/UnknownPreprocessorSymbol.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnknownPreprocessorSymbol.md",
+          "content_sha256": "2cf035e16ad017c4851c9f7b857ab79f2d2267305c54e60d25ce866091e72ae4"
+        },
+        {
+          "id": "UnreachableCode",
+          "source_path": "docs/diagnostics/UnreachableCode.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnreachableCode.md",
+          "content_sha256": "ae0bf33875ef3ecdfcf422a9a33302289aea192bb672f16220b8876b14c1bccb"
+        },
+        {
+          "id": "UnsafeFindByCode",
+          "source_path": "docs/diagnostics/UnsafeFindByCode.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnsafeFindByCode.md",
+          "content_sha256": "3be983d5852559c4abdd94a26a376b62f86355a0b6d86f2c023976048095161a"
+        },
+        {
+          "id": "UnsafeSafeModeMethodCall",
+          "source_path": "docs/diagnostics/UnsafeSafeModeMethodCall.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnsafeSafeModeMethodCall.md",
+          "content_sha256": "1419cc108a950a567633b2153fb13a8d1147bc05a2fd047476be51845efe9d16"
+        },
+        {
+          "id": "UnusedLocalMethod",
+          "source_path": "docs/diagnostics/UnusedLocalMethod.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnusedLocalMethod.md",
+          "content_sha256": "0db96fe0b6394aeca9080222865243c06cf09dddadca1f967e2514cc26112f37"
+        },
+        {
+          "id": "UnusedLocalVariable",
+          "source_path": "docs/diagnostics/UnusedLocalVariable.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnusedLocalVariable.md",
+          "content_sha256": "cd9276f4d7c2788360c3e421e563099f7412c50dcd1d8f1d6cab0a476515037b"
+        },
+        {
+          "id": "UnusedParameters",
+          "source_path": "docs/diagnostics/UnusedParameters.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnusedParameters.md",
+          "content_sha256": "323fa45dfb6b6cb89c9fed9f1e22c01f1b626a7e6275f3c4ac1ecedaca6dbd41"
+        },
+        {
+          "id": "UsageWriteLogEvent",
+          "source_path": "docs/diagnostics/UsageWriteLogEvent.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md",
+          "content_sha256": "32c51686cf491c2db9187ccfd98c4221ccf38c60978eae3d7a4eb2c270be9b80"
+        },
+        {
+          "id": "UseLessForEach",
+          "source_path": "docs/diagnostics/UseLessForEach.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UseLessForEach.md",
+          "content_sha256": "e838b027a777b39328ba00b7e5bc00230ede11190602487cf14681876b71cb87"
+        },
+        {
+          "id": "UselessTernaryOperator",
+          "source_path": "docs/diagnostics/UselessTernaryOperator.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UselessTernaryOperator.md",
+          "content_sha256": "7a0c7c9fabe350792e009827a6c78a6328952cbc20a5776dd64e46b95e9570c6"
+        },
+        {
+          "id": "UseSystemInformation",
+          "source_path": "docs/diagnostics/UseSystemInformation.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UseSystemInformation.md",
+          "content_sha256": "8ff50cffa2039005e03831de8d430f8c368cee3e8dca63d9433fc7f27a46a5ec"
+        },
+        {
+          "id": "UsingCancelParameter",
+          "source_path": "docs/diagnostics/UsingCancelParameter.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingCancelParameter.md",
+          "content_sha256": "8d7bff13d282aaff1001b7ad72dc165f82a5d1de12d08bc43d8b015353bbb725"
+        },
+        {
+          "id": "UsingExternalCodeTools",
+          "source_path": "docs/diagnostics/UsingExternalCodeTools.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingExternalCodeTools.md",
+          "content_sha256": "9602ede9cf2987b3c15cf3cd423ecdc3013a6aee722ab652616a9f48585ac144"
+        },
+        {
+          "id": "UsingFindElementByString",
+          "source_path": "docs/diagnostics/UsingFindElementByString.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingFindElementByString.md",
+          "content_sha256": "3ddda9cd99692523beea1a29e2b5b3bbf5e65a5d393d5a8663c49907a27f9367"
+        },
+        {
+          "id": "UsingGoto",
+          "source_path": "docs/diagnostics/UsingGoto.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingGoto.md",
+          "content_sha256": "23d5f55ae295c59d677f6d7933f2f44517f9cafa002d4b76b98968a57e14bb2a"
+        },
+        {
+          "id": "UsingHardcodeNetworkAddress",
+          "source_path": "docs/diagnostics/UsingHardcodeNetworkAddress.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingHardcodeNetworkAddress.md",
+          "content_sha256": "9b84c48246ea5bdb8e98151f7e376d7707254b05f1942bc2a2ec626058249313"
+        },
+        {
+          "id": "UsingHardcodePath",
+          "source_path": "docs/diagnostics/UsingHardcodePath.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingHardcodePath.md",
+          "content_sha256": "d269d900455750813fc0685a5d5a7d9f4a1305fd51f995a2e5370b9982f7d8a5"
+        },
+        {
+          "id": "UsingHardcodeSecretInformation",
+          "source_path": "docs/diagnostics/UsingHardcodeSecretInformation.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingHardcodeSecretInformation.md",
+          "content_sha256": "99d173230b8bf5046081f9b9426a1bec3f83ac983d0ef2c9dffd07e337b075a8"
+        },
+        {
+          "id": "UsingLikeInQuery",
+          "source_path": "docs/diagnostics/UsingLikeInQuery.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingLikeInQuery.md",
+          "content_sha256": "289c501920dfbbe6f63c176d13ffe25dfc46502a79cf0673048cf075885aee37"
+        },
+        {
+          "id": "UsingModalWindows",
+          "source_path": "docs/diagnostics/UsingModalWindows.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingModalWindows.md",
+          "content_sha256": "8a52c730aa483284df669d107620598d8e817da6bb9a09fa5d5ca0c798bfac89"
+        },
+        {
+          "id": "UsingObjectNotAvailableUnix",
+          "source_path": "docs/diagnostics/UsingObjectNotAvailableUnix.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingObjectNotAvailableUnix.md",
+          "content_sha256": "33bad7635b536e5023ef58eb911045d8610b69d52ca460df1abf2028b16d162a"
+        },
+        {
+          "id": "UsingServiceTag",
+          "source_path": "docs/diagnostics/UsingServiceTag.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingServiceTag.md",
+          "content_sha256": "04c278cec8089c07ffcb8bc5f3ac8bd9099d84c6f97ca11785c4a230452c88c3"
+        },
+        {
+          "id": "UsingSynchronousCalls",
+          "source_path": "docs/diagnostics/UsingSynchronousCalls.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingSynchronousCalls.md",
+          "content_sha256": "b71b127ebe1a508c13ffe40dfac899c98c20bf9a358a7134cf6f44f8f19722a5"
+        },
+        {
+          "id": "UsingThisForm",
+          "source_path": "docs/diagnostics/UsingThisForm.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingThisForm.md",
+          "content_sha256": "20e483e85cc709e574fba264ddee985c963507ad4d816591b090f32493bcebd4"
+        },
+        {
+          "id": "VirtualTableCallWithoutParameters",
+          "source_path": "docs/diagnostics/VirtualTableCallWithoutParameters.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/VirtualTableCallWithoutParameters.md",
+          "content_sha256": "4ac9da43c5f7a1e6d1989050440a9cd203f2bee307783a9004c2af24768b3ad4"
+        },
+        {
+          "id": "WrongDataPathForFormElements",
+          "source_path": "docs/diagnostics/WrongDataPathForFormElements.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongDataPathForFormElements.md",
+          "content_sha256": "2d73e70d31d76844a67c1e16cf659a6ef08b61f255caa1848be047a705730c35"
+        },
+        {
+          "id": "WrongHttpServiceHandler",
+          "source_path": "docs/diagnostics/WrongHttpServiceHandler.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongHttpServiceHandler.md",
+          "content_sha256": "8bb2dfa4657821ccaaf4e076f7d648072c26f98d095cdf6983a837a6b819383e"
+        },
+        {
+          "id": "WrongUseFunctionProceedWithCall",
+          "source_path": "docs/diagnostics/WrongUseFunctionProceedWithCall.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongUseFunctionProceedWithCall.md",
+          "content_sha256": "6efbf16de0f404a787615de878e31ff1631b5720466bb8ee4bbdd6d6102dd2f1"
+        },
+        {
+          "id": "WrongUseOfRollbackTransactionMethod",
+          "source_path": "docs/diagnostics/WrongUseOfRollbackTransactionMethod.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongUseOfRollbackTransactionMethod.md",
+          "content_sha256": "90f73978af208fdf083834b01df8faefb0762c2fae74165e0be148d9f9f65be1"
+        },
+        {
+          "id": "WrongWebServiceHandler",
+          "source_path": "docs/diagnostics/WrongWebServiceHandler.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongWebServiceHandler.md",
+          "content_sha256": "8bb5dbe74297ac0736c7f1583433fae16391d933f0c59c42fa2cede9e18db9ca"
+        },
+        {
+          "id": "YoLetterUsage",
+          "source_path": "docs/diagnostics/YoLetterUsage.md",
+          "source_url": "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/YoLetterUsage.md",
+          "content_sha256": "710334b303f5954beddc3a250300bd74b23917bf982e110cacebb97b4b1befb9"
+        }
+      ]
+    },
+    {
+      "family": "v8-code-style",
+      "repository": "https://github.com/1C-Company/v8-code-style",
+      "revision": "c8fe7932babf718c0ace3cf836a99d6a3b98d098",
+      "license": "EPL-2.0",
+      "source_root": "bundles",
+      "diagnostics": [
+        {
+          "id": "begin-transaction",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/begin-transaction.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/begin-transaction.md",
+          "content_sha256": "94acfe9422b71a20356964ecb1aed892e3786e89aeeeb17765cbc378fe6ee424"
+        },
+        {
+          "id": "bsl-canonical-pragma",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-canonical-pragma.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-canonical-pragma.md",
+          "content_sha256": "cf2b0e484191a518d409b643c26a1ac9079d9b9ce32c82db16e5b0b979139d76"
+        },
+        {
+          "id": "bsl-nstr-string-literal-format",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-nstr-string-literal-format.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-nstr-string-literal-format.md",
+          "content_sha256": "54ac24f3d8098972b76854d6a86f9a7ca2683fd646c9175c6f461b1fd27ecd9f"
+        },
+        {
+          "id": "bsl-variable-name-invalid",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-variable-name-invalid.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-variable-name-invalid.md",
+          "content_sha256": "2230c613fbbf0b5eb2351b2cb9fec2905ad571d1556393d5eb690ced337f1965"
+        },
+        {
+          "id": "change-and-validate-instead-of-around",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/change-and-validate-instead-of-around.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/change-and-validate-instead-of-around.md",
+          "content_sha256": "6720ee8cdb9f78cd1f89ee14ead466869dce599a8e1e52eb32fdc5673c6e8ccc"
+        },
+        {
+          "id": "code-after-async-call",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/code-after-async-call.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/code-after-async-call.md",
+          "content_sha256": "636f1581601eae4d6f90730d01b43ce770ab1ae49c446ad215ff7d3ed7efa82c"
+        },
+        {
+          "id": "commit-transaction",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/commit-transaction.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/commit-transaction.md",
+          "content_sha256": "43883d0dec6ce8511052722a8f3ceb9ac3319fb2846d7414d739fb45f4d748a2"
+        },
+        {
+          "id": "common-module-missing-api",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-missing-api.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-missing-api.md",
+          "content_sha256": "7cf6f2286949fca0ee627229e4312f34426313369e9a8d5bab523f5ef6ebec56"
+        },
+        {
+          "id": "common-module-name-cached",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-cached.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-cached.md",
+          "content_sha256": "093a37ca121d383894c028ce18556814486d4031b7fbe4191bae38eeb908d1d6"
+        },
+        {
+          "id": "common-module-name-client",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client.md",
+          "content_sha256": "fb96daf97dafea9dc3446fb1058e0f591fd9833664b7874a011abb63ef60d224"
+        },
+        {
+          "id": "common-module-name-client-cached",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-cached.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-cached.md",
+          "content_sha256": "6095027350056813ea7fce10e56163e61054ebcdf97f82ebecc02f70c0785e73"
+        },
+        {
+          "id": "common-module-name-client-server",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-server.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-server.md",
+          "content_sha256": "9906daf80f924433f7addb26b30393277ad3fe8741d50d6807fcfde36441329a"
+        },
+        {
+          "id": "common-module-name-full-access",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-full-access.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-full-access.md",
+          "content_sha256": "610af98e38d6bcebe766cb2140728c79c3c603378c392605b2b4c53a1b5fd216"
+        },
+        {
+          "id": "common-module-name-global",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global.md",
+          "content_sha256": "978a8c280450ead7db0487e5a0649dfab59460cb800f6ce23678dcbaf8e0f2e2"
+        },
+        {
+          "id": "common-module-name-global-client",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global-client.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global-client.md",
+          "content_sha256": "5aa4246b5939eb5acf175c84d5bb9838af0eee7dffa6a6148f4453e3d43d4b02"
+        },
+        {
+          "id": "common-module-name-server-call",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call.md",
+          "content_sha256": "e936156c64e995eea4942ef8998b2efe107e448ff619e4bbfb0a523c9de982aa"
+        },
+        {
+          "id": "common-module-name-server-call-cached",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call-cached.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call-cached.md",
+          "content_sha256": "d1334fa8958d3d5048c1534fc425517ec7ac7428002dead7e38d3a502970531a"
+        },
+        {
+          "id": "common-module-named-self-reference",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-named-self-reference.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-named-self-reference.md",
+          "content_sha256": "c905fc1252922ef096d9135dec2cd702754bc656f6fc9215dc318f879a1fa0c4"
+        },
+        {
+          "id": "common-module-server-call",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-server-call.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-server-call.md",
+          "content_sha256": "814b9b34ebddc7f66f998bb55690a1c6f7a6af1d1f9bb7019b00abe9adef72d5"
+        },
+        {
+          "id": "common-module-type",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-type.md",
+          "content_sha256": "b73a5f8cf1216af92fd033b410a9086483b38751ce0383c33a888fec453eb8fe"
+        },
+        {
+          "id": "configuration-data-lock-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/configuration-data-lock-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/configuration-data-lock-mode.md",
+          "content_sha256": "1679ed236b42be0b869171a8b3d81d7eb6797bce4b22cf8b07dc6f700339f329"
+        },
+        {
+          "id": "constructor-function-return-section",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/constructor-function-return-section.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/constructor-function-return-section.md",
+          "content_sha256": "c88437aefd2f2c70f7b9a40f5f4e0e52700761253a30cd893b62407578037808"
+        },
+        {
+          "id": "data-composition-conditional-appearance-use",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-conditional-appearance-use.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-conditional-appearance-use.md",
+          "content_sha256": "3663f0e7186eda1611da4577e42df4781a56f8ee629001bd3364926fffac622a"
+        },
+        {
+          "id": "data-composition-variant-name-default",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-variant-name-default.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-variant-name-default.md",
+          "content_sha256": "46f8463060342c203803d1688c07d9edd3c890e1ba4763a769a5621de883e590"
+        },
+        {
+          "id": "data-exchange-load",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md",
+          "content_sha256": "3001aa0b4afc7492d2fd1cfbab1ae08415f4db5f48b2d60441d45ae1ae86ac62"
+        },
+        {
+          "id": "db-object-anyref-type",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-anyref-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-anyref-type.md",
+          "content_sha256": "3bd6962ebfa9873996dc1193a2bb3d51f18176bd53b83035fdad2e29637deacc"
+        },
+        {
+          "id": "db-object-max-number-length",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-max-number-length.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-max-number-length.md",
+          "content_sha256": "6880c2368ce192bab7414d5fe8f69de271b7904fa2090dcbad7cf277532e1c7a"
+        },
+        {
+          "id": "db-object-ref-non-ref-type",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-ref-non-ref-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-ref-non-ref-type.md",
+          "content_sha256": "99c106ddcac39ba868d230d630d809c2c2604cdf9c5837e3c5ad20915b678d69"
+        },
+        {
+          "id": "deprecated-procedure-outside-deprecated-region",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/deprecated-procedure-outside-deprecated-region.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/deprecated-procedure-outside-deprecated-region.md",
+          "content_sha256": "48d9b83f5a31c217ebbd0b07ad9c873f9017aa69bc62bba8039033a946d50e11"
+        },
+        {
+          "id": "doc-comment-collection-item-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-collection-item-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-collection-item-type.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-complex-type-with-link",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-complex-type-with-link.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-complex-type-with-link.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-description-ends-on-dot",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-description-ends-on-dot.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-description-ends-on-dot.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-export-function-return-section",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-export-function-return-section.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-export-function-return-section.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-export-procedure-description-section",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-export-procedure-description-section.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-export-procedure-description-section.md",
+          "content_sha256": "3c127c72069d2f070f7dd2583692fea9d7e6236f6615d464f9df5338a0419903"
+        },
+        {
+          "id": "doc-comment-field-in-description-suggestion",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-in-description-suggestion.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-in-description-suggestion.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-field-name",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-name.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-name.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-field-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-type.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-field-type-strict",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-type-strict.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-field-type-strict.md",
+          "content_sha256": "fc3b9143096c545d50501aa868e15774a85464601869746669744eabc1d71291"
+        },
+        {
+          "id": "doc-comment-parameter-in-description-suggestion",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-parameter-in-description-suggestion.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-parameter-in-description-suggestion.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-parameter-section",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-parameter-section.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-parameter-section.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-procedure-return-section",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-procedure-return-section.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-procedure-return-section.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-redundant-parameter-section",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-redundant-parameter-section.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-redundant-parameter-section.md",
+          "content_sha256": "c34b8c2c5a8496318709ded69f4b3cec433f4cb1602388293702a031e83189d8"
+        },
+        {
+          "id": "doc-comment-ref-link",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-ref-link.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-ref-link.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "doc-comment-return-section-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-return-section-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-return-section-type.md",
+          "content_sha256": "2a574190d6d22b54e49ec05dbea4b7c0cfc4ae1e37656552a955deab56e9e017"
+        },
+        {
+          "id": "doc-comment-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-type.md",
+          "content_sha256": "145587ec7194e59c27084f109767f302911c1c828601925ff18d5bdb7946b4e7"
+        },
+        {
+          "id": "doc-comment-use-minus",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-use-minus.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-use-minus.md",
+          "content_sha256": "44835166adcb06ebbe71b64e493bf233be31a40ee370d4c31803643096e5bbfb"
+        },
+        {
+          "id": "document-post-in-privileged-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/document-post-in-privileged-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/document-post-in-privileged-mode.md",
+          "content_sha256": "cc03d492d7b6fad23b51c23e0c4809ced52c70b6706b854f71f0ea1fb35403ec"
+        },
+        {
+          "id": "dont-use-modality-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md",
+          "content_sha256": "8f73458893d291563474f5671baa875f67557003779e6f44401646d463e181fc"
+        },
+        {
+          "id": "dynamic-access-method-not-found",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/dynamic-access-method-not-found.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dynamic-access-method-not-found.md",
+          "content_sha256": "107d5e2dfc0e1a7349fd26246a7cfa2f0eec435ff0112fd2b0167087e84e56b9"
+        },
+        {
+          "id": "empty-except-statement",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/empty-except-statement.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/empty-except-statement.md",
+          "content_sha256": "71e87ded3c4bd075465c644d28bbe2e9a8029cf5b5a9b9470e9024c11922f829"
+        },
+        {
+          "id": "event-handler-boolean-param",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/event-handler-boolean-param.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/event-handler-boolean-param.md",
+          "content_sha256": "00b510e63ed2b7e99227833d748565dced119ead6c2ed0519f733c13ab3f1798"
+        },
+        {
+          "id": "export-method-in-command-form-module",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md",
+          "content_sha256": "5369e6b43a81c0914e26180710bd2cdbf91abc1a69565213cb8faed943515957"
+        },
+        {
+          "id": "export-procedure-missing-comment",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-procedure-missing-comment.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-procedure-missing-comment.md",
+          "content_sha256": "ea77fd0b07ff52d9392400120fd6236cb87beec9fb169a88a395ce3af8c5dc24"
+        },
+        {
+          "id": "extension-md-object-prefix",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/extension-md-object-prefix.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/extension-md-object-prefix.md",
+          "content_sha256": "dbec4b08c14ee22f28bb9cac265e5dc80ebd1c7a05bd125a49a3461612348692"
+        },
+        {
+          "id": "extension-method-prefix",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/extension-method-prefix.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/extension-method-prefix.md",
+          "content_sha256": "7d23310e015e82a170fe71f1304502a8a62612288195c5cba4d3b4468eca8873"
+        },
+        {
+          "id": "extension-method-visible-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/extension-method-visible-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/extension-method-visible-mode.md",
+          "content_sha256": "4bc812f7c9d56bd0a90b92f1b262cd528a188e61afa8c81665f4ca20a9e13095"
+        },
+        {
+          "id": "extension-variable-prefix",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/extension-variable-prefix.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/extension-variable-prefix.md",
+          "content_sha256": "13facd6193df3f65b26e0e41630791171eb8e6ba2c51cef813f75ed84928a7f4"
+        },
+        {
+          "id": "form-commands-single-action-handler",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/form-commands-single-action-handler.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-commands-single-action-handler.md",
+          "content_sha256": "dc6c7f262fa1aadcd6db3832a3434bb8bfcf6a02e40042d0cbdafd9b4e156a15"
+        },
+        {
+          "id": "form-dynamic-list-item-title",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/form-dynamic-list-item-title.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-dynamic-list-item-title.md",
+          "content_sha256": "622d9e73793db9490a075e1555c7bdbe58601105407f403d58a6720efac49cc1"
+        },
+        {
+          "id": "form-item-visible-settings-by-roles",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/form-item-visible-settings-by-roles.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-item-visible-settings-by-roles.md",
+          "content_sha256": "a14a8fd4719babbeed0203507f790db2a7a8f02a77335b8f79b8b8385329a4aa"
+        },
+        {
+          "id": "form-items-single-event-handler",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/form-items-single-event-handler.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-items-single-event-handler.md",
+          "content_sha256": "aff02a3bbb106f1619fe5009a81775b3fd9db64017dceaffb074a3d0793b342c"
+        },
+        {
+          "id": "form-list-field-ref-not-added",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-field-ref-not-added.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-field-ref-not-added.md",
+          "content_sha256": "1faef423fa8ccc23e72b08f0a24b7670af16cd1e6093ef339f286b0fb6e9f9f1"
+        },
+        {
+          "id": "form-list-ref-use-always-flag-disabled",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-use-always-flag-disabled.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-use-always-flag-disabled.md",
+          "content_sha256": "06180c99d09bb608796865c0e8d9d5296d6d2e0b8fd0d19bc090ae3652600d98"
+        },
+        {
+          "id": "form-list-ref-user-visibility-enabled",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-user-visibility-enabled.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-user-visibility-enabled.md",
+          "content_sha256": "e4317264e64d189b9b6f0f2a527cb112ee58de9bfd69e4bd90e620b5ac39fb9c"
+        },
+        {
+          "id": "form-module-missing-pragma",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md",
+          "content_sha256": "e5d599693cbe85645723c47726f41089c0af3718b29ca8ce58e42e9e54a307a7"
+        },
+        {
+          "id": "form-module-pragma",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-pragma.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-pragma.md",
+          "content_sha256": "6c668fa1ff7c5d2dce047655f67fab7f03ae60a44f39b5e28b6972bf17a31fde"
+        },
+        {
+          "id": "form-self-reference",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-self-reference.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-self-reference.md",
+          "content_sha256": "61a4b7afdf18ad48f9253f30d7aa41365076fdb19e88d888e3b70fecf0f7fe85"
+        },
+        {
+          "id": "function-return-value-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/function-return-value-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/function-return-value-type.md",
+          "content_sha256": "1d6889e18e014ef5931c586c9592506e96711c44493a67e51128fedeb47343db"
+        },
+        {
+          "id": "functional-option-privileged-get-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/functional-option-privileged-get-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/functional-option-privileged-get-mode.md",
+          "content_sha256": "e4db0914e6b7bc35c04232324c3e89b87bcdbd3ed62abfa8f0e9432d1ee19b92"
+        },
+        {
+          "id": "input-field-list-choice-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.form/markdown/ru/input-field-list-choice-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/input-field-list-choice-mode.md",
+          "content_sha256": "6ac09de34c45c70d6b075b8a97931ef8521354b6c0c476a8f9218b7dfd4ad7f4"
+        },
+        {
+          "id": "invocation-form-event-handler",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/invocation-form-event-handler.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/invocation-form-event-handler.md",
+          "content_sha256": "97a0c3a40a648aefbcf1bfc28b2f0519876676dc7cdb83ab6f9455de9c177662"
+        },
+        {
+          "id": "invocation-parameter-type-intersect",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/invocation-parameter-type-intersect.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/invocation-parameter-type-intersect.md",
+          "content_sha256": "49aa40f2fdb2f75eb94adc7709640f83001cb49f98af30449e00639e1fc8dd26"
+        },
+        {
+          "id": "link-part-comment-space",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/link-part-comment-space.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/link-part-comment-space.md",
+          "content_sha256": "7544da80e3d4d6409653061077530eb9f19dcc87a6aae896a305711f5573ea29"
+        },
+        {
+          "id": "lock-out-of-try",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/lock-out-of-try.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/lock-out-of-try.md",
+          "content_sha256": "681e68e2c55bf8553158f21dc64bdab7d9a296816ad1b133e51d65e22a4d2a0c"
+        },
+        {
+          "id": "manager-module-named-self-reference",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/manager-module-named-self-reference.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/manager-module-named-self-reference.md",
+          "content_sha256": "bd35172ad495a49f133ee6fb260c995a9beb9e89ff8d8a8b33ab142e60cd3e78"
+        },
+        {
+          "id": "md-list-object-presentation",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/md-list-object-presentation.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-list-object-presentation.md",
+          "content_sha256": "580274798f41a9c074794b3e9fb4b0c30090e7012f08a8ca5028282da623058b"
+        },
+        {
+          "id": "md-object-attribute-comment-incorrect-type",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-incorrect-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-incorrect-type.md",
+          "content_sha256": "c6d6720b98861b6b16c88d07e56e34020a9bc5595aedf05504b8755e7513db4a"
+        },
+        {
+          "id": "md-object-attribute-comment-not-exist",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-not-exist.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-not-exist.md",
+          "content_sha256": "20ae0161db083286f1cd44c883b1a3ac2a280b8219e30ca622c9cc27c4076cac"
+        },
+        {
+          "id": "md-standard-attribute-synonym-empty",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/md-standard-attribute-synonym-empty.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-standard-attribute-synonym-empty.md",
+          "content_sha256": "2e344a08b3e2217ab89093f99f9fa61e5ee1c845d9e5b07def339e7c0dddb3ce"
+        },
+        {
+          "id": "mdo-name-length",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-name-length.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-name-length.md",
+          "content_sha256": "b1b098ea608a9ead1b0b9d7a9b95b3b1353866a424c00b9d4367621ef11bfb24"
+        },
+        {
+          "id": "mdo-ru-name-unallowed-letter",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-ru-name-unallowed-letter.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-ru-name-unallowed-letter.md",
+          "content_sha256": "b63a0da4b8ea40c3627ff6774b527ba4f9d85f6a7c0adaa854403594204a11e4"
+        },
+        {
+          "id": "mdo-scheduled-job-description",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-scheduled-job-description.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-scheduled-job-description.md",
+          "content_sha256": "427b6da2e0c2ac2a60f6db34179595f3ca4a7fab953fc118df61374f0bc7be91"
+        },
+        {
+          "id": "method-isinrole-role-exist",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-isinrole-role-exist.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-isinrole-role-exist.md",
+          "content_sha256": "3787820f05e92229e9154f708e847f5d7e414e2d3d3e2e1b819f2b44cc33e6ad"
+        },
+        {
+          "id": "method-optional-parameter-before-required",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-optional-parameter-before-required.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-optional-parameter-before-required.md",
+          "content_sha256": "0f06537fb70b00f024bce544fc112ec270bb77cc3f7b94d4af96e51f0268b8b8"
+        },
+        {
+          "id": "method-param-value-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-param-value-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-param-value-type.md",
+          "content_sha256": "0d286cc2f923e13dd69321a7a888123b02458e6260f41bf91cb70299911c6d09"
+        },
+        {
+          "id": "method-semicolon-extra",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-semicolon-extra.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-semicolon-extra.md",
+          "content_sha256": "7b5ab1edc9161f6430f9cf9bdf099bda63dcaa57f2a6ca56f3c92312f01abacb"
+        },
+        {
+          "id": "method-too-many-params",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-too-many-params.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-too-many-params.md",
+          "content_sha256": "e3f3f80dee33e2c7820854f30c8f75dde6de1cf353235f33741ce23dabdd7472"
+        },
+        {
+          "id": "missing-temporary-file-deletion",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/missing-temporary-file-deletion.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/missing-temporary-file-deletion.md",
+          "content_sha256": "a8bea9fa27bf5a9d3aae12d0813f9b2004d26483581e2f7b3af3df903b66c634"
+        },
+        {
+          "id": "module-accessibility-at-client",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-accessibility-at-client.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-accessibility-at-client.md",
+          "content_sha256": "ad842308b31790be01c1f013c27a9fbb7f02da83b0ab147098fef74f1e1d32fd"
+        },
+        {
+          "id": "module-attachable-event-handler-name",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-attachable-event-handler-name.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-attachable-event-handler-name.md",
+          "content_sha256": "348b4b732f03ad75af8e6563519f3286150005879339f316143ae626a1e43067"
+        },
+        {
+          "id": "module-consecutive-blank-lines",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-consecutive-blank-lines.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-consecutive-blank-lines.md",
+          "content_sha256": "86c2cca6bb27f46a3a9ae373dcd0f9df359c2e2ac5782af96483f08a1bedd69b"
+        },
+        {
+          "id": "module-empty-method",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-empty-method.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-empty-method.md",
+          "content_sha256": "9e0bb32f7f2f72fd732089749be248d0d3d98ee8b852bc0ba9f6c2ebc32dd0bb"
+        },
+        {
+          "id": "module-region-empty",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-region-empty.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-region-empty.md",
+          "content_sha256": "4b8d5a258b3ad724febb6ba901b982a91d29d4f989a3f06e01e173f3777317ea"
+        },
+        {
+          "id": "module-self-reference",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-self-reference.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-self-reference.md",
+          "content_sha256": "4e83ed5f8c060f12b1202da649d01c22ae2a48ba6153f46359ccab9fffa398c8"
+        },
+        {
+          "id": "module-structure-event-regions",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-event-regions.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-event-regions.md",
+          "content_sha256": "a8134fa610b5009571e969752fdcd7647f31584206487c65a3fc7696e2bed071"
+        },
+        {
+          "id": "module-structure-form-event-regions",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-form-event-regions.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-form-event-regions.md",
+          "content_sha256": "7ae87835ab42a94138673a1156b796dc050b03a023c56054a633b3a9a2bea651"
+        },
+        {
+          "id": "module-structure-init-code-in-region",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-init-code-in-region.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-init-code-in-region.md",
+          "content_sha256": "a05bc12b757ec82483ed37897e28bf0569287b8f35d98725b9264d8b62541f38"
+        },
+        {
+          "id": "module-structure-method-in-regions",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-method-in-regions.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-method-in-regions.md",
+          "content_sha256": "c73245fad2b5d2dbedbcde27d035edc6f0680ad2952269fc49cf925489af229f"
+        },
+        {
+          "id": "module-structure-top-region",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-top-region.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-top-region.md",
+          "content_sha256": "4b050a1bd972678ae503548b714d1b1a6085e84016403807b49df7e284ca7ccd"
+        },
+        {
+          "id": "module-structure-var-in-region",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-var-in-region.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-var-in-region.md",
+          "content_sha256": "645c4e630528224d790b72176eb7279e6ff123bfa67c8ef26e3a2d401572554c"
+        },
+        {
+          "id": "module-undefined-function",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-undefined-function.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-undefined-function.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "module-undefined-method",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-undefined-method.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-undefined-method.md",
+          "content_sha256": "842ab8f1dd395fc82be884ec0657630f51542ca1a130798a5c38ef37815fedca"
+        },
+        {
+          "id": "module-undefined-variable",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-undefined-variable.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-undefined-variable.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "module-unused-local-variable",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-unused-local-variable.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-unused-local-variable.md",
+          "content_sha256": "e2c9dabc4dfbb285af16297731b9231d2d10436add549d89490331d63483f51b"
+        },
+        {
+          "id": "module-unused-method",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-unused-method.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-unused-method.md",
+          "content_sha256": "a3c241b877819578e9701a79bdff8ca034d17106c2a3bd930f677c413ede7392"
+        },
+        {
+          "id": "new-color",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-color.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-color.md",
+          "content_sha256": "a3b53c528c63e88428848f626321a139ec32a939fe510638e0673bb0a914477b"
+        },
+        {
+          "id": "new-font",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-font.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-font.md",
+          "content_sha256": "7dab3738a84ed69a9169bff0db3242b61f70a2e0c8476c53402fdc622c9ab725"
+        },
+        {
+          "id": "not-support-goto-operator-webclient",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/not-support-goto-operator-webclient.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/not-support-goto-operator-webclient.md",
+          "content_sha256": "27fc7288656201a5f88e7469c80906c33ef205c72661124210f46efae10d5f8a"
+        },
+        {
+          "id": "notify-description-to-server-procedure",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/notify-description-to-server-procedure.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/notify-description-to-server-procedure.md",
+          "content_sha256": "0d48d59b2b5e27678c8c5c343989cb4a54e04edc197cba645af62a4b4cc6359e"
+        },
+        {
+          "id": "object-module-export-variable",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/object-module-export-variable.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/object-module-export-variable.md",
+          "content_sha256": "685fbb52bdf17e7cc1b1176f9b668acf8047b53886ace9f049e0fb439e6c0c7a"
+        },
+        {
+          "id": "optional-form-parameter-access",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/optional-form-parameter-access.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/optional-form-parameter-access.md",
+          "content_sha256": "17caadcd15ab1c99f6663f9a7a32792639599b608ba61724df996b0e136e3150"
+        },
+        {
+          "id": "property-return-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/property-return-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/property-return-type.md",
+          "content_sha256": "0d8b13a00d68e25a96cc388b854eea9804bdc8676a4118fe6ad2e8daa71a123c"
+        },
+        {
+          "id": "public-method-caching",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/public-method-caching.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/public-method-caching.md",
+          "content_sha256": "783b3713abfb59cbf95ba1d794a28bf459e5cc89ccb75242e9295a5cab224988"
+        },
+        {
+          "id": "ql-camel-case-string-literal",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-camel-case-string-literal.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-camel-case-string-literal.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "ql-cast-to-max-number",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-cast-to-max-number.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-cast-to-max-number.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "ql-constants-in-binary-operation",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-constants-in-binary-operation.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-constants-in-binary-operation.md",
+          "content_sha256": "2405611e796a841f1e32a16cabc9a3c3765ad051ec3b55dac3003fccf07b0bb5"
+        },
+        {
+          "id": "ql-join-to-sub-query",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-join-to-sub-query.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-join-to-sub-query.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "ql-like-expression-with-field",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md",
+          "content_sha256": "5a33dc1919014970096cc6381860fe30333b7b0c4aefb0e8d8994343b96c31e9"
+        },
+        {
+          "id": "ql-temp-table-index",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-temp-table-index.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-temp-table-index.md",
+          "content_sha256": "a44a3eff0efd2e022a0a3df207ad1883374e41a2357401fbecda09f07870dd69"
+        },
+        {
+          "id": "ql-using-for-update",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-using-for-update.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-using-for-update.md",
+          "content_sha256": "8007c2a9c0acf28ec556c70ce2ffaf6686d0e0d403349c22d9c050dd2da3e14b"
+        },
+        {
+          "id": "ql-virtual-table-filters",
+          "source_path": "bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-virtual-table-filters.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-virtual-table-filters.md",
+          "content_sha256": "63024380ff9fa9933741ad2366fbf51749b8bd01a2c60b7d9be726e7949c2738"
+        },
+        {
+          "id": "query-in-loop",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/query-in-loop.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/query-in-loop.md",
+          "content_sha256": "29e097584f00147cffa007b975a043f1133a14bd92b30c32fb0edfb9c9896e7b"
+        },
+        {
+          "id": "reading-attribute-from-database",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/reading-attribute-from-database.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/reading-attribute-from-database.md",
+          "content_sha256": "6b24e81eac32b723ac99ab29364fa41ea970497801ae0bde13d20c502fefa472"
+        },
+        {
+          "id": "redundant-export-method",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/redundant-export-method.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/redundant-export-method.md",
+          "content_sha256": "5786080e0ddb846a5966b55733d5991e35a8e15ec32058a54f68a7b1aa9dd6a2"
+        },
+        {
+          "id": "register-resource-precision",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/register-resource-precision.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/register-resource-precision.md",
+          "content_sha256": "92885ca68ae680b4376a90bc90fc37f07dc5fef3f161b84eeffed0043b8cece4"
+        },
+        {
+          "id": "restriction-execute-external-code",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-code.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-code.md",
+          "content_sha256": "6f960f1730a26691070cae5096244d16a5f1b4e15902450770f77b0a7fd892ed"
+        },
+        {
+          "id": "restriction-execute-external-component-code",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-component-code.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-component-code.md",
+          "content_sha256": "db8fa3004c6fbe263cdfcc8d4e5b0a0e9e4313091e2180786e9e0ff02774e117"
+        },
+        {
+          "id": "right-active-users",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-active-users.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-active-users.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-administration",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-administration.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-administration.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-all-functions-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-all-functions-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-all-functions-mode.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-configuration-extensions-administration",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-configuration-extensions-administration.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-configuration-extensions-administration.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-data-administration",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-data-administration.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-data-administration.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-delete",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-delete.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-delete.md",
+          "content_sha256": "7c283c1c3e90bdd8ed5276c1f48ce33b39bf2138ab1076e0f3d2674335e35dd7"
+        },
+        {
+          "id": "right-exclusive-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-exclusive-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-exclusive-mode.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-interactive-clear-deletion-mark-predefined-data",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-clear-deletion-mark-predefined-data.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-clear-deletion-mark-predefined-data.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "right-interactive-delete",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "right-interactive-delete-marked-predefined-data",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete-marked-predefined-data.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete-marked-predefined-data.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "right-interactive-delete-predefined-data",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete-predefined-data.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete-predefined-data.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "right-interactive-open-external-data-processors",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-data-processors.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-data-processors.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-interactive-open-external-reports",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-reports.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-reports.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-interactive-set-deletion-mark-predefined-data",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-set-deletion-mark-predefined-data.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-set-deletion-mark-predefined-data.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "right-output-to-printer-file-clipboard",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-output-to-printer-file-clipboard.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-output-to-printer-file-clipboard.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-save-user-data",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-save-user-data.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-save-user-data.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-start-automation",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-automation.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-automation.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-start-external-connection",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-external-connection.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-external-connection.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-start-thick-client",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thick-client.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thick-client.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-start-thin-client",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thin-client.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thin-client.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-start-web-client",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-web-client.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-web-client.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-update-database-configuration",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-update-database-configuration.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-update-database-configuration.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "right-view-event-log",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/right-view-event-log.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-view-event-log.md",
+          "content_sha256": "8dcbe7830f053fcea009396316e10870bcad92cdbf9ba16ea42d55fd5958a8c9"
+        },
+        {
+          "id": "role-right-has-rls",
+          "source_path": "bundles/com.e1c.v8codestyle.right/markdown/ru/role-right-has-rls.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/role-right-has-rls.md",
+          "content_sha256": "5678f989140acea159051b90cee6b96d3c2802adce71597c11715d915bbc12af"
+        },
+        {
+          "id": "rollback-transaction",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/rollback-transaction.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/rollback-transaction.md",
+          "content_sha256": "497ae1c31229cc26c196994479ec4949346a052dbea06158951c93265a57c00d"
+        },
+        {
+          "id": "scheduled-job-periodicity-too-short",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/scheduled-job-periodicity-too-short.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/scheduled-job-periodicity-too-short.md",
+          "content_sha256": "763a0af8dc160980c903c6bb293235b26b37bdb79a614170b8c90eb5bf812c8f"
+        },
+        {
+          "id": "secure-password-storage",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/secure-password-storage.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/secure-password-storage.md",
+          "content_sha256": "603328268eda394e204a35ee83f895bf8f0c039a7d830aec5459a9604991af9f"
+        },
+        {
+          "id": "security-software-call",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/security-software-call.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/security-software-call.md",
+          "content_sha256": "4186a613a4969678ae4650d4ad7c3b1cca2e0a422fe66bbf75251868f87917f2"
+        },
+        {
+          "id": "self-assign",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/self-assign.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/self-assign.md",
+          "content_sha256": "3d2cb31050ae8c5f5ab1ac98f2b1e14416f1dd18b48a432577e1b552c3101991"
+        },
+        {
+          "id": "semicolon-missing",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/semicolon-missing.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/semicolon-missing.md",
+          "content_sha256": "86f5d7d3f79f46be593ec444c05f2eae1885a3de3687dcee0b8641581c5f03b1"
+        },
+        {
+          "id": "server-execution-safe-mode",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/server-execution-safe-mode.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/server-execution-safe-mode.md",
+          "content_sha256": "6e208da75088f621ed3a7e5b714dfeb90fcf2d805fadeaf712314d7e6fbf2947"
+        },
+        {
+          "id": "statement-type-change",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/statement-type-change.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/statement-type-change.md",
+          "content_sha256": "078ce500997a281bc880b932dd42ad5edfc5f3609b7430d9b388ac1354b9acdd"
+        },
+        {
+          "id": "string-literal-type-annotation-invalid-place",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/string-literal-type-annotation-invalid-place.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/string-literal-type-annotation-invalid-place.md",
+          "content_sha256": "552e061a3545d0079af18a2155ef54a783f010b8ee759af0d0cd7b880231302b"
+        },
+        {
+          "id": "structure-constructor-too-many-keys",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-too-many-keys.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-too-many-keys.md",
+          "content_sha256": "71af889d961127b08e92f92114a0c848f17fa0719cb82198a3727cc42523f2d2"
+        },
+        {
+          "id": "structure-constructor-value-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-value-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-value-type.md",
+          "content_sha256": "e7af10588d03e76714aa7dd4be896b38f3966536d7cc8850232f41c129643b93"
+        },
+        {
+          "id": "structure-key-modification",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-key-modification.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-key-modification.md",
+          "content_sha256": "563b56718a1442b72a01e5abba255b4b99bdac45db30dff6e5373abef5171971"
+        },
+        {
+          "id": "subsystem-synonym-too-long",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/subsystem-synonym-too-long.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/subsystem-synonym-too-long.md",
+          "content_sha256": "1b84bdabcc196cc4dbe7763022cb862fa0b7f415208fafc85eb63036e6b4c86b"
+        },
+        {
+          "id": "typed-value-adding-to-untyped-collection",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/typed-value-adding-to-untyped-collection.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/typed-value-adding-to-untyped-collection.md",
+          "content_sha256": "6ea7f43fe629e90b8c60829a306a9811bea2d52bf8b6a658354aa1a439a38092"
+        },
+        {
+          "id": "unknown-form-parameter-access",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/unknown-form-parameter-access.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/unknown-form-parameter-access.md",
+          "content_sha256": "ffdff9bb5aae0142b5e8a21351c265619b4f9b2f8cd257f5e2e67f47c046fea7"
+        },
+        {
+          "id": "unsafe-password-ib-storage",
+          "source_path": "bundles/com.e1c.v8codestyle.md/markdown/ru/unsafe-password-ib-storage.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/unsafe-password-ib-storage.md",
+          "content_sha256": "ee355b66bc99c5bb8c58d47a70fa06df41bbb23a88229b214c33a99570685d26"
+        },
+        {
+          "id": "use-goto-operator",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-goto-operator.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-goto-operator.md",
+          "content_sha256": "de0dfcd99067ec60e4d375cb4be65fead0425698ceebf86b19a8179bb732d28f"
+        },
+        {
+          "id": "use-non-recommended-method",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md",
+          "content_sha256": "66459d0fd3a7484e4ab18f34fd79f4c862ada1a5ed2c044aa547beb3b0352548"
+        },
+        {
+          "id": "using-form-data-to-value",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-form-data-to-value.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-form-data-to-value.md",
+          "content_sha256": "da0b9116c7642f53a505312d31902174c0e777a8a1832a4a5327319c9bc167ab"
+        },
+        {
+          "id": "using-isinrole",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-isinrole.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-isinrole.md",
+          "content_sha256": "e6d65c6165de3fc72da9f812b37f1e873ea150eab17d508f25d71f12347a3652"
+        },
+        {
+          "id": "variable-value-type",
+          "source_path": "bundles/com.e1c.v8codestyle.bsl/markdown/ru/variable-value-type.md",
+          "source_url": "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/variable-value-type.md",
+          "content_sha256": "4a92385a7b1dd41a10c720b0fe75b0806669a8797c30041bcc878e2a0b08c8a8"
+        }
+      ]
+    }
+  ]
+}

@@ -4,12 +4,56 @@
 
 - Категория: `ql`
 
+<!-- diagnostic-source:start
+source_url=https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md
+source_path=bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md
+revision=c8fe7932babf718c0ace3cf836a99d6a3b98d098
+SPDX-License-Identifier: EPL-2.0
+sha256=5a33dc1919014970096cc6381860fe30333b7b0c4aefb0e8d8994343b96c31e9
+-->
+
 Правым операндом операции сравнения ПОДОБНО (LIKE) и СПЕЦСИМВОЛ (ESCAPE) может быть только литерал (параметр) или выражение над литералами. Шаблонными символами являются только «_» – любой символ и «%» – последовательность любых символов.
 
-###### Стандарт
+## Неправильно
+
+Запрещено использовать в запросе поле таблицы (реквизит справочника) в качестве правого операнда операции сравнения "ПОДОБНО" и "СПЕЦСИМВОЛ".
+
+```bsl
+ВЫБРАТЬ
+    Товары.Ссылка
+ИЗ
+    Справочник.Товары КАК Товары
+ГДЕ
+    Товары.СтранаПроисхождения.Наименование ПОДОБНО Таблица.Поле1
+```
+
+## Правильно
+
+При использовании в тексте запроса оператора ПОДОБНО и СПЕЦСИМВОЛ допустимо использовать только константные строковые литералы или параметры запроса.
+
+```bsl
+ВЫБРАТЬ
+    Товары.Ссылка
+ИЗ
+    Справочник.Товары КАК Товары
+ГДЕ
+    Товары.СтранаПроисхождения.Наименование ПОДОБНО "123%!%" СПЕЦСИМВОЛ "!"
+```
+
+## См.
+
+- [Общие требования к конфигурации.](https://its.1c.ru/db/v8std#content:467:hdoc)
+- [Приложение 8. Особенности работы с различными СУБД.](http://its.1c.ru/db/v83doc#bookmark:dev:TI000001285)
+- [Руководство разработчика Глава 8. Работа с запросами.](https://its.1c.ru/db/v8318doc#bookmark:dev:TI000000506)
+
+<!-- diagnostic-source:end -->
+
+## Соответствие стандартам
 
 - [#std467: Общие требования к конфигурации](../../std/467.md)
 
-###### Источник
+## Источник диагностики
 
-https://github.com/1C-Company/v8-code-style/blob/master/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md
+- [Исходная статья](https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md)
+- Ревизия: `c8fe7932babf718c0ace3cf836a99d6a3b98d098`
+- Лицензия: `EPL-2.0`

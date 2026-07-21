@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import tempfile
 import unittest
@@ -19,6 +20,8 @@ from scripts.diagnostic_articles import (
     verify_checkout_revision,
 )
 
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 BSLLS_FAMILY = SourceFamily(
     family="bslls",
@@ -60,6 +63,17 @@ class DiagnosticArticleCoreTests(unittest.TestCase):
 
         self.assertEqual(title, "Заголовок без пробела")
         self.assertEqual(body, "Описание.\n")
+
+    def test_normalize_article_removes_trailing_whitespace_from_source(self):
+        title, body = normalize_article(
+            "# Заголовок  \n\nСтрока с пробелами.  \n\t\n```bsl\nЗначение = 1;\t\n```\n"
+        )
+
+        self.assertEqual(title, "Заголовок")
+        self.assertEqual(
+            body,
+            "Строка с пробелами.\n\n```bsl\nЗначение = 1;\n```\n",
+        )
 
     def test_immutable_source_url_uses_full_revision(self):
         family = SourceFamily(
@@ -327,6 +341,42 @@ https://example.com/source
             catalog = load_catalog(repo / "data/diagnostic-sources.json")
             self.assertEqual(catalog.ids("bslls"), {"One"})
             self.assertEqual(catalog.ids("v8-code-style"), {"Two"})
+
+
+class DiagnosticArticleRepositoryTests(unittest.TestCase):
+    def test_manifest_and_local_catalogs_have_exact_expected_composition(self):
+        catalog = load_catalog(REPO_ROOT / "data/diagnostic-sources.json")
+
+        self.assertEqual(len(catalog.diagnostics["bslls"]), 186)
+        self.assertEqual(len(catalog.diagnostics["v8-code-style"]), 172)
+        self.assertEqual(catalog.ids("bslls"), self._markdown_ids("bslls"))
+        self.assertEqual(
+            catalog.ids("v8-code-style"),
+            self._markdown_ids("v8-code-style"),
+        )
+
+    def test_every_managed_body_is_nonempty(self):
+        for family in ("bslls", "v8-code-style"):
+            for path in sorted((REPO_ROOT / "docs/diagnostics" / family).glob("*.md")):
+                if path.name == "index.md":
+                    continue
+                content = path.read_text(encoding="utf-8")
+                match = re.search(
+                    r"<!-- diagnostic-source:start.*?-->\n(?P<body>.*?)"
+                    r"<!-- diagnostic-source:end -->",
+                    content,
+                    re.DOTALL,
+                )
+                self.assertIsNotNone(match, path)
+                self.assertGreater(len(match.group("body").strip()), 20, path)
+
+    @staticmethod
+    def _markdown_ids(family: str) -> set[str]:
+        return {
+            path.stem
+            for path in (REPO_ROOT / "docs/diagnostics" / family).glob("*.md")
+            if path.name != "index.md"
+        }
 
 
 if __name__ == "__main__":

@@ -4,12 +4,57 @@
 
 - Категория: `bsl`
 
-1.1. Конфигурация должна использовать только штатные и документированные возможности платформы 1С:Предприятие. ... Платформа позволяет в модулях форм реализовывать процедуры без директив компиляции (&НаСервере и т.п.). Такие процедуры не работают в веб-клиенте и приводят к лишнему серверному вызову.
+<!-- diagnostic-source:start
+source_url=https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md
+source_path=bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md
+revision=c8fe7932babf718c0ace3cf836a99d6a3b98d098
+SPDX-License-Identifier: EPL-2.0
+sha256=e5d599693cbe85645723c47726f41089c0af3718b29ca8ce58e42e9e54a307a7
+-->
 
-###### Стандарт
+1.1. Конфигурация должна использовать только штатные и документированные
+возможности платформы 1С:Предприятие.
+
+...
+
+Платформа позволяет в модулях форм реализовывать процедуры без директив
+компиляции (&НаСервере и т.п.). Такие процедуры не работают в
+веб-клиенте и приводят к лишнему серверному вызову.
+
+## Неправильно
+
+```bsl
+Процедура Серверная()
+
+
+КонецПроцедуры
+```
+
+## Правильно
+
+```bsl
+&НаСервере
+Процедура Серверная()
+
+
+КонецПроцедуры
+```
+
+## См.
+
+- [Исполнение модуля формы на клиенте и на сервере](https://its.1c.ru/db/pubv8devui/content/189/hdoc/)
+- [Использование директив компиляции и инструкций препроцессора](https://its.1c.ru/db/v8std/content/439/hdoc/)
+- [Общие требования к конфигурации](https://its.1c.ru/db/v8std#content:467:hdoc)
+- [Модуль формы](https://its.1c.ru/db/v8320doc#bookmark:dev:TI000000403)
+
+<!-- diagnostic-source:end -->
+
+## Соответствие стандартам
 
 - [#std467: Общие требования к конфигурации](../../std/467.md)
 
-###### Источник
+## Источник диагностики
 
-https://github.com/1C-Company/v8-code-style/blob/master/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md
+- [Исходная статья](https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md)
+- Ревизия: `c8fe7932babf718c0ace3cf836a99d6a3b98d098`
+- Лицензия: `EPL-2.0`

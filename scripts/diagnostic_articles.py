@@ -55,7 +55,10 @@ class LocalShell:
 
 def normalize_article(source: str) -> tuple[str, str]:
     normalized = source.replace("\r\n", "\n").replace("\r", "\n")
-    lines = normalized.splitlines()
+    # Markdown source articles occasionally contain spaces and tabs at EOL.
+    # They carry no semantic information here, make generated pages fail
+    # ``git diff --check`` and would otherwise return on every synchronization.
+    lines = [line.rstrip() for line in normalized.splitlines()]
     first = next((index for index, line in enumerate(lines) if line.strip()), None)
     heading = re.fullmatch(r"#(?!#)\s*(.+)", lines[first]) if first is not None else None
     if heading is None:

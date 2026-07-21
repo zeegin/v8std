@@ -7,10 +7,38 @@
 - Включена по умолчанию: Да
 - Теги: `standard`
 
-###### Стандарт
+<!-- diagnostic-source:start
+source_url=https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md
+source_path=docs/diagnostics/NonStandardRegion.md
+revision=f4616cda8a216789ee40529ed857e614b9e2ea25
+SPDX-License-Identifier: LGPL-3.0-or-later
+sha256=e378b919cda3e4b3aef195dffbbf5f3f51d67ad7a912fa2fe097efe0b161a870
+-->
+
+<!-- Блоки выше заполняются автоматически, не трогать -->
+## Описание диагностики
+<!-- Описание диагностики заполняется вручную. Необходимо понятным языком описать смысл и схему работу -->
+
+Весь код модуля должен быть структурирован и разделен по разделам (областям).
+Набор разделов для каждого типа модуля (модуль формы, модуль объект, общий модуль и т.д.) однозначно определен, наличие посторонних разделов недопустимо.
+
+## Примеры
+<!-- В данном разделе приводятся примеры, на которые диагностика срабатывает, а также можно привести пример, как можно исправить ситуацию -->
+
+## Источники
+<!-- Необходимо указывать ссылки на все источники, из которых почерпнута информация для создания диагностики -->
+
+
+* Источник [Соглашения при написания кода. Структура модуля](https://its.1c.ru/db/v8std#content:455:hdoc)
+
+<!-- diagnostic-source:end -->
+
+## Соответствие стандартам
 
 - [#std455: Структура модуля](../../std/455.md)
 
-###### Источник
+## Источник диагностики
 
-https://1c-syntax.github.io/bsl-language-server/diagnostics/NonStandardRegion/
+- [Исходная статья](https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md)
+- Ревизия: `f4616cda8a216789ee40529ed857e614b9e2ea25`
+- Лицензия: `LGPL-3.0-or-later`

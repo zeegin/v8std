@@ -7,10 +7,36 @@
 - Включена по умолчанию: Да
 - Теги: `error`
 
-###### Стандарт
+<!-- diagnostic-source:start
+source_url=https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleAssign.md
+source_path=docs/diagnostics/CommonModuleAssign.md
+revision=f4616cda8a216789ee40529ed857e614b9e2ea25
+SPDX-License-Identifier: LGPL-3.0-or-later
+sha256=735e59d42186cb481a46e143ef2263e3e21d9e55238706f2b733f33c06ab4472
+-->
+
+<!-- Блоки выше заполняются автоматически, не трогать -->
+## Описание диагностики
+<!-- Описание диагностики заполняется вручную. Необходимо понятным языком описать смысл и схему работу -->
+
+При присвоении значения общему модулю будет вызвано исключение.
+Такая ситуация возможна когда в конфигурацию добавляется общий модуль с
+именем, которое уже задействовано для переменной.
+
+## Примеры
+<!-- В данном разделе приводятся примеры, на которые диагностика срабатывает, а также можно привести пример, как можно исправить ситуацию -->
+
+## Источники
+<!-- Необходимо указывать ссылки на все источники, из которых почерпнута информация для создания диагностики -->
+
+<!-- diagnostic-source:end -->
+
+## Соответствие стандартам
 
 - Нет прямой привязки к стандарту
 
-###### Источник
+## Источник диагностики
 
-https://1c-syntax.github.io/bsl-language-server/diagnostics/CommonModuleAssign/
+- [Исходная статья](https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleAssign.md)
+- Ревизия: `f4616cda8a216789ee40529ed857e614b9e2ea25`
+- Лицензия: `LGPL-3.0-or-later`

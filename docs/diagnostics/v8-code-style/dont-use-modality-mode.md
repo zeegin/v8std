@@ -4,10 +4,39 @@
 
 - Категория: `bsl`
 
-###### Стандарт
+<!-- diagnostic-source:start
+source_url=https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md
+source_path=bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md
+revision=c8fe7932babf718c0ace3cf836a99d6a3b98d098
+SPDX-License-Identifier: EPL-2.0
+sha256=8f73458893d291563474f5671baa875f67557003779e6f44401646d463e181fc
+-->
+
+## Неправильно
+
+Процедура ПроцедураПример(Параметры)
+	Предупреждение("Сообщение");
+КонецПроцедуры
+
+
+## Правильно
+
+Процедура ПроцедураПример(Параметры)
+	ПоказатьПредупреждение(,"Сообщение");
+КонецПроцедуры
+
+
+ ## См.
+[Ограничение на использование модальных окон и синхронных вызовов](https://its.1c.ru/db/v8std#content:703:hdoc)
+
+<!-- diagnostic-source:end -->
+
+## Соответствие стандартам
 
 - [#std703: Ограничение на использование модальных окон и синхронных вызовов](../../std/703.md)
 
-###### Источник
+## Источник диагностики
 
-https://github.com/1C-Company/v8-code-style/blob/master/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md
+- [Исходная статья](https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md)
+- Ревизия: `c8fe7932babf718c0ace3cf836a99d6a3b98d098`
+- Лицензия: `EPL-2.0`
