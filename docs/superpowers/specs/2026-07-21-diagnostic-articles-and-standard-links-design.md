@@ -1,3 +1,8 @@
+---
+llms:
+  ignore: true
+---
+
 # Diagnostic Articles and Exact Standard Links Design
 
 ## Status
