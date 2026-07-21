@@ -55,6 +55,10 @@ def _is_public_acc_source(label: str) -> bool:
     return label.strip().casefold() not in EXCLUDED_ACC_SOURCE_LABELS
 
 
+def _normalize_source_text(value: str) -> str:
+    return "\n".join(line.rstrip() for line in value.strip().splitlines())
+
+
 def extract_catalog(source: Path, *, product_version: str) -> dict[str, Any]:
     source_bytes = source.read_bytes()
     root = ET.fromstring(source_bytes)
@@ -114,9 +118,9 @@ def extract_catalog(source: Path, *, product_version: str) -> dict[str, Any]:
         diagnostics.append(
             {
                 "code": code,
-                "description": fields.get("Description", "").strip(),
+                "description": _normalize_source_text(fields.get("Description", "")),
                 "severity": fields.get("Критичность", "").strip(),
-                "recommendation": fields.get("Рекомендация", "").strip(),
+                "recommendation": _normalize_source_text(fields.get("Рекомендация", "")),
                 "estimated_fix_minutes": int(estimated) if estimated.isdigit() else None,
                 "standards": standards,
                 "edt_codes": [],

@@ -170,6 +170,22 @@ class AccCatalogExtractionTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertEqual(len(load_catalog(output)["diagnostics"]), 2)
 
+    def test_extract_normalizes_trailing_whitespace_inside_source_text(self):
+        source_xml = TEMPLATE_XML.replace(
+            "Исправьте комментарий.",
+            "Строка 1\n\t\nСтрока 2\t",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "Template.bin"
+            source.write_text(source_xml, encoding="utf-8")
+
+            catalog = extract_catalog(source, product_version="1.2.9.80")
+
+        self.assertEqual(
+            catalog["diagnostics"][0]["recommendation"],
+            "Строка 1\n\nСтрока 2",
+        )
+
 
 class AccRenderingTests(unittest.TestCase):
     def test_review_and_page_use_the_current_exact_local_clause(self):
