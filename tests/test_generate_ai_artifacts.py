@@ -167,6 +167,9 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             any(page["source_path"].startswith("ai/") for page in self.index["pages"])
         )
 
+    def test_internal_superpowers_working_files_are_not_site_sources(self):
+        self.assertFalse((REPO_ROOT / "docs" / "superpowers").exists())
+
     def test_writer_removes_retired_machine_artifacts(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             docs_dir = Path(temp_dir)
