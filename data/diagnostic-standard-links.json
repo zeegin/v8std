@@ -1915,14 +1915,13 @@
     {
       "diagnostic": "v8cs:begin-transaction",
       "standard": "std499",
-      "clause": "3.6",
-      "anchor": "36",
+      "clause": null,
+      "anchor": null,
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/begin-transaction.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Пункт 3.6 отсутствует в текущем std499; правило транзакции перенесено в std783.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:begin-transaction",
@@ -1930,35 +1929,59 @@
       "clause": "1.3",
       "anchor": "13",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/begin-transaction.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/begin-transaction.md",
+        "local:docs/std/783.md#13"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:begin-transaction проверяет требование пункта 1.3 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:bsl-canonical-pragma",
       "standard": "std441",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-canonical-pragma.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-canonical-pragma.md",
+        "local:docs/std/441.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:bsl-canonical-pragma проверяет требование пункта 1 стандарта std441.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:bsl-nstr-string-literal-format",
       "standard": "std761",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-nstr-string-literal-format.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-nstr-string-literal-format.md",
+        "local:docs/std/761.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:bsl-nstr-string-literal-format проверяет требование пункта 1 стандарта std761.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:bsl-nstr-string-literal-format",
+      "standard": "std761",
+      "clause": "4",
+      "anchor": "4",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-nstr-string-literal-format.md",
+        "local:docs/std/761.md#4"
+      ],
+      "reason": "Диагностика v8cs:bsl-nstr-string-literal-format проверяет требование пункта 4 стандарта std761.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:bsl-nstr-string-literal-format",
+      "standard": "std761",
+      "clause": "8",
+      "anchor": "8",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-nstr-string-literal-format.md",
+        "local:docs/std/761.md#8"
+      ],
+      "reason": "Диагностика v8cs:bsl-nstr-string-literal-format проверяет требование пункта 8 стандарта std761.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:bsl-variable-name-invalid",
@@ -1966,23 +1989,22 @@
       "clause": "3",
       "anchor": "3",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-variable-name-invalid.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-variable-name-invalid.md",
+        "local:docs/std/454.md#3"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:bsl-variable-name-invalid проверяет требование пункта 3 стандарта std454.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:commit-transaction",
       "standard": "std499",
-      "clause": "3.6",
-      "anchor": "36",
+      "clause": null,
+      "anchor": null,
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/commit-transaction.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Пункт 3.6 отсутствует в текущем std499; правило транзакции перенесено в std783.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:commit-transaction",
@@ -1990,11 +2012,11 @@
       "clause": "1.3",
       "anchor": "13",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/commit-transaction.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/commit-transaction.md",
+        "local:docs/std/783.md#13"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:commit-transaction проверяет требование пункта 1.3 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:common-module-missing-api",
@@ -2004,33 +2026,56 @@
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-missing-api.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "std455 описывает структуру модулей, но не требует экспортного API в каждом общем модуле.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:common-module-name-cached",
       "standard": "std469",
-      "clause": "2.2",
-      "anchor": "22",
+      "clause": "3.2.3",
+      "anchor": "323",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-cached.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-cached.md",
+        "local:docs/std/469.md#323"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:common-module-name-cached проверяет требование пункта 3.2.3 стандарта std469.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-client",
+      "standard": "std469",
+      "clause": "2.3",
+      "anchor": "23",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client.md",
+        "local:docs/std/469.md#23"
+      ],
+      "reason": "Клиентский общий модуль должен иметь постфикс Клиент.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:common-module-name-client-cached",
       "standard": "std469",
-      "clause": "2.2",
-      "anchor": "22",
+      "clause": "3.2.3",
+      "anchor": "323",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-cached.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-cached.md",
+        "local:docs/std/469.md#323"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:common-module-name-client-cached проверяет требование пункта 3.2.3 стандарта std469.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-client-server",
+      "standard": "std469",
+      "clause": "2.4",
+      "anchor": "24",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-server.md",
+        "local:docs/std/469.md#24"
+      ],
+      "reason": "Клиент-серверный общий модуль должен иметь постфикс КлиентСервер.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:common-module-name-full-access",
@@ -2038,11 +2083,23 @@
       "clause": "3.2.2",
       "anchor": "322",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-full-access.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-full-access.md",
+        "local:docs/std/469.md#322"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:common-module-name-full-access проверяет требование пункта 3.2.2 стандарта std469.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-global",
+      "standard": "std469",
+      "clause": "3.2.1",
+      "anchor": "321",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global.md",
+        "local:docs/std/469.md#321"
+      ],
+      "reason": "Глобальный общий модуль должен иметь постфикс Глобальный.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:common-module-name-global-client",
@@ -2050,11 +2107,11 @@
       "clause": "3.2.1",
       "anchor": "321",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global-client.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global-client.md",
+        "local:docs/std/469.md#321"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:common-module-name-global-client проверяет требование пункта 3.2.1 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:common-module-name-server-call",
@@ -2062,35 +2119,47 @@
       "clause": "2.2",
       "anchor": "22",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call.md",
+        "local:docs/std/469.md#22"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:common-module-name-server-call проверяет требование пункта 2.2 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:common-module-name-server-call-cached",
       "standard": "std469",
-      "clause": "2.2",
-      "anchor": "22",
+      "clause": "3.2.3",
+      "anchor": "323",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call-cached.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call-cached.md",
+        "local:docs/std/469.md#323"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:common-module-name-server-call-cached проверяет требование пункта 3.2.3 стандарта std469.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:common-module-server-call",
       "standard": "std679",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-server-call.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-server-call.md",
+        "local:docs/std/679.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:common-module-server-call проверяет требование пункта 1 стандарта std679.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:configuration-data-lock-mode",
+      "standard": "std460",
+      "clause": "std460",
+      "anchor": "std460",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/configuration-data-lock-mode.md",
+        "local:docs/std/460.md#std460"
+      ],
+      "reason": "Диагностика проверяет использование управляемого режима блокировки данных.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:data-composition-conditional-appearance-use",
@@ -2098,107 +2167,107 @@
       "clause": "2.1",
       "anchor": "21",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-conditional-appearance-use.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-conditional-appearance-use.md",
+        "local:docs/std/710.md#21"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:data-composition-conditional-appearance-use проверяет требование пункта 2.1 стандарта std710.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:data-composition-variant-name-default",
       "standard": "std674",
-      "clause": null,
-      "anchor": null,
+      "clause": "4",
+      "anchor": "4",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-variant-name-default.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-variant-name-default.md",
+        "local:docs/std/674.md#4"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:data-composition-variant-name-default проверяет требование пункта 4 стандарта std674.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:data-exchange-load",
       "standard": "std464",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md",
+        "local:docs/std/464.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:data-exchange-load проверяет требование пункта 2 стандарта std464.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:data-exchange-load",
       "standard": "std465",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md",
+        "local:docs/std/465.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:data-exchange-load проверяет требование пункта 2 стандарта std465.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:data-exchange-load",
       "standard": "std752",
-      "clause": null,
-      "anchor": null,
+      "clause": "2",
+      "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md",
+        "local:docs/std/752.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:data-exchange-load проверяет требование пункта 2 стандарта std752.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:data-exchange-load",
       "standard": "std773",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md",
+        "local:docs/std/773.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:data-exchange-load проверяет требование пункта 1 стандарта std773.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:db-object-anyref-type",
       "standard": "std728",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-anyref-type.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-anyref-type.md",
+        "local:docs/std/728.md#21"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:db-object-anyref-type проверяет требование пункта 2.1 стандарта std728.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:db-object-max-number-length",
       "standard": "std467",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.2",
+      "anchor": "12",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-max-number-length.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-max-number-length.md",
+        "local:docs/std/467.md#12"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:db-object-max-number-length проверяет требование пункта 1.2 стандарта std467.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:db-object-ref-non-ref-type",
       "standard": "std728",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-ref-non-ref-type.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-ref-non-ref-type.md",
+        "local:docs/std/728.md#11"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:db-object-ref-non-ref-type проверяет требование пункта 1.1 стандарта std728.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:deprecated-procedure-outside-deprecated-region",
@@ -2206,11 +2275,11 @@
       "clause": "3.1",
       "anchor": "31",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/deprecated-procedure-outside-deprecated-region.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/deprecated-procedure-outside-deprecated-region.md",
+        "local:docs/std/644.md#31"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:deprecated-procedure-outside-deprecated-region проверяет требование пункта 3.1 стандарта std644.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:doc-comment-export-procedure-description-section",
@@ -2218,11 +2287,11 @@
       "clause": "2",
       "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-export-procedure-description-section.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-export-procedure-description-section.md",
+        "local:docs/std/453.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:doc-comment-export-procedure-description-section проверяет требование пункта 2 стандарта std453.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:document-post-in-privileged-mode",
@@ -2230,35 +2299,35 @@
       "clause": "1.7",
       "anchor": "17",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/document-post-in-privileged-mode.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/document-post-in-privileged-mode.md",
+        "local:docs/std/689.md#17"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:document-post-in-privileged-mode проверяет требование пункта 1.7 стандарта std689.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:dont-use-modality-mode",
       "standard": "std703",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md",
+        "local:docs/std/703.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:dont-use-modality-mode проверяет требование пункта 1 стандарта std703.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:empty-except-statement",
       "standard": "std499",
-      "clause": "2",
-      "anchor": "2",
+      "clause": "3.2",
+      "anchor": "32",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/empty-except-statement.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/empty-except-statement.md",
+        "local:docs/std/499.md#32"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:empty-except-statement проверяет требование пункта 3.2 стандарта std499.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:event-handler-boolean-param",
@@ -2268,9 +2337,8 @@
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/event-handler-boolean-param.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика запрещает сбрасывать булев параметр обработчика; std400 описывает информирование пользователя и это условие не задаёт.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:event-handler-boolean-param",
@@ -2278,11 +2346,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/event-handler-boolean-param.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/event-handler-boolean-param.md",
+        "local:docs/std/686.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:event-handler-boolean-param проверяет требование пункта 1 стандарта std686.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:export-method-in-command-form-module",
@@ -2292,33 +2360,32 @@
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Пункт 4 std404 регулирует получение результата формы после закрытия, а диагностика проверяет объявления экспортных методов.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:export-method-in-command-form-module",
       "standard": "std544",
-      "clause": null,
-      "anchor": null,
+      "clause": "std544",
+      "anchor": "std544",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md",
+        "local:docs/std/544.md#std544"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:export-method-in-command-form-module проверяет требование пункта std544 стандарта std544.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:export-method-in-command-form-module",
       "standard": "std630",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md",
+        "local:docs/std/630.md#11"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:export-method-in-command-form-module проверяет требование пункта 1.1 стандарта std630.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:export-procedure-missing-comment",
@@ -2326,23 +2393,22 @@
       "clause": "2",
       "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-procedure-missing-comment.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-procedure-missing-comment.md",
+        "local:docs/std/453.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:export-procedure-missing-comment проверяет требование пункта 2 стандарта std453.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:extension-md-object-prefix",
       "standard": "std469",
-      "clause": "2.2",
-      "anchor": "22",
+      "clause": null,
+      "anchor": null,
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/extension-md-object-prefix.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "std469 регулирует имена общих модулей, а диагностика проверяет префиксы объектов расширения метаданных.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:form-commands-single-action-handler",
@@ -2350,11 +2416,11 @@
       "clause": "2.4.3",
       "anchor": "243",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-commands-single-action-handler.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-commands-single-action-handler.md",
+        "local:docs/std/455.md#243"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-commands-single-action-handler проверяет требование пункта 2.4.3 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-dynamic-list-item-title",
@@ -2362,11 +2428,11 @@
       "clause": "4",
       "anchor": "4",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-dynamic-list-item-title.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-dynamic-list-item-title.md",
+        "local:docs/std/765.md#4"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-dynamic-list-item-title проверяет требование пункта 4 стандарта std765.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-item-visible-settings-by-roles",
@@ -2374,11 +2440,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-item-visible-settings-by-roles.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-item-visible-settings-by-roles.md",
+        "local:docs/std/737.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-item-visible-settings-by-roles проверяет требование пункта 1 стандарта std737.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-items-single-event-handler",
@@ -2386,71 +2452,72 @@
       "clause": "2.4.3",
       "anchor": "243",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-items-single-event-handler.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-items-single-event-handler.md",
+        "local:docs/std/455.md#243"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-items-single-event-handler проверяет требование пункта 2.4.3 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-list-field-ref-not-added",
       "standard": "std702",
-      "clause": "2.2",
-      "anchor": "22",
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-field-ref-not-added.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-field-ref-not-added.md",
+        "local:docs/std/702.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-list-field-ref-not-added проверяет требование пункта 1 стандарта std702.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-list-ref-use-always-flag-disabled",
       "standard": "std702",
-      "clause": "2.2",
-      "anchor": "22",
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-use-always-flag-disabled.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-use-always-flag-disabled.md",
+        "local:docs/std/702.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-list-ref-use-always-flag-disabled проверяет требование пункта 1 стандарта std702.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-list-ref-user-visibility-enabled",
       "standard": "std702",
-      "clause": "2.2",
-      "anchor": "22",
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-user-visibility-enabled.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-user-visibility-enabled.md",
+        "local:docs/std/702.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-list-ref-user-visibility-enabled проверяет требование пункта 1 стандарта std702.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-module-missing-pragma",
       "standard": "std439",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md",
+        "local:docs/std/439.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-module-missing-pragma проверяет требование пункта 1 стандарта std439.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:form-module-missing-pragma",
       "standard": "std467",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md",
+        "local:docs/std/467.md#11"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-module-missing-pragma проверяет требование пункта 1.1 стандарта std467.",
+      "review": "confirmed",
+      "notes": "Пункт задаёт общее требование использовать только документированные возможности; непосредственное правило директив находится в std439/1."
     },
     {
       "diagnostic": "v8cs:form-module-pragma",
@@ -2458,11 +2525,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-pragma.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-pragma.md",
+        "local:docs/std/439.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:form-module-pragma проверяет требование пункта 1 стандарта std439.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:functional-option-privileged-get-mode",
@@ -2470,47 +2537,46 @@
       "clause": "1.8",
       "anchor": "18",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/functional-option-privileged-get-mode.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/functional-option-privileged-get-mode.md",
+        "local:docs/std/689.md#18"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:functional-option-privileged-get-mode проверяет требование пункта 1.8 стандарта std689.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:input-field-list-choice-mode",
       "standard": "std765",
-      "clause": null,
-      "anchor": null,
+      "clause": "5",
+      "anchor": "5",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/input-field-list-choice-mode.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/input-field-list-choice-mode.md",
+        "local:docs/std/765.md#5"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:input-field-list-choice-mode проверяет требование пункта 5 стандарта std765.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:invocation-form-event-handler",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.4.3",
+      "anchor": "243",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/invocation-form-event-handler.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/invocation-form-event-handler.md",
+        "local:docs/std/455.md#243"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:invocation-form-event-handler проверяет требование пункта 2.4.3 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:lock-out-of-try",
       "standard": "std499",
-      "clause": "3.6",
-      "anchor": "36",
+      "clause": null,
+      "anchor": null,
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/lock-out-of-try.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Пункт 3.6 отсутствует в текущем std499; правило транзакции перенесено в std783.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:lock-out-of-try",
@@ -2518,23 +2584,23 @@
       "clause": "1.3",
       "anchor": "13",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/lock-out-of-try.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/lock-out-of-try.md",
+        "local:docs/std/783.md#13"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:lock-out-of-try проверяет требование пункта 1.3 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:md-list-object-presentation",
       "standard": "std468",
-      "clause": null,
-      "anchor": null,
+      "clause": "std468",
+      "anchor": "std468",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-list-object-presentation.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-list-object-presentation.md",
+        "local:docs/std/468.md#std468"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:md-list-object-presentation проверяет требование пункта std468 стандарта std468.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:md-object-attribute-comment-incorrect-type",
@@ -2542,11 +2608,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-incorrect-type.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-incorrect-type.md",
+        "local:docs/std/531.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:md-object-attribute-comment-incorrect-type проверяет требование пункта 1 стандарта std531.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:md-object-attribute-comment-not-exist",
@@ -2554,35 +2620,47 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-not-exist.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-not-exist.md",
+        "local:docs/std/531.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:md-object-attribute-comment-not-exist проверяет требование пункта 1 стандарта std531.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:md-standard-attribute-synonym-empty",
       "standard": "std474",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.5",
+      "anchor": "15",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-standard-attribute-synonym-empty.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-standard-attribute-synonym-empty.md",
+        "local:docs/std/474.md#15"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:md-standard-attribute-synonym-empty проверяет требование пункта 1.5 стандарта std474.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:mdo-name-length",
+      "standard": "std474",
+      "clause": "2.3",
+      "anchor": "23",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-name-length.md",
+        "local:docs/std/474.md#23"
+      ],
+      "reason": "Диагностика проверяет предел имени объекта метаданных в 80 символов.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:mdo-ru-name-unallowed-letter",
       "standard": "std474",
-      "clause": null,
-      "anchor": null,
+      "clause": "4",
+      "anchor": "4",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-ru-name-unallowed-letter.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-ru-name-unallowed-letter.md",
+        "local:docs/std/474.md#4"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:mdo-ru-name-unallowed-letter проверяет требование пункта 4 стандарта std474.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:mdo-scheduled-job-description",
@@ -2590,11 +2668,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-scheduled-job-description.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-scheduled-job-description.md",
+        "local:docs/std/767.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:mdo-scheduled-job-description проверяет требование пункта 1 стандарта std767.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:method-optional-parameter-before-required",
@@ -2602,11 +2680,11 @@
       "clause": "4",
       "anchor": "4",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-optional-parameter-before-required.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-optional-parameter-before-required.md",
+        "local:docs/std/640.md#4"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:method-optional-parameter-before-required проверяет требование пункта 4 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:method-too-many-params",
@@ -2614,11 +2692,11 @@
       "clause": "5",
       "anchor": "5",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-too-many-params.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-too-many-params.md",
+        "local:docs/std/640.md#5"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:method-too-many-params проверяет требование пункта 5 стандарта std640.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:missing-temporary-file-deletion",
@@ -2626,11 +2704,11 @@
       "clause": "4",
       "anchor": "4",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/missing-temporary-file-deletion.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/missing-temporary-file-deletion.md",
+        "local:docs/std/542.md#4"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:missing-temporary-file-deletion проверяет требование пункта 4 стандарта std542.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-accessibility-at-client",
@@ -2638,11 +2716,11 @@
       "clause": "2",
       "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-accessibility-at-client.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-accessibility-at-client.md",
+        "local:docs/std/680.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-accessibility-at-client проверяет требование пункта 2 стандарта std680.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-accessibility-at-client",
@@ -2652,21 +2730,20 @@
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-accessibility-at-client.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "std746 лишь отсылает к требованиям толстого клиента; проверяемое ограничение непосредственно задано пунктом 2 std680.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:module-attachable-event-handler-name",
       "standard": "std492",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-attachable-event-handler-name.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-attachable-event-handler-name.md",
+        "local:docs/std/492.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-attachable-event-handler-name проверяет требование пункта 1 стандарта std492.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-region-empty",
@@ -2674,83 +2751,83 @@
       "clause": "1.8",
       "anchor": "18",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-region-empty.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-region-empty.md",
+        "local:docs/std/455.md#18"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-region-empty проверяет требование пункта 1.8 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-structure-event-regions",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.5",
+      "anchor": "15",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-event-regions.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-event-regions.md",
+        "local:docs/std/455.md#15"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-structure-event-regions проверяет требование пункта 1.5 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-structure-form-event-regions",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.6",
+      "anchor": "16",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-form-event-regions.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-form-event-regions.md",
+        "local:docs/std/455.md#16"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-structure-form-event-regions проверяет требование пункта 1.6 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-structure-init-code-in-region",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-init-code-in-region.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-init-code-in-region.md",
+        "local:docs/std/455.md#11"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-structure-init-code-in-region проверяет требование пункта 1.1 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-structure-method-in-regions",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-method-in-regions.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-method-in-regions.md",
+        "local:docs/std/455.md#11"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-structure-method-in-regions проверяет требование пункта 1.1 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-structure-top-region",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-top-region.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-top-region.md",
+        "local:docs/std/455.md#11"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-structure-top-region проверяет требование пункта 1.1 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:module-structure-var-in-region",
       "standard": "std455",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.1",
+      "anchor": "11",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-var-in-region.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-var-in-region.md",
+        "local:docs/std/455.md#11"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:module-structure-var-in-region проверяет требование пункта 1.1 стандарта std455.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:new-color",
@@ -2758,11 +2835,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-color.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-color.md",
+        "local:docs/std/667.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:new-color проверяет требование пункта 1 стандарта std667.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:new-font",
@@ -2770,11 +2847,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-font.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-font.md",
+        "local:docs/std/667.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:new-font проверяет требование пункта 1 стандарта std667.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:not-support-goto-operator-webclient",
@@ -2782,47 +2859,47 @@
       "clause": "2",
       "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/not-support-goto-operator-webclient.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/not-support-goto-operator-webclient.md",
+        "local:docs/std/547.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:not-support-goto-operator-webclient проверяет требование пункта 2 стандарта std547.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:object-module-export-variable",
       "standard": "std639",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/object-module-export-variable.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/object-module-export-variable.md",
+        "local:docs/std/639.md#21"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:object-module-export-variable проверяет требование пункта 2.1 стандарта std639.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:optional-form-parameter-access",
       "standard": "std741",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/optional-form-parameter-access.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/optional-form-parameter-access.md",
+        "local:docs/std/741.md#3"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:optional-form-parameter-access проверяет требование пункта 3 стандарта std741.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:public-method-caching",
       "standard": "std644",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.6",
+      "anchor": "36",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/public-method-caching.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/public-method-caching.md",
+        "local:docs/std/644.md#36"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:public-method-caching проверяет требование пункта 3.6 стандарта std644.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:ql-constants-in-binary-operation",
@@ -2832,153 +2909,167 @@
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-constants-in-binary-operation.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "std658 не устанавливает общего запрета бинарных операций над литералами, который реализован диагностикой.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:ql-constants-in-binary-operation",
       "standard": "std726",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-constants-in-binary-operation.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-constants-in-binary-operation.md",
+        "local:docs/std/726.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:ql-constants-in-binary-operation проверяет требование пункта 1 стандарта std726.",
+      "review": "confirmed",
+      "notes": "Пункт подтверждает запрет вычислять шаблон ПОДОБНО; реализация диагностики шире и проверяет любые бинарные операции двух литералов."
+    },
+    {
+      "diagnostic": "v8cs:ql-join-to-sub-query",
+      "standard": "std655",
+      "clause": "1.1",
+      "anchor": "11",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-join-to-sub-query.md",
+        "local:docs/std/655.md#11"
+      ],
+      "reason": "Диагностика запрещает соединение с вложенным запросом.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:ql-like-expression-with-field",
       "standard": "std467",
-      "clause": null,
-      "anchor": null,
+      "clause": "1.2",
+      "anchor": "12",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md",
+        "local:docs/std/467.md#12"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:ql-like-expression-with-field проверяет требование пункта 1.2 стандарта std467.",
+      "review": "confirmed",
+      "notes": "Пункт задаёт требование переносимости между СУБД; конкретное ограничение операнда ПОДОБНО находится в документации платформы."
     },
     {
       "diagnostic": "v8cs:ql-temp-table-index",
       "standard": "std777",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-temp-table-index.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-temp-table-index.md",
+        "local:docs/std/777.md#3"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:ql-temp-table-index проверяет требование пункта 3 стандарта std777.",
+      "review": "confirmed",
+      "notes": "Диагностика требует индекс у любой временной таблицы без ПЕРВЫЕ < 1000, тогда как стандарт требует индекс только когда он даёт прирост производительности."
     },
     {
       "diagnostic": "v8cs:ql-using-for-update",
       "standard": "std460",
-      "clause": null,
-      "anchor": null,
+      "clause": "std460",
+      "anchor": "std460",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-using-for-update.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-using-for-update.md",
+        "local:docs/std/460.md#std460"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:ql-using-for-update проверяет требование пункта std460 стандарта std460.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:ql-virtual-table-filters",
       "standard": "std657",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-virtual-table-filters.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-virtual-table-filters.md",
+        "local:docs/std/657.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:ql-virtual-table-filters проверяет требование пункта 1 стандарта std657.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:query-in-loop",
       "standard": "std436",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/query-in-loop.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/query-in-loop.md",
+        "local:docs/std/436.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:query-in-loop проверяет требование пункта 1 стандарта std436.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:reading-attribute-from-database",
       "standard": "std496",
-      "clause": null,
-      "anchor": null,
+      "clause": "std496",
+      "anchor": "std496",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/reading-attribute-from-database.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/reading-attribute-from-database.md",
+        "local:docs/std/496.md#std496"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:reading-attribute-from-database проверяет требование пункта std496 стандарта std496.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:redundant-export-method",
       "standard": "std467",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.2",
+      "anchor": "22",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/redundant-export-method.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/redundant-export-method.md",
+        "local:docs/std/467.md#22"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:redundant-export-method проверяет требование пункта 2.2 стандарта std467.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:restriction-execute-external-code",
       "standard": "std669",
-      "clause": null,
-      "anchor": null,
+      "clause": "7",
+      "anchor": "7",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-code.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-code.md",
+        "local:docs/std/669.md#7"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:restriction-execute-external-code проверяет требование пункта 7 стандарта std669.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:restriction-execute-external-component-code",
       "standard": "std669",
-      "clause": null,
-      "anchor": null,
+      "clause": "6.4",
+      "anchor": "64",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-component-code.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-component-code.md",
+        "local:docs/std/669.md#64"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:restriction-execute-external-component-code проверяет требование пункта 6.4 стандарта std669.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-active-users",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.1",
+      "anchor": "31",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-active-users.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-active-users.md",
+        "local:docs/std/488.md#31"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-active-users проверяет требование пункта 3.1 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-administration",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.1",
+      "anchor": "31",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-administration.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-administration.md",
+        "local:docs/std/488.md#31"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-administration проверяет требование пункта 3.1 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-all-functions-mode",
@@ -2988,33 +3079,32 @@
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-all-functions-mode.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Текущий std488 описывает роль РежимТехническогоСпециалиста, но не устаревшее право РежимВсеФункции, проверяемое диагностикой.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:right-configuration-extensions-administration",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.1",
+      "anchor": "31",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-configuration-extensions-administration.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-configuration-extensions-administration.md",
+        "local:docs/std/488.md#31"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-configuration-extensions-administration проверяет требование пункта 3.1 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-data-administration",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.1",
+      "anchor": "31",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-data-administration.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-data-administration.md",
+        "local:docs/std/488.md#31"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-data-administration проверяет требование пункта 3.1 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-delete",
@@ -3022,167 +3112,227 @@
       "clause": "5",
       "anchor": "5",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-delete.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-delete.md",
+        "local:docs/std/488.md#5"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-delete проверяет требование пункта 5 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-exclusive-mode",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-exclusive-mode.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-exclusive-mode.md",
+        "local:docs/std/488.md#21"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-exclusive-mode проверяет требование пункта 2.1 стандарта std488.",
+      "review": "confirmed",
+      "notes": "Пункт разрешает Монопольный режим для ПолныеПрава. Проверка также разрешает SystemAdministrator, а русское имя АдминистраторСистемы в исходном коде содержит ошибочный хвостовой пробел."
+    },
+    {
+      "diagnostic": "v8cs:right-interactive-clear-deletion-mark-predefined-data",
+      "standard": "std488",
+      "clause": "5",
+      "anchor": "5",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-clear-deletion-mark-predefined-data.md",
+        "local:docs/std/488.md#5"
+      ],
+      "reason": "Пункт запрещает интерактивное снятие пометки удаления предопределённых данных.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:right-interactive-delete",
+      "standard": "std488",
+      "clause": "5",
+      "anchor": "5",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete.md",
+        "local:docs/std/488.md#5"
+      ],
+      "reason": "Пункт запрещает право Интерактивное удаление.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:right-interactive-delete-marked-predefined-data",
+      "standard": "std488",
+      "clause": "5",
+      "anchor": "5",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete-marked-predefined-data.md",
+        "local:docs/std/488.md#5"
+      ],
+      "reason": "Пункт запрещает интерактивное удаление помеченных предопределённых данных.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:right-interactive-delete-predefined-data",
+      "standard": "std488",
+      "clause": "5",
+      "anchor": "5",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-delete-predefined-data.md",
+        "local:docs/std/488.md#5"
+      ],
+      "reason": "Пункт запрещает интерактивное удаление предопределённых данных.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-interactive-open-external-data-processors",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.3",
+      "anchor": "23",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-data-processors.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-data-processors.md",
+        "local:docs/std/488.md#23"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-interactive-open-external-data-processors проверяет требование пункта 2.3 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-interactive-open-external-reports",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.3",
+      "anchor": "23",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-reports.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-reports.md",
+        "local:docs/std/488.md#23"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-interactive-open-external-reports проверяет требование пункта 2.3 стандарта std488.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:right-interactive-set-deletion-mark-predefined-data",
+      "standard": "std488",
+      "clause": "5",
+      "anchor": "5",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-set-deletion-mark-predefined-data.md",
+        "local:docs/std/488.md#5"
+      ],
+      "reason": "Пункт запрещает интерактивную пометку удаления предопределённых данных.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-output-to-printer-file-clipboard",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.2",
+      "anchor": "32",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-output-to-printer-file-clipboard.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-output-to-printer-file-clipboard.md",
+        "local:docs/std/488.md#32"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-output-to-printer-file-clipboard проверяет требование пункта 3.2 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-save-user-data",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.12",
+      "anchor": "312",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-save-user-data.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-save-user-data.md",
+        "local:docs/std/488.md#312"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-save-user-data проверяет требование пункта 3.12 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-start-automation",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.3",
+      "anchor": "33",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-automation.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-automation.md",
+        "local:docs/std/488.md#33"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-start-automation проверяет требование пункта 3.3 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-start-external-connection",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.5",
+      "anchor": "35",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-external-connection.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-external-connection.md",
+        "local:docs/std/488.md#35"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-start-external-connection проверяет требование пункта 3.5 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-start-thick-client",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.6",
+      "anchor": "36",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thick-client.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thick-client.md",
+        "local:docs/std/488.md#36"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-start-thick-client проверяет требование пункта 3.6 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-start-thin-client",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.7",
+      "anchor": "37",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thin-client.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thin-client.md",
+        "local:docs/std/488.md#37"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-start-thin-client проверяет требование пункта 3.7 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-start-web-client",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.4",
+      "anchor": "34",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-web-client.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-web-client.md",
+        "local:docs/std/488.md#34"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-start-web-client проверяет требование пункта 3.4 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-update-database-configuration",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.9",
+      "anchor": "39",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-update-database-configuration.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-update-database-configuration.md",
+        "local:docs/std/488.md#39"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-update-database-configuration проверяет требование пункта 3.9 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:right-view-event-log",
       "standard": "std488",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.10",
+      "anchor": "310",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-view-event-log.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-view-event-log.md",
+        "local:docs/std/488.md#310"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:right-view-event-log проверяет требование пункта 3.10 стандарта std488.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:rollback-transaction",
       "standard": "std499",
-      "clause": "3.6",
-      "anchor": "36",
+      "clause": null,
+      "anchor": null,
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/rollback-transaction.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Пункт 3.6 отсутствует в текущем std499; правило транзакции перенесено в std783.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:rollback-transaction",
@@ -3190,47 +3340,47 @@
       "clause": "1.3",
       "anchor": "13",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/rollback-transaction.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/rollback-transaction.md",
+        "local:docs/std/783.md#13"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:rollback-transaction проверяет требование пункта 1.3 стандарта std783.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:scheduled-job-periodicity-too-short",
       "standard": "std402",
-      "clause": null,
-      "anchor": null,
+      "clause": "std402",
+      "anchor": "std402",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/scheduled-job-periodicity-too-short.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/scheduled-job-periodicity-too-short.md",
+        "local:docs/std/402.md#std402"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:scheduled-job-periodicity-too-short проверяет требование пункта std402 стандарта std402.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:secure-password-storage",
       "standard": "std740",
-      "clause": null,
-      "anchor": null,
+      "clause": "3.3",
+      "anchor": "33",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/secure-password-storage.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/secure-password-storage.md",
+        "local:docs/std/740.md#33"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:secure-password-storage проверяет требование пункта 3.3 стандарта std740.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:security-software-call",
       "standard": "std775",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/security-software-call.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/security-software-call.md",
+        "local:docs/std/775.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:security-software-call проверяет требование пункта 1 стандарта std775.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:server-execution-safe-mode",
@@ -3238,47 +3388,71 @@
       "clause": "2",
       "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/server-execution-safe-mode.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/server-execution-safe-mode.md",
+        "local:docs/std/770.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:server-execution-safe-mode проверяет требование пункта 2 стандарта std770.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:structure-constructor-too-many-keys",
       "standard": "std640",
-      "clause": null,
-      "anchor": null,
+      "clause": "6.2",
+      "anchor": "62",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-too-many-keys.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-too-many-keys.md",
+        "local:docs/std/640.md#62"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:structure-constructor-too-many-keys проверяет требование пункта 6.2 стандарта std640.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:structure-constructor-too-many-keys",
+      "standard": "std693",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-too-many-keys.md",
+        "local:docs/std/693.md#1"
+      ],
+      "reason": "Пункт ограничивает конструктор структуры небольшим фиксированным набором свойств.",
+      "review": "confirmed"
+    },
+    {
+      "diagnostic": "v8cs:structure-key-modification",
+      "standard": "std693",
+      "clause": "4.1",
+      "anchor": "41",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-key-modification.md",
+        "local:docs/std/693.md#41"
+      ],
+      "reason": "Пункт запрещает изменять структуру добавлением и удалением ключей после создания.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:subsystem-synonym-too-long",
       "standard": "std712",
-      "clause": null,
-      "anchor": null,
+      "clause": "2.1",
+      "anchor": "21",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/subsystem-synonym-too-long.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/subsystem-synonym-too-long.md",
+        "local:docs/std/712.md#21"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:subsystem-synonym-too-long проверяет требование пункта 2.1 стандарта std712.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:unknown-form-parameter-access",
       "standard": "std741",
-      "clause": null,
-      "anchor": null,
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/unknown-form-parameter-access.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/unknown-form-parameter-access.md",
+        "local:docs/std/741.md#3"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:unknown-form-parameter-access проверяет требование пункта 3 стандарта std741.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:unsafe-password-ib-storage",
@@ -3286,11 +3460,11 @@
       "clause": "2",
       "anchor": "2",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/unsafe-password-ib-storage.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/unsafe-password-ib-storage.md",
+        "local:docs/std/740.md#2"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:unsafe-password-ib-storage проверяет требование пункта 2 стандарта std740.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:use-goto-operator",
@@ -3298,11 +3472,11 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-goto-operator.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-goto-operator.md",
+        "local:docs/std/547.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:use-goto-operator проверяет требование пункта 1 стандарта std547.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:use-non-recommended-method",
@@ -3310,23 +3484,23 @@
       "clause": "1",
       "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md",
+        "local:docs/std/404.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:use-non-recommended-method проверяет требование пункта 1 стандарта std404.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:use-non-recommended-method",
       "standard": "std418",
-      "clause": null,
-      "anchor": null,
+      "clause": "std418",
+      "anchor": "std418",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md",
+        "local:docs/std/418.md#std418"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:use-non-recommended-method проверяет требование пункта std418 стандарта std418.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:use-non-recommended-method",
@@ -3334,23 +3508,23 @@
       "clause": "2.1",
       "anchor": "21",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md",
+        "local:docs/std/643.md#21"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:use-non-recommended-method проверяет требование пункта 2.1 стандарта std643.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:using-form-data-to-value",
       "standard": "std409",
-      "clause": null,
-      "anchor": null,
+      "clause": "1",
+      "anchor": "1",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-form-data-to-value.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-form-data-to-value.md",
+        "local:docs/std/409.md#1"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:using-form-data-to-value проверяет требование пункта 1 стандарта std409.",
+      "review": "confirmed"
     },
     {
       "diagnostic": "v8cs:using-isinrole",
@@ -3360,9 +3534,8 @@
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-isinrole.md"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "std689 описывает настройку ролей, но не запрещает вызов РольДоступна; прямое правило находится в std737.",
+      "review": "rejected"
     },
     {
       "diagnostic": "v8cs:using-isinrole",
@@ -3370,11 +3543,12 @@
       "clause": "3",
       "anchor": "3",
       "evidence": [
-        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-isinrole.md"
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-isinrole.md",
+        "local:docs/std/737.md#3"
       ],
-      "reason": "Unreviewed bootstrap record",
-      "review": "rejected",
-      "notes": "Source proposal retained pending semantic review."
+      "reason": "Диагностика v8cs:using-isinrole проверяет требование пункта 3 стандарта std737.",
+      "review": "confirmed",
+      "notes": "Следует учитывать исключения пунктов 4.1-4.2 стандарта."
     }
   ]
 }

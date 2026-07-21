@@ -357,5 +357,139 @@ class BsllsSemanticReviewTests(unittest.TestCase):
         )
 
 
+class V8CodeStyleSemanticReviewTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.reviews = tuple(
+            review
+            for review in load_reviews(REPO_ROOT / "data/diagnostic-standard-links.json")
+            if review.diagnostic.startswith("v8cs:")
+        )
+
+    def assertClauses(self, diagnostic, standard, expected):
+        actual = {
+            review.clause
+            for review in self.reviews
+            if review.diagnostic == diagnostic
+            and review.standard == standard
+            and review.review == "confirmed"
+        }
+        self.assertEqual(actual, set(expected))
+
+    def assertRejected(self, diagnostic, standard):
+        matches = [
+            review
+            for review in self.reviews
+            if review.diagnostic == diagnostic and review.standard == standard
+        ]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0].review, "rejected")
+
+    def test_all_v8_code_style_source_proposals_are_semantically_reviewed(self):
+        unreviewed = [
+            review.diagnostic + " -> " + review.standard
+            for review in self.reviews
+            if review.reason == "Unreviewed bootstrap record"
+        ]
+        self.assertEqual(unreviewed, [])
+
+    def test_known_clause_corrections(self):
+        expected = {
+            ("v8cs:bsl-canonical-pragma", "std441"): {"1"},
+            ("v8cs:common-module-name-cached", "std469"): {"3.2.3"},
+            ("v8cs:common-module-name-client-cached", "std469"): {"3.2.3"},
+            ("v8cs:common-module-name-server-call-cached", "std469"): {"3.2.3"},
+            ("v8cs:data-composition-variant-name-default", "std674"): {"4"},
+            ("v8cs:db-object-anyref-type", "std728"): {"2.1"},
+            ("v8cs:db-object-ref-non-ref-type", "std728"): {"1.1"},
+            ("v8cs:empty-except-statement", "std499"): {"3.2"},
+            ("v8cs:md-standard-attribute-synonym-empty", "std474"): {"1.5"},
+            ("v8cs:module-attachable-event-handler-name", "std492"): {"1"},
+            ("v8cs:public-method-caching", "std644"): {"3.6"},
+            ("v8cs:ql-temp-table-index", "std777"): {"3"},
+            ("v8cs:secure-password-storage", "std740"): {"3.3"},
+            ("v8cs:structure-constructor-too-many-keys", "std640"): {"6.2"},
+            ("v8cs:subsystem-synonym-too-long", "std712"): {"2.1"},
+        }
+        for (diagnostic, standard), clauses in expected.items():
+            with self.subTest(diagnostic=diagnostic, standard=standard):
+                self.assertClauses(diagnostic, standard, clauses)
+
+    def test_transaction_links_use_current_transaction_standard(self):
+        for name in ("begin-transaction", "commit-transaction", "lock-out-of-try", "rollback-transaction"):
+            diagnostic = "v8cs:" + name
+            with self.subTest(diagnostic=diagnostic):
+                self.assertRejected(diagnostic, "std499")
+                self.assertClauses(diagnostic, "std783", {"1.3"})
+
+    def test_semantically_broad_stale_or_indirect_references_are_rejected(self):
+        rejected = {
+            ("v8cs:common-module-missing-api", "std455"),
+            ("v8cs:event-handler-boolean-param", "std400"),
+            ("v8cs:export-method-in-command-form-module", "std404"),
+            ("v8cs:extension-md-object-prefix", "std469"),
+            ("v8cs:module-accessibility-at-client", "std746"),
+            ("v8cs:ql-constants-in-binary-operation", "std658"),
+            ("v8cs:right-all-functions-mode", "std488"),
+            ("v8cs:using-isinrole", "std689"),
+        }
+        for diagnostic, standard in rejected:
+            with self.subTest(diagnostic=diagnostic, standard=standard):
+                self.assertRejected(diagnostic, standard)
+
+    def test_form_list_checks_point_to_the_reorganized_normative_clause(self):
+        for name in (
+            "form-list-field-ref-not-added",
+            "form-list-ref-use-always-flag-disabled",
+            "form-list-ref-user-visibility-enabled",
+        ):
+            with self.subTest(diagnostic=name):
+                self.assertClauses("v8cs:" + name, "std702", {"1"})
+
+    def test_standard_role_checks_point_to_specific_role_clauses(self):
+        expected = {
+            "right-active-users": "3.1",
+            "right-administration": "3.1",
+            "right-configuration-extensions-administration": "3.1",
+            "right-data-administration": "3.1",
+            "right-exclusive-mode": "2.1",
+            "right-interactive-open-external-data-processors": "2.3",
+            "right-interactive-open-external-reports": "2.3",
+            "right-output-to-printer-file-clipboard": "3.2",
+            "right-save-user-data": "3.12",
+            "right-start-automation": "3.3",
+            "right-start-external-connection": "3.5",
+            "right-start-thick-client": "3.6",
+            "right-start-thin-client": "3.7",
+            "right-start-web-client": "3.4",
+            "right-update-database-configuration": "3.9",
+            "right-view-event-log": "3.10",
+        }
+        for name, clause in expected.items():
+            with self.subTest(diagnostic=name):
+                self.assertClauses("v8cs:" + name, "std488", {clause})
+        self.assertClauses("v8cs:right-delete", "std488", {"5"})
+
+    def test_locally_proven_missing_links_are_registered(self):
+        expected = {
+            ("v8cs:common-module-name-client", "std469"): {"2.3"},
+            ("v8cs:common-module-name-client-server", "std469"): {"2.4"},
+            ("v8cs:common-module-name-global", "std469"): {"3.2.1"},
+            ("v8cs:configuration-data-lock-mode", "std460"): {"std460"},
+            ("v8cs:mdo-name-length", "std474"): {"2.3"},
+            ("v8cs:ql-join-to-sub-query", "std655"): {"1.1"},
+            ("v8cs:right-interactive-delete", "std488"): {"5"},
+            ("v8cs:right-interactive-delete-predefined-data", "std488"): {"5"},
+            ("v8cs:right-interactive-set-deletion-mark-predefined-data", "std488"): {"5"},
+            ("v8cs:right-interactive-clear-deletion-mark-predefined-data", "std488"): {"5"},
+            ("v8cs:right-interactive-delete-marked-predefined-data", "std488"): {"5"},
+            ("v8cs:structure-key-modification", "std693"): {"4.1"},
+            ("v8cs:structure-constructor-too-many-keys", "std693"): {"1"},
+        }
+        for (diagnostic, standard), clauses in expected.items():
+            with self.subTest(diagnostic=diagnostic, standard=standard):
+                self.assertClauses(diagnostic, standard, clauses)
+
+
 if __name__ == "__main__":
     unittest.main()
