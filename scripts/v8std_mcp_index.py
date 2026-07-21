@@ -632,7 +632,7 @@ class V8StdIndex:
                 normalized_codes.append(normalize_lookup_key(code_text))
         frequencies = Counter(normalized_codes)
         diagnostics = []
-        standards_by_id: dict[str, dict[str, Any]] = {}
+        standards_by_key: dict[tuple[str, str], dict[str, Any]] = {}
         unknown_codes = []
 
         for normalized_code, frequency in frequencies.most_common():
@@ -647,12 +647,13 @@ class V8StdIndex:
                 target = self.resolve(item.get("id", ""))
                 enriched = {**item, "description": target.get("description") if target else None}
                 related_standards.append(enriched)
-                standards_by_id[item["id"]] = {
+                key = (item["id"], item["url"])
+                standards_by_key[key] = {
                     "id": item["id"],
                     "title": item["title"],
                     "url": item["url"],
                     "markdown_url": item["markdown_url"],
-                    "frequency": standards_by_id.get(item["id"], {}).get("frequency", 0) + frequency,
+                    "frequency": standards_by_key.get(key, {}).get("frequency", 0) + frequency,
                 }
             diagnostics.append(
                 {
@@ -665,7 +666,10 @@ class V8StdIndex:
                 }
             )
 
-        standards = sorted(standards_by_id.values(), key=lambda item: (-item["frequency"], item["id"]))
+        standards = sorted(
+            standards_by_key.values(),
+            key=lambda item: (-item["frequency"], item["id"], item["url"]),
+        )
         return {
             "diagnostics": diagnostics,
             "standards": standards,
@@ -1215,33 +1219,55 @@ class V8StdIndex:
                 seen.add(alias)
         return result
 
-    def _related_entry(self, relation: str, target: dict[str, Any]) -> dict[str, Any]:
+    def _related_entry(
+        self,
+        relation: str,
+        target: dict[str, Any],
+        *,
+        url: str | None = None,
+        markdown_url: str | None = None,
+    ) -> dict[str, Any]:
         return {
             "relation": relation,
             "id": target["id"],
             "type": target["type"],
             "title": target["title"],
-            "url": target["url"],
-            "markdown_url": target["markdown_url"],
+            "url": url or target["url"],
+            "markdown_url": markdown_url or target["markdown_url"],
             "source_path": target["source_path"],
         }
 
     def _append_relation(
         self,
         relations: list[dict[str, Any]],
-        seen: set[tuple[str, str, str]],
+        seen: set[tuple[str, str, str, str]],
         source: dict[str, Any],
         target: dict[str, Any],
         relation: str | None = None,
+        *,
+        url: str | None = None,
+        markdown_url: str | None = None,
+        prefer_existing_target: bool = False,
     ) -> None:
         if source["id"] == target["id"]:
             return
         canonical = relation_for_target(source, target, relation)
-        key = (source["id"], target["id"], canonical)
+        relation_url = url or target["url"]
+        target_key = (source["id"], target["id"], canonical)
+        if prefer_existing_target and any(item[:3] == target_key for item in seen):
+            return
+        key = (*target_key, relation_url)
         if key in seen:
             return
         seen.add(key)
-        relations.append(self._related_entry(canonical, target))
+        relations.append(
+            self._related_entry(
+                canonical,
+                target,
+                url=relation_url,
+                markdown_url=markdown_url,
+            )
+        )
 
     def _apply_related_graph(self, pages: list[dict[str, Any]], pages_by_id: dict[str, dict[str, Any]]) -> None:
         missing: list[dict[str, str]] = []
@@ -1249,7 +1275,7 @@ class V8StdIndex:
 
         for page in pages:
             related = []
-            seen: set[tuple[str, str, str]] = set()
+            seen: set[tuple[str, str, str, str]] = set()
             for item in page.get("related", []):
                 target_id = item.get("id")
                 if not isinstance(target_id, str):
@@ -1257,7 +1283,19 @@ class V8StdIndex:
                 target = pages_by_id.get(target_id)
                 if target is None:
                     continue
-                self._append_relation(related, seen, page, target, item.get("relation"))
+                self._append_relation(
+                    related,
+                    seen,
+                    page,
+                    target,
+                    item.get("relation"),
+                    url=item.get("url") if isinstance(item.get("url"), str) else None,
+                    markdown_url=(
+                        item.get("markdown_url")
+                        if isinstance(item.get("markdown_url"), str)
+                        else None
+                    ),
+                )
             page["related"] = related
 
         for rule in self.rules.rules:
@@ -1277,12 +1315,14 @@ class V8StdIndex:
             primary = pages_by_id.get(rule.primary)
             if primary is not None:
                 seen = {
-                    (primary["id"], item["id"], item["relation"])
+                    (primary["id"], item["id"], item["relation"], item["url"])
                     for item in primary.get("related", [])
                 }
                 related = list(primary.get("related", []))
                 for target in valid_targets:
-                    self._append_relation(related, seen, primary, target)
+                    self._append_relation(
+                        related, seen, primary, target, prefer_existing_target=True
+                    )
                 primary["related"] = related
 
             valid_standards = [
@@ -1295,16 +1335,25 @@ class V8StdIndex:
                 if diagnostic is None or diagnostic.get("type") != "diagnostic":
                     continue
                 seen = {
-                    (diagnostic["id"], item["id"], item["relation"])
+                    (diagnostic["id"], item["id"], item["relation"], item["url"])
                     for item in diagnostic.get("related", [])
                 }
                 related = list(diagnostic.get("related", []))
                 for standard in valid_standards:
-                    self._append_relation(related, seen, diagnostic, standard)
+                    self._append_relation(
+                        related,
+                        seen,
+                        diagnostic,
+                        standard,
+                        prefer_existing_target=True,
+                    )
                 diagnostic["related"] = related
 
         for page in pages:
-            page["related"] = sorted(page.get("related", []), key=lambda item: (item["relation"], item["id"]))
+            page["related"] = sorted(
+                page.get("related", []),
+                key=lambda item: (item["relation"], item["id"], item["url"]),
+            )
 
         self._missing_rule_targets = sorted(missing, key=lambda item: (item["rule"], item["id"]))
 

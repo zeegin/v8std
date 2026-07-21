@@ -185,16 +185,34 @@ class V8StdMcpIndexTests(unittest.TestCase):
         canonical = self.index.related("std456", relations=["standard"])["related"]
         legacy = self.index.related("std456", relations=["related_standard"])["related"]
 
-        self.assertTrue(
-            any(item["id"] == "std487" and item["relation"] == "standard" for item in modal_related)
-        )
-        self.assertTrue(any(item["id"] == "std487" for item in modal_batch["standards"]))
+        modal_standards = [item for item in modal_related if item["relation"] == "standard"]
+        self.assertEqual([item["id"] for item in modal_standards], ["std703"])
+        self.assertEqual(modal_standards[0]["url"], "https://v8std.ru/std/703/#1")
+        self.assertEqual(modal_batch["standards"][0]["id"], "std703")
+        self.assertEqual(modal_batch["standards"][0]["url"], "https://v8std.ru/std/703/#1")
         self.assertTrue(any(item["id"] == "std437" for item in canonical))
         self.assertTrue(
             any(item["id"] == "std437" and item["relation"] == "standard" for item in legacy)
         )
         with self.assertRaises(ValueError):
             self.index.related("std456", relations=["bad"])
+
+    def test_related_and_batch_preserve_multiple_clauses_of_one_standard(self):
+        related = self.index.related("bslls:DeprecatedCurrentDate")["related"]
+        batch = self.index.explain_diagnostics(["bslls:DeprecatedCurrentDate"])
+        expected = {
+            "https://v8std.ru/std/643/#21",
+            "https://v8std.ru/std/643/#31",
+        }
+
+        self.assertEqual(
+            {item["url"] for item in related if item["id"] == "std643"},
+            expected,
+        )
+        self.assertEqual(
+            {item["url"] for item in batch["standards"] if item["id"] == "std643"},
+            expected,
+        )
 
     def test_explain_snippet_and_batch_diagnostics(self):
         snippet = self.index.explain_snippet(

@@ -587,14 +587,20 @@ def relation_kind(page: dict, target: dict) -> str:
     return "related"
 
 
-def related_entry(relation: str, target: dict) -> dict:
+def related_entry(relation: str, target: dict, link_target: str) -> dict:
+    parsed = urlsplit(link_target)
+    suffix = ""
+    if parsed.query:
+        suffix += f"?{parsed.query}"
+    if parsed.fragment:
+        suffix += f"#{parsed.fragment}"
     return {
         "relation": relation,
         "id": target["id"],
         "type": target["type"],
         "title": target["title"],
-        "url": target["url"],
-        "markdown_url": target["markdown_url"],
+        "url": target["url"] + suffix,
+        "markdown_url": target["markdown_url"] + suffix,
         "source_path": target["source_path"],
     }
 
@@ -658,7 +664,7 @@ def resolve_relations(pages: list[dict], docs_dir: Path) -> None:
     for page in pages:
         source = docs_dir / page["source_path"]
         related: list[dict] = []
-        seen: set[tuple[str, str]] = set()
+        seen: set[tuple[str, str, str, str]] = set()
 
         for _, target in page["_links"]:
             relative_target = local_link_target(source, docs_dir, target)
@@ -670,19 +676,22 @@ def resolve_relations(pages: list[dict], docs_dir: Path) -> None:
                 continue
 
             relation = relation_kind(page, target_page)
-            key = (relation, target_page["id"])
+            parsed = urlsplit(target)
+            key = (relation, target_page["id"], parsed.query, parsed.fragment)
             if key in seen:
                 continue
 
             seen.add(key)
-            related.append(related_entry(relation, target_page))
+            related.append(related_entry(relation, target_page, target))
 
-        page["related"] = sorted(related, key=lambda item: (item["relation"], item["id"]))
+        page["related"] = sorted(
+            related, key=lambda item: (item["relation"], item["id"], item["url"])
+        )
         del page["_links"]
 
 
 def related_ids(page: dict, relation: str) -> list[str]:
-    return [item["id"] for item in page["related"] if item["relation"] == relation]
+    return dedupe([item["id"] for item in page["related"] if item["relation"] == relation])
 
 
 def format_id_list(ids: list[str], limit: int = 8) -> str:
@@ -1008,6 +1017,7 @@ def build_site_ai_index(root: Path) -> dict:
         [
             build_ai_page(source, docs_dir, project, retrieval_rules)
             for source in sorted(docs_dir.rglob("*.md"))
+            if not source.is_relative_to(docs_dir / AI_DIR)
         ]
     )
     resolve_relations(pages, docs_dir)

@@ -10,9 +10,7 @@ rules:
     diagnostics:
       - "bslls:UsingModalWindows"
     standards:
-      - "std404"
-      - "std487"
-      - "std519"
+      - "std703"
     aliases:
       - "модальные окна"
       - "модальное окно"

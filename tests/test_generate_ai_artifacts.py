@@ -107,6 +107,45 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             [item["id"] for item in acc["related"] if item["relation"] == "edt_check"],
         )
 
+    def test_diagnostic_relations_preserve_exact_standard_anchors(self):
+        modal = self.pages_by_id["bslls:UsingModalWindows"]
+        relation = next(
+            item
+            for item in modal["related"]
+            if item["relation"] == "standard" and item["id"] == "std703"
+        )
+
+        self.assertEqual(relation["url"], "https://v8std.ru/std/703/#1")
+        self.assertEqual(relation["markdown_url"], "https://v8std.ru/std/703.md#1")
+
+    def test_multi_clause_relation_keeps_each_clause_without_new_page_ids(self):
+        diagnostic = self.pages_by_id["bslls:DeprecatedCurrentDate"]
+        relations = [
+            item
+            for item in diagnostic["related"]
+            if item["relation"] == "standard" and item["id"] == "std643"
+        ]
+
+        self.assertEqual({item["url"] for item in relations}, {
+            "https://v8std.ru/std/643/#21",
+            "https://v8std.ru/std/643/#31",
+        })
+        self.assertEqual({item["id"] for item in relations}, {"std643"})
+
+    def test_full_diagnostic_article_is_available_to_mcp(self):
+        page = self.pages_by_id["bslls:UsingModalWindows"]
+
+        self.assertIn("Ограничения диагностики", page["body_markdown"])
+        self.assertIn("ПоказатьПредупреждение", page["body_markdown"])
+
+    def test_rejected_standard_reference_is_not_exposed_as_a_relation(self):
+        page = self.pages_by_id["bslls:UsingLikeInQuery"]
+
+        self.assertNotIn(
+            "std726",
+            [item["id"] for item in page["related"] if item["relation"] == "standard"],
+        )
+
     def test_pages_jsonl_is_valid_and_urls_are_unique(self):
         payload = self.module.build_pages_jsonl(self.index["pages"])
         rows = [json.loads(line) for line in payload.splitlines()]
@@ -121,6 +160,11 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertEqual(
             self.pages_by_id["std437"]["markdown_url"],
             "https://v8std.ru/std/437.md",
+        )
+
+    def test_generated_ai_reports_are_not_indexed_as_source_pages(self):
+        self.assertFalse(
+            any(page["source_path"].startswith("ai/") for page in self.index["pages"])
         )
 
     def test_writer_removes_retired_machine_artifacts(self):
