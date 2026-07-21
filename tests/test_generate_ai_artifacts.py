@@ -147,6 +147,25 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("Ограничения диагностики", page["body_markdown"])
         self.assertIn("ПоказатьПредупреждение", page["body_markdown"])
 
+    def test_acc_placeholders_survive_jsonl_and_both_llms_outputs(self):
+        acc_423 = self.pages_by_id["acc:423"]
+        acc_499 = self.pages_by_id["acc:499"]
+
+        self.assertIn("<ИмяКонстанты>", acc_423["body_markdown"])
+        self.assertIn(
+            "<ИмяМодуля>.<ИмяПроцедуры>(<Параметры>);",
+            acc_499["body_markdown"],
+        )
+
+        jsonl = self.module.build_pages_jsonl(self.index["pages"])
+        llms = self.module.build_llms_txt(self.index)
+        llms_full = self.module.build_llms_full_txt(self.index)
+        self.assertIn("<ИмяКонстанты>", jsonl)
+        self.assertIn("<ИмяМодуля>.<ИмяПроцедуры>(<Параметры>);", jsonl)
+        self.assertIn("ИмяКонстанты", llms)
+        self.assertIn("<ИмяКонстанты>", llms_full)
+        self.assertIn("<ИмяМодуля>.<ИмяПроцедуры>(<Параметры>);", llms_full)
+
     def test_rejected_standard_reference_is_not_exposed_as_a_relation(self):
         page = self.pages_by_id["bslls:UsingLikeInQuery"]
 

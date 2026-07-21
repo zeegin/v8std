@@ -1,5 +1,6 @@
 import json
 import re
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -344,6 +345,57 @@ https://example.com/source
 
 
 class DiagnosticArticleRepositoryTests(unittest.TestCase):
+    def test_offline_integrity_verifier_checks_all_committed_articles_and_proposals(self):
+        result = subprocess.run(
+            [
+                str(REPO_ROOT / ".venv/bin/python"),
+                str(REPO_ROOT / "scripts/check_diagnostic_articles.py"),
+                "--root",
+                str(REPO_ROOT),
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+        self.assertRegex(
+            result.stdout,
+            r"diagnostic article integrity clean: families=2, pages=358, proposals=\d+",
+        )
+
+    def test_offline_integrity_verifier_rejects_a_tampered_managed_body(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data").mkdir()
+            for name in ("diagnostic-sources.json", "diagnostic-standard-links.json"):
+                shutil.copy2(REPO_ROOT / "data" / name, root / "data" / name)
+            for family in ("bslls", "v8-code-style"):
+                shutil.copytree(
+                    REPO_ROOT / "docs/diagnostics" / family,
+                    root / "docs/diagnostics" / family,
+                )
+            page = root / "docs/diagnostics/bslls/UsingModalWindows.md"
+            page.write_text(
+                page.read_text(encoding="utf-8").replace(
+                    "Модальные и всплывающие окна", "Изменённые модальные окна", 1
+                ),
+                encoding="utf-8",
+            )
+
+            result = subprocess.run(
+                [
+                    str(REPO_ROOT / ".venv/bin/python"),
+                    str(REPO_ROOT / "scripts/check_diagnostic_articles.py"),
+                    "--root",
+                    str(root),
+                ],
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("content hash mismatch", result.stderr + result.stdout)
+
     def test_manifest_and_local_catalogs_have_exact_expected_composition(self):
         catalog = load_catalog(REPO_ROOT / "data/diagnostic-sources.json")
 

@@ -1,8 +1,13 @@
+import hashlib
+import inspect
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
+import scripts.acc_diagnostics as acc_diagnostics
 from scripts.acc_diagnostics import (
     build_link_reviews,
     extract_catalog,
@@ -14,6 +19,22 @@ from scripts.acc_diagnostics import (
     render_page,
     validate_review_targets,
 )
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def code_set_fingerprint(codes):
+    ordered = sorted(codes, key=int)
+    return hashlib.sha256("\n".join(ordered).encode("utf-8")).hexdigest()
+
+
+def patched_site_contract(*codes):
+    return mock.patch.multiple(
+        acc_diagnostics,
+        SITE_ACC_EXPECTED_COUNT=len(codes),
+        SITE_ACC_CODE_SET_SHA256=code_set_fingerprint(codes),
+    )
 
 
 TEMPLATE_XML = """<?xml version="1.0" encoding="UTF-8"?>
@@ -188,6 +209,44 @@ class AccCatalogExtractionTests(unittest.TestCase):
 
 
 class AccRenderingTests(unittest.TestCase):
+    def test_source_angle_bracket_placeholders_are_escaped_at_the_markdown_boundary(self):
+        diagnostic = {
+            "code": "499",
+            "description": 'Код вида "<ИмяМодуля>.<ИмяПроцедуры>(<Параметры>);".',
+            "severity": "Рекомендация",
+            "recommendation": "Замените <ИмяПроцедуры> на вызов исходного модуля.",
+            "estimated_fix_minutes": 0,
+            "standards": [],
+            "external_sources": [],
+            "edt_codes": [],
+        }
+
+        page = render_page(
+            diagnostic,
+            (),
+            standard_titles={},
+            product_version="1.2.9.80",
+            source_sha256="a" * 64,
+        )
+
+        self.assertIn("&lt;ИмяМодуля&gt;.&lt;ИмяПроцедуры&gt;(&lt;Параметры&gt;);", page)
+        self.assertIn("Замените &lt;ИмяПроцедуры&gt;", page)
+        self.assertNotIn("<ИмяМодуля>", page)
+
+    def test_generated_acc_pages_preserve_representative_placeholders(self):
+        acc_423 = (REPO_ROOT / "docs/diagnostics/acc/423.md").read_text(
+            encoding="utf-8"
+        )
+        acc_499 = (REPO_ROOT / "docs/diagnostics/acc/499.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("Изменение&lt;ИмяКонстанты&gt;", acc_423)
+        self.assertIn(
+            "&lt;ИмяМодуля&gt;.&lt;ИмяПроцедуры&gt;(&lt;Параметры&gt;);",
+            acc_499,
+        )
+
     def test_review_and_page_use_the_current_exact_local_clause(self):
         diagnostic = {
             "code": "5",
@@ -485,11 +544,142 @@ class AccRenderingTests(unittest.TestCase):
             stale = root / "docs/diagnostics/acc/456.md"
             stale.write_text("historical", encoding="utf-8")
 
-            result = generate(root, write=False)
+            with patched_site_contract("5"):
+                result = generate(root, write=False)
 
             self.assertEqual(result, (1, 1, 1, True))
             self.assertFalse((root / "docs/diagnostics/acc/5.md").exists())
             self.assertTrue(stale.exists())
+
+    def test_write_preserves_stale_numeric_pages_without_explicit_prune(self):
+        catalog = {
+            "version": 1,
+            "source": {
+                "product_version": "1.2.9.80",
+                "sha256": "4302557c70d119c8945cf42372693b93c0495f850ec37e60596402aa1884de4f",
+            },
+            "diagnostics": [
+                {
+                    "code": "5",
+                    "description": "Проверка",
+                    "severity": "Совместимо",
+                    "recommendation": "",
+                    "estimated_fix_minutes": 0,
+                    "standards": [],
+                    "edt_codes": [],
+                    "external_sources": [],
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data").mkdir()
+            (root / "docs/diagnostics/acc").mkdir(parents=True)
+            (root / "docs/std").mkdir(parents=True)
+            (root / "data/acc-diagnostics.json").write_text(json.dumps(catalog), encoding="utf-8")
+            (root / "data/acc-standard-link-overrides.json").write_text(
+                json.dumps({"version": 1, "overrides": []}), encoding="utf-8"
+            )
+            stale = root / "docs/diagnostics/acc/456.md"
+            stale.write_text("historical", encoding="utf-8")
+
+            with patched_site_contract("5"):
+                generate(root, write=True)
+
+            self.assertTrue(stale.exists())
+            self.assertEqual(stale.read_text(encoding="utf-8"), "historical")
+
+    def test_explicit_prune_removes_stale_numeric_pages(self):
+        supports_prune = "prune" in inspect.signature(generate).parameters
+        self.assertTrue(supports_prune, "ACC generation must expose an explicit prune gate")
+        if not supports_prune:
+            return
+
+        catalog = {
+            "version": 1,
+            "source": {
+                "product_version": "1.2.9.80",
+                "sha256": "4302557c70d119c8945cf42372693b93c0495f850ec37e60596402aa1884de4f",
+            },
+            "diagnostics": [
+                {
+                    "code": "5",
+                    "description": "Проверка",
+                    "severity": "Совместимо",
+                    "recommendation": "",
+                    "estimated_fix_minutes": 0,
+                    "standards": [],
+                    "edt_codes": [],
+                    "external_sources": [],
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data").mkdir()
+            (root / "docs/diagnostics/acc").mkdir(parents=True)
+            (root / "docs/std").mkdir(parents=True)
+            (root / "data/acc-diagnostics.json").write_text(json.dumps(catalog), encoding="utf-8")
+            (root / "data/acc-standard-link-overrides.json").write_text(
+                json.dumps({"version": 1, "overrides": []}), encoding="utf-8"
+            )
+            stale = root / "docs/diagnostics/acc/456.md"
+            stale.write_text("historical", encoding="utf-8")
+
+            with patched_site_contract("5"):
+                generate(root, write=True, prune=True)
+
+            self.assertFalse(stale.exists())
+
+    def test_truncated_or_replaced_code_sets_fail_before_any_write_or_delete(self):
+        supports_prune = "prune" in inspect.signature(generate).parameters
+        self.assertTrue(supports_prune, "ACC generation must validate before the prune gate")
+        if not supports_prune:
+            return
+
+        authoritative = json.loads(
+            (REPO_ROOT / "data/acc-diagnostics.json").read_text(encoding="utf-8")
+        )
+        variants = {}
+        truncated = json.loads(json.dumps(authoritative))
+        truncated["diagnostics"] = [
+            item for item in truncated["diagnostics"] if item["code"] != "1448"
+        ]
+        variants["truncated"] = truncated
+        replaced = json.loads(json.dumps(authoritative))
+        replacement = next(
+            item for item in replaced["diagnostics"] if item["code"] == "1448"
+        )
+        replacement["code"] = "999998"
+        variants["replaced"] = replaced
+
+        for name, catalog in variants.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "data").mkdir()
+                acc = root / "docs/diagnostics/acc"
+                acc.mkdir(parents=True)
+                (root / "docs/std").symlink_to(
+                    REPO_ROOT / "docs/std", target_is_directory=True
+                )
+                (root / "data/acc-diagnostics.json").write_text(
+                    json.dumps(catalog, ensure_ascii=False), encoding="utf-8"
+                )
+                shutil.copy2(
+                    REPO_ROOT / "data/acc-standard-link-overrides.json",
+                    root / "data/acc-standard-link-overrides.json",
+                )
+                existing = acc / "1.md"
+                stale = acc / "999999.md"
+                existing.write_text("existing", encoding="utf-8")
+                stale.write_text("stale", encoding="utf-8")
+                before = {path.name: path.read_bytes() for path in acc.iterdir()}
+
+                with self.assertRaisesRegex(ValueError, "ACC catalog diagnostic"):
+                    generate(root, write=True, prune=True)
+
+                after = {path.name: path.read_bytes() for path in acc.iterdir()}
+                self.assertEqual(after, before)
 
     def test_generate_rejects_an_unpinned_acc_product_version_before_writing(self):
         catalog = {

@@ -6,6 +6,7 @@ import json
 import re
 import copy
 import xml.etree.ElementTree as ET
+from html import escape
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -31,6 +32,8 @@ SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 KNOWN_BROKEN_HDOC_RE = re.compile(r"(?<=:hdoc)(?=\d)")
 SITE_ACC_PRODUCT_VERSION = "1.2.9.80"
 SITE_ACC_SOURCE_SHA256 = "4302557c70d119c8945cf42372693b93c0495f850ec37e60596402aa1884de4f"
+SITE_ACC_EXPECTED_COUNT = 691
+SITE_ACC_CODE_SET_SHA256 = "c2e22e6d281b1204124926d30dced5a7ba37c7a160e3edafb8ae86740f9fe2c1"
 EXCLUDED_ACC_SOURCE_LABELS = {"acc_index.md"}
 
 
@@ -57,6 +60,15 @@ def _is_public_acc_source(label: str) -> bool:
 
 def _normalize_source_text(value: str) -> str:
     return "\n".join(line.rstrip() for line in value.strip().splitlines())
+
+
+def _escape_source_markdown(value: str) -> str:
+    return escape(value, quote=False)
+
+
+def _code_set_fingerprint(codes: Iterable[str]) -> str:
+    ordered = sorted(codes, key=int)
+    return hashlib.sha256("\n".join(ordered).encode("utf-8")).hexdigest()
 
 
 def extract_catalog(source: Path, *, product_version: str) -> dict[str, Any]:
@@ -183,6 +195,18 @@ def validate_site_catalog(catalog: dict[str, Any]) -> None:
             f"ACC catalog source SHA-256 must be {SITE_ACC_SOURCE_SHA256}; "
             f"got {source_sha256!r}"
         )
+    codes = [diagnostic["code"] for diagnostic in catalog["diagnostics"]]
+    if len(codes) != SITE_ACC_EXPECTED_COUNT:
+        raise ValueError(
+            f"ACC catalog diagnostic count must be {SITE_ACC_EXPECTED_COUNT}; "
+            f"got {len(codes)}"
+        )
+    fingerprint = _code_set_fingerprint(codes)
+    if fingerprint != SITE_ACC_CODE_SET_SHA256:
+        raise ValueError(
+            "ACC catalog diagnostic code-set fingerprint must be "
+            f"{SITE_ACC_CODE_SET_SHA256}; got {fingerprint}"
+        )
 
 
 def build_link_reviews(
@@ -264,10 +288,11 @@ def render_page(
     source_sha256: str,
 ) -> str:
     code = diagnostic["code"]
+    description = _escape_source_markdown(diagnostic["description"])
     lines = [
         f"###### acc:{code}",
         "",
-        f"# {diagnostic['description']} (ACC {code})",
+        f"# {description} (ACC {code})",
         "",
         f"- Код АПК: `{code}`",
         f"- Критичность АПК: `{diagnostic['severity']}`",
@@ -285,11 +310,13 @@ def render_page(
             )
         )
 
-    lines.extend(["", "## Описание диагностики", "", diagnostic["description"]])
+    lines.extend(["", "## Описание диагностики", "", description])
 
     recommendation = diagnostic.get("recommendation", "").strip()
     if recommendation:
-        lines.extend(["", "## Рекомендация АПК", "", recommendation])
+        lines.extend(
+            ["", "## Рекомендация АПК", "", _escape_source_markdown(recommendation)]
+        )
 
     lines.extend(
         [
@@ -434,7 +461,7 @@ def render_index(
     return "\n".join(lines) + "\n"
 
 
-def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool]:
+def generate(root: Path, *, write: bool, prune: bool = False) -> tuple[int, int, int, bool]:
     catalog = load_catalog(root / "data/acc-diagnostics.json")
     validate_site_catalog(catalog)
     overrides = load_overrides(root / "data/acc-standard-link-overrides.json")
@@ -472,7 +499,7 @@ def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool]:
         for path in acc_directory.glob("[0-9]*.md")
         if path not in expected_paths
     )
-    if write:
+    if write and prune:
         for path in stale_paths:
             path.unlink()
 
@@ -501,6 +528,11 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write", action="store_true")
     generate_parser.add_argument(
+        "--prune",
+        action="store_true",
+        help="delete stale numeric ACC pages (requires --write)",
+    )
+    generate_parser.add_argument(
         "--root", type=Path, default=Path(__file__).resolve().parents[1]
     )
     args = parser.parse_args(argv)
@@ -519,8 +551,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"extracted ACC diagnostics: {len(catalog['diagnostics'])}")
         return 0
 
+    if args.prune and not args.write:
+        generate_parser.error("--prune requires --write")
+
     count, changed, stale, index_changed = generate(
-        args.root.resolve(), write=args.write
+        args.root.resolve(), write=args.write, prune=args.prune
     )
     print(
         f"ACC catalog: diagnostics={count}, changed={changed}, "

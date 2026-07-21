@@ -1,9 +1,13 @@
 import json
 import re
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
+import scripts.generate_diagnostic_standard_links as relationship_generator
+from scripts.diagnostic_articles import load_catalog as load_source_catalog
 from scripts.diagnostic_standard_links import (
     LinkReview,
     SourceProposal,
@@ -538,6 +542,121 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
 
         self.assertIn("[acc:5](acc/5.md)", rendered)
         self.assertNotIn("acc:6", rendered)
+
+    def test_family_index_renderer_keeps_metadata_and_uses_only_exact_confirmed_links(self):
+        renderer = getattr(relationship_generator, "render_family_index", None)
+        self.assertIsNotNone(renderer, "family indexes must be generated with the relationship graph")
+        if renderer is None:
+            return
+
+        confirmed = LinkReview.from_dict(
+            {
+                "diagnostic": "bslls:Example",
+                "standard": "std437",
+                "clause": "2.1",
+                "anchor": "21",
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "Confirmed.",
+                "review": "confirmed",
+            }
+        )
+        rejected = LinkReview.from_dict(
+            {
+                "diagnostic": "bslls:Example",
+                "standard": "std456",
+                "clause": None,
+                "anchor": None,
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "Rejected.",
+                "review": "rejected",
+            }
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            pages = Path(directory)
+            (pages / "Example.md").write_text(
+                "###### bslls:Example\n\n# Example\n\n"
+                "- Тип: Дефект кода\n- Важность: Важный\n",
+                encoding="utf-8",
+            )
+            rendered = renderer(
+                "bslls",
+                [SimpleNamespace(id="Example")],
+                [confirmed, rejected],
+                {"std437": "Запросы", "std456": "Текст модулей"},
+                pages,
+            )
+
+        self.assertIn("| Дефект кода | Важный |", rendered)
+        self.assertIn("../../std/437.md#21", rendered)
+        self.assertNotIn("std456", rendered)
+
+    def test_every_family_index_row_exactly_matches_confirmed_registry_records(self):
+        expected_by_diagnostic = {}
+        for review in self.reviews:
+            if review.review != "confirmed":
+                continue
+            expected_by_diagnostic.setdefault(review.diagnostic, []).append(review)
+
+        for directory, prefix in (("bslls", "bslls"), ("v8-code-style", "v8cs")):
+            index = (
+                REPO_ROOT / "docs/diagnostics" / directory / "index.md"
+            ).read_text(encoding="utf-8")
+            rows = {}
+            for line in index.splitlines():
+                if not line.startswith("| ["):
+                    continue
+                cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+                match = re.fullmatch(r"\[([^]]+)\]\([^)]+\.md\)", cells[0])
+                self.assertIsNotNone(match, line)
+                exact_links = re.findall(
+                    r"\(\.\./\.\./std/(\d+)\.md#([^)]+)\)", cells[-1]
+                )
+                all_standard_links = re.findall(
+                    r"\(\.\./\.\./std/[^)]+\)", cells[-1]
+                )
+                self.assertEqual(len(all_standard_links), len(exact_links), line)
+                rows[match.group(1)] = exact_links
+
+            catalog = load_source_catalog(REPO_ROOT / "data/diagnostic-sources.json")
+            self.assertEqual(set(rows), catalog.ids(directory), directory)
+
+            for identifier, actual in rows.items():
+                diagnostic = f"{prefix}:{identifier}"
+                reviews = sorted(
+                    expected_by_diagnostic.get(diagnostic, ()),
+                    key=lambda item: (item.standard, item.clause or "", item.anchor or ""),
+                )
+                expected = [(item.standard[3:], item.anchor) for item in reviews]
+                self.assertEqual(actual, expected, diagnostic)
+
+    def test_relationship_generator_checks_and_writes_family_index_drift(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data").symlink_to(REPO_ROOT / "data", target_is_directory=True)
+            (root / "docs/diagnostics").mkdir(parents=True)
+            (root / "docs/std").symlink_to(
+                REPO_ROOT / "docs/std", target_is_directory=True
+            )
+            for family in ("bslls", "v8-code-style"):
+                shutil.copytree(
+                    REPO_ROOT / "docs/diagnostics" / family,
+                    root / "docs/diagnostics" / family,
+                )
+            shutil.copy2(
+                REPO_ROOT / "docs/diagnostics/index.md",
+                root / "docs/diagnostics/index.md",
+            )
+            index = root / "docs/diagnostics/bslls/index.md"
+            index.write_text(index.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+
+            check_result = relationship_generator.generate(root, write=False)
+            write_result = relationship_generator.generate(root, write=True)
+            clean_result = relationship_generator.generate(root, write=False)
+
+        self.assertEqual(len(check_result), 5)
+        self.assertEqual(check_result[4], 1)
+        self.assertEqual(write_result[4], 1)
+        self.assertEqual(clean_result[4], 0)
 
     def diagnosticPath(self, diagnostic):
         family, identifier = diagnostic.split(":", 1)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 from pathlib import Path
 
 try:
@@ -91,7 +92,96 @@ def render_registry_index(reviews: list | tuple, standard_titles: dict[str, str]
     return "\n".join(lines) + "\n"
 
 
-def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool]:
+def _page_metadata(path: Path, labels: tuple[str, ...]) -> tuple[str, ...]:
+    source = path.read_text(encoding="utf-8")
+    values = []
+    for label in labels:
+        match = re.search(rf"^- {re.escape(label)}:\s*(.+?)\s*$", source, re.MULTILINE)
+        if match is None:
+            raise ValueError(f"missing {label} metadata: {path}")
+        values.append(match.group(1))
+    return tuple(values)
+
+
+def _render_family_relations(
+    reviews: list | tuple,
+    standard_titles: dict[str, str],
+) -> str:
+    confirmed = sorted(
+        (review for review in reviews if review.review == "confirmed"),
+        key=lambda item: (item.standard, item.clause or "", item.anchor or ""),
+    )
+    links = []
+    for review in confirmed:
+        title = standard_titles[review.standard]
+        if review.clause == review.standard:
+            label = f"#{review.standard}: {title}"
+        else:
+            label = f"#{review.standard}, п. {review.clause}: {title}"
+        links.append(
+            f"[{label}](../../std/{review.standard[3:]}.md#{review.anchor})"
+        )
+    return "<br>".join(links) or "—"
+
+
+def render_family_index(
+    family: str,
+    entries: list | tuple,
+    reviews: list | tuple,
+    standard_titles: dict[str, str],
+    pages_directory: Path,
+) -> str:
+    settings = {
+        "bslls": {
+            "prefix": "bslls",
+            "title": "Диагностики BSL Language Server и стандарты",
+            "metadata": ("Тип", "Важность"),
+            "header": "| Диагностика | Тип | Важность | Стандарты |",
+            "separator": "|---|---|---|---|",
+        },
+        "v8-code-style": {
+            "prefix": "v8cs",
+            "title": "Диагностики EDT v8-code-style и стандарты",
+            "metadata": ("Категория",),
+            "header": "| Диагностика | Категория | Стандарты |",
+            "separator": "|---|---|---|",
+        },
+    }
+    try:
+        config = settings[family]
+    except KeyError as error:
+        raise ValueError(f"unsupported diagnostic family index: {family}") from error
+
+    reviews_by_diagnostic: dict[str, list] = {}
+    for review in reviews:
+        reviews_by_diagnostic.setdefault(review.diagnostic, []).append(review)
+    title = config["title"]
+    lines = [
+        "---",
+        f"title: {title}",
+        "llms:",
+        "  ignore: true",
+        "---",
+        "",
+        f"# {title}",
+        "",
+        config["header"],
+        config["separator"],
+    ]
+    for entry in entries:
+        metadata = _page_metadata(
+            pages_directory / f"{entry.id}.md", config["metadata"]
+        )
+        diagnostic = f"{config['prefix']}:{entry.id}"
+        relations = _render_family_relations(
+            reviews_by_diagnostic.get(diagnostic, ()), standard_titles
+        )
+        cells = [f"[{entry.id}]({entry.id}.md)", *metadata, relations]
+        lines.append("| " + " | ".join(cells) + " |")
+    return "\n".join(lines) + "\n"
+
+
+def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool, int]:
     catalog = load_catalog(root / "data/diagnostic-sources.json")
     reviews = load_all_reviews(root)
     standard_titles = load_standard_titles(root / "docs/std")
@@ -123,6 +213,24 @@ def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool]:
                 if write:
                     path.write_text(expected, encoding="utf-8")
 
+    changed_family_indexes = 0
+    for family in catalog.families:
+        directory, _ = family_settings[family.family]
+        family_directory = root / "docs/diagnostics" / directory
+        index_path = family_directory / "index.md"
+        expected_index = render_family_index(
+            family.family,
+            catalog.diagnostics[family.family],
+            reviews,
+            standard_titles,
+            family_directory,
+        )
+        actual_index = index_path.read_text(encoding="utf-8")
+        if actual_index != expected_index:
+            changed_family_indexes += 1
+            if write:
+                index_path.write_text(expected_index, encoding="utf-8")
+
     changed_standards = 0
     standard_count = 0
     for path in sorted((root / "docs/std").glob("[0-9]*.md")):
@@ -141,7 +249,13 @@ def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool]:
     if write and registry_changed:
         registry_path.write_text(expected_registry, encoding="utf-8")
 
-    return diagnostic_count, changed_diagnostics, changed_standards, registry_changed
+    return (
+        diagnostic_count,
+        changed_diagnostics,
+        changed_standards,
+        registry_changed,
+        changed_family_indexes,
+    )
 
 
 def main() -> int:
@@ -154,15 +268,24 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
 
-    diagnostic_count, changed_diagnostics, changed_standards, registry_changed = generate(
-        args.root.resolve(), write=args.write
-    )
+    (
+        diagnostic_count,
+        changed_diagnostics,
+        changed_standards,
+        registry_changed,
+        changed_family_indexes,
+    ) = generate(args.root.resolve(), write=args.write)
     if args.check:
-        if changed_diagnostics or changed_standards or registry_changed:
+        if (
+            changed_diagnostics
+            or changed_standards
+            or registry_changed
+            or changed_family_indexes
+        ):
             print(
                 "relationship graph differs: "
                 f"diagnostics={changed_diagnostics}, standards={changed_standards}, "
-                f"registry={int(registry_changed)}"
+                f"registry={int(registry_changed)}, family_indexes={changed_family_indexes}"
             )
             return 1
         print(f"relationship graph clean: diagnostics={diagnostic_count}")
@@ -171,7 +294,7 @@ def main() -> int:
     print(
         "relationship graph written: "
         f"diagnostics={changed_diagnostics}, standards={changed_standards}, "
-        f"registry={int(registry_changed)}"
+        f"registry={int(registry_changed)}, family_indexes={changed_family_indexes}"
     )
     return 0
 

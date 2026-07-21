@@ -48,6 +48,8 @@ jobs:
             --entrypoint python \
             v8std-docs -m unittest \
             tests.test_acc_diagnostics \
+            tests.test_catalog_counters \
+            tests.test_diagnostic_articles \
             tests.test_diagnostic_standard_links \
             tests.test_v8_code_style_diagnostics \
             tests.test_generate_ai_artifacts \
@@ -64,6 +66,11 @@ jobs:
             -w /docs \
             --entrypoint python \
             v8std-docs scripts/generate_diagnostic_standard_links.py --check
+          docker run --rm \
+            -v "$PWD:/docs" \
+            -w /docs \
+            --entrypoint python \
+            v8std-docs scripts/check_diagnostic_articles.py
           docker run --rm \
             -v "$PWD:/docs" \
             -w /docs \
