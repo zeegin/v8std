@@ -381,6 +381,9 @@ def test_parse_supported_v8std_urls(self):
         ("https://its.1c.ru/db/v8std/content/455/hdoc/", ("std455", None)),
         ("https://its.1c.ru/db/v8std/content/455/hdoc#2.4.3", ("std455", "2.4.3")),
         ("https://its.1c.ru/db/v8std#contrut:761:hdoc", ("std761", None)),
+        ("https://its.1c.ru/db/v8std#content:441", ("std441", None)),
+        ("https://its.1c.ru/db/v8std#content:783:hdoc:_top", ("std783", None)),
+        ("https://its.1c.ru/db/v8std#content:644:hdoc:3.1@49fb4d81", ("std644", "3.1")),
     ]
     for url, expected in cases:
         with self.subTest(url=url):

@@ -1,0 +1,3389 @@
+{
+  "version": 1,
+  "reviews": [
+    {
+      "diagnostic": "bslls:AssignAliasFieldsInQuery",
+      "standard": "std437",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignAliasFieldsInQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:AssignAliasFieldsInQuery",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/AssignAliasFieldsInQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:BadExceptionCategory",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/BadExceptionCategory.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:BeginTransactionBeforeTryCatch",
+      "standard": "std783",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/BeginTransactionBeforeTryCatch.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CachedPublic",
+      "standard": "std644",
+      "clause": "3.6",
+      "anchor": "36",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CachedPublic.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CanonicalSpellingKeywords",
+      "standard": "std441",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CanonicalSpellingKeywords.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CodeAfterAsyncCall",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeAfterAsyncCall.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CodeBlockBeforeSub",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeBlockBeforeSub.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CodeOutOfRegion",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CodeOutOfRegion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommandModuleExportMethods",
+      "standard": "std544",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommandModuleExportMethods.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommentedCode",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommentedCode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommitTransactionOutsideTryCatch",
+      "standard": "std783",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommitTransactionOutsideTryCatch.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleInvalidType",
+      "standard": "std469",
+      "clause": "1.2",
+      "anchor": "12",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleInvalidType.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleMissingAPI",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleMissingAPI.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameCached",
+      "standard": "std469",
+      "clause": "3.2.3",
+      "anchor": "323",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameCached.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameClient",
+      "standard": "std469",
+      "clause": "2.3",
+      "anchor": "23",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameClient.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameClientServer",
+      "standard": "std469",
+      "clause": "2.4",
+      "anchor": "24",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameClientServer.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameFullAccess",
+      "standard": "std469",
+      "clause": "3.2.2",
+      "anchor": "322",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameFullAccess.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameGlobal",
+      "standard": "std469",
+      "clause": "3.2.1",
+      "anchor": "321",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameGlobal.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameGlobalClient",
+      "standard": "std469",
+      "clause": "3.2.1",
+      "anchor": "321",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameGlobalClient.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameServerCall",
+      "standard": "std469",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameServerCall.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleNameWords",
+      "standard": "std469",
+      "clause": "3.1",
+      "anchor": "31",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleNameWords.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CommonModuleVariables",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CommonModuleVariables.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CompareWithBoolean",
+      "standard": "std441",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CompareWithBoolean.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CompilationDirectiveNeedLess",
+      "standard": "std439",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CompilationDirectiveNeedLess.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:CrazyMultilineString",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/CrazyMultilineString.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DataExchangeLoading",
+      "standard": "std464",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DataExchangeLoading",
+      "standard": "std465",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DataExchangeLoading",
+      "standard": "std752",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DataExchangeLoading",
+      "standard": "std773",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DataExchangeLoading.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DenyIncompleteValues",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DenyIncompleteValues.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DeprecatedCurrentDate",
+      "standard": "std643",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedCurrentDate.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DeprecatedMessage",
+      "standard": "std418",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedMessage.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DeprecatedMethodCall",
+      "standard": "std453",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DeprecatedMethodCall.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DisableSafeMode",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DisableSafeMode",
+      "standard": "std485",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DisableSafeMode",
+      "standard": "std669",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DisableSafeMode",
+      "standard": "std678",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DisableSafeMode",
+      "standard": "std770",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DisableSafeMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DuplicateRegion",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicateRegion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DuplicateStringLiteral",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicateStringLiteral.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:DuplicatedInsertionIntoCollection",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/DuplicatedInsertionIntoCollection.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:EmptyRegion",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EmptyRegion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:EventHandlerInvalidSignature",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EventHandlerInvalidSignature.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:EventHandlerOutsideEventRegion",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/EventHandlerOutsideEventRegion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExcessiveAutoTestCheck",
+      "standard": "std456",
+      "clause": "3",
+      "anchor": "3",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExcessiveAutoTestCheck.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExecuteExternalCode",
+      "standard": "std770",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExecuteExternalCodeInCommonModule",
+      "standard": "std770",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCodeInCommonModule.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExportVariables",
+      "standard": "std639",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExportVariables.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExternalAppStarting",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExternalAppStarting.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExternalAppStarting",
+      "standard": "std669",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExternalAppStarting.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExternalAppStarting",
+      "standard": "std774",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExternalAppStarting.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ExtraCommas",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExtraCommas.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FieldsFromJoinsWithoutIsNull",
+      "standard": "std412",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FieldsFromJoinsWithoutIsNull.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FieldsFromJoinsWithoutIsNull",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FieldsFromJoinsWithoutIsNull.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FileSystemAccess",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FileSystemAccess.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FileSystemAccess",
+      "standard": "std542",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FileSystemAccess.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FileSystemAccess",
+      "standard": "std774",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FileSystemAccess.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ForbiddenMetadataName",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ForbiddenMetadataName.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ForbiddenMetadataName",
+      "standard": "std474",
+      "clause": "2.5",
+      "anchor": "25",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ForbiddenMetadataName.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FormDataToValue",
+      "standard": "std409",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FormDataToValue.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FullOuterJoinQuery",
+      "standard": "std435",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FullOuterJoinQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FunctionNameStartsWithGet",
+      "standard": "std647",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionNameStartsWithGet.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:FunctionOutParameter",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/FunctionOutParameter.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:GetFormMethod",
+      "standard": "std404",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/GetFormMethod.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:GlobalContextMethodCollision8312",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/GlobalContextMethodCollision8312.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:IncorrectLineBreak",
+      "standard": "std444",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectLineBreak.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:IncorrectUseLikeInQuery",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseLikeInQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:IncorrectUseLikeInQuery",
+      "standard": "std726",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseLikeInQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:IncorrectUseOfStrTemplate",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseOfStrTemplate.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:IncorrectUseOfStrTemplate",
+      "standard": "std763",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IncorrectUseOfStrTemplate.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:InternetAccess",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/InternetAccess.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:InvalidCharacterInFile",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/InvalidCharacterInFile.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:IsInRoleMethod",
+      "standard": "std737",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/IsInRoleMethod.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:JoinWithSubQuery",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithSubQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:JoinWithSubQuery",
+      "standard": "std655",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithSubQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:JoinWithVirtualTable",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithVirtualTable.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:JoinWithVirtualTable",
+      "standard": "std655",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/JoinWithVirtualTable.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:LatinAndCyrillicSymbolInWord",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LatinAndCyrillicSymbolInWord.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:LineLength",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LineLength.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:LogicalOrInJoinQuerySection",
+      "standard": "std658",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LogicalOrInJoinQuerySection.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:LogicalOrInTheWhereSectionOfQuery",
+      "standard": "std658",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/LogicalOrInTheWhereSectionOfQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MetadataObjectNameLength",
+      "standard": "std474",
+      "clause": "2.3",
+      "anchor": "23",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MetadataObjectNameLength.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissedRequiredParameter",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissedRequiredParameter.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingCodeTryCatchEx",
+      "standard": "std499",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingCodeTryCatchEx.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingCommonModuleMethod",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingCommonModuleMethod.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingEventSubscriptionHandler",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingEventSubscriptionHandler.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingParameterDescription",
+      "standard": "std453",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingParameterDescription.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingParameterDescription",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingParameterDescription.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingReturnedValueDescription",
+      "standard": "std453",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingReturnedValueDescription.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingReturnedValueDescription",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingReturnedValueDescription.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingTempStorageDeletion",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTempStorageDeletion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingTempStorageDeletion",
+      "standard": "std487",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTempStorageDeletion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingTempStorageDeletion",
+      "standard": "std642",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTempStorageDeletion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingTemporaryFileDeletion",
+      "standard": "std542",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingTemporaryFileDeletion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MissingVariablesDescription",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MissingVariablesDescription.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MultilineStringInQuery",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilineStringInQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MultilingualStringHasAllDeclaredLanguages",
+      "standard": "std763",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilingualStringHasAllDeclaredLanguages.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:MultilingualStringUsingWithTemplate",
+      "standard": "std763",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/MultilingualStringUsingWithTemplate.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:NestedFunctionInParameters",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NestedFunctionInParameters.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:NonExportMethodsInApiRegion",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonExportMethodsInApiRegion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:NonStandardRegion",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NonStandardRegion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:NumberOfOptionalParams",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfOptionalParams.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:NumberOfParams",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfParams.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:NumberOfValuesInStructureConstructor",
+      "standard": "std693",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/NumberOfValuesInStructureConstructor.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:OneStatementPerLine",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OneStatementPerLine.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:OrderOfParams",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OrderOfParams.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:OrdinaryAppSupport",
+      "standard": "std467",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/OrdinaryAppSupport.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:PairingBrokenTransaction",
+      "standard": "std783",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PairingBrokenTransaction.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ParseError",
+      "standard": "std439",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ParseError.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:PrivilegedModuleMethodCall",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PrivilegedModuleMethodCall.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ProtectedModule",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ProtectedModule.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:PublicMethodsDescription",
+      "standard": "std453",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/PublicMethodsDescription.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:QueryNestedFieldsByDot",
+      "standard": "std654",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryNestedFieldsByDot.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:QueryParseError",
+      "standard": "std437",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryParseError.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:QueryParseError",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryParseError.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:QueryToMissingMetadata",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/QueryToMissingMetadata.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:RefOveruse",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/RefOveruse.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:RefOveruse",
+      "standard": "std654",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/RefOveruse.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ReservedParameterNames",
+      "standard": "std454",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ReservedParameterNames.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ReservedParameterNames",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ReservedParameterNames.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SameMetadataObjectAndChildNames",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SameMetadataObjectAndChildNames.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SameMetadataObjectAndChildNames",
+      "standard": "std474",
+      "clause": "2.4",
+      "anchor": "24",
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SameMetadataObjectAndChildNames.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ScheduledJobHandler",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ScheduledJobHandler.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SelectTopWithoutOrderBy",
+      "standard": "std412",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SelectTopWithoutOrderBy.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SelectTopWithoutOrderBy",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SelectTopWithoutOrderBy.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:ServerSideExportFormMethod",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ServerSideExportFormMethod.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SetPermissionsForNewObjects",
+      "standard": "std532",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPermissionsForNewObjects.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SetPrivilegedMode",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SetPrivilegedMode",
+      "standard": "std485",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SetPrivilegedMode",
+      "standard": "std669",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SetPrivilegedMode",
+      "standard": "std678",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SetPrivilegedMode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:SpaceAtStartComment",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/SpaceAtStartComment.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:StyleElementConstructors",
+      "standard": "std667",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/StyleElementConstructors.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:TempFilesDir",
+      "standard": "std542",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TempFilesDir.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:TimeoutsInExternalResources",
+      "standard": "std748",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TimeoutsInExternalResources.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:TransferringParametersBetweenClientAndServer",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TransferringParametersBetweenClientAndServer.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:TryNumber",
+      "standard": "std499",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/TryNumber.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UnionAll",
+      "standard": "std434",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnionAll.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UnsafeFindByCode",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnsafeFindByCode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UnusedLocalMethod",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UnusedLocalMethod.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsageWriteLogEvent",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsageWriteLogEvent",
+      "standard": "std498",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsageWriteLogEvent",
+      "standard": "std499",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsageWriteLogEvent.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingCancelParameter",
+      "standard": "std686",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingCancelParameter.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingExternalCodeTools",
+      "standard": "std669",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingExternalCodeTools.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingGoto",
+      "standard": "std547",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingGoto.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingHardcodeSecretInformation",
+      "standard": "std740",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingHardcodeSecretInformation.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingLikeInQuery",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingLikeInQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingLikeInQuery",
+      "standard": "std726",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingLikeInQuery.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingModalWindows",
+      "standard": "std703",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingModalWindows.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:UsingSynchronousCalls",
+      "standard": "std703",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/UsingSynchronousCalls.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:VirtualTableCallWithoutParameters",
+      "standard": "std657",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/VirtualTableCallWithoutParameters.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:VirtualTableCallWithoutParameters",
+      "standard": "std733",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/VirtualTableCallWithoutParameters.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:WrongDataPathForFormElements",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongDataPathForFormElements.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:WrongDataPathForFormElements",
+      "standard": "std467",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongDataPathForFormElements.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:WrongHttpServiceHandler",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongHttpServiceHandler.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:WrongUseOfRollbackTransactionMethod",
+      "standard": "std783",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongUseOfRollbackTransactionMethod.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:WrongWebServiceHandler",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/WrongWebServiceHandler.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "bslls:YoLetterUsage",
+      "standard": "std456",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/YoLetterUsage.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:begin-transaction",
+      "standard": "std499",
+      "clause": "3.6",
+      "anchor": "36",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/begin-transaction.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:begin-transaction",
+      "standard": "std783",
+      "clause": "1.3",
+      "anchor": "13",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/begin-transaction.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:bsl-canonical-pragma",
+      "standard": "std441",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-canonical-pragma.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:bsl-nstr-string-literal-format",
+      "standard": "std761",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-nstr-string-literal-format.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:bsl-variable-name-invalid",
+      "standard": "std454",
+      "clause": "3",
+      "anchor": "3",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/bsl-variable-name-invalid.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:commit-transaction",
+      "standard": "std499",
+      "clause": "3.6",
+      "anchor": "36",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/commit-transaction.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:commit-transaction",
+      "standard": "std783",
+      "clause": "1.3",
+      "anchor": "13",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/commit-transaction.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-missing-api",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-missing-api.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-cached",
+      "standard": "std469",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-cached.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-client-cached",
+      "standard": "std469",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-client-cached.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-full-access",
+      "standard": "std469",
+      "clause": "3.2.2",
+      "anchor": "322",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-full-access.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-global-client",
+      "standard": "std469",
+      "clause": "3.2.1",
+      "anchor": "321",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-global-client.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-server-call",
+      "standard": "std469",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-name-server-call-cached",
+      "standard": "std469",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/common-module-name-server-call-cached.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:common-module-server-call",
+      "standard": "std679",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/common-module-server-call.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:data-composition-conditional-appearance-use",
+      "standard": "std710",
+      "clause": "2.1",
+      "anchor": "21",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-conditional-appearance-use.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:data-composition-variant-name-default",
+      "standard": "std674",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/data-composition-variant-name-default.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:data-exchange-load",
+      "standard": "std464",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:data-exchange-load",
+      "standard": "std465",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:data-exchange-load",
+      "standard": "std752",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:data-exchange-load",
+      "standard": "std773",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/data-exchange-load.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:db-object-anyref-type",
+      "standard": "std728",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-anyref-type.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:db-object-max-number-length",
+      "standard": "std467",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-max-number-length.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:db-object-ref-non-ref-type",
+      "standard": "std728",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/db-object-ref-non-ref-type.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:deprecated-procedure-outside-deprecated-region",
+      "standard": "std644",
+      "clause": "3.1",
+      "anchor": "31",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/deprecated-procedure-outside-deprecated-region.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:doc-comment-export-procedure-description-section",
+      "standard": "std453",
+      "clause": "2",
+      "anchor": "2",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/doc-comment-export-procedure-description-section.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:document-post-in-privileged-mode",
+      "standard": "std689",
+      "clause": "1.7",
+      "anchor": "17",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/document-post-in-privileged-mode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:dont-use-modality-mode",
+      "standard": "std703",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/dont-use-modality-mode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:empty-except-statement",
+      "standard": "std499",
+      "clause": "2",
+      "anchor": "2",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/empty-except-statement.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:event-handler-boolean-param",
+      "standard": "std400",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/event-handler-boolean-param.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:event-handler-boolean-param",
+      "standard": "std686",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/event-handler-boolean-param.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:export-method-in-command-form-module",
+      "standard": "std404",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:export-method-in-command-form-module",
+      "standard": "std544",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:export-method-in-command-form-module",
+      "standard": "std630",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-method-in-command-form-module.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:export-procedure-missing-comment",
+      "standard": "std453",
+      "clause": "2",
+      "anchor": "2",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/export-procedure-missing-comment.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:extension-md-object-prefix",
+      "standard": "std469",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/extension-md-object-prefix.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-commands-single-action-handler",
+      "standard": "std455",
+      "clause": "2.4.3",
+      "anchor": "243",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-commands-single-action-handler.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-dynamic-list-item-title",
+      "standard": "std765",
+      "clause": "4",
+      "anchor": "4",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-dynamic-list-item-title.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-item-visible-settings-by-roles",
+      "standard": "std737",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-item-visible-settings-by-roles.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-items-single-event-handler",
+      "standard": "std455",
+      "clause": "2.4.3",
+      "anchor": "243",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-items-single-event-handler.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-list-field-ref-not-added",
+      "standard": "std702",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-field-ref-not-added.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-list-ref-use-always-flag-disabled",
+      "standard": "std702",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-use-always-flag-disabled.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-list-ref-user-visibility-enabled",
+      "standard": "std702",
+      "clause": "2.2",
+      "anchor": "22",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/form-list-ref-user-visibility-enabled.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-module-missing-pragma",
+      "standard": "std439",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-module-missing-pragma",
+      "standard": "std467",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-missing-pragma.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:form-module-pragma",
+      "standard": "std439",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/form-module-pragma.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:functional-option-privileged-get-mode",
+      "standard": "std689",
+      "clause": "1.8",
+      "anchor": "18",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/functional-option-privileged-get-mode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:input-field-list-choice-mode",
+      "standard": "std765",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.form/markdown/ru/input-field-list-choice-mode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:invocation-form-event-handler",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/invocation-form-event-handler.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:lock-out-of-try",
+      "standard": "std499",
+      "clause": "3.6",
+      "anchor": "36",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/lock-out-of-try.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:lock-out-of-try",
+      "standard": "std783",
+      "clause": "1.3",
+      "anchor": "13",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/lock-out-of-try.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:md-list-object-presentation",
+      "standard": "std468",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-list-object-presentation.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:md-object-attribute-comment-incorrect-type",
+      "standard": "std531",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-incorrect-type.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:md-object-attribute-comment-not-exist",
+      "standard": "std531",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-object-attribute-comment-not-exist.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:md-standard-attribute-synonym-empty",
+      "standard": "std474",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/md-standard-attribute-synonym-empty.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:mdo-ru-name-unallowed-letter",
+      "standard": "std474",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-ru-name-unallowed-letter.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:mdo-scheduled-job-description",
+      "standard": "std767",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/mdo-scheduled-job-description.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:method-optional-parameter-before-required",
+      "standard": "std640",
+      "clause": "4",
+      "anchor": "4",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-optional-parameter-before-required.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:method-too-many-params",
+      "standard": "std640",
+      "clause": "5",
+      "anchor": "5",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/method-too-many-params.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:missing-temporary-file-deletion",
+      "standard": "std542",
+      "clause": "4",
+      "anchor": "4",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/missing-temporary-file-deletion.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-accessibility-at-client",
+      "standard": "std680",
+      "clause": "2",
+      "anchor": "2",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-accessibility-at-client.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-accessibility-at-client",
+      "standard": "std746",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-accessibility-at-client.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-attachable-event-handler-name",
+      "standard": "std492",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-attachable-event-handler-name.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-region-empty",
+      "standard": "std455",
+      "clause": "1.8",
+      "anchor": "18",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-region-empty.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-structure-event-regions",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-event-regions.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-structure-form-event-regions",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-form-event-regions.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-structure-init-code-in-region",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-init-code-in-region.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-structure-method-in-regions",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-method-in-regions.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-structure-top-region",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-top-region.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:module-structure-var-in-region",
+      "standard": "std455",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/module-structure-var-in-region.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:new-color",
+      "standard": "std667",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-color.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:new-font",
+      "standard": "std667",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/new-font.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:not-support-goto-operator-webclient",
+      "standard": "std547",
+      "clause": "2",
+      "anchor": "2",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/not-support-goto-operator-webclient.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:object-module-export-variable",
+      "standard": "std639",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/object-module-export-variable.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:optional-form-parameter-access",
+      "standard": "std741",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/optional-form-parameter-access.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:public-method-caching",
+      "standard": "std644",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/public-method-caching.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:ql-constants-in-binary-operation",
+      "standard": "std658",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-constants-in-binary-operation.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:ql-constants-in-binary-operation",
+      "standard": "std726",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-constants-in-binary-operation.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:ql-like-expression-with-field",
+      "standard": "std467",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-like-expression-with-field.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:ql-temp-table-index",
+      "standard": "std777",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-temp-table-index.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:ql-using-for-update",
+      "standard": "std460",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-using-for-update.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:ql-virtual-table-filters",
+      "standard": "std657",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.ql/markdown/ru/ql-virtual-table-filters.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:query-in-loop",
+      "standard": "std436",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/query-in-loop.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:reading-attribute-from-database",
+      "standard": "std496",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/reading-attribute-from-database.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:redundant-export-method",
+      "standard": "std467",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/redundant-export-method.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:restriction-execute-external-code",
+      "standard": "std669",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-code.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:restriction-execute-external-component-code",
+      "standard": "std669",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/restriction-execute-external-component-code.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-active-users",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-active-users.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-administration",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-administration.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-all-functions-mode",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-all-functions-mode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-configuration-extensions-administration",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-configuration-extensions-administration.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-data-administration",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-data-administration.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-delete",
+      "standard": "std488",
+      "clause": "5",
+      "anchor": "5",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-delete.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-exclusive-mode",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-exclusive-mode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-interactive-open-external-data-processors",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-data-processors.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-interactive-open-external-reports",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-interactive-open-external-reports.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-output-to-printer-file-clipboard",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-output-to-printer-file-clipboard.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-save-user-data",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-save-user-data.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-start-automation",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-automation.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-start-external-connection",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-external-connection.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-start-thick-client",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thick-client.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-start-thin-client",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-thin-client.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-start-web-client",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-start-web-client.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-update-database-configuration",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-update-database-configuration.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:right-view-event-log",
+      "standard": "std488",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.right/markdown/ru/right-view-event-log.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:rollback-transaction",
+      "standard": "std499",
+      "clause": "3.6",
+      "anchor": "36",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/rollback-transaction.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:rollback-transaction",
+      "standard": "std783",
+      "clause": "1.3",
+      "anchor": "13",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/rollback-transaction.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:scheduled-job-periodicity-too-short",
+      "standard": "std402",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/scheduled-job-periodicity-too-short.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:secure-password-storage",
+      "standard": "std740",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/secure-password-storage.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:security-software-call",
+      "standard": "std775",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/security-software-call.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:server-execution-safe-mode",
+      "standard": "std770",
+      "clause": "2",
+      "anchor": "2",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/server-execution-safe-mode.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:structure-constructor-too-many-keys",
+      "standard": "std640",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/structure-constructor-too-many-keys.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:subsystem-synonym-too-long",
+      "standard": "std712",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/subsystem-synonym-too-long.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:unknown-form-parameter-access",
+      "standard": "std741",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/unknown-form-parameter-access.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:unsafe-password-ib-storage",
+      "standard": "std740",
+      "clause": "2",
+      "anchor": "2",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.md/markdown/ru/unsafe-password-ib-storage.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:use-goto-operator",
+      "standard": "std547",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-goto-operator.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:use-non-recommended-method",
+      "standard": "std404",
+      "clause": "1",
+      "anchor": "1",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:use-non-recommended-method",
+      "standard": "std418",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:use-non-recommended-method",
+      "standard": "std643",
+      "clause": "2.1",
+      "anchor": "21",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/use-non-recommended-method.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:using-form-data-to-value",
+      "standard": "std409",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-form-data-to-value.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:using-isinrole",
+      "standard": "std689",
+      "clause": null,
+      "anchor": null,
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-isinrole.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    },
+    {
+      "diagnostic": "v8cs:using-isinrole",
+      "standard": "std737",
+      "clause": "3",
+      "anchor": "3",
+      "evidence": [
+        "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/using-isinrole.md"
+      ],
+      "reason": "Unreviewed bootstrap record",
+      "review": "rejected",
+      "notes": "Source proposal retained pending semantic review."
+    }
+  ]
+}

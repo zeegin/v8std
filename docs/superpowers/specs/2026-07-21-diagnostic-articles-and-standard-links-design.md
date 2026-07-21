@@ -215,10 +215,18 @@ The relationship importer recognizes and normalizes all observed v8std forms:
 
 - `#content:NNN:hdoc`;
 - `#content:NNN:hdoc:X.Y`;
+- `#content:NNN` without the optional `hdoc` segment;
+- `_top` in fragment or path form, meaning that the source proposes no clause;
+- a service suffix such as `X.Y@HASH`, where only `X.Y` is the clause;
 - `/content/NNN/hdoc`;
 - `/content/NNN/hdoc/`;
 - `/content/NNN/hdoc#X.Y`;
+- the observed `ysclid` tracking query, which does not affect the target;
 - the known upstream typo `#contrut:NNN:hdoc`.
+
+The observed `#browse:...` links are recognized navigation references rather
+than standard proposals and are skipped explicitly. They are not treated as an
+unknown URL form.
 
 An unknown v8std URL form is a hard error with source file and URL in the
 message. The importer never treats an unparsed URL as "no relationship".
