@@ -2,9 +2,11 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.diagnostic_articles import (
     SourceEntry,
@@ -101,35 +103,19 @@ class DiagnosticArticleCoreTests(unittest.TestCase):
 
 class DiagnosticArticleRenderingTests(unittest.TestCase):
     def test_verify_checkout_revision_rejects_wrong_sha(self):
-        with tempfile.TemporaryDirectory() as directory:
-            checkout = Path(directory)
-            subprocess.run(["git", "init", "-q", checkout], check=True)
-            subprocess.run(
-                ["git", "-C", checkout, "config", "user.email", "test@example.com"],
-                check=True,
-            )
-            subprocess.run(
-                ["git", "-C", checkout, "config", "user.name", "Test"],
-                check=True,
-            )
-            (checkout / "README.md").write_text("x\n", encoding="utf-8")
-            subprocess.run(["git", "-C", checkout, "add", "README.md"], check=True)
-            subprocess.run(
-                [
-                    "git",
-                    "-C",
-                    checkout,
-                    "-c",
-                    "commit.gpgsign=false",
-                    "commit",
-                    "-qm",
-                    "fixture",
-                ],
-                check=True,
-            )
+        checkout = Path("/tmp/source-checkout")
+        with patch("scripts.diagnostic_articles.subprocess.run") as run:
+            run.return_value.stdout = "1" * 40 + "\n"
 
             with self.assertRaisesRegex(ValueError, "checkout revision mismatch"):
                 verify_checkout_revision(checkout, "0" * 40)
+
+        run.assert_called_once_with(
+            ["git", "-C", str(checkout), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
     def test_render_article_preserves_metadata_and_marks_imported_body(self):
         rendered = render_article(
@@ -236,15 +222,6 @@ https://example.com/source
             edt = root / "edt"
             for checkout in (bslls, edt):
                 checkout.mkdir()
-                subprocess.run(["git", "init", "-q", checkout], check=True)
-                subprocess.run(
-                    ["git", "-C", checkout, "config", "user.email", "test@example.com"],
-                    check=True,
-                )
-                subprocess.run(
-                    ["git", "-C", checkout, "config", "user.name", "Test"],
-                    check=True,
-                )
 
             (bslls / "docs/diagnostics").mkdir(parents=True)
             (bslls / "docs/diagnostics/One.md").write_text(
@@ -256,34 +233,8 @@ https://example.com/source
                 "# Вторая\n\nПолная статья EDT.\n",
                 encoding="utf-8",
             )
-            for checkout in (bslls, edt):
-                subprocess.run(["git", "-C", checkout, "add", "."], check=True)
-                subprocess.run(
-                    [
-                        "git",
-                        "-C",
-                        checkout,
-                        "-c",
-                        "commit.gpgsign=false",
-                        "commit",
-                        "-qm",
-                        "fixture",
-                    ],
-                    check=True,
-                )
-
-            bslls_revision = subprocess.run(
-                ["git", "-C", bslls, "rev-parse", "HEAD"],
-                check=True,
-                capture_output=True,
-                text=True,
-            ).stdout.strip()
-            edt_revision = subprocess.run(
-                ["git", "-C", edt, "rev-parse", "HEAD"],
-                check=True,
-                capture_output=True,
-                text=True,
-            ).stdout.strip()
+            bslls_revision = "1" * 40
+            edt_revision = "2" * 40
             families = (
                 SourceFamily(
                     "bslls",
@@ -315,18 +266,21 @@ https://example.com/source
             acc_path.write_text("ACC remains unchanged.\n", encoding="utf-8")
             acc_before = acc_path.read_bytes()
 
-            written = synchronize_articles(
-                repo_root=repo,
-                checkouts={"bslls": bslls, "v8-code-style": edt},
-                families=families,
-                write=True,
-            )
-            drift = synchronize_articles(
-                repo_root=repo,
-                checkouts={"bslls": bslls, "v8-code-style": edt},
-                families=families,
-                write=False,
-            )
+            with patch("scripts.diagnostic_articles.verify_checkout_revision") as verify:
+                written = synchronize_articles(
+                    repo_root=repo,
+                    checkouts={"bslls": bslls, "v8-code-style": edt},
+                    families=families,
+                    write=True,
+                )
+                drift = synchronize_articles(
+                    repo_root=repo,
+                    checkouts={"bslls": bslls, "v8-code-style": edt},
+                    families=families,
+                    write=False,
+                )
+
+            self.assertEqual(verify.call_count, 4)
 
             self.assertEqual(len(written), 3)
             self.assertEqual(drift, [])
@@ -348,7 +302,7 @@ class DiagnosticArticleRepositoryTests(unittest.TestCase):
     def test_offline_integrity_verifier_checks_all_committed_articles_and_proposals(self):
         result = subprocess.run(
             [
-                str(REPO_ROOT / ".venv/bin/python"),
+                sys.executable,
                 str(REPO_ROOT / "scripts/check_diagnostic_articles.py"),
                 "--root",
                 str(REPO_ROOT),
@@ -384,7 +338,7 @@ class DiagnosticArticleRepositoryTests(unittest.TestCase):
 
             result = subprocess.run(
                 [
-                    str(REPO_ROOT / ".venv/bin/python"),
+                    sys.executable,
                     str(REPO_ROOT / "scripts/check_diagnostic_articles.py"),
                     "--root",
                     str(root),

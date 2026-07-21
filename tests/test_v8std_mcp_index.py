@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import re
 import struct
 import tempfile
 import time
@@ -178,6 +179,32 @@ class V8StdMcpIndexTests(unittest.TestCase):
         self.assertTrue(
             any(item["id"] == "bslls:AssignAliasFieldsInQuery" for item in related)
         )
+
+    def test_acc_placeholder_metadata_is_decoded_at_the_mcp_boundary(self):
+        catalog = json.loads(
+            (REPO_ROOT / "data" / "acc-diagnostics.json").read_text(encoding="utf-8")
+        )
+        diagnostics = [
+            item
+            for item in catalog["diagnostics"]
+            if re.search(r"<[^<>]+>", item["description"])
+        ]
+
+        self.assertEqual(len(diagnostics), 8)
+        for diagnostic in diagnostics:
+            page = self.index.page(f"acc:{diagnostic['code']}")["page"]
+            expected_description = diagnostic["description"]
+            self.assertEqual(page["description"], expected_description)
+            self.assertEqual(
+                page["title"],
+                f"{expected_description} АПК:{diagnostic['code']}",
+            )
+            self.assertNotIn("&lt;", page["title"])
+            self.assertNotIn("&lt;", page["description"])
+
+        acc_423 = self.index.page("acc:423")["page"]
+        self.assertIn("<ИмяКонстанты>", acc_423["title"])
+        self.assertIn("<ИмяКонстанты>", acc_423["description"])
 
     def test_related_merges_rules_and_normalizes_relation_filters(self):
         modal_related = self.index.related("bslls:UsingModalWindows")["related"]

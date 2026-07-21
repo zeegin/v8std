@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import re
 import tempfile
 import tomllib
 import unittest
@@ -165,6 +166,20 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("ИмяКонстанты", llms)
         self.assertIn("<ИмяКонстанты>", llms_full)
         self.assertIn("<ИмяМодуля>.<ИмяПроцедуры>(<Параметры>);", llms_full)
+
+        catalog = json.loads(
+            (REPO_ROOT / "data" / "acc-diagnostics.json").read_text(encoding="utf-8")
+        )
+        for diagnostic in catalog["diagnostics"]:
+            page = self.pages_by_id[f"acc:{diagnostic['code']}"]
+            for field in ("description", "recommendation"):
+                source_value = diagnostic.get(field, "")
+                placeholders = re.findall(r"<[^<>]+>", source_value)
+                for placeholder in placeholders:
+                    self.assertIn(placeholder, page["body_markdown"])
+                    if field == "description":
+                        self.assertIn(placeholder, page["title"])
+                        self.assertIn(placeholder, page["description"])
 
     def test_rejected_standard_reference_is_not_exposed_as_a_relation(self):
         page = self.pages_by_id["bslls:UsingLikeInQuery"]

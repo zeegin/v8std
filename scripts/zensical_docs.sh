@@ -109,6 +109,7 @@ from pathlib import Path
 script_dir = Path(sys.argv[1])
 site_dir = Path(sys.argv[2])
 generator = script_dir / "generate_ai_artifacts.py"
+license_publisher = script_dir / "publish_license_texts.py"
 
 
 def signature() -> int | None:
@@ -135,12 +136,17 @@ while True:
             ],
             check=False,
         )
+        subprocess.run(
+            [sys.executable, str(license_publisher), "--site", str(site_dir)],
+            check=False,
+        )
     time.sleep(1)
 PY
 }
 
 if [ "${1:-}" = "build" ]; then
   "${PYTHON_BIN}" -m zensical "$@"
+  "${PYTHON_BIN}" "${SCRIPT_DIR}/publish_license_texts.py" --site "${REPO_ROOT}/site"
   "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py" --write-site-markdown "${REPO_ROOT}/site"
   "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_search_vectors.py"
 elif [ "${1:-}" = "serve" ]; then

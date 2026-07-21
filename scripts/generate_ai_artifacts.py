@@ -20,8 +20,8 @@ from generate_social_cards import (  # noqa: E402
     discover_project_root,
     extract_front_matter,
     load_project,
-    normalize_description,
     strip_markdown,
+    truncate_text,
 )
 from v8std_retrieval_rules import RetrievalRules  # noqa: E402
 from v8std_search_features import generated_aliases_for_page  # noqa: E402
@@ -110,6 +110,10 @@ def dedupe(values: list[str]) -> list[str]:
 def normalize_body(raw: str) -> str:
     _, content = extract_front_matter(raw)
     return content.replace("\r\n", "\n").replace("\r", "\n").strip()
+
+
+def normalize_plain_description(value: str, limit: int) -> str:
+    return truncate_text(re.sub(r"\s+", " ", value).strip(), limit)
 
 
 def strip_acc_backlinks_from_search_content(content: str) -> str:
@@ -643,17 +647,19 @@ def build_ai_page(
     page_type = classify_page(relative)
     page_id = build_page_id(relative, content, page_type)
     metadata = build_page_metadata(source, docs_dir, project)
+    metadata_title = unescape(metadata["seo_title"])
+    metadata_description = unescape(metadata["description"])
     search_content = strip_acc_backlinks_from_search_content(content)
     body_markdown = clean_llm_markdown(search_content)
     body_markdown = normalize_internal_markdown_links(body_markdown, source, docs_dir, project)
-    body_markdown = remove_duplicate_title_heading(body_markdown, metadata["seo_title"])
+    body_markdown = remove_duplicate_title_heading(body_markdown, metadata_title)
     body_markdown = wrap_llm_markdown_lines(body_markdown)
 
     page = {
         "id": page_id,
         "type": page_type,
-        "title": metadata["seo_title"],
-        "description": metadata["description"],
+        "title": metadata_title,
+        "description": metadata_description,
         "url": metadata["canonical"],
         "markdown_url": canonical_markdown_url(project, relative),
         "source_path": str(relative),
@@ -661,7 +667,7 @@ def build_ai_page(
             page_id,
             relative,
             page_type,
-            metadata["seo_title"],
+            metadata_title,
             retrieval_rules,
         ),
         "related": [],
@@ -936,7 +942,7 @@ def build_llms_txt(index: dict) -> str:
             f"- {page_markdown_link(page, '#' + page['id'])}: {page['title']}. "
             f"HTML: {page['url']}. "
             f"Diagnostics: {format_id_list(diagnostics_ids)}. "
-            f"{normalize_description(page['description'], 140)}"
+            f"{normalize_plain_description(page['description'], 140)}"
         )
 
     lines.extend(["", "## Diagnostics"])
@@ -949,21 +955,21 @@ def build_llms_txt(index: dict) -> str:
         lines.append(
             f"- {page_markdown_link(page, page['id'])}: HTML: {page['url']}. "
             f"{'; '.join(details)}. "
-            f"{normalize_description(page['description'], 140)}"
+            f"{normalize_plain_description(page['description'], 140)}"
         )
 
     lines.extend(["", "## Patterns"])
     for page in patterns:
         lines.append(
             f"- {page_markdown_link(page)}: HTML: {page['url']}. "
-            f"{normalize_description(page['description'], 140)}"
+            f"{normalize_plain_description(page['description'], 140)}"
         )
 
     lines.extend(["", "## Service Pages"])
     for page in services:
         lines.append(
             f"- {page_markdown_link(page)}: HTML: {page['url']}. "
-            f"{normalize_description(page['description'], 140)}"
+            f"{normalize_plain_description(page['description'], 140)}"
         )
 
     return "\n".join(lines).rstrip() + "\n"
