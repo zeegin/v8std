@@ -32,6 +32,9 @@
   {% endif %}
   {% set href = config.theme.favicon | d("assets/images/favicon.png") %}
   <link rel="icon" href="{{ href | url | e }}">
+  <link rel="apple-touch-icon" href="{{ 'assets/images/icon-192.png' | url | e }}">
+  <link rel="manifest" href="{{ 'manifest.webmanifest' | url | e }}">
+  <meta name="theme-color" content="#0b6fa4">
   <meta name="generator" content="{{ generator | e }}">
 {% endblock %}
 
