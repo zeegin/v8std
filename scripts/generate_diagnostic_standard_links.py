@@ -82,6 +82,9 @@ def _clause_summary(lines: list[str]) -> str | None:
         text = re.sub(r"#![a-z]+\s+", "", line, flags=re.IGNORECASE)
         text = MARKDOWN_LINK_RE.sub(r"\1", text)
         text = re.sub(r"[`*_~]", "", text).strip()
+        text = re.split(
+            r"\s*[«»]?\s*\(англ\.", text, maxsplit=1, flags=re.IGNORECASE
+        )[0].rstrip(" «»")
         if not text:
             continue
         sentence = re.split(r"(?<=[.!?])\s+", text, maxsplit=1)[0].rstrip(".!?")

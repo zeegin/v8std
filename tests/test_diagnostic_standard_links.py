@@ -583,14 +583,14 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
             (standards / "640.md").write_text(
                 "###### #std640\n\n# Параметры процедур и функций\n\n"
                 "###### 6.10.\nДесятый подпункт.\n\n"
-                "###### 6.2.\nВторой #!bsl подпункт. Продолжение.\n\n"
+                "###### 6.2.\nСекция `#!bsl // Описание`» (англ. `#!bsl // Description`) содержит назначение.\n\n"
                 "###### 7.\n```bsl\nМетод();\n```\n",
                 encoding="utf-8",
             )
             page = relationship_generator.load_standard_pages(standards)["std640"]
 
         self.assertEqual([clause.clause for clause in page.clauses], ["6.2", "6.10", "7"])
-        self.assertEqual(page.clauses[0].summary, "Второй подпункт")
+        self.assertEqual(page.clauses[0].summary, "Секция // Описание")
         self.assertIsNone(page.clauses[2].summary)
 
     def test_registry_uses_readable_russian_counts(self):

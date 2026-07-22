@@ -904,15 +904,15 @@ llms:
           <a class="diagnostics-clause__diagnostic" href="acc/402.md">acc:402</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 5.1 — секция // описание» (англ acc:466 acc:1243">
-        <h2 class="diagnostics-clause__title"><a href="../std/453.md#51">п. 5.1 — Секция // Описание» (англ</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 5.1 — секция // описание acc:466 acc:1243">
+        <h2 class="diagnostics-clause__title"><a href="../std/453.md#51">п. 5.1 — Секция // Описание</a></h2>
         <div class="diagnostics-clause__links">
           <a class="diagnostics-clause__diagnostic" href="acc/466.md">acc:466</a>
           <a class="diagnostics-clause__diagnostic" href="acc/1243.md">acc:1243</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 5.2 — секция // параметры: (англ acc:399 bslls:missingparameterdescription">
-        <h2 class="diagnostics-clause__title"><a href="../std/453.md#52">п. 5.2 — Секция // Параметры: (англ</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 5.2 — секция // параметры: acc:399 bslls:missingparameterdescription">
+        <h2 class="diagnostics-clause__title"><a href="../std/453.md#52">п. 5.2 — Секция // Параметры:</a></h2>
         <div class="diagnostics-clause__links">
           <a class="diagnostics-clause__diagnostic" href="acc/399.md">acc:399</a>
           <a class="diagnostics-clause__diagnostic" href="bslls/MissingParameterDescription.md">bslls:MissingParameterDescription</a>
@@ -933,8 +933,8 @@ llms:
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#522">п. 5.2.2 — Для параметров типа Структура и ТаблицаЗначений (ДеревоЗначений) в описании типа указывайте ссылку на функцию, выходным значением которой является эта структура или таблица значений</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 5.2.3 — для параметров типа массив указывайте тип элементов с помощью ключевого слова из (англ acc:1360">
-        <h2 class="diagnostics-clause__title"><a href="../std/453.md#523">п. 5.2.3 — Для параметров типа Массив указывайте тип элементов с помощью ключевого слова Из (англ</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 5.2.3 — для параметров типа массив указывайте тип элементов с помощью ключевого слова из acc:1360">
+        <h2 class="diagnostics-clause__title"><a href="../std/453.md#523">п. 5.2.3 — Для параметров типа Массив указывайте тип элементов с помощью ключевого слова Из</a></h2>
         <div class="diagnostics-clause__links">
           <a class="diagnostics-clause__diagnostic" href="acc/1360.md">acc:1360</a>
         </div>
@@ -953,8 +953,8 @@ llms:
           <a class="diagnostics-clause__diagnostic" href="acc/1389.md">acc:1389</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 5.3 — секция // возвращаемое значение: (англ acc:400 acc:409 acc:416 acc:417 bslls:missingreturnedvaluedescription">
-        <h2 class="diagnostics-clause__title"><a href="../std/453.md#53">п. 5.3 — Секция // Возвращаемое значение: (англ</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 5.3 — секция // возвращаемое значение: acc:400 acc:409 acc:416 acc:417 bslls:missingreturnedvaluedescription">
+        <h2 class="diagnostics-clause__title"><a href="../std/453.md#53">п. 5.3 — Секция // Возвращаемое значение:</a></h2>
         <div class="diagnostics-clause__links">
           <a class="diagnostics-clause__diagnostic" href="acc/400.md">acc:400</a>
           <a class="diagnostics-clause__diagnostic" href="acc/409.md">acc:409</a>
@@ -963,16 +963,16 @@ llms:
           <a class="diagnostics-clause__diagnostic" href="bslls/MissingReturnedValueDescription.md">bslls:MissingReturnedValueDescription</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 5.4 — секция // пример:» (англ" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/453.md#54">п. 5.4 — Секция // Пример:» (англ</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 5.4 — секция // пример:" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/453.md#54">п. 5.4 — Секция // Пример:</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.4.1 — в переопределяемых модулях в секции «пример» приводите пример реализации переопределяемой процедуры, а не пример ее вызова" hidden data-empty="true">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#541">п. 5.4.1 — В переопределяемых модулях в секции «Пример» приводите пример реализации переопределяемой процедуры, а не пример ее вызова</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 5.5 — в редких случаях, когда сразу несколько параметров имеют дополнительные типы, добавляйте секцию // варианты вызова: (англ" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/453.md#55">п. 5.5 — В редких случаях, когда сразу несколько параметров имеют дополнительные типы, добавляйте секцию // Варианты вызова: (англ</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 5.5 — в редких случаях, когда сразу несколько параметров имеют дополнительные типы, добавляйте секцию // варианты вызова:" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/453.md#55">п. 5.5 — В редких случаях, когда сразу несколько параметров имеют дополнительные типы, добавляйте секцию // Варианты вызова:</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.6 — в любом месте документирующего комментария можно добавить переход к другим объектам конфигурации, процедурам и функциям (в том числе к функциям-конструкторам структур) acc:403 acc:404 acc:1381 acc:1382 acc:1402">
@@ -985,8 +985,8 @@ llms:
           <a class="diagnostics-clause__diagnostic" href="acc/1402.md">acc:1402</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 5.7 — если нужно пометить процедуру (функцию) как устаревшую, в первой строке описания используйте слово // устарела (англ acc:222 acc:223 acc:288 acc:289 acc:1334 acc:1335 acc:1336 bslls:deprecatedmethodcall">
-        <h2 class="diagnostics-clause__title"><a href="../std/453.md#57">п. 5.7 — Если нужно пометить процедуру (функцию) как устаревшую, в первой строке описания используйте слово // Устарела (англ</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 5.7 — если нужно пометить процедуру (функцию) как устаревшую, в первой строке описания используйте слово // устарела acc:222 acc:223 acc:288 acc:289 acc:1334 acc:1335 acc:1336 bslls:deprecatedmethodcall">
+        <h2 class="diagnostics-clause__title"><a href="../std/453.md#57">п. 5.7 — Если нужно пометить процедуру (функцию) как устаревшую, в первой строке описания используйте слово // Устарела</a></h2>
         <div class="diagnostics-clause__links">
           <a class="diagnostics-clause__diagnostic" href="acc/222.md">acc:222</a>
           <a class="diagnostics-clause__diagnostic" href="acc/223.md">acc:223</a>
