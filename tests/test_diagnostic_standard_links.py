@@ -20,7 +20,10 @@ from scripts.diagnostic_standard_links import (
     rewrite_standard_page,
     validate_review_coverage,
 )
-from scripts.generate_diagnostic_standard_links import load_all_reviews, render_registry_index
+from scripts.generate_diagnostic_standard_links import (
+    load_all_reviews,
+    render_registry_index,
+)
 
 
 IMMUTABLE_EVIDENCE = (
@@ -512,7 +515,13 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
         self.assertEqual(len(acc_reviews), 600)
         self.assertEqual(sum(review.review == "confirmed" for review in acc_reviews), 598)
 
-    def test_registry_index_is_generated_from_confirmed_exact_reviews(self):
+    def test_standard_clause_parser_is_available(self):
+        self.assertIsNotNone(
+            getattr(relationship_generator, "load_standard_pages", None),
+            "registry generation must parse exact standard clauses",
+        )
+
+    def test_registry_index_groups_confirmed_reviews_by_exact_clause(self):
         confirmed = LinkReview.from_dict(
             {
                 "diagnostic": "acc:5",
@@ -536,12 +545,72 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
             }
         )
 
-        rendered = render_registry_index(
-            [confirmed, rejected], {"std474": "Имя, синоним, комментарий"}
+        whole_standard = LinkReview.from_dict(
+            {
+                "diagnostic": "bslls:Example",
+                "standard": "std474",
+                "clause": "std474",
+                "anchor": "std474",
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "Confirmed for the whole standard.",
+                "review": "confirmed",
+            }
         )
+        with tempfile.TemporaryDirectory() as directory:
+            standards = Path(directory)
+            (standards / "474.md").write_text(
+                "###### #std474\n\n# Имя, синоним, комментарий\n\n"
+                "###### 3.2.\nПервое требование пункта. Вторая фраза.\n",
+                encoding="utf-8",
+            )
+            pages = relationship_generator.load_standard_pages(standards)
+            rendered = render_registry_index([confirmed, rejected, whole_standard], pages)
 
-        self.assertIn("[acc:5](acc/5.md)", rendered)
+        self.assertIn('href="acc/5/">acc:5</a>', rendered)
         self.assertNotIn("acc:6", rendered)
+        self.assertIn("п. 3.2 — Первое требование пункта", rendered)
+        self.assertIn("../std/474.md#32", rendered)
+        self.assertIn("Стандарт в целом", rendered)
+        self.assertLess(rendered.index("п. 3.2"), rendered.index("Стандарт в целом"))
+
+    def test_standard_parser_orders_nested_clauses_and_skips_code_as_summary(self):
+        with tempfile.TemporaryDirectory() as directory:
+            standards = Path(directory)
+            (standards / "640.md").write_text(
+                "###### #std640\n\n# Параметры процедур и функций\n\n"
+                "###### 6.10.\nДесятый подпункт.\n\n"
+                "###### 6.2.\nВторой подпункт. Продолжение.\n\n"
+                "###### 7.\n```bsl\nМетод();\n```\n",
+                encoding="utf-8",
+            )
+            page = relationship_generator.load_standard_pages(standards)["std640"]
+
+        self.assertEqual([clause.clause for clause in page.clauses], ["6.2", "6.10", "7"])
+        self.assertEqual(page.clauses[0].summary, "Второй подпункт")
+        self.assertIsNone(page.clauses[2].summary)
+
+    def test_registry_rejects_confirmed_clause_missing_from_standard(self):
+        confirmed = LinkReview.from_dict(
+            {
+                "diagnostic": "acc:5",
+                "standard": "std474",
+                "clause": "9",
+                "anchor": "9",
+                "evidence": [IMMUTABLE_EVIDENCE],
+                "reason": "Confirmed.",
+                "review": "confirmed",
+            }
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            standards = Path(directory)
+            (standards / "474.md").write_text(
+                "###### #std474\n\n# Имя, синоним, комментарий\n\n###### 1.\nТекст.\n",
+                encoding="utf-8",
+            )
+            pages = relationship_generator.load_standard_pages(standards)
+
+        with self.assertRaisesRegex(ValueError, "missing clause std474:9#9"):
+            render_registry_index([confirmed], pages)
 
     def test_family_index_renderer_keeps_metadata_and_uses_only_exact_confirmed_links(self):
         renderer = getattr(relationship_generator, "render_family_index", None)

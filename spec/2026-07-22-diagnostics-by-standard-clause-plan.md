@@ -12,7 +12,7 @@
 
 - Show only standards and clauses with confirmed diagnostics by default.
 - The control label is exactly `Показать пункты без проверок`.
-- A confirmed relationship without a clause belongs to `Стандарт в целом`.
+- A confirmed relationship with `clause="stdNNN"` belongs to `Стандарт в целом`.
 - A relationship with only one of `clause` and `anchor` is invalid.
 - Without JavaScript, the compact useful registry remains visible.
 - Do not modify existing relationship decisions or diagnostic backlinks.

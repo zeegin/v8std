@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import html
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
 try:
@@ -9,6 +11,7 @@ try:
     from scripts.diagnostic_articles import load_catalog
     from scripts.diagnostic_standard_links import (
         load_reviews,
+        heading_anchor,
         rewrite_diagnostic_page,
         rewrite_standard_page,
     )
@@ -17,6 +20,7 @@ except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
     from diagnostic_articles import load_catalog
     from diagnostic_standard_links import (
         load_reviews,
+        heading_anchor,
         rewrite_diagnostic_page,
         rewrite_standard_page,
     )
@@ -29,21 +33,87 @@ def load_all_reviews(root: Path) -> tuple:
     return reviewed + build_link_reviews(acc_catalog, acc_overrides)
 
 
-def load_standard_titles(standards_dir: Path) -> dict[str, str]:
-    titles: dict[str, str] = {}
+@dataclass(frozen=True)
+class StandardClause:
+    clause: str
+    anchor: str
+    summary: str | None
+
+
+@dataclass(frozen=True)
+class StandardPage:
+    title: str
+    clauses: tuple[StandardClause, ...]
+
+
+NUMERIC_HEADING_RE = re.compile(
+    r"^######\s+(?P<clause>\d+(?:\.\d+)*(?:\.?[а-яa-z])?)\.?\s*$",
+    re.IGNORECASE,
+)
+H1_RE = re.compile(r"^#\s+(?P<title>.+?)\s*$")
+MARKDOWN_LINK_RE = re.compile(r"\[([^]]+)]\([^)]+\)")
+
+
+def _clause_sort_key(clause: str) -> tuple:
+    parts = re.findall(r"\d+|[а-яa-z]+", clause.casefold())
+    return tuple((0, int(part)) if part.isdigit() else (1, part) for part in parts)
+
+
+def _clause_summary(lines: list[str]) -> str | None:
+    in_fence = False
+    in_managed = False
+    for raw in lines:
+        line = raw.strip()
+        if line.startswith("<!-- diagnostic-backlinks:start"):
+            in_managed = True
+            continue
+        if line.startswith("<!-- diagnostic-backlinks:end"):
+            in_managed = False
+            continue
+        if in_managed:
+            continue
+        if line.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence or not line:
+            continue
+        if line.startswith(("<!--", "!!!", "???", "#", "- ", "* ", ">")):
+            continue
+        text = MARKDOWN_LINK_RE.sub(r"\1", line)
+        text = re.sub(r"[`*_~]", "", text).strip()
+        if not text:
+            continue
+        sentence = re.split(r"(?<=[.!?])\s+", text, maxsplit=1)[0].rstrip(".!?")
+        return sentence or None
+    return None
+
+
+def load_standard_pages(standards_dir: Path) -> dict[str, StandardPage]:
+    pages: dict[str, StandardPage] = {}
     for path in sorted(standards_dir.glob("[0-9]*.md")):
-        title = next(
-            (
-                line.removeprefix("# ").strip()
-                for line in path.read_text(encoding="utf-8").splitlines()
-                if line.startswith("# ")
-            ),
-            None,
-        )
+        lines = path.read_text(encoding="utf-8").splitlines()
+        title = next((match.group("title") for line in lines if (match := H1_RE.fullmatch(line))), None)
         if title is None:
             raise ValueError(f"standard page lacks H1 title: {path}")
-        titles[f"std{path.stem}"] = title
-    return titles
+        headings: list[tuple[int, str]] = []
+        for index, line in enumerate(lines):
+            match = NUMERIC_HEADING_RE.fullmatch(line)
+            if match:
+                clause = match.group("clause").rstrip(".")
+                clause = re.sub(r"\.(?=[а-яa-z]$)", "", clause, flags=re.IGNORECASE)
+                headings.append((index, clause))
+        occurrences: dict[str, int] = {}
+        clauses = []
+        for position, (index, clause) in enumerate(headings):
+            base_anchor = heading_anchor(clause)
+            occurrence = occurrences.get(base_anchor, 0)
+            occurrences[base_anchor] = occurrence + 1
+            anchor = heading_anchor(clause, occurrence)
+            end = headings[position + 1][0] if position + 1 < len(headings) else len(lines)
+            clauses.append(StandardClause(clause, anchor, _clause_summary(lines[index + 1 : end])))
+        clauses.sort(key=lambda item: (_clause_sort_key(item.clause), item.anchor))
+        pages[f"std{path.stem}"] = StandardPage(title, tuple(clauses))
+    return pages
 
 
 def _registry_diagnostic_path(diagnostic: str) -> str:
@@ -59,11 +129,25 @@ def _registry_diagnostic_sort_key(diagnostic: str) -> tuple:
     return (family, 1, identifier.casefold())
 
 
-def render_registry_index(reviews: list | tuple, standard_titles: dict[str, str]) -> str:
-    by_standard: dict[str, set[str]] = {standard: set() for standard in standard_titles}
+def render_registry_index(reviews: list | tuple, standard_pages: dict[str, StandardPage]) -> str:
+    by_clause: dict[tuple[str, str], set[str]] = {}
     for review in reviews:
         if review.review == "confirmed":
-            by_standard[review.standard].add(review.diagnostic)
+            if review.standard not in standard_pages:
+                raise ValueError(f"missing standard {review.standard}")
+            if review.clause is None or review.anchor is None:
+                raise ValueError(f"confirmed relationship lacks clause: {review.diagnostic}")
+            if review.clause != review.standard:
+                valid_clauses = {
+                    clause.clause for clause in standard_pages[review.standard].clauses
+                }
+                if review.clause not in valid_clauses:
+                    raise ValueError(
+                        f"missing clause {review.standard}:{review.clause}#{review.anchor}"
+                    )
+            by_clause.setdefault((review.standard, review.clause), set()).add(
+                review.diagnostic
+            )
     lines = [
         "---",
         "title: Реестр диагностик по стандартам",
@@ -73,22 +157,70 @@ def render_registry_index(reviews: list | tuple, standard_titles: dict[str, str]
         "",
         "# Реестр диагностик по стандартам",
         "",
-        "| Стандарт | Диагностики |",
-        "| --- | --- |",
+        '<div class="diagnostics-registry" data-diagnostics-registry>',
+        '  <div class="diagnostics-registry__controls">',
+        '    <label>Поиск <input type="search" data-diagnostics-search placeholder="Стандарт, пункт или диагностика"></label>',
+        '    <label><input type="checkbox" data-show-empty> Показать пункты без проверок</label>',
+        "  </div>",
     ]
-    for standard in sorted(standard_titles, key=lambda item: int(item[3:])):
+    for standard in sorted(standard_pages, key=lambda item: int(item[3:])):
         number = standard[3:]
-        title = standard_titles[standard]
-        diagnostics = sorted(
-            by_standard[standard], key=_registry_diagnostic_sort_key
+        page = standard_pages[standard]
+        groups = []
+        all_diagnostics: set[str] = set()
+        clauses_with_checks = 0
+        for clause in page.clauses:
+            diagnostics = sorted(
+                by_clause.get((standard, clause.clause), ()),
+                key=_registry_diagnostic_sort_key,
+            )
+            if diagnostics:
+                clauses_with_checks += 1
+                all_diagnostics.update(diagnostics)
+            groups.append((clause, diagnostics, False))
+        overall = sorted(
+            by_clause.get((standard, standard), ()),
+            key=_registry_diagnostic_sort_key,
         )
-        rendered = " <br> ".join(
-            f"[{diagnostic}]({_registry_diagnostic_path(diagnostic)})"
-            for diagnostic in diagnostics
-        ) or "Нет диагностик"
-        lines.append(
-            f"| [#{standard}: {title}](../std/{number}.md) | {rendered} |"
-        )
+        all_diagnostics.update(overall)
+        if overall:
+            groups.append((StandardClause(standard, standard, "Стандарт в целом"), overall, True))
+        empty_standard = not all_diagnostics
+        search = " ".join([standard, page.title, *all_diagnostics]).casefold()
+        hidden = ' hidden data-empty="true"' if empty_standard else ""
+        lines.extend([
+            f'  <details class="diagnostics-standard" data-standard data-search="{html.escape(search, quote=True)}"{hidden}>',
+            '    <summary class="diagnostics-standard__summary">',
+            f'      <span class="diagnostics-standard__title">#{standard}: {html.escape(page.title)}</span>',
+            f'      <span class="diagnostics-standard__counts">{len(all_diagnostics)} проверок · {clauses_with_checks} пунктов</span>',
+            "    </summary>",
+            '    <div class="diagnostics-standard__clauses">',
+        ])
+        for clause, diagnostics, overall_group in groups:
+            is_empty = not diagnostics
+            empty = ' hidden data-empty="true"' if is_empty else ""
+            label = "Стандарт в целом" if overall_group else f"п. {clause.clause}"
+            if clause.summary and not overall_group:
+                label += f" — {clause.summary}"
+            clause_search = " ".join([label, *diagnostics]).casefold()
+            lines.append(
+                f'      <section class="diagnostics-clause" data-clause data-search="{html.escape(clause_search, quote=True)}"{empty}>'
+            )
+            lines.append(
+                f'        <h2 class="diagnostics-clause__title"><a href="../std/{number}.md#{html.escape(clause.anchor, quote=True)}">{html.escape(label)}</a></h2>'
+            )
+            if diagnostics:
+                lines.append('        <div class="diagnostics-clause__links">')
+                for diagnostic in diagnostics:
+                    lines.append(
+                        f'          <a class="diagnostics-clause__diagnostic" href="{_registry_diagnostic_path(diagnostic).removesuffix(".md")}/">{html.escape(diagnostic)}</a>'
+                    )
+                lines.append("        </div>")
+            else:
+                lines.append('        <p class="diagnostics-clause__empty">Нет проверок</p>')
+            lines.append("      </section>")
+        lines.extend(["    </div>", "  </details>"])
+    lines.append("</div>")
     return "\n".join(lines) + "\n"
 
 
@@ -184,7 +316,8 @@ def render_family_index(
 def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool, int]:
     catalog = load_catalog(root / "data/diagnostic-sources.json")
     reviews = load_all_reviews(root)
-    standard_titles = load_standard_titles(root / "docs/std")
+    standard_pages = load_standard_pages(root / "docs/std")
+    standard_titles = {standard: page.title for standard, page in standard_pages.items()}
     reviews_by_diagnostic: dict[str, list] = {}
     for review in reviews:
         reviews_by_diagnostic.setdefault(review.diagnostic, []).append(review)
@@ -244,7 +377,7 @@ def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool, int]:
                 path.write_text(expected, encoding="utf-8")
 
     registry_path = root / "docs/diagnostics/index.md"
-    expected_registry = render_registry_index(reviews, standard_titles)
+    expected_registry = render_registry_index(reviews, standard_pages)
     registry_changed = registry_path.read_text(encoding="utf-8") != expected_registry
     if write and registry_changed:
         registry_path.write_text(expected_registry, encoding="utf-8")
