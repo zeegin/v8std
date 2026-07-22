@@ -30,6 +30,14 @@ class DiagnosticsRegistryJavascriptTests(unittest.TestCase):
 
         self.assertIn('"assets/javascripts/diagnostics-registry.js"', config)
 
+    def test_registry_styles_are_scoped_and_responsive(self):
+        source = (ROOT / "docs/assets/stylesheets/extra.css").read_text(encoding="utf-8")
+
+        self.assertIn(".diagnostics-registry__controls", source)
+        self.assertIn(".diagnostics-standard__summary:focus-visible", source)
+        self.assertIn(".diagnostics-clause__diagnostic", source)
+        self.assertIn("max-width: 44.984375em", source)
+
 
 if __name__ == "__main__":
     unittest.main()
