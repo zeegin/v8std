@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import sys
 
@@ -8,10 +9,16 @@ import sys
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from search_benchmark import ranked_summary, read_case_payloads  # noqa: E402
+from search_benchmark import parse_args, ranked_summary, read_case_payloads  # noqa: E402
 
 
 class SearchBenchmarkTests(unittest.TestCase):
+    def test_default_report_is_written_outside_docs_tree(self):
+        with patch("sys.argv", ["search_benchmark.py"]):
+            args = parse_args()
+
+        self.assertEqual(args.report, Path(".cache/search-benchmark.md"))
+
     def test_extra_cases_are_optional_and_tagged_as_feedback(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)

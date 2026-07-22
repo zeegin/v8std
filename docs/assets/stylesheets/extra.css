@@ -530,7 +530,7 @@
     min-width: 34%;
 }
 
-/* Telegram challenge announcement bar */
+/* Smooth in-page navigation */
 html {
     scroll-behavior: smooth;
 }
@@ -538,171 +538,6 @@ html {
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
-    }
-}
-
-.md-banner {
-    background: var(--md-default-bg-color);
-    border-bottom: 1px solid rgba(19, 63, 89, 0.1);
-}
-
-[data-md-color-scheme=slate] .md-banner {
-    background: #07131c;
-    border-bottom-color: rgba(130, 204, 255, 0.18);
-}
-
-.md-banner__inner {
-    box-sizing: border-box;
-    padding-bottom: 0.18rem;
-    padding-inline: clamp(1rem, 2.2vw, 1.15rem);
-    padding-top: 0.18rem;
-    position: relative;
-}
-
-.v8std-announce {
-    position: relative;
-    width: 100%;
-}
-
-.v8std-announce__link,
-.v8std-announce__link:hover,
-.v8std-announce__link:focus-visible {
-    color: inherit;
-    text-decoration: none;
-}
-
-.v8std-announce__link {
-    align-items: center;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem 0.7rem;
-    min-width: 0;
-    padding: 0.2rem 2.2rem 0.2rem 0;
-    transition: color 0.16s ease;
-}
-
-.v8std-announce__link:hover,
-.v8std-announce__link:focus-visible {
-    color: #0d6e9f;
-}
-
-[data-md-color-scheme=slate] .v8std-announce__link {
-    background: transparent;
-}
-
-[data-md-color-scheme=slate] .v8std-announce__link:hover,
-[data-md-color-scheme=slate] .v8std-announce__link:focus-visible {
-    color: #d7f0ff;
-}
-
-.v8std-announce__text {
-    color: #10384d;
-    display: block;
-    flex: 1 1 20rem;
-    font-size: 0.76rem;
-    font-weight: 500;
-    line-height: 1.35;
-    min-width: 0;
-}
-
-[data-md-color-scheme=slate] .v8std-announce__text {
-    color: #e4f3ff;
-}
-
-.v8std-announce__cta {
-    align-items: center;
-    background: #0d6e9f;
-    border: 0;
-    border-radius: 999px;
-    color: #ffffff;
-    display: inline-flex;
-    font-size: 0.68rem;
-    font-weight: 700;
-    justify-content: center;
-    line-height: 1;
-    min-height: 1.7rem;
-    padding: 0.38rem 0.72rem;
-    text-align: center;
-    text-decoration: none;
-    transition: background-color 0.16s ease, color 0.16s ease;
-    white-space: nowrap;
-}
-
-[data-md-color-scheme=slate] .v8std-announce__cta {
-    background: #72cfff;
-    color: #072033;
-}
-
-.v8std-announce__dismiss {
-    align-items: center;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    color: #4f6472;
-    display: inline-flex;
-    height: 1.65rem;
-    justify-content: center;
-    padding: 0;
-    position: absolute;
-    right: 0.15rem;
-    top: 50%;
-    margin-top: -0.825rem;
-    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
-    width: 1.65rem;
-    z-index: 1;
-}
-
-.v8std-announce__dismiss:hover,
-.v8std-announce__dismiss:focus-visible {
-    background: rgba(42, 171, 238, 0.1);
-    border-color: rgba(42, 171, 238, 0.16);
-    color: #0d6e9f;
-}
-
-[data-md-color-scheme=slate] .v8std-announce__dismiss {
-    color: #b6d7ea;
-}
-
-[data-md-color-scheme=slate] .v8std-announce__dismiss:hover,
-[data-md-color-scheme=slate] .v8std-announce__dismiss:focus-visible {
-    background: rgba(130, 204, 255, 0.12);
-    border-color: rgba(130, 204, 255, 0.18);
-    color: #f2fbff;
-}
-
-.v8std-announce__dismiss svg {
-    height: 0.85rem;
-    width: 0.85rem;
-}
-
-@media screen and (min-width: 45em) {
-    .v8std-announce__text {
-        max-width: 54rem;
-    }
-}
-
-@media screen and (max-width: 44.984375em) {
-    .md-banner__inner {
-        padding-bottom: 0.12rem;
-        padding-top: 0.12rem;
-    }
-
-    .v8std-announce__link {
-        align-items: flex-start;
-        gap: 0.32rem 0.6rem;
-        padding: 0.18rem 1.95rem 0.18rem 0.08rem;
-    }
-
-    .v8std-announce__cta {
-        justify-self: start;
-    }
-
-    .v8std-announce__dismiss {
-        right: 0.08rem;
     }
 }
 
@@ -1099,7 +934,6 @@ body:has(.v8std-home-hero) .md-sidebar--secondary {
 }
 
 .v8std-home-page a[target="_blank"]::after,
-body:has(.v8std-home-hero) .v8std-announce a[target="_blank"]::after,
 body:has(.v8std-home-hero) .v8std-home-hero a[target="_blank"]::after {
     content: none !important;
     display: none !important;
@@ -1348,14 +1182,23 @@ body[data-md-color-scheme=default] .v8std-home-challenge__eyebrow {
 }
 
 .v8std-home-challenge__cta {
+    align-items: center;
+    border: 0;
+    border-radius: 999px;
+    display: inline-flex;
     font-size: 0.82rem;
+    font-weight: 700;
     grid-area: cta;
+    justify-content: center;
     justify-self: center;
+    line-height: 1;
     margin: 0;
     min-height: 2rem;
     min-width: 13.5rem;
     padding: 0.5rem 0.95rem;
     text-align: center;
+    transition: background-color 0.16s ease, color 0.16s ease;
+    white-space: nowrap;
 }
 
 body[data-md-color-scheme=default] .v8std-home-challenge__cta {
@@ -1378,6 +1221,7 @@ body[data-md-color-scheme=default] .v8std-home-challenge__cta:focus-visible {
 [data-md-color-scheme=slate] .v8std-home-challenge__cta,
 [data-md-color-scheme=slate] .v8std-home-challenge__cta:hover,
 [data-md-color-scheme=slate] .v8std-home-challenge__cta:focus-visible {
+    background: #72cfff;
     color: #072033;
 }
 

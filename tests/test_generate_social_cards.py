@@ -1,6 +1,10 @@
 import importlib.util
 import unittest
+from html.parser import HTMLParser
 from pathlib import Path
+from types import SimpleNamespace
+
+from jinja2 import DictLoader, Environment
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -13,6 +17,155 @@ def load_module():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+class StartTagCollector(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.tags: list[tuple[str, dict[str, str | None]]] = []
+        self.title_parts: list[str] = []
+        self.in_title = False
+
+    def handle_starttag(self, tag, attrs):
+        self.tags.append((tag, dict(attrs)))
+        if tag == "title":
+            self.in_title = True
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self.in_title = False
+
+    def handle_data(self, data):
+        if self.in_title:
+            self.title_parts.append(data)
+
+
+class MetadataTemplateEscapingTests(unittest.TestCase):
+    def find_tag(self, markup: str, tag: str, **selector: str) -> dict[str, str | None]:
+        parser = StartTagCollector()
+        parser.feed(markup)
+        matches = [
+            attrs
+            for candidate, attrs in parser.tags
+            if candidate == tag and all(attrs.get(key) == value for key, value in selector.items())
+        ]
+        self.assertEqual(len(matches), 1, (tag, selector, matches))
+        return matches[0]
+
+    def test_main_template_round_trips_dynamic_attribute_values(self):
+        quoted_text = 'Данные "в кавычках" & <детали>'
+        quoted_title = 'Заголовок "в кавычках" & <ИмяОбъекта>'
+        quoted_url = 'https://example.test/?query="значение"&mode=full'
+        base_template = """\
+{% block site_meta %}{% endblock %}
+{% block htmltitle %}{% endblock %}
+{% block analytics %}{% endblock %}
+{% block extrahead %}{% endblock %}
+"""
+        environment = Environment(
+            loader=DictLoader(
+                {
+                    "main.html": (REPO_ROOT / "overrides" / "main.html").read_text(
+                        encoding="utf-8"
+                    ),
+                    "base.html": base_template,
+                    "partials/page_meta.html": "",
+                    "partials/social_meta.html": "",
+                }
+            ),
+            autoescape=False,
+        )
+        environment.filters["url"] = lambda value: value
+
+        markup = environment.get_template("main.html").render(
+            config=SimpleNamespace(
+                site_description="Резервное описание",
+                site_author="Резервный автор",
+                site_name="Тест",
+                extra=SimpleNamespace(alternate=[]),
+                theme=SimpleNamespace(favicon="icon.png"),
+            ),
+            generator=quoted_text,
+            lang=SimpleNamespace(t=lambda _: "ru"),
+            page=SimpleNamespace(
+                canonical_url=quoted_url,
+                is_homepage=True,
+                meta=SimpleNamespace(description="Описание страницы", author=quoted_text),
+                next_page=None,
+                previous_page=None,
+                title="Заголовок",
+                url="",
+            ),
+            page_meta=SimpleNamespace(description=quoted_text, seo_title=quoted_title),
+        )
+
+        self.assertEqual(
+            self.find_tag(markup, "meta", name="description")["content"], quoted_text
+        )
+        self.assertEqual(self.find_tag(markup, "meta", name="author")["content"], quoted_text)
+        self.assertEqual(self.find_tag(markup, "link", rel="canonical")["href"], quoted_url)
+        self.assertEqual(
+            self.find_tag(markup, "meta", name="generator")["content"], quoted_text
+        )
+        parser = StartTagCollector()
+        parser.feed(markup)
+        self.assertEqual("".join(parser.title_parts).strip(), quoted_title)
+
+    def test_social_meta_round_trips_dynamic_attribute_values(self):
+        title = 'Стандарт "в кавычках" & смысл'
+        description = 'Описание "в кавычках" & <детали>'
+        page_url = 'https://example.test/page/?query="значение"&mode=full'
+        image_url = 'https://example.test/image.png?query="значение"&mode=full'
+        site_name = 'Сайт "Стандарты" & практики'
+        locale = 'ru_"RU"&test'
+        environment = Environment(
+            loader=DictLoader(
+                {
+                    "partials/social_meta.html": (
+                        REPO_ROOT / "overrides" / "partials" / "social_meta.html"
+                    ).read_text(encoding="utf-8"),
+                    "partials/page_meta.html": "",
+                }
+            ),
+            autoescape=False,
+        )
+
+        markup = environment.get_template("partials/social_meta.html").render(
+            config=SimpleNamespace(site_url="https://example.test", site_name=site_name),
+            page_meta=SimpleNamespace(
+                description=description,
+                image=image_url,
+                seo_title=title,
+                url=page_url,
+            ),
+            page_meta_locale=locale,
+        )
+
+        expected_properties = {
+            "og:site_name": site_name,
+            "og:locale": locale,
+            "og:title": title,
+            "og:description": description,
+            "og:url": page_url,
+            "og:image": image_url,
+            "og:image:alt": title,
+        }
+        for property_name, expected in expected_properties.items():
+            with self.subTest(property=property_name):
+                self.assertEqual(
+                    self.find_tag(markup, "meta", property=property_name)["content"], expected
+                )
+
+        expected_names = {
+            "twitter:title": title,
+            "twitter:description": description,
+            "twitter:url": page_url,
+            "twitter:image": image_url,
+            "twitter:image:alt": title,
+        }
+        for name, expected in expected_names.items():
+            with self.subTest(name=name):
+                self.assertEqual(self.find_tag(markup, "meta", name=name)["content"], expected)
 
 
 class StripMarkdownTests(unittest.TestCase):
@@ -44,6 +197,39 @@ class StripMarkdownTests(unittest.TestCase):
             "- [English version — 1Ci Knowledge Base](https://kb.1ci.com/example)\n"
         )
         self.assertEqual(self.module.extract_list_summary(value), "")
+
+    def test_description_limit_counts_decoded_visible_characters(self):
+        prefix = "А" * 155
+        expected = f"{prefix} Модуль<ИмяОбъекта>"
+
+        self.assertEqual(
+            self.module.normalize_description(
+                f"{prefix} Модуль&lt;ИмяОбъекта&gt;"
+            ),
+            expected,
+        )
+
+    def test_uniquify_descriptions_preserves_plain_angle_placeholders(self):
+        pages = [
+            {
+                "seo_title": "Первая<Имя>",
+                "description": "Модуль<ИмяОбъекта>",
+            },
+            {
+                "seo_title": "Вторая<Имя>",
+                "description": "Модуль<ИмяОбъекта>",
+            },
+        ]
+
+        self.module.uniquify_descriptions(pages)
+
+        self.assertEqual(
+            [page["description"] for page in pages],
+            [
+                "Первая<Имя>. Модуль<ИмяОбъекта>",
+                "Вторая<Имя>. Модуль<ИмяОбъекта>",
+            ],
+        )
 
 
 class BuildPageMetadataTests(unittest.TestCase):
@@ -77,6 +263,23 @@ class BuildPageMetadataTests(unittest.TestCase):
 
         self.assertIn("#!sdbl", page["description"])
         self.assertIn("#!sdbl", page["card_description"])
+
+    def test_diagnostic_provenance_comment_is_not_used_as_description(self):
+        page = self.build_page("diagnostics/bslls/CompareWithBoolean.md")
+
+        for key in ("description", "card_description"):
+            with self.subTest(key=key):
+                self.assertIn("Сравнение выражения с булевой константой", page[key])
+                self.assertNotIn("sourceurl=", page[key])
+                self.assertNotIn("sourcepath=", page[key])
+
+    def test_markdown_entities_are_decoded_before_html_context_escaping(self):
+        page = self.build_page("diagnostics/acc/1383.md")
+
+        for key in ("title", "seo_title", "description", "card_description"):
+            with self.subTest(key=key):
+                self.assertIn("Модуль<ИмяОбъекта>", page[key])
+                self.assertNotIn("&lt;", page[key])
 
 
 class SocialCardSmokeTests(unittest.TestCase):

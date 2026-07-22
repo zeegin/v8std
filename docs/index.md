@@ -170,7 +170,7 @@ social:
         <span>Пт</span>
       </div>
       <a
-        class="v8std-home-challenge__cta v8std-announce__cta"
+        class="v8std-home-challenge__cta"
         href="https://t.me/v8std"
         target="_blank"
         rel="noopener"

@@ -33,8 +33,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--report",
         type=Path,
-        default=Path("docs/ai/search-benchmark.md"),
-        help="Write a Markdown report. Use an ignored path for local runs.",
+        default=Path(".cache/search-benchmark.md"),
+        help="Write a Markdown report (default: ignored local cache).",
     )
     return parser.parse_args()
 

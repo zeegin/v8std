@@ -8,6 +8,7 @@ import os
 import re
 import tomllib
 from collections import Counter
+from html import unescape
 from pathlib import Path
 
 import yaml
@@ -49,6 +50,7 @@ EMPHASIS_RE = re.compile(r"(?<!\*)\*(?=\S)(.+?)(?<=\S)\*(?!\*)", re.DOTALL)
 UNDERSCORE_EMPHASIS_RE = re.compile(r"(?<!_)_(?=\S)(.+?)(?<=\S)_(?!_)", re.DOTALL)
 STRIKETHROUGH_RE = re.compile(r"~~(?=\S)(.+?)(?<=\S)~~", re.DOTALL)
 SUBSCRIPT_RE = re.compile(r"(?<!~)~(?=\S)(.+?)(?<=\S)~(?!~)", re.DOTALL)
+HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 
 
 def find_font(*names: str) -> str | None:
@@ -140,6 +142,10 @@ def strip_markdown(value: str) -> str:
     return WHITESPACE_RE.sub(" ", text).strip()
 
 
+def strip_html_comments(value: str) -> str:
+    return HTML_COMMENT_RE.sub("\n", value)
+
+
 def extract_front_matter(text: str) -> tuple[dict, str]:
     match = FRONT_MATTER_RE.match(text)
     if not match:
@@ -153,7 +159,7 @@ def extract_front_matter(text: str) -> tuple[dict, str]:
 
 
 def extract_description(text: str) -> str:
-    lines = text.splitlines()
+    lines = strip_html_comments(text).splitlines()
     paragraph: list[str] = []
     in_code_block = False
     skip_indented_block = False
@@ -206,8 +212,14 @@ def truncate_text(value: str, limit: int) -> str:
     return f"{truncated}..."
 
 
+def normalize_plain_description(
+    value: str, limit: int = SEO_DESCRIPTION_LENGTH
+) -> str:
+    return truncate_text(WHITESPACE_RE.sub(" ", value).strip(), limit)
+
+
 def normalize_description(value: str, limit: int = SEO_DESCRIPTION_LENGTH) -> str:
-    return truncate_text(strip_markdown(value), limit)
+    return normalize_plain_description(unescape(strip_markdown(value)), limit)
 
 
 def looks_like_url(value: str) -> bool:
@@ -310,11 +322,16 @@ def build_page_metadata(source: Path, docs_dir: Path, project: dict) -> dict:
         description_source = seo_title or project.get("site_description", "")
 
     description = normalize_description(description_source)
-    card_description = normalize_description(
-        front_matter.get("social_description")
-        or description
-        or project.get("site_description")
-    )
+    social_description = front_matter.get("social_description")
+    if social_description:
+        card_description = normalize_description(social_description)
+    elif description:
+        card_description = description
+    else:
+        card_description = normalize_description(project.get("site_description", ""))
+
+    title = unescape(str(title))
+    seo_title = unescape(str(seo_title))
 
     if relative.name == "index.md":
         url_path = "/".join(relative.parts[:-1])
@@ -577,7 +594,9 @@ def uniquify_descriptions(pages: list[dict]) -> None:
         description = page.get("description")
         if not description or counts[description] <= 1:
             continue
-        page["description"] = normalize_description(f"{page['seo_title']}. {description}")
+        page["description"] = normalize_plain_description(
+            f"{page['seo_title']}. {description}"
+        )
 
 
 def main() -> int:

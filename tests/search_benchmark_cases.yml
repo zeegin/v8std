@@ -65,6 +65,12 @@ cases:
   required_top: 3
 - scenario: external resource timeout
   query: таймаут HTTPСоединение внешние ресурсы
+  expected: bslls:TimeoutsInExternalResources
+  required_top: 1
+- scenario: external resource timeout standard filter
+  query: таймаут HTTPСоединение внешние ресурсы
+  types:
+  - standard
   expected: std748
   required_top: 1
 - scenario: server execute/evaluate

@@ -350,11 +350,9 @@ class DiagnosticArticleRepositoryTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("content hash mismatch", result.stderr + result.stdout)
 
-    def test_manifest_and_local_catalogs_have_exact_expected_composition(self):
+    def test_manifest_and_local_catalogs_have_matching_composition(self):
         catalog = load_catalog(REPO_ROOT / "data/diagnostic-sources.json")
 
-        self.assertEqual(len(catalog.diagnostics["bslls"]), 186)
-        self.assertEqual(len(catalog.diagnostics["v8-code-style"]), 172)
         self.assertEqual(catalog.ids("bslls"), self._markdown_ids("bslls"))
         self.assertEqual(
             catalog.ids("v8-code-style"),

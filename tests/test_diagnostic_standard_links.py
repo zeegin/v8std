@@ -526,12 +526,6 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
         self.assertEqual(len(acc_reviews), 600)
         self.assertEqual(sum(review.review == "confirmed" for review in acc_reviews), 598)
 
-    def test_standard_clause_parser_is_available(self):
-        self.assertIsNotNone(
-            getattr(relationship_generator, "load_standard_pages", None),
-            "registry generation must parse exact standard clauses",
-        )
-
     def test_registry_index_groups_confirmed_reviews_by_exact_clause(self):
         confirmed = LinkReview.from_dict(
             {
@@ -652,11 +646,6 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
             render_registry_index([confirmed], pages)
 
     def test_family_index_renderer_keeps_metadata_and_uses_only_exact_confirmed_links(self):
-        renderer = getattr(relationship_generator, "render_family_index", None)
-        self.assertIsNotNone(renderer, "family indexes must be generated with the relationship graph")
-        if renderer is None:
-            return
-
         confirmed = LinkReview.from_dict(
             {
                 "diagnostic": "bslls:Example",
@@ -686,7 +675,7 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
                 "- Тип: Дефект кода\n- Важность: Важный\n",
                 encoding="utf-8",
             )
-            rendered = renderer(
+            rendered = relationship_generator.render_family_index(
                 "bslls",
                 [SimpleNamespace(id="Example")],
                 [confirmed, rejected],

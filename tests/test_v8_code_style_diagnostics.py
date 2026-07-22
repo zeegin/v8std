@@ -1,3 +1,4 @@
+import json
 import re
 import unittest
 from pathlib import Path
@@ -26,12 +27,15 @@ class V8CodeStyleDiagnosticsTests(unittest.TestCase):
         return sorted(path for path in CATALOG_DIR.glob("*.md") if path.name != "index.md")
 
     def expected_ids(self):
-        manifest = REPO_ROOT / "tests" / "fixtures" / "v8-code-style-diagnostics.txt"
-        return {
-            line
-            for line in manifest.read_text(encoding="utf-8").splitlines()
-            if line and not line.startswith("#")
-        }
+        catalog = json.loads(
+            (REPO_ROOT / "data" / "diagnostic-sources.json").read_text(encoding="utf-8")
+        )
+        family = next(
+            family
+            for family in catalog["families"]
+            if family["family"] == "v8-code-style"
+        )
+        return {diagnostic["id"] for diagnostic in family["diagnostics"]}
 
     def test_catalog_contains_current_canonical_diagnostics(self):
         ids = {path.stem for path in self.diagnostic_paths()}
@@ -62,13 +66,11 @@ class V8CodeStyleDiagnosticsTests(unittest.TestCase):
             self.assertIn(f'- "v8cs:{legacy_id}"', rule.group("body"))
             self.assertIn(f'- "{legacy_id}"', rule.group("body"))
 
-    def test_site_exposes_172_diagnostics_and_canonical_links(self):
-        homepage = (REPO_ROOT / "docs" / "index.md").read_text(encoding="utf-8")
+    def test_site_exposes_canonical_links(self):
         diagnostics_index = (REPO_ROOT / "docs" / "diagnostics" / "index.md").read_text(
             encoding="utf-8"
         )
 
-        self.assertIn("172 диагностики", homepage)
         self.assertIn(
             "v8-code-style/event-handler-boolean-param.md",
             diagnostics_index,

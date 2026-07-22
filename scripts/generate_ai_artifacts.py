@@ -21,6 +21,7 @@ from generate_social_cards import (  # noqa: E402
     extract_front_matter,
     load_project,
     strip_markdown,
+    strip_html_comments,
     truncate_text,
 )
 from v8std_retrieval_rules import RetrievalRules  # noqa: E402
@@ -32,7 +33,6 @@ LLMS_TXT = "llms.txt"
 LLMS_FULL_TXT = "llms-full.txt"
 AI_DIR = "ai"
 PAGES_JSONL = "pages.jsonl"
-REMOVED_AI_ARTIFACTS = ("graph.json", "search-aliases.json")
 
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
 DIRECT_URL_RE = re.compile(r"https?://[^\s)>\"']+")
@@ -247,7 +247,7 @@ def clean_llm_markdown(content: str) -> str:
     in_multiline_html_tag = False
     code_block_indent = 0
 
-    for raw_line in content.splitlines():
+    for raw_line in strip_html_comments(content).splitlines():
         if raw_line.strip():
             while dedent_stack and leading_spaces(raw_line) < sum(dedent_stack):
                 dedent_stack.pop()
@@ -658,8 +658,8 @@ def build_ai_page(
     page_type = classify_page(relative)
     page_id = build_page_id(relative, content, page_type)
     metadata = build_page_metadata(source, docs_dir, project)
-    metadata_title = unescape(metadata["seo_title"])
-    metadata_description = unescape(metadata["description"])
+    metadata_title = metadata["seo_title"]
+    metadata_description = metadata["description"]
     search_content = strip_acc_backlinks_from_search_content(content)
     body_markdown = clean_llm_markdown(search_content)
     body_markdown = normalize_internal_markdown_links(body_markdown, source, docs_dir, project)
@@ -1070,8 +1070,6 @@ def write_ai_artifacts(index: dict) -> None:
     atomic_write_text(docs_dir / LLMS_TXT, build_llms_txt(index))
     atomic_write_text(docs_dir / LLMS_FULL_TXT, build_llms_full_txt(index))
     atomic_write_text(ai_dir / PAGES_JSONL, build_pages_jsonl(index["pages"]))
-    for filename in REMOVED_AI_ARTIFACTS:
-        (ai_dir / filename).unlink(missing_ok=True)
 
 
 def build_page_markdown(page: dict) -> str:
@@ -1098,11 +1096,32 @@ def build_page_markdown(page: dict) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-def write_site_markdown_pages(index: dict, site_dir: Path) -> None:
-    for page in llm_visible_pages(index["pages"]):
+def write_site_markdown_records(pages: list[dict], site_dir: Path) -> None:
+    for page in pages:
         output_path = site_dir / page["source_path"]
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(build_page_markdown(page), encoding="utf-8")
+
+
+def write_site_markdown_pages(index: dict, site_dir: Path) -> None:
+    write_site_markdown_records(llm_visible_pages(index["pages"]), site_dir)
+
+
+def write_site_markdown_cache(index: dict, cache_path: Path) -> None:
+    payload = "\n".join(
+        json.dumps(page, ensure_ascii=False, sort_keys=True)
+        for page in llm_visible_pages(index["pages"])
+    )
+    atomic_write_text(cache_path, payload + "\n")
+
+
+def write_site_markdown_pages_from_cache(cache_path: Path, site_dir: Path) -> None:
+    pages = [
+        json.loads(line)
+        for line in cache_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    write_site_markdown_records(pages, site_dir)
 
 
 def main() -> int:
@@ -1112,11 +1131,40 @@ def main() -> int:
         type=Path,
         help="Write public per-page Markdown files into an already built site directory.",
     )
+    parser.add_argument(
+        "--site-markdown-cache",
+        type=Path,
+        help="Write an ignored cache for publishing Markdown sidecars after the site build.",
+    )
+    parser.add_argument(
+        "--from-site-markdown-cache",
+        type=Path,
+        help="Publish Markdown sidecars from a prepared cache without rebuilding the AI index.",
+    )
     args = parser.parse_args()
 
     root = discover_project_root()
+    if args.from_site_markdown_cache:
+        if not args.write_site_markdown:
+            parser.error("--from-site-markdown-cache requires --write-site-markdown")
+        if args.site_markdown_cache:
+            parser.error(
+                "--site-markdown-cache and --from-site-markdown-cache are mutually exclusive"
+            )
+        cache_path = args.from_site_markdown_cache
+        if not cache_path.is_absolute():
+            cache_path = root / cache_path
+        write_site_markdown_pages_from_cache(cache_path, args.write_site_markdown)
+        return 0
+
     index = build_site_ai_index(root)
     write_ai_artifacts(index)
+
+    if args.site_markdown_cache:
+        cache_path = args.site_markdown_cache
+        if not cache_path.is_absolute():
+            cache_path = root / cache_path
+        write_site_markdown_cache(index, cache_path)
 
     if args.write_site_markdown:
         write_site_markdown_pages(index, args.write_site_markdown)

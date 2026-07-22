@@ -148,6 +148,56 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("Ограничения диагностики", page["body_markdown"])
         self.assertIn("ПоказатьПредупреждение", page["body_markdown"])
 
+    def test_diagnostic_provenance_is_metadata_not_description_or_body(self):
+        page = self.pages_by_id["bslls:CompareWithBoolean"]
+        upstream_url = (
+            "https://github.com/1c-syntax/bsl-language-server/blob/"
+            "f4616cda8a216789ee40529ed857e614b9e2ea25/"
+            "docs/diagnostics/CompareWithBoolean.md"
+        )
+
+        self.assertIn(upstream_url, page["source_urls"])
+        self.assertIn("Сравнение выражения с булевой константой", page["description"])
+        for provenance_marker in (
+            "diagnostic-source:",
+            "source_url=",
+            "source_path=",
+            "revision=",
+            "SPDX-License-Identifier:",
+            "sha256=",
+        ):
+            with self.subTest(marker=provenance_marker):
+                self.assertNotIn(provenance_marker, page["description"])
+                self.assertNotIn(provenance_marker, page["body_markdown"])
+
+    def test_comment_only_provenance_url_survives_as_source_metadata(self):
+        upstream_url = "https://example.test/upstream.md"
+        content = (
+            "<!-- diagnostic-source:\n"
+            f"source_url={upstream_url}\n"
+            "-->\n\n# Диагностика\n"
+        )
+
+        self.assertEqual(self.module.extract_source_urls(content), [upstream_url])
+        self.assertNotIn(upstream_url, self.module.clean_llm_markdown(content))
+
+    def test_metadata_entities_are_decoded_exactly_once(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            docs_dir = Path(temp_dir)
+            source = docs_dir / "entity-example.md"
+            source.write_text(
+                "# Entity example\n\nLiteral &amp;nbsp; marker.\n",
+                encoding="utf-8",
+            )
+            page = self.module.build_ai_page(
+                source,
+                docs_dir,
+                {"site_url": "https://example.test", "site_name": "Test"},
+            )
+
+        self.assertIn("&nbsp;", page["description"])
+        self.assertNotIn("\N{NO-BREAK SPACE}", page["description"])
+
     def test_acc_placeholders_survive_jsonl_and_both_llms_outputs(self):
         acc_423 = self.pages_by_id["acc:423"]
         acc_499 = self.pages_by_id["acc:499"]
@@ -212,36 +262,6 @@ class GenerateAiArtifactsTests(unittest.TestCase):
 
     def test_internal_superpowers_working_files_are_not_site_sources(self):
         self.assertFalse((REPO_ROOT / "docs" / "superpowers").exists())
-
-    def test_writer_removes_retired_machine_artifacts(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            docs_dir = Path(temp_dir)
-            ai_dir = docs_dir / self.module.AI_DIR
-            ai_dir.mkdir()
-            retired_paths = [
-                ai_dir / "graph.json",
-                ai_dir / "search-aliases.json",
-            ]
-            for path in retired_paths:
-                path.write_text("{}\n", encoding="utf-8")
-
-            self.module.write_ai_artifacts(
-                {
-                    "project": {
-                        "site_name": "Test",
-                        "site_description": "Test docs",
-                        "site_url": "https://example.test",
-                    },
-                    "docs_dir": docs_dir,
-                    "pages": [],
-                }
-            )
-
-            self.assertTrue((docs_dir / self.module.LLMS_TXT).is_file())
-            self.assertTrue((docs_dir / self.module.LLMS_FULL_TXT).is_file())
-            self.assertTrue((ai_dir / self.module.PAGES_JSONL).is_file())
-            for path in retired_paths:
-                self.assertFalse(path.exists())
 
     def test_llms_ignore_excludes_service_pages_from_mcp_index(self):
         llms_txt = self.module.build_llms_txt(self.index)
@@ -331,6 +351,32 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             ignored_source_path = self.pages_by_id[ignored_id]["source_path"]
             self.assertFalse((site_dir / ignored_source_path).exists())
 
+    def test_reuses_private_cache_for_identical_public_markdown(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            cache_path = temp_path / "site-markdown-pages.jsonl"
+            self.module.write_site_markdown_cache(self.index, cache_path)
+            expected_dir = temp_path / "expected"
+            actual_dir = temp_path / "actual"
+            self.module.write_site_markdown_pages(self.index, expected_dir)
+            self.module.write_site_markdown_pages_from_cache(cache_path, actual_dir)
+
+            expected_files = sorted(
+                path.relative_to(expected_dir)
+                for path in expected_dir.rglob("*.md")
+            )
+            actual_files = sorted(
+                path.relative_to(actual_dir)
+                for path in actual_dir.rglob("*.md")
+            )
+            self.assertEqual(actual_files, expected_files)
+            for relative in expected_files:
+                with self.subTest(path=relative):
+                    self.assertEqual(
+                        (actual_dir / relative).read_bytes(),
+                        (expected_dir / relative).read_bytes(),
+                    )
+
     def test_llms_full_uses_readable_metadata_and_has_no_relative_links(self):
         payload = self.module.build_llms_full_txt(self.index)
 
@@ -399,8 +445,6 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         self.assertIn("\n> Система стандартов", payload)
         self.assertIn("\n## Machine-Readable Files\n", payload)
         self.assertIn("\n## Standards\n", payload)
-        self.assertNotIn("graph.json", payload)
-        self.assertNotIn("search-aliases.json", payload)
         self.assertIn("[#std437](https://v8std.ru/std/437.md)", payload)
         self.assertIn("HTML: https://v8std.ru/std/437/", payload)
         self.assertIn("AssignAliasFieldsInQuery", payload)

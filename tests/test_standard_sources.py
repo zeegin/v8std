@@ -1,10 +1,17 @@
 import json
+import re
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.standard_sources import load_registry, render_sources, sync_standard_sources
+from scripts.standard_sources import (
+    ITS_SOURCE_RE,
+    SOURCE_SECTION_RE,
+    load_registry,
+    render_sources,
+    sync_standard_sources,
+)
 
 
 ENGLISH_URL = (
@@ -93,6 +100,70 @@ class StandardSourceRegistryTests(unittest.TestCase):
                     f"https://its.1c.ru/db/v8std#content:{standard[3:]}",
                     page.read_text(encoding="utf-8"),
                 )
+
+    def test_every_standard_page_has_matching_marker_and_its_source(self):
+        pages = sorted((REPO_ROOT / "docs/std").glob("*.md"))
+        self.assertTrue(pages)
+        for page in pages:
+            with self.subTest(page=page.name):
+                content = page.read_text(encoding="utf-8")
+                expected_id = page.stem
+                self.assertEqual(
+                    re.findall(r"^###### #std(\d+)\s*$", content, re.MULTILINE),
+                    [expected_id],
+                )
+                source_section = SOURCE_SECTION_RE.search(content)
+                self.assertIsNotNone(source_section)
+                self.assertEqual(
+                    ITS_SOURCE_RE.findall(source_section.group(0)),
+                    [expected_id],
+                )
+
+    def test_verified_source_corrections_are_preserved(self):
+        std467 = (REPO_ROOT / "docs/std/467.md").read_text(encoding="utf-8")
+        for requirement in (
+            "администраторов",
+            "полными правами",
+            "толстого клиента обычного приложения",
+            "внешнего соединения",
+            "1С:Предприятие 8.0",
+            "8.1",
+        ):
+            with self.subTest(standard="std467", requirement=requirement):
+                self.assertIn(requirement, std467)
+
+        std535 = (REPO_ROOT / "docs/std/535.md").read_text(encoding="utf-8")
+        for requirement in ("31 разряд суммарно", "0.00001", "20 разрядов целой части"):
+            with self.subTest(standard="std535", requirement=requirement):
+                self.assertIn(requirement, std535)
+
+        std729 = (REPO_ROOT / "docs/std/729.md").read_text(encoding="utf-8")
+        self.assertRegex(std729, r"5[–-]7 таблиц")
+        self.assertIn("растет нелинейно", std729)
+        self.assertIn("план выполнения", std729)
+
+        std774 = (REPO_ROOT / "docs/std/774.md").read_text(encoding="utf-8")
+        for requirement in (
+            "запрещать запуск всех приложений, кроме явно разрешенных",
+            "временный каталог целиком",
+            "вредоносный файл",
+            "электронной подписи",
+            "конкретному хешу",
+        ):
+            with self.subTest(standard="std774", requirement=requirement):
+                self.assertIn(requirement, std774)
+
+        std727 = (REPO_ROOT / "docs/std/727.md").read_text(encoding="utf-8")
+        self.assertRegex(std727, r"Internet Explorer[^\n]*54")
+        self.assertRegex(std727, r"Mozilla Firefox[^\n]*63")
+
+        std787 = (REPO_ROOT / "docs/std/787.md").read_text(encoding="utf-8")
+        self.assertRegex(std787, r"7\s+разряд")
+
+        std791 = (REPO_ROOT / "docs/std/791.md").read_text(encoding="utf-8")
+        self.assertRegex(std791, r"1\s+секунд")
+        self.assertIn("не более чем в 2 раза", std791)
+        self.assertNotIn("можно игнорировать", std791)
 
 
 class StandardSourceRenderingTests(unittest.TestCase):

@@ -9909,8 +9909,8 @@ llms:
         <h2 class="diagnostics-clause__title"><a href="../std/791.md#1">п. 1 — Дополнительные индексы доступны только для КОРП платформы</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 2 — при разработке надо тестировать производительность в двух случаях:" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/791.md#2">п. 2 — При разработке надо тестировать производительность в двух случаях:</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 2 — при разработке тестируйте и оптимизируйте производительность в двух случаях:" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/791.md#2">п. 2 — При разработке тестируйте и оптимизируйте производительность в двух случаях:</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — не используйте доп" hidden data-empty="true">
@@ -9921,8 +9921,8 @@ llms:
         <h2 class="diagnostics-clause__title"><a href="../std/791.md#4">п. 4 — Не делайте несколько веток кода в зависимости от использования доп</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 4.1 — все, что написано выше, можно игнорировать, потому что если очень хочется, то на небольшом объеме можно и доп" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/791.md#41">п. 4.1 — Все, что написано выше, можно игнорировать, потому что если очень хочется, то на небольшом объеме можно и доп</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 4.1 — если на небольшом объеме данных не удается обеспечить минимальную производительность с отключенными дополнительными индексами, в порядке исключения допустимо альтернативное решение" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/791.md#41">п. 4.1 — Если на небольшом объеме данных не удается обеспечить минимальную производительность с отключенными дополнительными индексами, в порядке исключения допустимо альтернативное решение</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок</p>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — поле в доп" hidden data-empty="true">

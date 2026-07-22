@@ -65,6 +65,7 @@ REPO_ROOT="$(find_repo_root)"
 export V8STD_REPO_ROOT="${REPO_ROOT}"
 cd "${REPO_ROOT}"
 PYTHON_BIN="$(find_python)"
+SITE_MARKDOWN_CACHE="${REPO_ROOT}/.cache/site-markdown-pages.jsonl"
 
 "${PYTHON_BIN}" - "${ZENSICAL_VERSION_PYTHON}" <<'PY'
 import importlib.metadata
@@ -84,7 +85,7 @@ if actual != expected:
 PY
 
 "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_social_cards.py"
-"${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py"
+"${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py" --site-markdown-cache "${SITE_MARKDOWN_CACHE}"
 "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_search_vectors.py"
 
 if { [ "${1:-}" = "build" ] || [ "${1:-}" = "serve" ]; } && [ -d "${REPO_ROOT}/site" ]; then
@@ -100,7 +101,7 @@ PY
 fi
 
 write_site_markdown_watch() {
-  "${PYTHON_BIN}" - "${SCRIPT_DIR}" "${REPO_ROOT}/site" <<'PY'
+  "${PYTHON_BIN}" - "${SCRIPT_DIR}" "${REPO_ROOT}/site" "${SITE_MARKDOWN_CACHE}" <<'PY'
 import subprocess
 import sys
 import time
@@ -108,47 +109,78 @@ from pathlib import Path
 
 script_dir = Path(sys.argv[1])
 site_dir = Path(sys.argv[2])
+site_markdown_cache = Path(sys.argv[3])
 generator = script_dir / "generate_ai_artifacts.py"
 license_publisher = script_dir / "publish_license_texts.py"
+sitemap_publisher = script_dir / "publish_diagnostic_sitemap.py"
 
 
-def signature() -> int | None:
+def signature() -> tuple[tuple[int, int], ...] | None:
     markers = [
         site_dir / "index.html",
         site_dir / "search.json",
         site_dir / "sitemap.xml",
     ]
-    mtimes = [path.stat().st_mtime_ns for path in markers if path.exists()]
-    return max(mtimes) if mtimes else None
+    if not all(path.is_file() for path in markers):
+        return None
+    try:
+        return tuple((path.stat().st_mtime_ns, path.stat().st_size) for path in markers)
+    except FileNotFoundError:
+        return None
 
 
-last_signature = None
+pending_signature = None
+last_processed_build = None
+first_build = True
 while True:
     current_signature = signature()
-    if current_signature is not None and current_signature != last_signature:
-        last_signature = current_signature
-        subprocess.run(
-            [
-                sys.executable,
-                str(generator),
-                "--write-site-markdown",
-                str(site_dir),
-            ],
-            check=False,
-        )
-        subprocess.run(
-            [sys.executable, str(license_publisher), "--site", str(site_dir)],
-            check=False,
-        )
+    if current_signature is None:
+        pending_signature = None
+    elif current_signature != pending_signature:
+        pending_signature = current_signature
+    elif current_signature[:2] != last_processed_build:
+        generator_command = [
+            sys.executable,
+            str(generator),
+            "--write-site-markdown",
+            str(site_dir),
+        ]
+        if first_build:
+            generator_command.extend(
+                ["--from-site-markdown-cache", str(site_markdown_cache)]
+            )
+        results = [
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(sitemap_publisher),
+                    "--root",
+                    str(site_dir.parent),
+                    "--sitemap",
+                    str(site_dir / "sitemap.xml"),
+                ],
+                check=False,
+            ),
+            subprocess.run(generator_command, check=False),
+            subprocess.run(
+                [sys.executable, str(license_publisher), "--site", str(site_dir)],
+                check=False,
+            ),
+        ]
+        if all(result.returncode == 0 for result in results):
+            last_processed_build = current_signature[:2]
+            first_build = False
     time.sleep(1)
 PY
 }
 
 if [ "${1:-}" = "build" ]; then
   "${PYTHON_BIN}" -m zensical "$@"
+  "${PYTHON_BIN}" "${SCRIPT_DIR}/publish_diagnostic_sitemap.py" --root "${REPO_ROOT}" --sitemap "${REPO_ROOT}/site/sitemap.xml"
   "${PYTHON_BIN}" "${SCRIPT_DIR}/publish_license_texts.py" --site "${REPO_ROOT}/site"
-  "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py" --write-site-markdown "${REPO_ROOT}/site"
-  "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_search_vectors.py"
+  "${PYTHON_BIN}" "${SCRIPT_DIR}/generate_ai_artifacts.py" \
+    --from-site-markdown-cache "${SITE_MARKDOWN_CACHE}" \
+    --write-site-markdown "${REPO_ROOT}/site"
 elif [ "${1:-}" = "serve" ]; then
   "${PYTHON_BIN}" -m zensical "$@" &
   serve_pid="$!"

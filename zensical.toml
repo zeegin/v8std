@@ -12,7 +12,6 @@ extra_css = [
     "assets/stylesheets/monokai.css",
 ]
 extra_javascript = [
-    "assets/javascripts/announce.js",
     "assets/javascripts/home-search.js",
     "assets/javascripts/diagnostics-registry.js",
     "assets/javascripts/search-shortcuts.js",
