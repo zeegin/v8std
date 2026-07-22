@@ -12,9 +12,9 @@ hide:
 | Что нужно найти | Примеры запросов |
 | --- | --- |
 | Стандарт | `#std437`, `std 437`, `стандарт 437` |
-| Диагностику BSLLS | `bslls:AssignAliasFieldsInQuery`, `AssignAliasFieldsInQuery` |
-| Диагностику АПК | `acc:1245`, `апк 1245`, `ACC 1245` |
-| Диагностику EDT / v8-code-style | `v8cs:common-module-name-client-server`, `edt common-module-name-client-server` |
+| Диагностику BSLLS | <a class="diagnostic-chip" href="diagnostics/bslls/AssignAliasFieldsInQuery.md">bslls:AssignAliasFieldsInQuery</a>, `AssignAliasFieldsInQuery` |
+| Диагностику АПК | <a class="diagnostic-chip" href="diagnostics/acc/1245.md">acc:1245</a>, `апк 1245`, `ACC 1245` |
+| Диагностику EDT / v8-code-style | <a class="diagnostic-chip" href="diagnostics/v8-code-style/common-module-name-client-server.md">v8cs:common-module-name-client-server</a>, `edt common-module-name-client-server` |
 | Тему | `транзакции`, `запросы`, `общие модули`, `права` |
 
 ## Индексы для LLM

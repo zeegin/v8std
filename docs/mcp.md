@@ -62,8 +62,8 @@ v8std и получает ответ.
 
 - `модальные окна`;
 - `std437`;
-- `acc:1245`;
-- `bslls:UsingModalWindows`;
+- <a class="diagnostic-chip" href="diagnostics/acc/1245.md">acc:1245</a>;
+- <a class="diagnostic-chip" href="diagnostics/bslls/UsingModalWindows.md">bslls:UsingModalWindows</a>;
 - `локализация интерфейсных текстов`.
 
 ### `v8std_get_page`
@@ -99,8 +99,8 @@ v8std и получает ответ.
 ## Примеры вопросов
 
 - "Найди стандарт про модальные окна в 1С".
-- "Объясни диагностику `bslls:UsingModalWindows`".
-- "Что означает `acc:1245` и какой стандарт с ним связан?"
+- "Объясни диагностику <a class="diagnostic-chip" href="diagnostics/bslls/UsingModalWindows.md">bslls:UsingModalWindows</a>".
+- "Что означает <a class="diagnostic-chip" href="diagnostics/acc/1245.md">acc:1245</a> и какой стандарт с ним связан?"
 - "Какие стандарты относятся к локализации интерфейсных текстов?"
 - "По этому фрагменту кода подбери применимые стандарты v8std".
 

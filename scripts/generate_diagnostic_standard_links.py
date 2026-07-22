@@ -235,10 +235,12 @@ def render_registry_index(reviews: list | tuple, standard_pages: dict[str, Stand
                 f'        <h2 class="diagnostics-clause__title"><a href="../std/{number}.md#{html.escape(clause.anchor, quote=True)}">{html.escape(label)}</a></h2>'
             )
             if diagnostics:
-                lines.append('        <div class="diagnostics-clause__links">')
+                lines.append(
+                    '        <div class="diagnostics-clause__links diagnostic-links">'
+                )
                 for diagnostic in diagnostics:
                     lines.append(
-                        f'          <a class="diagnostics-clause__diagnostic" href="{_registry_diagnostic_path(diagnostic)}">{html.escape(diagnostic)}</a>'
+                        f'          <a class="diagnostic-chip" href="{_registry_diagnostic_path(diagnostic)}">{html.escape(diagnostic)}</a>'
                     )
                 lines.append("        </div>")
             else:

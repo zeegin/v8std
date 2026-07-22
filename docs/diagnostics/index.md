@@ -147,9 +147,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:319 v8cs:scheduled-job-periodicity-too-short">
         <h2 class="diagnostics-clause__title"><a href="../std/402.md#std402">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/319.md">acc:319</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/scheduled-job-periodicity-too-short.md">v8cs:scheduled-job-periodicity-too-short</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/319.md">acc:319</a>
+          <a class="diagnostic-chip" href="v8-code-style/scheduled-job-periodicity-too-short.md">v8cs:scheduled-job-periodicity-too-short</a>
         </div>
       </section>
     </div>
@@ -162,16 +162,16 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для открытия форм используйте метод открытьформу acc:65 bslls:getformmethod v8cs:use-non-recommended-method">
         <h2 class="diagnostics-clause__title"><a href="../std/404.md#1">п. 1 — Для открытия форм используйте метод ОткрытьФорму</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/65.md">acc:65</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/GetFormMethod.md">bslls:GetFormMethod</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/use-non-recommended-method.md">v8cs:use-non-recommended-method</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/65.md">acc:65</a>
+          <a class="diagnostic-chip" href="bslls/GetFormMethod.md">bslls:GetFormMethod</a>
+          <a class="diagnostic-chip" href="v8-code-style/use-non-recommended-method.md">v8cs:use-non-recommended-method</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если форма требует параметризации при открытии, передавайте все параметры через набор параметров формы acc:346">
         <h2 class="diagnostics-clause__title"><a href="../std/404.md#2">п. 2 — Если форма требует параметризации при открытии, передавайте все параметры через набор параметров формы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/346.md">acc:346</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/346.md">acc:346</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — не используйте альтернативные способы параметризации формы при открытии" hidden data-empty="true">
@@ -212,15 +212,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — в большинстве случаев в модулях форм используйте метод формы реквизитформывзначение() вместо метода данныеформывзначение() bslls:formdatatovalue v8cs:using-form-data-to-value">
         <h2 class="diagnostics-clause__title"><a href="../std/409.md#1">п. 1 — В большинстве случаев в модулях форм используйте метод формы РеквизитФормыВЗначение() вместо метода ДанныеФормыВЗначение()</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/FormDataToValue.md">bslls:FormDataToValue</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/using-form-data-to-value.md">v8cs:using-form-data-to-value</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/FormDataToValue.md">bslls:FormDataToValue</a>
+          <a class="diagnostic-chip" href="v8-code-style/using-form-data-to-value.md">v8cs:using-form-data-to-value</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:68">
         <h2 class="diagnostics-clause__title"><a href="../std/409.md#std409">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/68.md">acc:68</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/68.md">acc:68</a>
         </div>
       </section>
     </div>
@@ -249,14 +249,14 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — если алгоритм обработки зависит от порядка записей или результат показывается пользователю, в тексте запроса следует использовать упорядочить по bslls:selecttopwithoutorderby">
         <h2 class="diagnostics-clause__title"><a href="../std/412.md#11">п. 1.1 — Если алгоритм обработки зависит от порядка записей или результат показывается пользователю, в тексте запроса следует использовать УПОРЯДОЧИТЬ ПО</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/SelectTopWithoutOrderBy.md">bslls:SelectTopWithoutOrderBy</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/SelectTopWithoutOrderBy.md">bslls:SelectTopWithoutOrderBy</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — при сортировке по полю, которое может содержать null, учитывайте: на разных субд порядок может отличаться acc:540">
         <h2 class="diagnostics-clause__title"><a href="../std/412.md#12">п. 1.2 — При сортировке по полю, которое может содержать NULL, учитывайте: на разных СУБД порядок может отличаться</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/540.md">acc:540</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/540.md">acc:540</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — если результаты запроса отображаются пользователю:" hidden data-empty="true">
@@ -333,10 +333,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:69 bslls:deprecatedmessage v8cs:use-non-recommended-method">
         <h2 class="diagnostics-clause__title"><a href="../std/418.md#std418">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/69.md">acc:69</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DeprecatedMessage.md">bslls:DeprecatedMessage</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/use-non-recommended-method.md">v8cs:use-non-recommended-method</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/69.md">acc:69</a>
+          <a class="diagnostic-chip" href="bslls/DeprecatedMessage.md">bslls:DeprecatedMessage</a>
+          <a class="diagnostic-chip" href="v8-code-style/use-non-recommended-method.md">v8cs:use-non-recommended-method</a>
         </div>
       </section>
     </div>
@@ -365,8 +365,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — для реквизитов строкового типа используйте переменную длину строки: acc:1205">
         <h2 class="diagnostics-clause__title"><a href="../std/432.md#11">п. 1.1 — Для реквизитов строкового типа используйте переменную длину строки:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1205.md">acc:1205</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1205.md">acc:1205</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — если максимальная длина строки заранее известна" hidden data-empty="true">
@@ -423,9 +423,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:96 bslls:unionall">
         <h2 class="diagnostics-clause__title"><a href="../std/434.md#std434">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/96.md">acc:96</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/UnionAll.md">bslls:UnionAll</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/96.md">acc:96</a>
+          <a class="diagnostic-chip" href="bslls/UnionAll.md">bslls:UnionAll</a>
         </div>
       </section>
     </div>
@@ -438,9 +438,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — при разработке запросов учитывайте, что в клиент-серверном варианте с субд postgresql производительность запросов с конструкцией полное внешнее соединение существенно снижается acc:70 bslls:fullouterjoinquery">
         <h2 class="diagnostics-clause__title"><a href="../std/435.md#11">п. 1.1 — При разработке запросов учитывайте, что в клиент-серверном варианте с СУБД PostgreSQL производительность запросов с конструкцией ПОЛНОЕ ВНЕШНЕЕ СОЕДИНЕНИЕ существенно снижается</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/70.md">acc:70</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/FullOuterJoinQuery.md">bslls:FullOuterJoinQuery</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/70.md">acc:70</a>
+          <a class="diagnostic-chip" href="bslls/FullOuterJoinQuery.md">bslls:FullOuterJoinQuery</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — исключение: случаи, когда запрос объективно нельзя переписать без полное внешнее соединение" hidden data-empty="true">
@@ -461,8 +461,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — старайтесь получать однотипные данные одним запросом, v8cs:query-in-loop">
         <h2 class="diagnostics-clause__title"><a href="../std/436.md#1">п. 1 — Старайтесь получать однотипные данные одним запросом,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/query-in-loop.md">v8cs:query-in-loop</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/query-in-loop.md">v8cs:query-in-loop</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — допускается разделение запроса на серию запросов в следующих случаях:" hidden data-empty="true">
@@ -483,26 +483,26 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — все ключевые слова языка запросов пишутся заглавными буквами acc:254">
         <h2 class="diagnostics-clause__title"><a href="../std/437.md#1">п. 1 — Все ключевые слова языка запросов пишутся заглавными буквами</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/254.md">acc:254</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/254.md">acc:254</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — указывайте необязательные части запроса bslls:assignaliasfieldsinquery">
         <h2 class="diagnostics-clause__title"><a href="../std/437.md#2">п. 2 — Указывайте необязательные части запроса</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/AssignAliasFieldsInQuery.md">bslls:AssignAliasFieldsInQuery</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/AssignAliasFieldsInQuery.md">bslls:AssignAliasFieldsInQuery</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2а — для полей – реквизитов других полей, например касса.валюта.наименование автоматически присваиваемые псевдонимы собираются как валютанаименование, а не наименование bslls:assignaliasfieldsinquery">
         <h2 class="diagnostics-clause__title"><a href="../std/437.md#2_1">п. 2а — Для полей – реквизитов других полей, например Касса.Валюта.Наименование автоматически присваиваемые псевдонимы собираются как ВалютаНаименование, а не Наименование</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/AssignAliasFieldsInQuery.md">bslls:AssignAliasFieldsInQuery</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/AssignAliasFieldsInQuery.md">bslls:AssignAliasFieldsInQuery</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2б — пишите ключевое слово как перед псевдонимом поля источника bslls:assignaliasfieldsinquery">
         <h2 class="diagnostics-clause__title"><a href="../std/437.md#2_2">п. 2б — Пишите ключевое слово КАК перед псевдонимом поля источника</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/AssignAliasFieldsInQuery.md">bslls:AssignAliasFieldsInQuery</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/AssignAliasFieldsInQuery.md">bslls:AssignAliasFieldsInQuery</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — текст запроса должен быть структурирован" hidden data-empty="true">
@@ -523,8 +523,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.2 — старайтесь, чтобы каждая часть формируемого запроса открывалась в конструкторе запросов: bslls:queryparseerror">
         <h2 class="diagnostics-clause__title"><a href="../std/437.md#62">п. 6.2 — Старайтесь, чтобы каждая часть формируемого запроса открывалась в конструкторе запросов:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/QueryParseError.md">bslls:QueryParseError</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/QueryParseError.md">bslls:QueryParseError</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7 — типичные случаи программной модификации текста запроса" hidden data-empty="true">
@@ -545,8 +545,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1407">
         <h2 class="diagnostics-clause__title"><a href="../std/437.md#std437">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1407.md">acc:1407</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1407.md">acc:1407</a>
         </div>
       </section>
     </div>
@@ -559,8 +559,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — используйте метод пустой, чтобы проверить, есть ли выбранные строки в результате запроса acc:98">
         <h2 class="diagnostics-clause__title"><a href="../std/438.md#1">п. 1 — Используйте метод Пустой, чтобы проверить, есть ли выбранные строки в результате запроса</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/98.md">acc:98</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/98.md">acc:98</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — не используйте метод пустой для проверки, когда собираетесь выбирать или выгружать данные из результата запроса" hidden data-empty="true">
@@ -577,23 +577,23 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — директивы компиляции: acc:104 bslls:compilationdirectiveneedless v8cs:form-module-missing-pragma v8cs:form-module-pragma">
         <h2 class="diagnostics-clause__title"><a href="../std/439.md#1">п. 1 — Директивы компиляции:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/104.md">acc:104</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CompilationDirectiveNeedLess.md">bslls:CompilationDirectiveNeedLess</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-module-missing-pragma.md">v8cs:form-module-missing-pragma</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-module-pragma.md">v8cs:form-module-pragma</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/104.md">acc:104</a>
+          <a class="diagnostic-chip" href="bslls/CompilationDirectiveNeedLess.md">bslls:CompilationDirectiveNeedLess</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-module-missing-pragma.md">v8cs:form-module-missing-pragma</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-module-pragma.md">v8cs:form-module-pragma</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — не используйте проверки #если сервер / #если клиент внутри #std469: клиент-серверных общих модулей acc:547">
         <h2 class="diagnostics-clause__title"><a href="../std/439.md#2">п. 2 — Не используйте проверки #Если Сервер / #Если Клиент внутри #std469: клиент-серверных общих модулей</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/547.md">acc:547</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/547.md">acc:547</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — не разрывайте инструкциями препроцессора и областями: bslls:parseerror">
         <h2 class="diagnostics-clause__title"><a href="../std/439.md#3">п. 3 — Не разрывайте инструкциями препроцессора и областями:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/ParseError.md">bslls:ParseError</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/ParseError.md">bslls:ParseError</a>
         </div>
       </section>
     </div>
@@ -606,9 +606,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — дублирование кода — это копирование существующих фрагментов, процедур или функций без изменений при разработке нового функционала, когда логика должна оставаться одинаковой acc:1343 acc:1344">
         <h2 class="diagnostics-clause__title"><a href="../std/440.md#1">п. 1 — Дублирование кода — это копирование существующих фрагментов, процедур или функций без изменений при разработке нового функционала, когда логика должна оставаться одинаковой</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1343.md">acc:1343</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1344.md">acc:1344</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1343.md">acc:1343</a>
+          <a class="diagnostic-chip" href="acc/1344.md">acc:1344</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — дублирование допустимо, если в будущем ожидается заметное расхождение логики в двух вариантах кода" hidden data-empty="true">
@@ -625,10 +625,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — ключевые слова встроенного языка пишите канонически, как в документации и синтакс-помощнике acc:1248 bslls:canonicalspellingkeywords v8cs:bsl-canonical-pragma">
         <h2 class="diagnostics-clause__title"><a href="../std/441.md#1">п. 1 — Ключевые слова встроенного языка пишите канонически, как в документации и Синтакс-помощнике</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1248.md">acc:1248</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CanonicalSpellingKeywords.md">bslls:CanonicalSpellingKeywords</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/bsl-canonical-pragma.md">v8cs:bsl-canonical-pragma</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1248.md">acc:1248</a>
+          <a class="diagnostic-chip" href="bslls/CanonicalSpellingKeywords.md">bslls:CanonicalSpellingKeywords</a>
+          <a class="diagnostic-chip" href="v8-code-style/bsl-canonical-pragma.md">v8cs:bsl-canonical-pragma</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — когда подряд идут несколько присваиваний, допускается локально выравнивать = для лучшей читаемости" hidden data-empty="true">
@@ -641,9 +641,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — логические выражения и значения типа булево не сравнивайте с литералами истина и ложь acc:297 bslls:comparewithboolean">
         <h2 class="diagnostics-clause__title"><a href="../std/441.md#4">п. 4 — Логические выражения и значения типа Булево не сравнивайте с литералами Истина и Ложь</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/297.md">acc:297</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CompareWithBoolean.md">bslls:CompareWithBoolean</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/297.md">acc:297</a>
+          <a class="diagnostic-chip" href="bslls/CompareWithBoolean.md">bslls:CompareWithBoolean</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — если нужно сравнить результат выражения, сначала присвойте его промежуточной переменной, а затем сравнивайте переменную" hidden data-empty="true">
@@ -688,15 +688,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — если длина строки больше 120 символов, используйте переносы acc:101">
         <h2 class="diagnostics-clause__title"><a href="../std/444.md#1">п. 1 — Если длина строки больше 120 символов, используйте переносы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/101.md">acc:101</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/101.md">acc:101</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — длинные арифметические выражения переносите по правилам: acc:102 acc:103">
         <h2 class="diagnostics-clause__title"><a href="../std/444.md#2">п. 2 — Длинные арифметические выражения переносите по правилам:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/102.md">acc:102</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/103.md">acc:103</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/102.md">acc:102</a>
+          <a class="diagnostic-chip" href="acc/103.md">acc:103</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — длинные строковые константы переносите с помощью символа перевода строки |" hidden data-empty="true">
@@ -721,8 +721,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — используйте автоформатирование текста программного модуля bslls:incorrectlinebreak">
         <h2 class="diagnostics-clause__title"><a href="../std/444.md#6">п. 6 — Используйте автоформатирование текста программного модуля</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/IncorrectLineBreak.md">bslls:IncorrectLineBreak</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/IncorrectLineBreak.md">bslls:IncorrectLineBreak</a>
         </div>
       </section>
     </div>
@@ -791,8 +791,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — не используйте явную запись наборов записей регистров методом записать() в процедуре обработки проведения документа acc:105">
         <h2 class="diagnostics-clause__title"><a href="../std/450.md#1">п. 1 — Не используйте явную запись наборов записей регистров методом Записать() в процедуре обработки проведения документа</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/105.md">acc:105</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/105.md">acc:105</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — исключение: данные из регистров нужны в последующих алгоритмах, которые выполняются до выхода из процедуры проведения" hidden data-empty="true">
@@ -809,8 +809,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для программного создания прикладных объектов используйте методы соответствующих менеджеров (создатьэлемент(), создатьдокумент(), создатьнаборзаписей() и т.п.) acc:99">
         <h2 class="diagnostics-clause__title"><a href="../std/451.md#1">п. 1 — Для программного создания прикладных объектов используйте методы соответствующих менеджеров (СоздатьЭлемент(), СоздатьДокумент(), СоздатьНаборЗаписей() и т.п.)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/99.md">acc:99</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/99.md">acc:99</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — при программном создании объекта явно вызывайте метод заполнить()" hidden data-empty="true">
@@ -819,8 +819,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1444">
         <h2 class="diagnostics-clause__title"><a href="../std/451.md#std451">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1444.md">acc:1444</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1444.md">acc:1444</a>
         </div>
       </section>
     </div>
@@ -877,17 +877,17 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — описывайте процедуры и функции в комментарии к ним acc:459">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#1">п. 1 — Описывайте процедуры и функции в комментарии к ним</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/459.md">acc:459</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/459.md">acc:459</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — комментируйте процедуры и функции, входящие в программный интерфейс модулей acc:1242 bslls:publicmethodsdescription v8cs:doc-comment-export-procedure-description-section v8cs:export-procedure-missing-comment">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#2">п. 2 — Комментируйте процедуры и функции, входящие в программный интерфейс модулей</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1242.md">acc:1242</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/PublicMethodsDescription.md">bslls:PublicMethodsDescription</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/doc-comment-export-procedure-description-section.md">v8cs:doc-comment-export-procedure-description-section</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/export-procedure-missing-comment.md">v8cs:export-procedure-missing-comment</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1242.md">acc:1242</a>
+          <a class="diagnostic-chip" href="bslls/PublicMethodsDescription.md">bslls:PublicMethodsDescription</a>
+          <a class="diagnostic-chip" href="v8-code-style/doc-comment-export-procedure-description-section.md">v8cs:doc-comment-export-procedure-description-section</a>
+          <a class="diagnostic-chip" href="v8-code-style/export-procedure-missing-comment.md">v8cs:export-procedure-missing-comment</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — прочие процедуры и функции (в том числе обработчики событий модулей форм, объектов, наборов записей, менеджеров значений и т.п.) комментируйте, если нужно пояснить назначение или особенности работы" hidden data-empty="true">
@@ -900,33 +900,33 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — размещайте комментарий перед объявлением процедуры (функции) и используйте следующий формат acc:402">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#5">п. 5 — Размещайте комментарий перед объявлением процедуры (функции) и используйте следующий формат</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/402.md">acc:402</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/402.md">acc:402</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.1 — секция // описание acc:466 acc:1243">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#51">п. 5.1 — Секция // Описание</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/466.md">acc:466</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1243.md">acc:1243</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/466.md">acc:466</a>
+          <a class="diagnostic-chip" href="acc/1243.md">acc:1243</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.2 — секция // параметры: acc:399 bslls:missingparameterdescription">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#52">п. 5.2 — Секция // Параметры:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/399.md">acc:399</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissingParameterDescription.md">bslls:MissingParameterDescription</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/399.md">acc:399</a>
+          <a class="diagnostic-chip" href="bslls/MissingParameterDescription.md">bslls:MissingParameterDescription</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.2.1 — описание параметра начинается с новой строки: имя параметра, затем дефис и список типов (), затем дефис и текстовое описание параметра acc:401 acc:405 acc:406 acc:407 acc:408 acc:410">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#521">п. 5.2.1 — Описание параметра начинается с новой строки: имя параметра, затем дефис и список типов (), затем дефис и текстовое описание параметра</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/401.md">acc:401</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/405.md">acc:405</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/406.md">acc:406</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/407.md">acc:407</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/408.md">acc:408</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/410.md">acc:410</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/401.md">acc:401</a>
+          <a class="diagnostic-chip" href="acc/405.md">acc:405</a>
+          <a class="diagnostic-chip" href="acc/406.md">acc:406</a>
+          <a class="diagnostic-chip" href="acc/407.md">acc:407</a>
+          <a class="diagnostic-chip" href="acc/408.md">acc:408</a>
+          <a class="diagnostic-chip" href="acc/410.md">acc:410</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.2.2 — для параметров типа структура и таблицазначений (деревозначений) в описании типа указывайте ссылку на функцию, выходным значением которой является эта структура или таблица значений" hidden data-empty="true">
@@ -935,8 +935,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.2.3 — для параметров типа массив указывайте тип элементов с помощью ключевого слова из acc:1360">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#523">п. 5.2.3 — Для параметров типа Массив указывайте тип элементов с помощью ключевого слова Из</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1360.md">acc:1360</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1360.md">acc:1360</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.2.4 — для параметра типа строкатаблицызначений (строкадеревазначений) можно задать состав свойств, соответствующий колонкам его таблицы-владельца (дерева-владельца)" hidden data-empty="true">
@@ -949,18 +949,18 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.2.6 — описания также могут задаваться с помощью ссылки на функцию-конструктор в формате // см acc:1389">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#526">п. 5.2.6 — Описания также могут задаваться с помощью ссылки на функцию-конструктор в формате // см</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1389.md">acc:1389</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1389.md">acc:1389</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.3 — секция // возвращаемое значение: acc:400 acc:409 acc:416 acc:417 bslls:missingreturnedvaluedescription">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#53">п. 5.3 — Секция // Возвращаемое значение:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/400.md">acc:400</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/409.md">acc:409</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/416.md">acc:416</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/417.md">acc:417</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissingReturnedValueDescription.md">bslls:MissingReturnedValueDescription</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/400.md">acc:400</a>
+          <a class="diagnostic-chip" href="acc/409.md">acc:409</a>
+          <a class="diagnostic-chip" href="acc/416.md">acc:416</a>
+          <a class="diagnostic-chip" href="acc/417.md">acc:417</a>
+          <a class="diagnostic-chip" href="bslls/MissingReturnedValueDescription.md">bslls:MissingReturnedValueDescription</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.4 — секция // пример:" hidden data-empty="true">
@@ -977,25 +977,25 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.6 — в любом месте документирующего комментария можно добавить переход к другим объектам конфигурации, процедурам и функциям (в том числе к функциям-конструкторам структур) acc:403 acc:404 acc:1381 acc:1382 acc:1402">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#56">п. 5.6 — В любом месте документирующего комментария можно добавить переход к другим объектам конфигурации, процедурам и функциям (в том числе к функциям-конструкторам структур)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/403.md">acc:403</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/404.md">acc:404</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1381.md">acc:1381</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1382.md">acc:1382</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1402.md">acc:1402</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/403.md">acc:403</a>
+          <a class="diagnostic-chip" href="acc/404.md">acc:404</a>
+          <a class="diagnostic-chip" href="acc/1381.md">acc:1381</a>
+          <a class="diagnostic-chip" href="acc/1382.md">acc:1382</a>
+          <a class="diagnostic-chip" href="acc/1402.md">acc:1402</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.7 — если нужно пометить процедуру (функцию) как устаревшую, в первой строке описания используйте слово // устарела acc:222 acc:223 acc:288 acc:289 acc:1334 acc:1335 acc:1336 bslls:deprecatedmethodcall">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#57">п. 5.7 — Если нужно пометить процедуру (функцию) как устаревшую, в первой строке описания используйте слово // Устарела</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/222.md">acc:222</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/223.md">acc:223</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/288.md">acc:288</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/289.md">acc:289</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1334.md">acc:1334</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1335.md">acc:1335</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1336.md">acc:1336</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DeprecatedMethodCall.md">bslls:DeprecatedMethodCall</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/222.md">acc:222</a>
+          <a class="diagnostic-chip" href="acc/223.md">acc:223</a>
+          <a class="diagnostic-chip" href="acc/288.md">acc:288</a>
+          <a class="diagnostic-chip" href="acc/289.md">acc:289</a>
+          <a class="diagnostic-chip" href="acc/1334.md">acc:1334</a>
+          <a class="diagnostic-chip" href="acc/1335.md">acc:1335</a>
+          <a class="diagnostic-chip" href="acc/1336.md">acc:1336</a>
+          <a class="diagnostic-chip" href="bslls/DeprecatedMethodCall.md">bslls:DeprecatedMethodCall</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — если требуется прокомментировать процедуру или функцию с директивой компиляции, сначала размещайте комментарий, а затем директиву компиляции" hidden data-empty="true">
@@ -1008,9 +1008,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:388 acc:389">
         <h2 class="diagnostics-clause__title"><a href="../std/453.md#std453">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/388.md">acc:388</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/389.md">acc:389</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/388.md">acc:388</a>
+          <a class="diagnostic-chip" href="acc/389.md">acc:389</a>
         </div>
       </section>
     </div>
@@ -1031,15 +1031,15 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — не начинайте имена переменных с подчеркивания имяпеременной acc:248 v8cs:bsl-variable-name-invalid">
         <h2 class="diagnostics-clause__title"><a href="../std/454.md#3">п. 3 — Не начинайте имена переменных с подчеркивания ИмяПеременной</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/248.md">acc:248</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/bsl-variable-name-invalid.md">v8cs:bsl-variable-name-invalid</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/248.md">acc:248</a>
+          <a class="diagnostic-chip" href="v8-code-style/bsl-variable-name-invalid.md">v8cs:bsl-variable-name-invalid</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — не делайте имена переменных из одного символа acc:247">
         <h2 class="diagnostics-clause__title"><a href="../std/454.md#4">п. 4 — Не делайте имена переменных из одного символа</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/247.md">acc:247</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/247.md">acc:247</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — названия булевых переменных пишутся так, как пишется истинное значение, хранимое в переменной" hidden data-empty="true">
@@ -1056,13 +1056,13 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — старайтесь выделить из модуля следующие разделы: acc:274 bslls:codeblockbeforesub v8cs:module-structure-init-code-in-region v8cs:module-structure-method-in-regions v8cs:module-structure-top-region v8cs:module-structure-var-in-region">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#11">п. 1.1 — Старайтесь выделить из модуля следующие разделы:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/274.md">acc:274</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CodeBlockBeforeSub.md">bslls:CodeBlockBeforeSub</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-structure-init-code-in-region.md">v8cs:module-structure-init-code-in-region</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-structure-method-in-regions.md">v8cs:module-structure-method-in-regions</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-structure-top-region.md">v8cs:module-structure-top-region</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-structure-var-in-region.md">v8cs:module-structure-var-in-region</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/274.md">acc:274</a>
+          <a class="diagnostic-chip" href="bslls/CodeBlockBeforeSub.md">bslls:CodeBlockBeforeSub</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-structure-init-code-in-region.md">v8cs:module-structure-init-code-in-region</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-structure-method-in-regions.md">v8cs:module-structure-method-in-regions</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-structure-top-region.md">v8cs:module-structure-top-region</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-structure-var-in-region.md">v8cs:module-structure-var-in-region</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — не делайте очень большие разделы, разделяйте на подразделы" hidden data-empty="true">
@@ -1071,50 +1071,50 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — разделы и подразделы оформляйте в виде областей acc:239 acc:241 bslls:codeoutofregion">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#13">п. 1.3 — Разделы и подразделы оформляйте в виде областей</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/239.md">acc:239</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/241.md">acc:241</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CodeOutOfRegion.md">bslls:CodeOutOfRegion</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/239.md">acc:239</a>
+          <a class="diagnostic-chip" href="acc/241.md">acc:241</a>
+          <a class="diagnostic-chip" href="bslls/CodeOutOfRegion.md">bslls:CodeOutOfRegion</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.4 — шаблон общего модуля: acc:286 acc:1387 bslls:commonmodulemissingapi bslls:nonexportmethodsinapiregion bslls:nonstandardregion">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#14">п. 1.4 — Шаблон общего модуля:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/286.md">acc:286</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1387.md">acc:1387</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleMissingAPI.md">bslls:CommonModuleMissingAPI</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/NonExportMethodsInApiRegion.md">bslls:NonExportMethodsInApiRegion</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/286.md">acc:286</a>
+          <a class="diagnostic-chip" href="acc/1387.md">acc:1387</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleMissingAPI.md">bslls:CommonModuleMissingAPI</a>
+          <a class="diagnostic-chip" href="bslls/NonExportMethodsInApiRegion.md">bslls:NonExportMethodsInApiRegion</a>
+          <a class="diagnostic-chip" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.5 — шаблон модулей объектов, менеджеров, наборов записей, обработок, отчетов: bslls:eventhandleroutsideeventregion bslls:nonstandardregion v8cs:module-structure-event-regions">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#15">п. 1.5 — Шаблон модулей объектов, менеджеров, наборов записей, обработок, отчетов:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/EventHandlerOutsideEventRegion.md">bslls:EventHandlerOutsideEventRegion</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-structure-event-regions.md">v8cs:module-structure-event-regions</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/EventHandlerOutsideEventRegion.md">bslls:EventHandlerOutsideEventRegion</a>
+          <a class="diagnostic-chip" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-structure-event-regions.md">v8cs:module-structure-event-regions</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.6 — шаблон модулей форм: bslls:eventhandleroutsideeventregion bslls:nonstandardregion v8cs:module-structure-form-event-regions">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#16">п. 1.6 — Шаблон модулей форм:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/EventHandlerOutsideEventRegion.md">bslls:EventHandlerOutsideEventRegion</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-structure-form-event-regions.md">v8cs:module-structure-form-event-regions</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/EventHandlerOutsideEventRegion.md">bslls:EventHandlerOutsideEventRegion</a>
+          <a class="diagnostic-chip" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-structure-form-event-regions.md">v8cs:module-structure-form-event-regions</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.7 — шаблон модулей команд: bslls:nonstandardregion">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#17">п. 1.7 — Шаблон модулей команд:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/NonStandardRegion.md">bslls:NonStandardRegion</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.8 — не оставляйте пустых областей в модуле acc:273 bslls:emptyregion v8cs:module-region-empty">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#18">п. 1.8 — Не оставляйте пустых областей в модуле</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/273.md">acc:273</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/EmptyRegion.md">bslls:EmptyRegion</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-region-empty.md">v8cs:module-region-empty</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/273.md">acc:273</a>
+          <a class="diagnostic-chip" href="bslls/EmptyRegion.md">bslls:EmptyRegion</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-region-empty.md">v8cs:module-region-empty</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — модуль может содержать заголовок модуля с описанием состава модуля" hidden data-empty="true">
@@ -1123,17 +1123,17 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — пример описания переменных: acc:425 acc:426 acc:429 bslls:missingvariablesdescription">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#22">п. 2.2 — Пример описания переменных:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/425.md">acc:425</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/426.md">acc:426</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/429.md">acc:429</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissingVariablesDescription.md">bslls:MissingVariablesDescription</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/425.md">acc:425</a>
+          <a class="diagnostic-chip" href="acc/426.md">acc:426</a>
+          <a class="diagnostic-chip" href="acc/429.md">acc:429</a>
+          <a class="diagnostic-chip" href="bslls/MissingVariablesDescription.md">bslls:MissingVariablesDescription</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.3 — программный интерфейс располагается сразу после описания переменных acc:240">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#23">п. 2.3 — Программный интерфейс располагается сразу после описания переменных</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/240.md">acc:240</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/240.md">acc:240</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.4.1 — обработчики событий формы, команд и элементов формы располагайте до служебных методов" hidden data-empty="true">
@@ -1146,10 +1146,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.4.3 — для каждого события создавайте свой обработчик v8cs:form-commands-single-action-handler v8cs:form-items-single-event-handler v8cs:invocation-form-event-handler">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#243">п. 2.4.3 — Для каждого события создавайте свой обработчик</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-commands-single-action-handler.md">v8cs:form-commands-single-action-handler</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-items-single-event-handler.md">v8cs:form-items-single-event-handler</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/invocation-form-event-handler.md">v8cs:invocation-form-event-handler</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/form-commands-single-action-handler.md">v8cs:form-commands-single-action-handler</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-items-single-event-handler.md">v8cs:form-items-single-event-handler</a>
+          <a class="diagnostic-chip" href="v8-code-style/invocation-form-event-handler.md">v8cs:invocation-form-event-handler</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.5 — обработчики событий модулей объекта и менеджера объекта размещайте после раздела с программным интерфейсом, но до служебных процедур и функций модуля" hidden data-empty="true">
@@ -1162,17 +1162,17 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.6 — служебные процедуры и функции модуля размещайте в модуле следом за обработчиками событий acc:1340 acc:1341">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#26">п. 2.6 — Служебные процедуры и функции модуля размещайте в модуле следом за обработчиками событий</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1340.md">acc:1340</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1341.md">acc:1341</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1340.md">acc:1340</a>
+          <a class="diagnostic-chip" href="acc/1341.md">acc:1341</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.7 — пример инициализации переменных: acc:427 acc:428 acc:430">
         <h2 class="diagnostics-clause__title"><a href="../std/455.md#27">п. 2.7 — Пример инициализации переменных:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/427.md">acc:427</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/428.md">acc:428</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/430.md">acc:430</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/427.md">acc:427</a>
+          <a class="diagnostic-chip" href="acc/428.md">acc:428</a>
+          <a class="diagnostic-chip" href="acc/430.md">acc:430</a>
         </div>
       </section>
     </div>
@@ -1185,53 +1185,53 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — пишите код на русском языке acc:1353">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#1">п. 1 — Пишите код на русском языке</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1353.md">acc:1353</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1353.md">acc:1353</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — не используйте букву ё в коде программы acc:163 bslls:yoletterusage">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#11">п. 1.1 — Не используйте букву ё в коде программы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/163.md">acc:163</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/YoLetterUsage.md">bslls:YoLetterUsage</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/163.md">acc:163</a>
+          <a class="diagnostic-chip" href="bslls/YoLetterUsage.md">bslls:YoLetterUsage</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — не используйте в коде программы неразрывные пробелы &amp;nbsp; и знак минус - &amp;minus; в других начертаниях (короткое – &amp;#150;, длинное тире — &amp;#151;) acc:217 bslls:invalidcharacterinfile">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#12">п. 1.2 — Не используйте в коде программы неразрывные пробелы &amp;nbsp; и знак минус - &amp;minus; в других начертаниях (короткое – &amp;#150;, длинное тире — &amp;#151;)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/217.md">acc:217</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/InvalidCharacterInFile.md">bslls:InvalidCharacterInFile</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/217.md">acc:217</a>
+          <a class="diagnostic-chip" href="bslls/InvalidCharacterInFile.md">bslls:InvalidCharacterInFile</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — удаляйте мертвый код acc:433 bslls:unusedlocalmethod">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#2">п. 2 — Удаляйте мертвый код</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/433.md">acc:433</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/UnusedLocalMethod.md">bslls:UnusedLocalMethod</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/433.md">acc:433</a>
+          <a class="diagnostic-chip" href="bslls/UnusedLocalMethod.md">bslls:UnusedLocalMethod</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — удалите закомментированный код и код связанный с процессом разработки (отладочный код, служебные отметки: acc:282 acc:284 acc:285 acc:1339 acc:1423 bslls:commentedcode bslls:excessiveautotestcheck">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#3">п. 3 — Удалите закомментированный код и код связанный с процессом разработки (отладочный код, служебные отметки:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/282.md">acc:282</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/284.md">acc:284</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/285.md">acc:285</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1339.md">acc:1339</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1423.md">acc:1423</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommentedCode.md">bslls:CommentedCode</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/ExcessiveAutoTestCheck.md">bslls:ExcessiveAutoTestCheck</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/282.md">acc:282</a>
+          <a class="diagnostic-chip" href="acc/284.md">acc:284</a>
+          <a class="diagnostic-chip" href="acc/285.md">acc:285</a>
+          <a class="diagnostic-chip" href="acc/1339.md">acc:1339</a>
+          <a class="diagnostic-chip" href="acc/1423.md">acc:1423</a>
+          <a class="diagnostic-chip" href="bslls/CommentedCode.md">bslls:CommentedCode</a>
+          <a class="diagnostic-chip" href="bslls/ExcessiveAutoTestCheck.md">bslls:ExcessiveAutoTestCheck</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — пишите один оператор на одной строке bslls:onestatementperline">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#4">п. 4 — Пишите один оператор на одной строке</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/OneStatementPerLine.md">bslls:OneStatementPerLine</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/OneStatementPerLine.md">bslls:OneStatementPerLine</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — код программы оформляйте отступом acc:1403">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#5">п. 5 — Код программы оформляйте отступом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1403.md">acc:1403</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1403.md">acc:1403</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.1 — с крайней левой позиции без отступов пишем:" hidden data-empty="true">
@@ -1244,8 +1244,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — длина строки: 120 символов bslls:linelength">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#6">п. 6 — Длина строки: 120 символов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/LineLength.md">bslls:LineLength</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/LineLength.md">bslls:LineLength</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7.1 — тексты комментариев должны составляться:" hidden data-empty="true">
@@ -1258,10 +1258,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7.3 — большие комментарии или комментарии к фрагменту кода пишите перед кодом отдельной строкой acc:244 acc:246 bslls:spaceatstartcomment">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#73">п. 7.3 — Большие комментарии или комментарии к фрагменту кода пишите перед кодом отдельной строкой</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/244.md">acc:244</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/246.md">acc:246</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/SpaceAtStartComment.md">bslls:SpaceAtStartComment</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/244.md">acc:244</a>
+          <a class="diagnostic-chip" href="acc/246.md">acc:246</a>
+          <a class="diagnostic-chip" href="bslls/SpaceAtStartComment.md">bslls:SpaceAtStartComment</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 8 — тексты больших процедур и функций разбивайте на отдельные сворачиваемые области" hidden data-empty="true">
@@ -1270,8 +1270,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1244">
         <h2 class="diagnostics-clause__title"><a href="../std/456.md#std456">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1244.md">acc:1244</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1244.md">acc:1244</a>
         </div>
       </section>
     </div>
@@ -1312,11 +1312,11 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:66 acc:67 v8cs:configuration-data-lock-mode v8cs:ql-using-for-update">
         <h2 class="diagnostics-clause__title"><a href="../std/460.md#std460">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/66.md">acc:66</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/67.md">acc:67</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/configuration-data-lock-mode.md">v8cs:configuration-data-lock-mode</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/ql-using-for-update.md">v8cs:ql-using-for-update</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/66.md">acc:66</a>
+          <a class="diagnostic-chip" href="acc/67.md">acc:67</a>
+          <a class="diagnostic-chip" href="v8-code-style/configuration-data-lock-mode.md">v8cs:configuration-data-lock-mode</a>
+          <a class="diagnostic-chip" href="v8-code-style/ql-using-for-update.md">v8cs:ql-using-for-update</a>
         </div>
       </section>
     </div>
@@ -1373,10 +1373,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — все действия в обработчике передзаписью выполняйте только после проверки обменданными.загрузка acc:75 bslls:dataexchangeloading v8cs:data-exchange-load">
         <h2 class="diagnostics-clause__title"><a href="../std/464.md#2">п. 2 — Все действия в обработчике ПередЗаписью выполняйте только после проверки ОбменДанными.Загрузка</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/75.md">acc:75</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/75.md">acc:75</a>
+          <a class="diagnostic-chip" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
+          <a class="diagnostic-chip" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
         </div>
       </section>
     </div>
@@ -1393,10 +1393,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — все действия в обработчике призаписи выполняйте только после проверки обменданными.загрузка acc:75 bslls:dataexchangeloading v8cs:data-exchange-load">
         <h2 class="diagnostics-clause__title"><a href="../std/465.md#2">п. 2 — Все действия в обработчике ПриЗаписи выполняйте только после проверки ОбменДанными.Загрузка</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/75.md">acc:75</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/75.md">acc:75</a>
+          <a class="diagnostic-chip" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
+          <a class="diagnostic-chip" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
         </div>
       </section>
     </div>
@@ -1417,49 +1417,49 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — используйте только штатные и документированные возможности платформы v8cs:form-module-missing-pragma">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#11">п. 1.1 — Используйте только штатные и документированные возможности платформы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-module-missing-pragma.md">v8cs:form-module-missing-pragma</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/form-module-missing-pragma.md">v8cs:form-module-missing-pragma</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — платформа может работать в различных субд, операционных системах, браузерах v8cs:db-object-max-number-length v8cs:ql-like-expression-with-field">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#12">п. 1.2 — Платформа может работать в различных СУБД, операционных системах, браузерах</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/db-object-max-number-length.md">v8cs:db-object-max-number-length</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/ql-like-expression-with-field.md">v8cs:ql-like-expression-with-field</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/db-object-max-number-length.md">v8cs:db-object-max-number-length</a>
+          <a class="diagnostic-chip" href="v8-code-style/ql-like-expression-with-field.md">v8cs:ql-like-expression-with-field</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — исправляйте ошибки обнаруженные при проверке конфигурации acc:561 acc:562 acc:563 acc:564 acc:565 acc:566 acc:567 acc:568 acc:569 acc:570 acc:571 acc:572 acc:573 acc:574 acc:575 acc:576 acc:577 acc:578 acc:579 acc:582 acc:590 bslls:wrongdatapathforformelements">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#13">п. 1.3 — Исправляйте ошибки обнаруженные при проверке конфигурации</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/561.md">acc:561</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/562.md">acc:562</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/563.md">acc:563</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/564.md">acc:564</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/565.md">acc:565</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/566.md">acc:566</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/567.md">acc:567</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/568.md">acc:568</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/569.md">acc:569</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/570.md">acc:570</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/571.md">acc:571</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/572.md">acc:572</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/573.md">acc:573</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/574.md">acc:574</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/575.md">acc:575</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/576.md">acc:576</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/577.md">acc:577</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/578.md">acc:578</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/579.md">acc:579</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/582.md">acc:582</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/590.md">acc:590</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/WrongDataPathForFormElements.md">bslls:WrongDataPathForFormElements</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/561.md">acc:561</a>
+          <a class="diagnostic-chip" href="acc/562.md">acc:562</a>
+          <a class="diagnostic-chip" href="acc/563.md">acc:563</a>
+          <a class="diagnostic-chip" href="acc/564.md">acc:564</a>
+          <a class="diagnostic-chip" href="acc/565.md">acc:565</a>
+          <a class="diagnostic-chip" href="acc/566.md">acc:566</a>
+          <a class="diagnostic-chip" href="acc/567.md">acc:567</a>
+          <a class="diagnostic-chip" href="acc/568.md">acc:568</a>
+          <a class="diagnostic-chip" href="acc/569.md">acc:569</a>
+          <a class="diagnostic-chip" href="acc/570.md">acc:570</a>
+          <a class="diagnostic-chip" href="acc/571.md">acc:571</a>
+          <a class="diagnostic-chip" href="acc/572.md">acc:572</a>
+          <a class="diagnostic-chip" href="acc/573.md">acc:573</a>
+          <a class="diagnostic-chip" href="acc/574.md">acc:574</a>
+          <a class="diagnostic-chip" href="acc/575.md">acc:575</a>
+          <a class="diagnostic-chip" href="acc/576.md">acc:576</a>
+          <a class="diagnostic-chip" href="acc/577.md">acc:577</a>
+          <a class="diagnostic-chip" href="acc/578.md">acc:578</a>
+          <a class="diagnostic-chip" href="acc/579.md">acc:579</a>
+          <a class="diagnostic-chip" href="acc/582.md">acc:582</a>
+          <a class="diagnostic-chip" href="acc/590.md">acc:590</a>
+          <a class="diagnostic-chip" href="bslls/WrongDataPathForFormElements.md">bslls:WrongDataPathForFormElements</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.4 — поддержите работу в режиме толстого клиента обычного приложения в минимальном виде для администраторов acc:82 bslls:ordinaryappsupport">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#14">п. 1.4 — Поддержите работу в режиме толстого клиента обычного приложения в минимальном виде для администраторов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/82.md">acc:82</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/OrdinaryAppSupport.md">bslls:OrdinaryAppSupport</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/82.md">acc:82</a>
+          <a class="diagnostic-chip" href="bslls/OrdinaryAppSupport.md">bslls:OrdinaryAppSupport</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.5 — не делайте пользовательские интерфейсы сильно отличающимися от интерфейса по умолчанию" hidden data-empty="true">
@@ -1468,90 +1468,90 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — пишите тексты грамотно acc:8 acc:87 acc:216 acc:235 acc:265 acc:321 acc:323 acc:324 acc:355 acc:1026 acc:1027 acc:1028 acc:1030 acc:1032 acc:1033 acc:1034 acc:1035 acc:1036 acc:1037 acc:1038">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#21">п. 2.1 — Пишите тексты грамотно</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/8.md">acc:8</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/87.md">acc:87</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/216.md">acc:216</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/235.md">acc:235</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/265.md">acc:265</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/321.md">acc:321</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/323.md">acc:323</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/324.md">acc:324</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/355.md">acc:355</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1026.md">acc:1026</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1027.md">acc:1027</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1028.md">acc:1028</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1030.md">acc:1030</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1032.md">acc:1032</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1033.md">acc:1033</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1034.md">acc:1034</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1035.md">acc:1035</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1036.md">acc:1036</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1037.md">acc:1037</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1038.md">acc:1038</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/8.md">acc:8</a>
+          <a class="diagnostic-chip" href="acc/87.md">acc:87</a>
+          <a class="diagnostic-chip" href="acc/216.md">acc:216</a>
+          <a class="diagnostic-chip" href="acc/235.md">acc:235</a>
+          <a class="diagnostic-chip" href="acc/265.md">acc:265</a>
+          <a class="diagnostic-chip" href="acc/321.md">acc:321</a>
+          <a class="diagnostic-chip" href="acc/323.md">acc:323</a>
+          <a class="diagnostic-chip" href="acc/324.md">acc:324</a>
+          <a class="diagnostic-chip" href="acc/355.md">acc:355</a>
+          <a class="diagnostic-chip" href="acc/1026.md">acc:1026</a>
+          <a class="diagnostic-chip" href="acc/1027.md">acc:1027</a>
+          <a class="diagnostic-chip" href="acc/1028.md">acc:1028</a>
+          <a class="diagnostic-chip" href="acc/1030.md">acc:1030</a>
+          <a class="diagnostic-chip" href="acc/1032.md">acc:1032</a>
+          <a class="diagnostic-chip" href="acc/1033.md">acc:1033</a>
+          <a class="diagnostic-chip" href="acc/1034.md">acc:1034</a>
+          <a class="diagnostic-chip" href="acc/1035.md">acc:1035</a>
+          <a class="diagnostic-chip" href="acc/1036.md">acc:1036</a>
+          <a class="diagnostic-chip" href="acc/1037.md">acc:1037</a>
+          <a class="diagnostic-chip" href="acc/1038.md">acc:1038</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — не оставляйте после себя мертвый код и мертвые объекты метаданных acc:277 acc:278 acc:299 acc:524 acc:525 acc:557 acc:558 acc:559 acc:580 v8cs:redundant-export-method">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#22">п. 2.2 — Не оставляйте после себя мертвый код и мертвые объекты метаданных</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/277.md">acc:277</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/278.md">acc:278</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/299.md">acc:299</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/524.md">acc:524</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/525.md">acc:525</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/557.md">acc:557</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/558.md">acc:558</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/559.md">acc:559</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/580.md">acc:580</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/redundant-export-method.md">v8cs:redundant-export-method</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/277.md">acc:277</a>
+          <a class="diagnostic-chip" href="acc/278.md">acc:278</a>
+          <a class="diagnostic-chip" href="acc/299.md">acc:299</a>
+          <a class="diagnostic-chip" href="acc/524.md">acc:524</a>
+          <a class="diagnostic-chip" href="acc/525.md">acc:525</a>
+          <a class="diagnostic-chip" href="acc/557.md">acc:557</a>
+          <a class="diagnostic-chip" href="acc/558.md">acc:558</a>
+          <a class="diagnostic-chip" href="acc/559.md">acc:559</a>
+          <a class="diagnostic-chip" href="acc/580.md">acc:580</a>
+          <a class="diagnostic-chip" href="v8-code-style/redundant-export-method.md">v8cs:redundant-export-method</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.3 — метаданные верхнего уровня сортируйте по имени acc:1108">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#23">п. 2.3 — Метаданные верхнего уровня сортируйте по имени</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1108.md">acc:1108</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1108.md">acc:1108</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:376 acc:377 acc:379 acc:380 acc:470 acc:526 acc:527 acc:531 acc:561 acc:562 acc:563 acc:564 acc:565 acc:566 acc:567 acc:568 acc:569 acc:570 acc:571 acc:572 acc:573 acc:574 acc:575 acc:576 acc:577 acc:578 acc:579 acc:581 acc:582 acc:590 acc:1349 acc:1350 acc:1351 acc:1352 acc:1374 acc:1435 acc:1448">
         <h2 class="diagnostics-clause__title"><a href="../std/467.md#std467">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/376.md">acc:376</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/377.md">acc:377</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/379.md">acc:379</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/380.md">acc:380</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/470.md">acc:470</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/526.md">acc:526</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/527.md">acc:527</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/531.md">acc:531</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/561.md">acc:561</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/562.md">acc:562</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/563.md">acc:563</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/564.md">acc:564</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/565.md">acc:565</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/566.md">acc:566</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/567.md">acc:567</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/568.md">acc:568</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/569.md">acc:569</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/570.md">acc:570</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/571.md">acc:571</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/572.md">acc:572</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/573.md">acc:573</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/574.md">acc:574</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/575.md">acc:575</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/576.md">acc:576</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/577.md">acc:577</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/578.md">acc:578</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/579.md">acc:579</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/581.md">acc:581</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/582.md">acc:582</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/590.md">acc:590</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1349.md">acc:1349</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1350.md">acc:1350</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1351.md">acc:1351</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1352.md">acc:1352</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1374.md">acc:1374</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1435.md">acc:1435</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1448.md">acc:1448</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/376.md">acc:376</a>
+          <a class="diagnostic-chip" href="acc/377.md">acc:377</a>
+          <a class="diagnostic-chip" href="acc/379.md">acc:379</a>
+          <a class="diagnostic-chip" href="acc/380.md">acc:380</a>
+          <a class="diagnostic-chip" href="acc/470.md">acc:470</a>
+          <a class="diagnostic-chip" href="acc/526.md">acc:526</a>
+          <a class="diagnostic-chip" href="acc/527.md">acc:527</a>
+          <a class="diagnostic-chip" href="acc/531.md">acc:531</a>
+          <a class="diagnostic-chip" href="acc/561.md">acc:561</a>
+          <a class="diagnostic-chip" href="acc/562.md">acc:562</a>
+          <a class="diagnostic-chip" href="acc/563.md">acc:563</a>
+          <a class="diagnostic-chip" href="acc/564.md">acc:564</a>
+          <a class="diagnostic-chip" href="acc/565.md">acc:565</a>
+          <a class="diagnostic-chip" href="acc/566.md">acc:566</a>
+          <a class="diagnostic-chip" href="acc/567.md">acc:567</a>
+          <a class="diagnostic-chip" href="acc/568.md">acc:568</a>
+          <a class="diagnostic-chip" href="acc/569.md">acc:569</a>
+          <a class="diagnostic-chip" href="acc/570.md">acc:570</a>
+          <a class="diagnostic-chip" href="acc/571.md">acc:571</a>
+          <a class="diagnostic-chip" href="acc/572.md">acc:572</a>
+          <a class="diagnostic-chip" href="acc/573.md">acc:573</a>
+          <a class="diagnostic-chip" href="acc/574.md">acc:574</a>
+          <a class="diagnostic-chip" href="acc/575.md">acc:575</a>
+          <a class="diagnostic-chip" href="acc/576.md">acc:576</a>
+          <a class="diagnostic-chip" href="acc/577.md">acc:577</a>
+          <a class="diagnostic-chip" href="acc/578.md">acc:578</a>
+          <a class="diagnostic-chip" href="acc/579.md">acc:579</a>
+          <a class="diagnostic-chip" href="acc/581.md">acc:581</a>
+          <a class="diagnostic-chip" href="acc/582.md">acc:582</a>
+          <a class="diagnostic-chip" href="acc/590.md">acc:590</a>
+          <a class="diagnostic-chip" href="acc/1349.md">acc:1349</a>
+          <a class="diagnostic-chip" href="acc/1350.md">acc:1350</a>
+          <a class="diagnostic-chip" href="acc/1351.md">acc:1351</a>
+          <a class="diagnostic-chip" href="acc/1352.md">acc:1352</a>
+          <a class="diagnostic-chip" href="acc/1374.md">acc:1374</a>
+          <a class="diagnostic-chip" href="acc/1435.md">acc:1435</a>
+          <a class="diagnostic-chip" href="acc/1448.md">acc:1448</a>
         </div>
       </section>
     </div>
@@ -1568,36 +1568,36 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — представление объекта (для регистра - представление записи) задавайте в единственном числе acc:93 acc:1210">
         <h2 class="diagnostics-clause__title"><a href="../std/468.md#2">п. 2 — Представление объекта (для регистра - Представление записи) задавайте в единственном числе</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/93.md">acc:93</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1210.md">acc:1210</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/93.md">acc:93</a>
+          <a class="diagnostic-chip" href="acc/1210.md">acc:1210</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — расширенное представление объекта (для регистра - расширенное представление записи) задавайте как полное название объекта в единственном числе acc:1211 acc:1213">
         <h2 class="diagnostics-clause__title"><a href="../std/468.md#3">п. 3 — Расширенное представление объекта (для регистра - Расширенное представление записи) задавайте как полное название объекта в единственном числе</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1211.md">acc:1211</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1213.md">acc:1213</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1211.md">acc:1211</a>
+          <a class="diagnostic-chip" href="acc/1213.md">acc:1213</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — представление списка задавайте во множественном числе acc:1214 v8cs:md-list-object-presentation">
         <h2 class="diagnostics-clause__title"><a href="../std/468.md#4">п. 4 — Представление списка задавайте во множественном числе</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1214.md">acc:1214</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/md-list-object-presentation.md">v8cs:md-list-object-presentation</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1214.md">acc:1214</a>
+          <a class="diagnostic-chip" href="v8-code-style/md-list-object-presentation.md">v8cs:md-list-object-presentation</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — расширенное представление списка задавайте как полное название списка объектов acc:1215 acc:1216">
         <h2 class="diagnostics-clause__title"><a href="../std/468.md#5">п. 5 — Расширенное представление списка задавайте как полное название списка объектов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1215.md">acc:1215</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1216.md">acc:1216</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1215.md">acc:1215</a>
+          <a class="diagnostic-chip" href="acc/1216.md">acc:1216</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — расширенное представление задавайте как полное название объекта метаданных acc:1217">
         <h2 class="diagnostics-clause__title"><a href="../std/468.md#6">п. 6 — Расширенное представление задавайте как полное название объекта метаданных</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1217.md">acc:1217</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1217.md">acc:1217</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7 — пояснение используйте для уточнения назначения объекта, если представления недостаточно" hidden data-empty="true">
@@ -1622,9 +1622,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — при разработке общих модулей выбирайте один из четырех контекстов выполнения acc:125 bslls:commonmoduleinvalidtype">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#12">п. 1.2 — При разработке общих модулей выбирайте один из четырех контекстов выполнения</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/125.md">acc:125</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleInvalidType.md">bslls:CommonModuleInvalidType</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/125.md">acc:125</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleInvalidType.md">bslls:CommonModuleInvalidType</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — серверные общие модули используйте для внутренней серверной бизнес-логики," hidden data-empty="true">
@@ -1633,34 +1633,34 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — серверные общие модули для вызова с клиента содержат серверные процедуры и функции, acc:90 bslls:commonmodulenameservercall v8cs:common-module-name-server-call">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#22">п. 2.2 — Серверные общие модули для вызова с клиента содержат серверные процедуры и функции,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/90.md">acc:90</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameServerCall.md">bslls:CommonModuleNameServerCall</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-server-call.md">v8cs:common-module-name-server-call</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/90.md">acc:90</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameServerCall.md">bslls:CommonModuleNameServerCall</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-server-call.md">v8cs:common-module-name-server-call</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.3 — клиентские общие модули содержат клиентскую бизнес-логику acc:80 bslls:commonmodulenameclient v8cs:common-module-name-client">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#23">п. 2.3 — Клиентские общие модули содержат клиентскую бизнес-логику</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/80.md">acc:80</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameClient.md">bslls:CommonModuleNameClient</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-client.md">v8cs:common-module-name-client</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/80.md">acc:80</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameClient.md">bslls:CommonModuleNameClient</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-client.md">v8cs:common-module-name-client</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.4 — чтобы избежать дублирования кода, acc:547 acc:1245 bslls:commonmodulenameclientserver v8cs:common-module-name-client-server">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#24">п. 2.4 — Чтобы избежать дублирования кода,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/547.md">acc:547</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1245.md">acc:1245</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameClientServer.md">bslls:CommonModuleNameClientServer</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-client-server.md">v8cs:common-module-name-client-server</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/547.md">acc:547</a>
+          <a class="diagnostic-chip" href="acc/1245.md">acc:1245</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameClientServer.md">bslls:CommonModuleNameClientServer</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-client-server.md">v8cs:common-module-name-client-server</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — имена общих модулей формируйте по общим правилам именования acc:73 bslls:commonmodulenamewords">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#31">п. 3.1 — Имена общих модулей формируйте по общим правилам именования</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/73.md">acc:73</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameWords.md">bslls:CommonModuleNameWords</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/73.md">acc:73</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameWords.md">bslls:CommonModuleNameWords</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — дополнительно к базовым постфиксам допускаются уточняющие постфиксы" hidden data-empty="true">
@@ -1669,31 +1669,31 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2.1 — для глобальных модулей используйте постфикс глобальный (global) acc:83 acc:363 bslls:commonmodulenameglobal bslls:commonmodulenameglobalclient v8cs:common-module-name-global v8cs:common-module-name-global-client">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#321">п. 3.2.1 — Для глобальных модулей используйте постфикс Глобальный (Global)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/83.md">acc:83</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/363.md">acc:363</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameGlobal.md">bslls:CommonModuleNameGlobal</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameGlobalClient.md">bslls:CommonModuleNameGlobalClient</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-global.md">v8cs:common-module-name-global</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-global-client.md">v8cs:common-module-name-global-client</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/83.md">acc:83</a>
+          <a class="diagnostic-chip" href="acc/363.md">acc:363</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameGlobal.md">bslls:CommonModuleNameGlobal</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameGlobalClient.md">bslls:CommonModuleNameGlobalClient</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-global.md">v8cs:common-module-name-global</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-global-client.md">v8cs:common-module-name-global-client</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2.2 — для модулей с признаком привилегированный acc:84 bslls:commonmodulenamefullaccess v8cs:common-module-name-full-access">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#322">п. 3.2.2 — Для модулей с признаком Привилегированный</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/84.md">acc:84</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameFullAccess.md">bslls:CommonModuleNameFullAccess</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-full-access.md">v8cs:common-module-name-full-access</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/84.md">acc:84</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameFullAccess.md">bslls:CommonModuleNameFullAccess</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-full-access.md">v8cs:common-module-name-full-access</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2.3 — для модулей с функциями повторного использования возвращаемых значений acc:85 bslls:commonmodulenamecached v8cs:common-module-name-cached v8cs:common-module-name-client-cached v8cs:common-module-name-server-call-cached">
         <h2 class="diagnostics-clause__title"><a href="../std/469.md#323">п. 3.2.3 — Для модулей с функциями повторного использования возвращаемых значений</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/85.md">acc:85</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommonModuleNameCached.md">bslls:CommonModuleNameCached</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-cached.md">v8cs:common-module-name-cached</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-client-cached.md">v8cs:common-module-name-client-cached</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-name-server-call-cached.md">v8cs:common-module-name-server-call-cached</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/85.md">acc:85</a>
+          <a class="diagnostic-chip" href="bslls/CommonModuleNameCached.md">bslls:CommonModuleNameCached</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-cached.md">v8cs:common-module-name-cached</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-client-cached.md">v8cs:common-module-name-client-cached</a>
+          <a class="diagnostic-chip" href="v8-code-style/common-module-name-server-call-cached.md">v8cs:common-module-name-server-call-cached</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2.4 — в библиотечных конфигурациях для модулей," hidden data-empty="true">
@@ -1802,9 +1802,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — длину кода (номера) устанавливайте в зависимости от назначения кода и способа его получения acc:1206 acc:1209">
         <h2 class="diagnostics-clause__title"><a href="../std/473.md#3">п. 3 — Длину кода (номера) устанавливайте в зависимости от назначения кода и способа его получения</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1206.md">acc:1206</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1209.md">acc:1209</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1206.md">acc:1206</a>
+          <a class="diagnostic-chip" href="acc/1209.md">acc:1209</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — для объектов с автонумерацией длину кода (номера) выбирайте исходя из потенциального количества:" hidden data-empty="true">
@@ -1837,9 +1837,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — синоним объекта заполняйте обязательно acc:58 acc:1151">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#11">п. 1.1 — Синоним объекта заполняйте обязательно</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/58.md">acc:58</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1151.md">acc:1151</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/58.md">acc:58</a>
+          <a class="diagnostic-chip" href="acc/1151.md">acc:1151</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — не используйте в синонимах сокращения, кроме общеупотребительных и понятных целевой аудитории, например:" hidden data-empty="true">
@@ -1856,12 +1856,12 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.5 — для стандартных реквизитов родитель и владелец всегда задавайте синонимы, отличные от значений по умолчанию acc:86 acc:347 acc:349 acc:350 v8cs:md-standard-attribute-synonym-empty">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#15">п. 1.5 — Для стандартных реквизитов Родитель и Владелец всегда задавайте синонимы, отличные от значений по умолчанию</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/86.md">acc:86</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/347.md">acc:347</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/349.md">acc:349</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/350.md">acc:350</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/md-standard-attribute-synonym-empty.md">v8cs:md-standard-attribute-synonym-empty</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/86.md">acc:86</a>
+          <a class="diagnostic-chip" href="acc/347.md">acc:347</a>
+          <a class="diagnostic-chip" href="acc/349.md">acc:349</a>
+          <a class="diagnostic-chip" href="acc/350.md">acc:350</a>
+          <a class="diagnostic-chip" href="v8-code-style/md-standard-attribute-synonym-empty.md">v8cs:md-standard-attribute-synonym-empty</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.6 — если есть два и более схожих объекта, синонимы должны полностью различать их назначение" hidden data-empty="true">
@@ -1870,11 +1870,11 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — имя объекта рекомендуется строить на основе синонима: acc:351 acc:352 acc:353 acc:354">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#21">п. 2.1 — Имя объекта рекомендуется строить на основе синонима:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/351.md">acc:351</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/352.md">acc:352</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/353.md">acc:353</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/354.md">acc:354</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/351.md">acc:351</a>
+          <a class="diagnostic-chip" href="acc/352.md">acc:352</a>
+          <a class="diagnostic-chip" href="acc/353.md">acc:353</a>
+          <a class="diagnostic-chip" href="acc/354.md">acc:354</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — исключение: объекты метаданных с префиксом удалить" hidden data-empty="true">
@@ -1883,24 +1883,24 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.3 — имена объектов метаданных не должны превышать 80 символов acc:381 bslls:metadataobjectnamelength v8cs:mdo-name-length">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#23">п. 2.3 — Имена объектов метаданных не должны превышать 80 символов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/381.md">acc:381</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/MetadataObjectNameLength.md">bslls:MetadataObjectNameLength</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/mdo-name-length.md">v8cs:mdo-name-length</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/381.md">acc:381</a>
+          <a class="diagnostic-chip" href="bslls/MetadataObjectNameLength.md">bslls:MetadataObjectNameLength</a>
+          <a class="diagnostic-chip" href="v8-code-style/mdo-name-length.md">v8cs:mdo-name-length</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.4 — для подчиненных объектов (реквизиты, измерения, ресурсы) не используйте имена, совпадающие с именами объектов-владельцев acc:1207 bslls:samemetadataobjectandchildnames">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#24">п. 2.4 — Для подчиненных объектов (реквизиты, измерения, ресурсы) не используйте имена, совпадающие с именами объектов-владельцев</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1207.md">acc:1207</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/SameMetadataObjectAndChildNames.md">bslls:SameMetadataObjectAndChildNames</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1207.md">acc:1207</a>
+          <a class="diagnostic-chip" href="bslls/SameMetadataObjectAndChildNames.md">bslls:SameMetadataObjectAndChildNames</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.5 — не используйте имена, совпадающие с именами таблиц языка запросов (документ, справочник, регистрсведений и т.п.) acc:1208 bslls:forbiddenmetadataname">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#25">п. 2.5 — Не используйте имена, совпадающие с именами таблиц языка запросов (Документ, Справочник, РегистрСведений и т.п.)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1208.md">acc:1208</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/ForbiddenMetadataName.md">bslls:ForbiddenMetadataName</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1208.md">acc:1208</a>
+          <a class="diagnostic-chip" href="bslls/ForbiddenMetadataName.md">bslls:ForbiddenMetadataName</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — комментарий задавайте только когда нужно дать разработчику важное пояснение по объекту" hidden data-empty="true">
@@ -1909,23 +1909,23 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — комментарий начинайте с прописной буквы acc:5">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#32">п. 3.2 — Комментарий начинайте с прописной буквы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/5.md">acc:5</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/5.md">acc:5</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — в именах, синонимах и комментариях не используйте букву ё acc:6 acc:7 acc:8 v8cs:mdo-ru-name-unallowed-letter">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#4">п. 4 — В именах, синонимах и комментариях не используйте букву ё</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/6.md">acc:6</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/7.md">acc:7</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/8.md">acc:8</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/mdo-ru-name-unallowed-letter.md">v8cs:mdo-ru-name-unallowed-letter</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/6.md">acc:6</a>
+          <a class="diagnostic-chip" href="acc/7.md">acc:7</a>
+          <a class="diagnostic-chip" href="acc/8.md">acc:8</a>
+          <a class="diagnostic-chip" href="v8-code-style/mdo-ru-name-unallowed-letter.md">v8cs:mdo-ru-name-unallowed-letter</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1218">
         <h2 class="diagnostics-clause__title"><a href="../std/474.md#std474">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1218.md">acc:1218</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1218.md">acc:1218</a>
         </div>
       </section>
     </div>
@@ -1938,8 +1938,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:123">
         <h2 class="diagnostics-clause__title"><a href="../std/477.md#std477">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/123.md">acc:123</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/123.md">acc:123</a>
         </div>
       </section>
     </div>
@@ -1952,10 +1952,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — свойство подсказка задавайте только для тех реквизитов и объектов, которые пользователь видит в интерфейсе и для которых действительно нужно пояснение acc:4 acc:59 acc:447">
         <h2 class="diagnostics-clause__title"><a href="../std/478.md#11">п. 1.1 — Свойство Подсказка задавайте только для тех реквизитов и объектов, которые пользователь видит в интерфейсе и для которых действительно нужно пояснение</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/4.md">acc:4</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/59.md">acc:59</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/447.md">acc:447</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/4.md">acc:4</a>
+          <a class="diagnostic-chip" href="acc/59.md">acc:59</a>
+          <a class="diagnostic-chip" href="acc/447.md">acc:447</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — для типизированных объектов метаданных, стандартных реквизитов и табличных частей, которые обязательны по логике объекта, устанавливайте свойство проверка заполнения = выдавать ошибку" hidden data-empty="true">
@@ -2048,27 +2048,27 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — синоним acc:60 acc:72">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#1">п. 1 — Синоним</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/60.md">acc:60</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/72.md">acc:72</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/60.md">acc:60</a>
+          <a class="diagnostic-chip" href="acc/72.md">acc:72</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — имя acc:61">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#2">п. 2 — Имя</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/61.md">acc:61</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/61.md">acc:61</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — краткая информация acc:1201">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#3">п. 3 — Краткая информация</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1201.md">acc:1201</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1201.md">acc:1201</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — подробная информация acc:1202">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#4">п. 4 — Подробная информация</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1202.md">acc:1202</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1202.md">acc:1202</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — логотип" hidden data-empty="true">
@@ -2081,26 +2081,26 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7 — авторские права acc:76">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#7">п. 7 — Авторские права</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/76.md">acc:76</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/76.md">acc:76</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 8 — адрес информации о поставщике acc:62">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#8">п. 8 — Адрес информации о поставщике</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/62.md">acc:62</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/62.md">acc:62</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 9 — адрес информации о конфигурации acc:63">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#9">п. 9 — Адрес информации о конфигурации</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/63.md">acc:63</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/63.md">acc:63</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 10 — поставщик acc:1203">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#10">п. 10 — Поставщик</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1203.md">acc:1203</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1203.md">acc:1203</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 11 — версия" hidden data-empty="true">
@@ -2109,8 +2109,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 12 — адрес каталога обновлений acc:64">
         <h2 class="diagnostics-clause__title"><a href="../std/482.md#12">п. 12 — Адрес каталога обновлений</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/64.md">acc:64</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/64.md">acc:64</a>
         </div>
       </section>
     </div>
@@ -2131,9 +2131,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — полный номер версии указывается в свойстве версия конфигурации acc:71 acc:1200">
         <h2 class="diagnostics-clause__title"><a href="../std/483.md#3">п. 3 — Полный номер версии указывается в свойстве Версия конфигурации</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/71.md">acc:71</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1200.md">acc:1200</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/71.md">acc:71</a>
+          <a class="diagnostic-chip" href="acc/1200.md">acc:1200</a>
         </div>
       </section>
     </div>
@@ -2194,8 +2194,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — неоправданное использование привилегированного режима создает риски безопасности bslls:setprivilegedmode">
         <h2 class="diagnostics-clause__title"><a href="../std/485.md#3">п. 3 — Неоправданное использование привилегированного режима создает риски безопасности</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/SetPrivilegedMode.md">bslls:SetPrivilegedMode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/SetPrivilegedMode.md">bslls:SetPrivilegedMode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — опасны экспортные серверные процедуры и функции," hidden data-empty="true">
@@ -2324,8 +2324,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 8.3 — при работе с временным хранилищем используйте один из двух вариантов: bslls:missingtempstoragedeletion">
         <h2 class="diagnostics-clause__title"><a href="../std/487.md#83">п. 8.3 — При работе с временным хранилищем используйте один из двух вариантов:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissingTempStorageDeletion.md">bslls:MissingTempStorageDeletion</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/MissingTempStorageDeletion.md">bslls:MissingTempStorageDeletion</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 9 — не добавляйте отдельный серверный вызов из клиентских передзаписью и послезаписи" hidden data-empty="true">
@@ -2342,8 +2342,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 12 — не возвращайте с сервера обратно параметры, которые пришли с клиента acc:1412">
         <h2 class="diagnostics-clause__title"><a href="../std/487.md#12_1">п. 12 — Не возвращайте с сервера обратно параметры, которые пришли с клиента</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1412.md">acc:1412</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1412.md">acc:1412</a>
         </div>
       </section>
     </div>
@@ -2364,17 +2364,17 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — в конфигурации должны быть обязательные роли: acc:224 acc:1046">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#2">п. 2 — В конфигурации должны быть обязательные роли:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/224.md">acc:224</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1046.md">acc:1046</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/224.md">acc:224</a>
+          <a class="diagnostic-chip" href="acc/1046.md">acc:1046</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — полныеправа (fullaccess) должна: acc:220 acc:1150 v8cs:right-exclusive-mode">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#21">п. 2.1 — ПолныеПрава (FullAccess) должна:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/220.md">acc:220</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1150.md">acc:1150</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-exclusive-mode.md">v8cs:right-exclusive-mode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/220.md">acc:220</a>
+          <a class="diagnostic-chip" href="acc/1150.md">acc:1150</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-exclusive-mode.md">v8cs:right-exclusive-mode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — администраторсистемы (systemadministrator) — роль системного администрирования" hidden data-empty="true">
@@ -2383,15 +2383,15 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.3 — интерактивноеоткрытиевнешнихотчетовиобработок v8cs:right-interactive-open-external-data-processors v8cs:right-interactive-open-external-reports">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#23">п. 2.3 — ИнтерактивноеОткрытиеВнешнихОтчетовИОбработок</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-interactive-open-external-data-processors.md">v8cs:right-interactive-open-external-data-processors</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-interactive-open-external-reports.md">v8cs:right-interactive-open-external-reports</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-interactive-open-external-data-processors.md">v8cs:right-interactive-open-external-data-processors</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-interactive-open-external-reports.md">v8cs:right-interactive-open-external-reports</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.4 — роли полныеправа, администраторсистемы и acc:251">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#24">п. 2.4 — Роли ПолныеПрава, АдминистраторСистемы и</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/251.md">acc:251</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/251.md">acc:251</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.5 — если нужно дать «неполноправным» пользователям право на удаление," hidden data-empty="true">
@@ -2400,53 +2400,53 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — для общих прав работы с информационной базой acc:162">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#3">п. 3 — Для общих прав работы с информационной базой</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/162.md">acc:162</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/162.md">acc:162</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — администрирование (administration) предоставляет права: v8cs:right-active-users v8cs:right-administration v8cs:right-configuration-extensions-administration v8cs:right-data-administration">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#31">п. 3.1 — Администрирование (Administration) предоставляет права:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-active-users.md">v8cs:right-active-users</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-administration.md">v8cs:right-administration</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-configuration-extensions-administration.md">v8cs:right-configuration-extensions-administration</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-data-administration.md">v8cs:right-data-administration</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-active-users.md">v8cs:right-active-users</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-administration.md">v8cs:right-administration</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-configuration-extensions-administration.md">v8cs:right-configuration-extensions-administration</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-data-administration.md">v8cs:right-data-administration</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — выводнапринтерфайлбуферобмена (outputtoprinterfileclipboard) предоставляет право: v8cs:right-output-to-printer-file-clipboard">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#32">п. 3.2 — ВыводНаПринтерФайлБуферОбмена (OutputToPrinterFileClipboard) предоставляет право:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-output-to-printer-file-clipboard.md">v8cs:right-output-to-printer-file-clipboard</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-output-to-printer-file-clipboard.md">v8cs:right-output-to-printer-file-clipboard</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.3 — запускautomation (startautomation) предоставляет право: v8cs:right-start-automation">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#33">п. 3.3 — ЗапускAutomation (StartAutomation) предоставляет право:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-start-automation.md">v8cs:right-start-automation</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-start-automation.md">v8cs:right-start-automation</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.4 — запусквебклиента (startwebclient) предоставляет право: v8cs:right-start-web-client">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#34">п. 3.4 — ЗапускВебКлиента (StartWebClient) предоставляет право:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-start-web-client.md">v8cs:right-start-web-client</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-start-web-client.md">v8cs:right-start-web-client</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.5 — запусквнешнегосоединения (startexternalconnection) предоставляет право: v8cs:right-start-external-connection">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#35">п. 3.5 — ЗапускВнешнегоСоединения (StartExternalConnection) предоставляет право:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-start-external-connection.md">v8cs:right-start-external-connection</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-start-external-connection.md">v8cs:right-start-external-connection</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.6 — запусктолстогоклиента (startthickclient) предоставляет право: v8cs:right-start-thick-client">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#36">п. 3.6 — ЗапускТолстогоКлиента (StartThickClient) предоставляет право:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-start-thick-client.md">v8cs:right-start-thick-client</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-start-thick-client.md">v8cs:right-start-thick-client</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.7 — запусктонкогоклиента (startthinclient) предоставляет право: v8cs:right-start-thin-client">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#37">п. 3.7 — ЗапускТонкогоКлиента (StartThinClient) предоставляет право:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-start-thin-client.md">v8cs:right-start-thin-client</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-start-thin-client.md">v8cs:right-start-thin-client</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.8 — интерактивноеоткрытиевнешнихотчетовиобработок" hidden data-empty="true">
@@ -2455,14 +2455,14 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.9 — обновлениеконфигурациибазыданных (updatedatabaseconfiguration) v8cs:right-update-database-configuration">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#39">п. 3.9 — ОбновлениеКонфигурацииБазыДанных (UpdateDatabaseConfiguration)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-update-database-configuration.md">v8cs:right-update-database-configuration</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-update-database-configuration.md">v8cs:right-update-database-configuration</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.10 — просмотржурналарегистрации (vieweventlog) v8cs:right-view-event-log">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#310">п. 3.10 — ПросмотрЖурналаРегистрации (ViewEventLog)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-view-event-log.md">v8cs:right-view-event-log</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-view-event-log.md">v8cs:right-view-event-log</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.11 — режимтехническогоспециалиста (technicalspecialistmode)" hidden data-empty="true">
@@ -2471,8 +2471,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.12 — сохранениеданныхпользователя (saveuserdata) v8cs:right-save-user-data">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#312">п. 3.12 — СохранениеДанныхПользователя (SaveUserData)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-save-user-data.md">v8cs:right-save-user-data</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/right-save-user-data.md">v8cs:right-save-user-data</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.1 — если отдельным пользователям нужен временный или постоянный доступ" hidden data-empty="true">
@@ -2485,29 +2485,29 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.3 — если роли построены по отдельным функциям, acc:419 acc:420">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#43">п. 4.3 — Если роли построены по отдельным функциям,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/419.md">acc:419</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/420.md">acc:420</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/419.md">acc:419</a>
+          <a class="diagnostic-chip" href="acc/420.md">acc:420</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — ни в одной роли, включая полныеправа и администраторсистемы, acc:164 acc:165 acc:192 acc:193 acc:194 acc:195 acc:218 acc:219 acc:1149 v8cs:right-delete v8cs:right-interactive-clear-deletion-mark-predefined-data v8cs:right-interactive-delete v8cs:right-interactive-delete-marked-predefined-data v8cs:right-interactive-delete-predefined-data v8cs:right-interactive-set-deletion-mark-predefined-data">
         <h2 class="diagnostics-clause__title"><a href="../std/488.md#5">п. 5 — Ни в одной роли, включая ПолныеПрава и АдминистраторСистемы,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/164.md">acc:164</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/165.md">acc:165</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/192.md">acc:192</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/193.md">acc:193</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/194.md">acc:194</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/195.md">acc:195</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/218.md">acc:218</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/219.md">acc:219</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1149.md">acc:1149</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-delete.md">v8cs:right-delete</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-interactive-clear-deletion-mark-predefined-data.md">v8cs:right-interactive-clear-deletion-mark-predefined-data</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-interactive-delete.md">v8cs:right-interactive-delete</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-interactive-delete-marked-predefined-data.md">v8cs:right-interactive-delete-marked-predefined-data</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-interactive-delete-predefined-data.md">v8cs:right-interactive-delete-predefined-data</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/right-interactive-set-deletion-mark-predefined-data.md">v8cs:right-interactive-set-deletion-mark-predefined-data</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/164.md">acc:164</a>
+          <a class="diagnostic-chip" href="acc/165.md">acc:165</a>
+          <a class="diagnostic-chip" href="acc/192.md">acc:192</a>
+          <a class="diagnostic-chip" href="acc/193.md">acc:193</a>
+          <a class="diagnostic-chip" href="acc/194.md">acc:194</a>
+          <a class="diagnostic-chip" href="acc/195.md">acc:195</a>
+          <a class="diagnostic-chip" href="acc/218.md">acc:218</a>
+          <a class="diagnostic-chip" href="acc/219.md">acc:219</a>
+          <a class="diagnostic-chip" href="acc/1149.md">acc:1149</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-delete.md">v8cs:right-delete</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-interactive-clear-deletion-mark-predefined-data.md">v8cs:right-interactive-clear-deletion-mark-predefined-data</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-interactive-delete.md">v8cs:right-interactive-delete</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-interactive-delete-marked-predefined-data.md">v8cs:right-interactive-delete-marked-predefined-data</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-interactive-delete-predefined-data.md">v8cs:right-interactive-delete-predefined-data</a>
+          <a class="diagnostic-chip" href="v8-code-style/right-interactive-set-deletion-mark-predefined-data.md">v8cs:right-interactive-set-deletion-mark-predefined-data</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — при разработке расширений не рекомендуется заимствовать и изменять роли" hidden data-empty="true">
@@ -2576,9 +2576,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — строку поиска в командной панели динамического списка acc:261 acc:262">
         <h2 class="diagnostics-clause__title"><a href="../std/489.md#3">п. 3 — Строку поиска в командной панели динамического списка</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/261.md">acc:261</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/262.md">acc:262</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/261.md">acc:261</a>
+          <a class="diagnostic-chip" href="acc/262.md">acc:262</a>
         </div>
       </section>
     </div>
@@ -2595,9 +2595,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — для блокировки из встроенного языка используйте метод заблокировать() у объекта или метод глобального контекста заблокироватьданныедляредактирования() acc:1327 acc:1328">
         <h2 class="diagnostics-clause__title"><a href="../std/490.md#12">п. 1.2 — Для блокировки из встроенного языка используйте метод Заблокировать() у объекта или метод глобального контекста ЗаблокироватьДанныеДляРедактирования()</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1327.md">acc:1327</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1328.md">acc:1328</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1327.md">acc:1327</a>
+          <a class="diagnostic-chip" href="acc/1328.md">acc:1328</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — при редактировании данных в формах платформа 1с:предприятие автоматически устанавливает блокировку объекта, который указан как основной реквизит формы" hidden data-empty="true">
@@ -2626,8 +2626,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — используйте префикс подключаемый для всех обработчиков, которые подключаются из кода v8cs:module-attachable-event-handler-name">
         <h2 class="diagnostics-clause__title"><a href="../std/492.md#1">п. 1 — Используйте префикс Подключаемый для всех обработчиков, которые подключаются из кода</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-attachable-event-handler-name.md">v8cs:module-attachable-event-handler-name</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/module-attachable-event-handler-name.md">v8cs:module-attachable-event-handler-name</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если подключение обработчика делается прямо в модуле формы, предупреждение о неиспользуемой процедуре обычно не возникает" hidden data-empty="true">
@@ -2636,8 +2636,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:100">
         <h2 class="diagnostics-clause__title"><a href="../std/492.md#std492">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/100.md">acc:100</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/100.md">acc:100</a>
         </div>
       </section>
     </div>
@@ -2666,9 +2666,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1419 v8cs:reading-attribute-from-database">
         <h2 class="diagnostics-clause__title"><a href="../std/496.md#std496">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1419.md">acc:1419</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/reading-attribute-from-database.md">v8cs:reading-attribute-from-database</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1419.md">acc:1419</a>
+          <a class="diagnostic-chip" href="v8-code-style/reading-attribute-from-database.md">v8cs:reading-attribute-from-database</a>
         </div>
       </section>
     </div>
@@ -2697,26 +2697,26 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — используйте строковый идентификатор типа события acc:156 acc:157 acc:161 acc:370 acc:371">
         <h2 class="diagnostics-clause__title"><a href="../std/498.md#21">п. 2.1 — Используйте строковый идентификатор типа события</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/156.md">acc:156</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/157.md">acc:157</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/161.md">acc:161</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/370.md">acc:370</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/371.md">acc:371</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/156.md">acc:156</a>
+          <a class="diagnostic-chip" href="acc/157.md">acc:157</a>
+          <a class="diagnostic-chip" href="acc/161.md">acc:161</a>
+          <a class="diagnostic-chip" href="acc/370.md">acc:370</a>
+          <a class="diagnostic-chip" href="acc/371.md">acc:371</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — выбирайте уровень важности события по смыслу: acc:154 bslls:usagewritelogevent">
         <h2 class="diagnostics-clause__title"><a href="../std/498.md#22">п. 2.2 — Выбирайте уровень важности события по смыслу:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/154.md">acc:154</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsageWriteLogEvent.md">bslls:UsageWriteLogEvent</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/154.md">acc:154</a>
+          <a class="diagnostic-chip" href="bslls/UsageWriteLogEvent.md">bslls:UsageWriteLogEvent</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.3 — комментарий — это текстовая неструктурированная информация о событии acc:153 bslls:usagewritelogevent">
         <h2 class="diagnostics-clause__title"><a href="../std/498.md#23">п. 2.3 — Комментарий — это текстовая неструктурированная информация о событии</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/153.md">acc:153</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsageWriteLogEvent.md">bslls:UsageWriteLogEvent</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/153.md">acc:153</a>
+          <a class="diagnostic-chip" href="bslls/UsageWriteLogEvent.md">bslls:UsageWriteLogEvent</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — не используйте выборки из журнала регистрации там, где критична высокая скорость" hidden data-empty="true">
@@ -2725,8 +2725,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:152">
         <h2 class="diagnostics-clause__title"><a href="../std/498.md#std498">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/152.md">acc:152</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/152.md">acc:152</a>
         </div>
       </section>
     </div>
@@ -2739,14 +2739,14 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — не перехватывайте исключения без необходимости bslls:trynumber">
         <h2 class="diagnostics-clause__title"><a href="../std/499.md#1">п. 1 — Не перехватывайте исключения без необходимости</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/TryNumber.md">bslls:TryNumber</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/TryNumber.md">bslls:TryNumber</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если технологический текст исключения непонятен пользователю, acc:280">
         <h2 class="diagnostics-clause__title"><a href="../std/499.md#2">п. 2 — Если технологический текст исключения непонятен пользователю,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/280.md">acc:280</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/280.md">acc:280</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — в таких случаях допустимо перехватить и перевызвать исключение" hidden data-empty="true">
@@ -2755,14 +2755,14 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — в особых сценариях (например, обработчики обновления информационной базы) bslls:usagewritelogevent">
         <h2 class="diagnostics-clause__title"><a href="../std/499.md#22">п. 2.2 — В особых сценариях (например, обработчики обновления информационной базы)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsageWriteLogEvent.md">bslls:UsageWriteLogEvent</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/UsageWriteLogEvent.md">bslls:UsageWriteLogEvent</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — частные случаи некорректного перехвата исключений acc:1388">
         <h2 class="diagnostics-clause__title"><a href="../std/499.md#3">п. 3 — Частные случаи некорректного перехвата исключений</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1388.md">acc:1388</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1388.md">acc:1388</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — не анализируйте текст исключения для интерпретации причины ошибки" hidden data-empty="true">
@@ -2771,9 +2771,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — недопустимо перехватывать любые исключения бесследно для системного администратора bslls:missingcodetrycatchex v8cs:empty-except-statement">
         <h2 class="diagnostics-clause__title"><a href="../std/499.md#32">п. 3.2 — Недопустимо перехватывать любые исключения бесследно для системного администратора</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissingCodeTryCatchEx.md">bslls:MissingCodeTryCatchEx</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/empty-except-statement.md">v8cs:empty-except-statement</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/MissingCodeTryCatchEx.md">bslls:MissingCodeTryCatchEx</a>
+          <a class="diagnostic-chip" href="v8-code-style/empty-except-statement.md">v8cs:empty-except-statement</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — порядок обработки исключений при использовании транзакций" hidden data-empty="true">
@@ -2814,9 +2814,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — в каждой конфигурации acc:1134 acc:1135">
         <h2 class="diagnostics-clause__title"><a href="../std/500.md#4">п. 4 — В каждой конфигурации</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1134.md">acc:1134</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1135.md">acc:1135</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1134.md">acc:1134</a>
+          <a class="diagnostic-chip" href="acc/1135.md">acc:1135</a>
         </div>
       </section>
     </div>
@@ -2829,9 +2829,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для отображения пунктов меню acc:242 acc:1133">
         <h2 class="diagnostics-clause__title"><a href="../std/501.md#1">п. 1 — Для отображения пунктов меню</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/242.md">acc:242</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1133.md">acc:1133</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/242.md">acc:242</a>
+          <a class="diagnostic-chip" href="acc/1133.md">acc:1133</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — на верхнем уровне главного меню" hidden data-empty="true">
@@ -2904,8 +2904,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1241">
         <h2 class="diagnostics-clause__title"><a href="../std/503.md#std503">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1241.md">acc:1241</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1241.md">acc:1241</a>
         </div>
       </section>
     </div>
@@ -2918,8 +2918,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1240">
         <h2 class="diagnostics-clause__title"><a href="../std/504.md#std504">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1240.md">acc:1240</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1240.md">acc:1240</a>
         </div>
       </section>
     </div>
@@ -2932,9 +2932,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1224 acc:1225">
         <h2 class="diagnostics-clause__title"><a href="../std/505.md#std505">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1224.md">acc:1224</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1225.md">acc:1225</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1224.md">acc:1224</a>
+          <a class="diagnostic-chip" href="acc/1225.md">acc:1225</a>
         </div>
       </section>
     </div>
@@ -2947,9 +2947,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1136 acc:1238">
         <h2 class="diagnostics-clause__title"><a href="../std/506.md#std506">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1136.md">acc:1136</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1238.md">acc:1238</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1136.md">acc:1136</a>
+          <a class="diagnostic-chip" href="acc/1238.md">acc:1238</a>
         </div>
       </section>
     </div>
@@ -2962,8 +2962,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1239">
         <h2 class="diagnostics-clause__title"><a href="../std/507.md#std507">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1239.md">acc:1239</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1239.md">acc:1239</a>
         </div>
       </section>
     </div>
@@ -3000,8 +3000,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:120">
         <h2 class="diagnostics-clause__title"><a href="../std/511.md#std511">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/120.md">acc:120</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/120.md">acc:120</a>
         </div>
       </section>
     </div>
@@ -3038,9 +3038,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:117 acc:118">
         <h2 class="diagnostics-clause__title"><a href="../std/515.md#std515">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/117.md">acc:117</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/118.md">acc:118</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/117.md">acc:117</a>
+          <a class="diagnostic-chip" href="acc/118.md">acc:118</a>
         </div>
       </section>
     </div>
@@ -3053,10 +3053,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:113 acc:114 acc:115">
         <h2 class="diagnostics-clause__title"><a href="../std/516.md#std516">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/113.md">acc:113</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/114.md">acc:114</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/115.md">acc:115</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/113.md">acc:113</a>
+          <a class="diagnostic-chip" href="acc/114.md">acc:114</a>
+          <a class="diagnostic-chip" href="acc/115.md">acc:115</a>
         </div>
       </section>
     </div>
@@ -3125,22 +3125,22 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для оформления конфигурации используйте стиль основной acc:1125 acc:1131 acc:1132">
         <h2 class="diagnostics-clause__title"><a href="../std/524.md#1">п. 1 — Для оформления конфигурации используйте стиль Основной</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1125.md">acc:1125</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1131.md">acc:1131</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1132.md">acc:1132</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1125.md">acc:1125</a>
+          <a class="diagnostic-chip" href="acc/1131.md">acc:1131</a>
+          <a class="diagnostic-chip" href="acc/1132.md">acc:1132</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — кроме стандартных элементов стиля платформы, acc:1126 acc:1127 acc:1128 acc:1129 acc:1130 acc:1221 acc:1222">
         <h2 class="diagnostics-clause__title"><a href="../std/524.md#2">п. 2 — Кроме стандартных элементов стиля платформы,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1126.md">acc:1126</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1127.md">acc:1127</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1128.md">acc:1128</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1129.md">acc:1129</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1130.md">acc:1130</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1221.md">acc:1221</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1222.md">acc:1222</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1126.md">acc:1126</a>
+          <a class="diagnostic-chip" href="acc/1127.md">acc:1127</a>
+          <a class="diagnostic-chip" href="acc/1128.md">acc:1128</a>
+          <a class="diagnostic-chip" href="acc/1129.md">acc:1129</a>
+          <a class="diagnostic-chip" href="acc/1130.md">acc:1130</a>
+          <a class="diagnostic-chip" href="acc/1221.md">acc:1221</a>
+          <a class="diagnostic-chip" href="acc/1222.md">acc:1222</a>
         </div>
       </section>
     </div>
@@ -3177,11 +3177,11 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для всех документов рекомендуется создавать реквизит комментарий (строка неограниченной длины) acc:108 acc:109 v8cs:md-object-attribute-comment-incorrect-type v8cs:md-object-attribute-comment-not-exist">
         <h2 class="diagnostics-clause__title"><a href="../std/531.md#1">п. 1 — Для всех документов рекомендуется создавать реквизит Комментарий (строка неограниченной длины)</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/108.md">acc:108</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/109.md">acc:109</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/md-object-attribute-comment-incorrect-type.md">v8cs:md-object-attribute-comment-incorrect-type</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/md-object-attribute-comment-not-exist.md">v8cs:md-object-attribute-comment-not-exist</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/108.md">acc:108</a>
+          <a class="diagnostic-chip" href="acc/109.md">acc:109</a>
+          <a class="diagnostic-chip" href="v8-code-style/md-object-attribute-comment-incorrect-type.md">v8cs:md-object-attribute-comment-incorrect-type</a>
+          <a class="diagnostic-chip" href="v8-code-style/md-object-attribute-comment-not-exist.md">v8cs:md-object-attribute-comment-not-exist</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если рабочий сценарий предполагает ввод произвольного прикладного текста, создавайте отдельные реквизиты прикладного назначения" hidden data-empty="true">
@@ -3202,15 +3202,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — при разработке ролей выбирайте методику установки прав, которая не допускает появления ролей с доступом к полям объекта без доступа к самому объекту acc:146">
         <h2 class="diagnostics-clause__title"><a href="../std/532.md#1">п. 1 — При разработке ролей выбирайте методику установки прав, которая не допускает появления ролей с доступом к полям объекта без доступа к самому объекту</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/146.md">acc:146</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/146.md">acc:146</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 acc:145 bslls:setpermissionsfornewobjects">
         <h2 class="diagnostics-clause__title"><a href="../std/532.md#2">п. 2</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/145.md">acc:145</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/SetPermissionsForNewObjects.md">bslls:SetPermissionsForNewObjects</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/145.md">acc:145</a>
+          <a class="diagnostic-chip" href="bslls/SetPermissionsForNewObjects.md">bslls:SetPermissionsForNewObjects</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — при добавлении новой роли:" hidden data-empty="true">
@@ -3271,10 +3271,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — не удаляйте устаревшие объекты и реквизиты сразу acc:236 acc:259 acc:1338">
         <h2 class="diagnostics-clause__title"><a href="../std/534.md#11">п. 1.1 — Не удаляйте устаревшие объекты и реквизиты сразу</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/236.md">acc:236</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/259.md">acc:259</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1338.md">acc:1338</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/236.md">acc:236</a>
+          <a class="diagnostic-chip" href="acc/259.md">acc:259</a>
+          <a class="diagnostic-chip" href="acc/1338.md">acc:1338</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — после изменения структуры обеспечьте перенос данных из устаревших объектов и реквизитов в новую структуру" hidden data-empty="true">
@@ -3287,9 +3287,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.4 — замените по всей конфигурации обращения к устаревшим объектам и реквизитам на новые acc:1370 acc:1371">
         <h2 class="diagnostics-clause__title"><a href="../std/534.md#14">п. 1.4 — Замените по всей конфигурации обращения к устаревшим объектам и реквизитам на новые</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1370.md">acc:1370</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1371.md">acc:1371</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1370.md">acc:1370</a>
+          <a class="diagnostic-chip" href="acc/1371.md">acc:1371</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.5 — сортируйте устаревшие объекты и реквизиты в дереве метаданных по общим требованиям к конфигурации" hidden data-empty="true">
@@ -3310,8 +3310,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:375">
         <h2 class="diagnostics-clause__title"><a href="../std/534.md#std534">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/375.md">acc:375</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/375.md">acc:375</a>
         </div>
       </section>
     </div>
@@ -3396,8 +3396,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — дополнительно обезопасьте выполнение acc:302">
         <h2 class="diagnostics-clause__title"><a href="../std/540.md#32">п. 3.2 — Дополнительно обезопасьте выполнение</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/302.md">acc:302</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/302.md">acc:302</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.1 — если выполнение регламентного задания" hidden data-empty="true">
@@ -3414,8 +3414,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — если регламентное задание acc:496">
         <h2 class="diagnostics-clause__title"><a href="../std/540.md#6">п. 6 — Если регламентное задание</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/496.md">acc:496</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/496.md">acc:496</a>
         </div>
       </section>
     </div>
@@ -3448,29 +3448,29 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — при обращении к файлам и каталогам из кода конфигурации учитывайте права пользователя ос, от имени которого запущено приложение acc:441 acc:495 bslls:filesystemaccess bslls:tempfilesdir">
         <h2 class="diagnostics-clause__title"><a href="../std/542.md#1">п. 1 — При обращении к файлам и каталогам из кода конфигурации учитывайте права пользователя ОС, от имени которого запущено приложение</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/441.md">acc:441</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/495.md">acc:495</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/FileSystemAccess.md">bslls:FileSystemAccess</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/TempFilesDir.md">bslls:TempFilesDir</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/441.md">acc:441</a>
+          <a class="diagnostic-chip" href="acc/495.md">acc:495</a>
+          <a class="diagnostic-chip" href="bslls/FileSystemAccess.md">bslls:FileSystemAccess</a>
+          <a class="diagnostic-chip" href="bslls/TempFilesDir.md">bslls:TempFilesDir</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для получения имени временного файла используйте получитьимявременногофайла() (исключение: веб-клиент, см acc:441 acc:495 bslls:filesystemaccess bslls:tempfilesdir">
         <h2 class="diagnostics-clause__title"><a href="../std/542.md#1_1">п. 1 — Для получения имени временного файла используйте ПолучитьИмяВременногоФайла() (исключение: веб-клиент, см</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/441.md">acc:441</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/495.md">acc:495</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/FileSystemAccess.md">bslls:FileSystemAccess</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/TempFilesDir.md">bslls:TempFilesDir</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/441.md">acc:441</a>
+          <a class="diagnostic-chip" href="acc/495.md">acc:495</a>
+          <a class="diagnostic-chip" href="bslls/FileSystemAccess.md">bslls:FileSystemAccess</a>
+          <a class="diagnostic-chip" href="bslls/TempFilesDir.md">bslls:TempFilesDir</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1 — если один и тот же файл обрабатывается и на клиенте, и на сервере, передавайте его через временное хранилище acc:441 acc:495 bslls:filesystemaccess bslls:tempfilesdir">
         <h2 class="diagnostics-clause__title"><a href="../std/542.md#1_2">п. 1 — Если один и тот же файл обрабатывается и на клиенте, и на сервере, передавайте его через временное хранилище</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/441.md">acc:441</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/495.md">acc:495</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/FileSystemAccess.md">bslls:FileSystemAccess</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/TempFilesDir.md">bslls:TempFilesDir</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/441.md">acc:441</a>
+          <a class="diagnostic-chip" href="acc/495.md">acc:495</a>
+          <a class="diagnostic-chip" href="bslls/FileSystemAccess.md">bslls:FileSystemAccess</a>
+          <a class="diagnostic-chip" href="bslls/TempFilesDir.md">bslls:TempFilesDir</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — если код выполняется на клиенте, доступ к файловой системе идет под правами пользователя, который запустил приложение (тонкий, толстый или веб-клиент)" hidden data-empty="true">
@@ -3519,9 +3519,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — после завершения работы временный файл или каталог удаляйте явно bslls:missingtemporaryfiledeletion v8cs:missing-temporary-file-deletion">
         <h2 class="diagnostics-clause__title"><a href="../std/542.md#4">п. 4 — После завершения работы временный файл или каталог удаляйте явно</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissingTemporaryFileDeletion.md">bslls:MissingTemporaryFileDeletion</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/missing-temporary-file-deletion.md">v8cs:missing-temporary-file-deletion</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/MissingTemporaryFileDeletion.md">bslls:MissingTemporaryFileDeletion</a>
+          <a class="diagnostic-chip" href="v8-code-style/missing-temporary-file-deletion.md">v8cs:missing-temporary-file-deletion</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — если временные файлы или каталоги используются на сервере, завершайте работу с ними в рамках одного серверного вызова" hidden data-empty="true">
@@ -3546,20 +3546,20 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — если структура интерфейса и функциональная структура совпадают, можно использовать одну и ту же иерархию подсистем acc:263">
         <h2 class="diagnostics-clause__title"><a href="../std/543.md#11">п. 1.1 — Если структура интерфейса и функциональная структура совпадают, можно использовать одну и ту же иерархию подсистем</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/263.md">acc:263</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/263.md">acc:263</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — если логическая группировка объектов не совпадает с разделами интерфейса, создавайте отдельную иерархию «функциональных» подсистем acc:264">
         <h2 class="diagnostics-clause__title"><a href="../std/543.md#12">п. 1.2 — Если логическая группировка объектов не совпадает с разделами интерфейса, создавайте отдельную иерархию «функциональных» подсистем</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/264.md">acc:264</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/264.md">acc:264</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — объекты без визуального представления в командном интерфейсе (общие модули, регламентные задания, константы, подписки на события и т.п.) включайте только в «функциональные» подсистемы acc:538">
         <h2 class="diagnostics-clause__title"><a href="../std/543.md#13">п. 1.3 — Объекты без визуального представления в командном интерфейсе (общие модули, регламентные задания, константы, подписки на события и т.п.) включайте только в «функциональные» подсистемы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/538.md">acc:538</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/538.md">acc:538</a>
         </div>
       </section>
     </div>
@@ -3572,10 +3572,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:250 bslls:commandmoduleexportmethods v8cs:export-method-in-command-form-module">
         <h2 class="diagnostics-clause__title"><a href="../std/544.md#std544">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/250.md">acc:250</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommandModuleExportMethods.md">bslls:CommandModuleExportMethods</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/export-method-in-command-form-module.md">v8cs:export-method-in-command-form-module</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/250.md">acc:250</a>
+          <a class="diagnostic-chip" href="bslls/CommandModuleExportMethods.md">bslls:CommandModuleExportMethods</a>
+          <a class="diagnostic-chip" href="v8-code-style/export-method-in-command-form-module.md">v8cs:export-method-in-command-form-module</a>
         </div>
       </section>
     </div>
@@ -3596,17 +3596,17 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — не используйте оператор перейти acc:89 bslls:usinggoto v8cs:use-goto-operator">
         <h2 class="diagnostics-clause__title"><a href="../std/547.md#1">п. 1 — Не используйте оператор Перейти</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/89.md">acc:89</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsingGoto.md">bslls:UsingGoto</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/use-goto-operator.md">v8cs:use-goto-operator</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/89.md">acc:89</a>
+          <a class="diagnostic-chip" href="bslls/UsingGoto.md">bslls:UsingGoto</a>
+          <a class="diagnostic-chip" href="v8-code-style/use-goto-operator.md">v8cs:use-goto-operator</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — оператор перейти не поддерживается в веб-клиенте acc:249 v8cs:not-support-goto-operator-webclient">
         <h2 class="diagnostics-clause__title"><a href="../std/547.md#2">п. 2 — Оператор Перейти не поддерживается в веб-клиенте</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/249.md">acc:249</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/not-support-goto-operator-webclient.md">v8cs:not-support-goto-operator-webclient</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/249.md">acc:249</a>
+          <a class="diagnostic-chip" href="v8-code-style/not-support-goto-operator-webclient.md">v8cs:not-support-goto-operator-webclient</a>
         </div>
       </section>
     </div>
@@ -3663,8 +3663,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — при подготовке табличного документа на сервере acc:384">
         <h2 class="diagnostics-clause__title"><a href="../std/548.md#6">п. 6 — При подготовке табличного документа на сервере</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/384.md">acc:384</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/384.md">acc:384</a>
         </div>
       </section>
     </div>
@@ -3877,9 +3877,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — при взаимодействии библиотек, конфигураций-потребителей и внешних систем разделяйте области видимости программного кода acc:277 acc:278">
         <h2 class="diagnostics-clause__title"><a href="../std/551.md#3">п. 3 — При взаимодействии библиотек, конфигураций-потребителей и внешних систем разделяйте области видимости программного кода</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/277.md">acc:277</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/278.md">acc:278</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/277.md">acc:277</a>
+          <a class="diagnostic-chip" href="acc/278.md">acc:278</a>
         </div>
       </section>
     </div>
@@ -3960,8 +3960,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — в библиотеках более высокого уровня реализацию процедур и функций базового переопределяемого модуля доопределяйте при необходимости acc:499">
         <h2 class="diagnostics-clause__title"><a href="../std/554.md#2">п. 2 — В библиотеках более высокого уровня реализацию процедур и функций базового переопределяемого модуля доопределяйте при необходимости</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/499.md">acc:499</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/499.md">acc:499</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — в конечной конфигурации-потребителе реализация переопределяемого модуля строится как цепочка вызовов библиотек плюс прикладная часть" hidden data-empty="true">
@@ -3970,13 +3970,13 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:500 acc:501 acc:502 acc:503 acc:505 acc:506">
         <h2 class="diagnostics-clause__title"><a href="../std/554.md#std554">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/500.md">acc:500</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/501.md">acc:501</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/502.md">acc:502</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/503.md">acc:503</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/505.md">acc:505</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/506.md">acc:506</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/500.md">acc:500</a>
+          <a class="diagnostic-chip" href="acc/501.md">acc:501</a>
+          <a class="diagnostic-chip" href="acc/502.md">acc:502</a>
+          <a class="diagnostic-chip" href="acc/503.md">acc:503</a>
+          <a class="diagnostic-chip" href="acc/505.md">acc:505</a>
+          <a class="diagnostic-chip" href="acc/506.md">acc:506</a>
         </div>
       </section>
     </div>
@@ -4309,14 +4309,14 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — сообщения должны быть информативными и содержательными acc:1223">
         <h2 class="diagnostics-clause__title"><a href="../std/585.md#11">п. 1.1 — Сообщения должны быть информативными и содержательными</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1223.md">acc:1223</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1223.md">acc:1223</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — не используйте восклицательные знаки и повелительный тон, acc:374">
         <h2 class="diagnostics-clause__title"><a href="../std/585.md#12">п. 1.2 — Не используйте восклицательные знаки и повелительный тон,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/374.md">acc:374</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/374.md">acc:374</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — пишите сообщение текстом, понятным пользователю" hidden data-empty="true">
@@ -4457,8 +4457,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — расположение группы полей &quot;ответственный&quot; и &quot;комментарий&quot; acc:110">
         <h2 class="diagnostics-clause__title"><a href="../std/587.md#1">п. 1 — Расположение группы полей &quot;Ответственный&quot; и &quot;Комментарий&quot;</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/110.md">acc:110</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/110.md">acc:110</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — оформление поля &quot;ответственный&quot;" hidden data-empty="true">
@@ -4467,8 +4467,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — оформление поля &quot;комментарий&quot; acc:111">
         <h2 class="diagnostics-clause__title"><a href="../std/587.md#3">п. 3 — Оформление поля &quot;Комментарий&quot;</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/111.md">acc:111</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/111.md">acc:111</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — оформление многострочного поля &quot;комментарий&quot;" hidden data-empty="true">
@@ -4657,8 +4657,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1401">
         <h2 class="diagnostics-clause__title"><a href="../std/598.md#std598">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1401.md">acc:1401</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1401.md">acc:1401</a>
         </div>
       </section>
     </div>
@@ -4939,8 +4939,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:392">
         <h2 class="diagnostics-clause__title"><a href="../std/620.md#std620">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/392.md">acc:392</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/392.md">acc:392</a>
         </div>
       </section>
     </div>
@@ -5073,9 +5073,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — не размещайте экспортные процедуры и функции в модулях форм acc:78 v8cs:export-method-in-command-form-module">
         <h2 class="diagnostics-clause__title"><a href="../std/630.md#11">п. 1.1 — Не размещайте экспортные процедуры и функции в модулях форм</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/78.md">acc:78</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/export-method-in-command-form-module.md">v8cs:export-method-in-command-form-module</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/78.md">acc:78</a>
+          <a class="diagnostic-chip" href="v8-code-style/export-method-in-command-form-module.md">v8cs:export-method-in-command-form-module</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — не используйте экспортные процедуры и функции формы для параметризации формы при открытии" hidden data-empty="true">
@@ -5248,9 +5248,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — чтобы передавать параметры между подписками на события и обработчиками событий модуля объекта из внешнего кода, используйте свойство дополнительныесвойства bslls:exportvariables v8cs:object-module-export-variable">
         <h2 class="diagnostics-clause__title"><a href="../std/639.md#21">п. 2.1 — Чтобы передавать параметры между подписками на события и обработчиками событий модуля объекта из внешнего кода, используйте свойство ДополнительныеСвойства</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/ExportVariables.md">bslls:ExportVariables</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/object-module-export-variable.md">v8cs:object-module-export-variable</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/ExportVariables.md">bslls:ExportVariables</a>
+          <a class="diagnostic-chip" href="v8-code-style/object-module-export-variable.md">v8cs:object-module-export-variable</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — для обработки кодов возврата (ошибок) в логике программного модуля используйте строковые константы" hidden data-empty="true">
@@ -5295,26 +5295,26 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — используйте порядок параметров: от общего к частному bslls:orderofparams">
         <h2 class="diagnostics-clause__title"><a href="../std/640.md#3">п. 3 — Используйте порядок параметров: от общего к частному</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/OrderOfParams.md">bslls:OrderOfParams</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/OrderOfParams.md">bslls:OrderOfParams</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — необязательные параметры (параметров по-умолчанию) располагайте после обязательных acc:141 v8cs:method-optional-parameter-before-required">
         <h2 class="diagnostics-clause__title"><a href="../std/640.md#4">п. 4 — Необязательные параметры (параметров по-умолчанию) располагайте после обязательных</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/141.md">acc:141</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/method-optional-parameter-before-required.md">v8cs:method-optional-parameter-before-required</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/141.md">acc:141</a>
+          <a class="diagnostic-chip" href="v8-code-style/method-optional-parameter-before-required.md">v8cs:method-optional-parameter-before-required</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — не делайте больше 7 параметров acc:134 acc:142 acc:267 bslls:numberofoptionalparams bslls:numberofparams v8cs:method-too-many-params">
         <h2 class="diagnostics-clause__title"><a href="../std/640.md#5">п. 5 — Не делайте больше 7 параметров</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/134.md">acc:134</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/142.md">acc:142</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/267.md">acc:267</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/NumberOfOptionalParams.md">bslls:NumberOfOptionalParams</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/NumberOfParams.md">bslls:NumberOfParams</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/method-too-many-params.md">v8cs:method-too-many-params</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/134.md">acc:134</a>
+          <a class="diagnostic-chip" href="acc/142.md">acc:142</a>
+          <a class="diagnostic-chip" href="acc/267.md">acc:267</a>
+          <a class="diagnostic-chip" href="bslls/NumberOfOptionalParams.md">bslls:NumberOfOptionalParams</a>
+          <a class="diagnostic-chip" href="bslls/NumberOfParams.md">bslls:NumberOfParams</a>
+          <a class="diagnostic-chip" href="v8-code-style/method-too-many-params.md">v8cs:method-too-many-params</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — избегайте громоздких конструкций" hidden data-empty="true">
@@ -5323,17 +5323,17 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.1 — избегайте вложенные вызовы bslls:nestedfunctioninparameters">
         <h2 class="diagnostics-clause__title"><a href="../std/640.md#61">п. 6.1 — Избегайте вложенные вызовы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/NestedFunctionInParameters.md">bslls:NestedFunctionInParameters</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/NestedFunctionInParameters.md">bslls:NestedFunctionInParameters</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.2 — избегайте вложенные конструкторы acc:293 acc:294 acc:295 v8cs:structure-constructor-too-many-keys">
         <h2 class="diagnostics-clause__title"><a href="../std/640.md#62">п. 6.2 — Избегайте вложенные конструкторы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/293.md">acc:293</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/294.md">acc:294</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/295.md">acc:295</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/structure-constructor-too-many-keys.md">v8cs:structure-constructor-too-many-keys</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/293.md">acc:293</a>
+          <a class="diagnostic-chip" href="acc/294.md">acc:294</a>
+          <a class="diagnostic-chip" href="acc/295.md">acc:295</a>
+          <a class="diagnostic-chip" href="v8-code-style/structure-constructor-too-many-keys.md">v8cs:structure-constructor-too-many-keys</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.3 — избегайте лишних пробелов:" hidden data-empty="true">
@@ -5342,21 +5342,21 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7 — при вызове методов не пропускайте обязательные параметры acc:549 bslls:extracommas bslls:missedrequiredparameter">
         <h2 class="diagnostics-clause__title"><a href="../std/640.md#7">п. 7 — При вызове методов не пропускайте обязательные параметры</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/549.md">acc:549</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/ExtraCommas.md">bslls:ExtraCommas</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissedRequiredParameter.md">bslls:MissedRequiredParameter</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/549.md">acc:549</a>
+          <a class="diagnostic-chip" href="bslls/ExtraCommas.md">bslls:ExtraCommas</a>
+          <a class="diagnostic-chip" href="bslls/MissedRequiredParameter.md">bslls:MissedRequiredParameter</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:269 acc:271 acc:287 acc:548 acc:1383 acc:1386">
         <h2 class="diagnostics-clause__title"><a href="../std/640.md#std640">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/269.md">acc:269</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/271.md">acc:271</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/287.md">acc:287</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/548.md">acc:548</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1383.md">acc:1383</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1386.md">acc:1386</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/269.md">acc:269</a>
+          <a class="diagnostic-chip" href="acc/271.md">acc:271</a>
+          <a class="diagnostic-chip" href="acc/287.md">acc:287</a>
+          <a class="diagnostic-chip" href="acc/548.md">acc:548</a>
+          <a class="diagnostic-chip" href="acc/1383.md">acc:1383</a>
+          <a class="diagnostic-chip" href="acc/1386.md">acc:1386</a>
         </div>
       </section>
     </div>
@@ -5369,8 +5369,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — помимо функции, которая реализует прикладную функциональность (далее по тексту: вызываемая функция), определите функцию-конструктор параметров, возвращающую: acc:138">
         <h2 class="diagnostics-clause__title"><a href="../std/641.md#11">п. 1.1 — Помимо функции, которая реализует прикладную функциональность (далее по тексту: вызываемая функция), определите функцию-конструктор параметров, возвращающую:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/138.md">acc:138</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/138.md">acc:138</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — имена свойств структуры должны соответствовать параметрам вызываемой функции" hidden data-empty="true">
@@ -5403,8 +5403,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — избегайте длительных вызовов из клиентского кода на сервер acc:137">
         <h2 class="diagnostics-clause__title"><a href="../std/642.md#1">п. 1 — Избегайте длительных вызовов из клиентского кода на сервер</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/137.md">acc:137</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/137.md">acc:137</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — общий подход к асинхронному выполнению длительных серверных операций:" hidden data-empty="true">
@@ -5421,8 +5421,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — при каждом запуске фонового задания результат помещается во временное хранилище на время жизни формы bslls:missingtempstoragedeletion">
         <h2 class="diagnostics-clause__title"><a href="../std/642.md#31">п. 3.1 — При каждом запуске фонового задания результат помещается во временное хранилище на время жизни формы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/MissingTempStorageDeletion.md">bslls:MissingTempStorageDeletion</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/MissingTempStorageDeletion.md">bslls:MissingTempStorageDeletion</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — если алгоритмы запускают фоновые задания или записывают данные без участия пользователя (например, при регулярном обновлении формы), проверяйте, что не включен монопольный режим" hidden data-empty="true">
@@ -5447,11 +5447,11 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — используйте текущаядатасеанса вместо текущаядата в серверном контексте acc:132 acc:143 bslls:deprecatedcurrentdate v8cs:use-non-recommended-method">
         <h2 class="diagnostics-clause__title"><a href="../std/643.md#21">п. 2.1 — Используйте ТекущаяДатаСеанса вместо ТекущаяДата в серверном контексте</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/132.md">acc:132</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/143.md">acc:143</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DeprecatedCurrentDate.md">bslls:DeprecatedCurrentDate</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/use-non-recommended-method.md">v8cs:use-non-recommended-method</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/132.md">acc:132</a>
+          <a class="diagnostic-chip" href="acc/143.md">acc:143</a>
+          <a class="diagnostic-chip" href="bslls/DeprecatedCurrentDate.md">bslls:DeprecatedCurrentDate</a>
+          <a class="diagnostic-chip" href="v8-code-style/use-non-recommended-method.md">v8cs:use-non-recommended-method</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — когда требуется учесть время, не зависящее от часового пояса текущего сеанса пользователя, используйте универсальноевремя" hidden data-empty="true">
@@ -5464,8 +5464,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — не используйте текущаядата на клиенте bslls:deprecatedcurrentdate">
         <h2 class="diagnostics-clause__title"><a href="../std/643.md#31">п. 3.1 — Не используйте ТекущаяДата на клиенте</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/DeprecatedCurrentDate.md">bslls:DeprecatedCurrentDate</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/DeprecatedCurrentDate.md">bslls:DeprecatedCurrentDate</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2" hidden data-empty="true">
@@ -5538,18 +5538,18 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — разделяйте программный интерфейс acc:277">
         <h2 class="diagnostics-clause__title"><a href="../std/644.md#21">п. 2.1 — Разделяйте программный интерфейс</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/277.md">acc:277</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/277.md">acc:277</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — раздел программный интерфейс может содержать acc:278 acc:473 acc:474 acc:475 acc:476">
         <h2 class="diagnostics-clause__title"><a href="../std/644.md#22">п. 2.2 — Раздел Программный интерфейс может содержать</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/278.md">acc:278</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/473.md">acc:473</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/474.md">acc:474</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/475.md">acc:475</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/476.md">acc:476</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/278.md">acc:278</a>
+          <a class="diagnostic-chip" href="acc/473.md">acc:473</a>
+          <a class="diagnostic-chip" href="acc/474.md">acc:474</a>
+          <a class="diagnostic-chip" href="acc/475.md">acc:475</a>
+          <a class="diagnostic-chip" href="acc/476.md">acc:476</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — практические рекомендации для сохранения совместимости api" hidden data-empty="true">
@@ -5558,9 +5558,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — если нужно переименовать или удалить экспортную функцию/процедуру, acc:458 v8cs:deprecated-procedure-outside-deprecated-region">
         <h2 class="diagnostics-clause__title"><a href="../std/644.md#31">п. 3.1 — Если нужно переименовать или удалить экспортную функцию/процедуру,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/458.md">acc:458</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/deprecated-procedure-outside-deprecated-region.md">v8cs:deprecated-procedure-outside-deprecated-region</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/458.md">acc:458</a>
+          <a class="diagnostic-chip" href="v8-code-style/deprecated-procedure-outside-deprecated-region.md">v8cs:deprecated-procedure-outside-deprecated-region</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — если исправление ошибки меняет поведение экспортной функции," hidden data-empty="true">
@@ -5581,10 +5581,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.6 — чтобы скрывать детали реализации от потребителя, acc:469 bslls:cachedpublic v8cs:public-method-caching">
         <h2 class="diagnostics-clause__title"><a href="../std/644.md#36">п. 3.6 — Чтобы скрывать детали реализации от потребителя,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/469.md">acc:469</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CachedPublic.md">bslls:CachedPublic</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/public-method-caching.md">v8cs:public-method-caching</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/469.md">acc:469</a>
+          <a class="diagnostic-chip" href="bslls/CachedPublic.md">bslls:CachedPublic</a>
+          <a class="diagnostic-chip" href="v8-code-style/public-method-caching.md">v8cs:public-method-caching</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — для контроля изменений программного интерфейса" hidden data-empty="true">
@@ -5593,9 +5593,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1442 acc:1443">
         <h2 class="diagnostics-clause__title"><a href="../std/644.md#std644">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1442.md">acc:1442</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1443.md">acc:1443</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1442.md">acc:1442</a>
+          <a class="diagnostic-chip" href="acc/1443.md">acc:1443</a>
         </div>
       </section>
     </div>
@@ -5644,8 +5644,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — не используйте типы в названиях процедур и функций acc:307">
         <h2 class="diagnostics-clause__title"><a href="../std/647.md#4">п. 4 — Не используйте типы в названиях процедур и функций</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/307.md">acc:307</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/307.md">acc:307</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — имена процедур берите от неопределенной формы глагола" hidden data-empty="true">
@@ -5654,8 +5654,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.1 — имена функций берите от описания возвращаемого значения bslls:functionnamestartswithget">
         <h2 class="diagnostics-clause__title"><a href="../std/647.md#61">п. 6.1 — Имена функций берите от описания возвращаемого значения</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/FunctionNameStartsWithGet.md">bslls:FunctionNameStartsWithGet</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/FunctionNameStartsWithGet.md">bslls:FunctionNameStartsWithGet</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.2 — если функция создает какой-то объект, назовите его со слова новый" hidden data-empty="true">
@@ -5704,9 +5704,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — если после ответственного чтения данные изменяются, устанавливайте исключительную управляемую блокировку до чтения acc:1327 acc:1328">
         <h2 class="diagnostics-clause__title"><a href="../std/648.md#21">п. 2.1 — Если после ответственного чтения данные изменяются, устанавливайте исключительную управляемую блокировку до чтения</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1327.md">acc:1327</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1328.md">acc:1328</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1327.md">acc:1327</a>
+          <a class="diagnostic-chip" href="acc/1328.md">acc:1328</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — если данные читаются ответственно, но не изменяются (например, только для формирования движений), используйте:" hidden data-empty="true">
@@ -5775,15 +5775,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — в языке запросов можно обращаться не только к полям таблиц из раздела из, но и к полям объектов, на которые ссылаются ссылочные поля bslls:refoveruse">
         <h2 class="diagnostics-clause__title"><a href="../std/654.md#11">п. 1.1 — В языке запросов можно обращаться не только к полям таблиц из раздела ИЗ, но и к полям объектов, на которые ссылаются ссылочные поля</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/RefOveruse.md">bslls:RefOveruse</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/RefOveruse.md">bslls:RefOveruse</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — чем больше неявных соединений, тем сложнее и медленнее запрос acc:1377 bslls:querynestedfieldsbydot">
         <h2 class="diagnostics-clause__title"><a href="../std/654.md#12">п. 1.2 — Чем больше неявных соединений, тем сложнее и медленнее запрос</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1377.md">acc:1377</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/QueryNestedFieldsByDot.md">bslls:QueryNestedFieldsByDot</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1377.md">acc:1377</a>
+          <a class="diagnostic-chip" href="bslls/QueryNestedFieldsByDot.md">bslls:QueryNestedFieldsByDot</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — избегайте избыточных составных типов ссылочных полей" hidden data-empty="true">
@@ -5808,10 +5808,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — в запросах не используйте соединения с вложенными запросами acc:494 bslls:joinwithsubquery v8cs:ql-join-to-sub-query">
         <h2 class="diagnostics-clause__title"><a href="../std/655.md#11">п. 1.1 — В запросах не используйте соединения с вложенными запросами</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/494.md">acc:494</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/JoinWithSubQuery.md">bslls:JoinWithSubQuery</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/ql-join-to-sub-query.md">v8cs:ql-join-to-sub-query</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/494.md">acc:494</a>
+          <a class="diagnostic-chip" href="bslls/JoinWithSubQuery.md">bslls:JoinWithSubQuery</a>
+          <a class="diagnostic-chip" href="v8-code-style/ql-join-to-sub-query.md">v8cs:ql-join-to-sub-query</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — для ситуации из п" hidden data-empty="true">
@@ -5820,8 +5820,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если запрос соединяется с виртуальной таблицей языка запросов 1с:предприятия bslls:joinwithvirtualtable">
         <h2 class="diagnostics-clause__title"><a href="../std/655.md#2">п. 2 — Если запрос соединяется с виртуальной таблицей языка запросов 1С:Предприятия</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/JoinWithVirtualTable.md">bslls:JoinWithVirtualTable</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/JoinWithVirtualTable.md">bslls:JoinWithVirtualTable</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — избегайте неявных подзапросов, которые появляются из-за вложенных соединений" hidden data-empty="true">
@@ -5846,9 +5846,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — передавайте в параметры виртуальной таблицы все условия, относящиеся к ней bslls:virtualtablecallwithoutparameters v8cs:ql-virtual-table-filters">
         <h2 class="diagnostics-clause__title"><a href="../std/657.md#1">п. 1 — Передавайте в параметры виртуальной таблицы все условия, относящиеся к ней</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/VirtualTableCallWithoutParameters.md">bslls:VirtualTableCallWithoutParameters</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/ql-virtual-table-filters.md">v8cs:ql-virtual-table-filters</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/VirtualTableCallWithoutParameters.md">bslls:VirtualTableCallWithoutParameters</a>
+          <a class="diagnostic-chip" href="v8-code-style/ql-virtual-table-filters.md">v8cs:ql-virtual-table-filters</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — в параметрах виртуальной таблицы используйте простые условия вида измерение = значение" hidden data-empty="true">
@@ -5889,11 +5889,11 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — в основном условии или допустим только для последнего (или единственного) поля индекса, acc:316 acc:317 bslls:logicalorinjoinquerysection bslls:logicalorinthewheresectionofquery">
         <h2 class="diagnostics-clause__title"><a href="../std/658.md#21">п. 2.1 — В основном условии ИЛИ допустим только для последнего (или единственного) поля индекса,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/316.md">acc:316</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/317.md">acc:317</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/LogicalOrInJoinQuerySection.md">bslls:LogicalOrInJoinQuerySection</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/LogicalOrInTheWhereSectionOfQuery.md">bslls:LogicalOrInTheWhereSectionOfQuery</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/316.md">acc:316</a>
+          <a class="diagnostic-chip" href="acc/317.md">acc:317</a>
+          <a class="diagnostic-chip" href="bslls/LogicalOrInJoinQuerySection.md">bslls:LogicalOrInJoinQuerySection</a>
+          <a class="diagnostic-chip" href="bslls/LogicalOrInTheWhereSectionOfQuery.md">bslls:LogicalOrInTheWhereSectionOfQuery</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — в дополнительном условии оператор или можно использовать без ограничений" hidden data-empty="true">
@@ -6018,13 +6018,13 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — элементы стиля нужно использовать всегда, acc:1345 acc:1346 acc:1347 bslls:styleelementconstructors v8cs:new-color v8cs:new-font">
         <h2 class="diagnostics-clause__title"><a href="../std/667.md#1">п. 1 — Элементы стиля нужно использовать всегда,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1345.md">acc:1345</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1346.md">acc:1346</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1347.md">acc:1347</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/StyleElementConstructors.md">bslls:StyleElementConstructors</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/new-color.md">v8cs:new-color</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/new-font.md">v8cs:new-font</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1345.md">acc:1345</a>
+          <a class="diagnostic-chip" href="acc/1346.md">acc:1346</a>
+          <a class="diagnostic-chip" href="acc/1347.md">acc:1347</a>
+          <a class="diagnostic-chip" href="bslls/StyleElementConstructors.md">bslls:StyleElementConstructors</a>
+          <a class="diagnostic-chip" href="v8-code-style/new-color.md">v8cs:new-color</a>
+          <a class="diagnostic-chip" href="v8-code-style/new-font.md">v8cs:new-font</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — не следует использовать элементы стиля," hidden data-empty="true">
@@ -6045,11 +6045,11 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1326 acc:1331 acc:1332 acc:1333">
         <h2 class="diagnostics-clause__title"><a href="../std/667.md#std667">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1326.md">acc:1326</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1331.md">acc:1331</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1332.md">acc:1332</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1333.md">acc:1333</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1326.md">acc:1326</a>
+          <a class="diagnostic-chip" href="acc/1331.md">acc:1331</a>
+          <a class="diagnostic-chip" href="acc/1332.md">acc:1332</a>
+          <a class="diagnostic-chip" href="acc/1333.md">acc:1333</a>
         </div>
       </section>
     </div>
@@ -6086,11 +6086,11 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — запрещено выполнение на сервере в небезопасном режиме любого кода, который не является частью программы acc:552 acc:553 acc:554 bslls:usingexternalcodetools">
         <h2 class="diagnostics-clause__title"><a href="../std/669.md#1">п. 1 — Запрещено выполнение на сервере в небезопасном режиме любого кода, который не является частью программы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/552.md">acc:552</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/553.md">acc:553</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/554.md">acc:554</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsingExternalCodeTools.md">bslls:UsingExternalCodeTools</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/552.md">acc:552</a>
+          <a class="diagnostic-chip" href="acc/553.md">acc:553</a>
+          <a class="diagnostic-chip" href="acc/554.md">acc:554</a>
+          <a class="diagnostic-chip" href="bslls/UsingExternalCodeTools.md">bslls:UsingExternalCodeTools</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — по умолчанию требуется отключить интерактивное открытие внешних отчетов и обработок через меню файл - открыть" hidden data-empty="true">
@@ -6107,10 +6107,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — подключенный администратором внешний код другие пользователи могут использовать без предупреждений acc:555 acc:556 bslls:disablesafemode">
         <h2 class="diagnostics-clause__title"><a href="../std/669.md#32">п. 3.2 — Подключенный администратором внешний код другие пользователи могут использовать без предупреждений</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/555.md">acc:555</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/556.md">acc:556</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DisableSafeMode.md">bslls:DisableSafeMode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/555.md">acc:555</a>
+          <a class="diagnostic-chip" href="acc/556.md">acc:556</a>
+          <a class="diagnostic-chip" href="bslls/DisableSafeMode.md">bslls:DisableSafeMode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — средства обновления конфигурации (из файлов .cf или .cfu), средства восстановления из резервной копии или загрузки из dt-файла" hidden data-empty="true">
@@ -6127,8 +6127,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.1 — внешние компоненты можно размещать: acc:472">
         <h2 class="diagnostics-clause__title"><a href="../std/669.md#61">п. 6.1 — Внешние компоненты можно размещать:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/472.md">acc:472</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/472.md">acc:472</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.2 — сторонние внешние компоненты должны храниться в специальном справочнике" hidden data-empty="true">
@@ -6141,17 +6141,17 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.4 — используйте бсп для подключение внешних компонент v8cs:restriction-execute-external-component-code">
         <h2 class="diagnostics-clause__title"><a href="../std/669.md#64">п. 6.4 — Используйте БСП для подключение внешних компонент</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/restriction-execute-external-component-code.md">v8cs:restriction-execute-external-component-code</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/restriction-execute-external-component-code.md">v8cs:restriction-execute-external-component-code</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7 — загружать код из внешнего удаленного источника следует: acc:1324 acc:1430 acc:1431 v8cs:restriction-execute-external-code">
         <h2 class="diagnostics-clause__title"><a href="../std/669.md#7">п. 7 — Загружать код из внешнего удаленного источника следует:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1324.md">acc:1324</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1430.md">acc:1430</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1431.md">acc:1431</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/restriction-execute-external-code.md">v8cs:restriction-execute-external-code</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1324.md">acc:1324</a>
+          <a class="diagnostic-chip" href="acc/1430.md">acc:1430</a>
+          <a class="diagnostic-chip" href="acc/1431.md">acc:1431</a>
+          <a class="diagnostic-chip" href="v8-code-style/restriction-execute-external-code.md">v8cs:restriction-execute-external-code</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 8 — регламентные задания по-умолчанию запускаются под полными правами" hidden data-empty="true">
@@ -6352,8 +6352,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — запрещается использовать название основной v8cs:data-composition-variant-name-default">
         <h2 class="diagnostics-clause__title"><a href="../std/674.md#4">п. 4 — Запрещается использовать название Основной</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/data-composition-variant-name-default.md">v8cs:data-composition-variant-name-default</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/data-composition-variant-name-default.md">v8cs:data-composition-variant-name-default</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — следует избегать слова отчет" hidden data-empty="true">
@@ -6534,8 +6534,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — тщательно тестируйте код, в котором устанавливается привилегированный режим или который расположен в общих модулях с флажком привилегированный bslls:setprivilegedmode">
         <h2 class="diagnostics-clause__title"><a href="../std/678.md#13">п. 1.3 — Тщательно тестируйте код, в котором устанавливается привилегированный режим или который расположен в общих модулях с флажком Привилегированный</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/SetPrivilegedMode.md">bslls:SetPrivilegedMode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/SetPrivilegedMode.md">bslls:SetPrivilegedMode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — любые возможности конфигурации исполнить &quot;внешний&quot; код или произвольные тексты запросов на сервере, не являющиеся частью программы, потенциально опасны" hidden data-empty="true">
@@ -6556,8 +6556,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — не устанавливайте признак вызов сервера у всех серверных общих модулей «по умолчанию» v8cs:common-module-server-call">
         <h2 class="diagnostics-clause__title"><a href="../std/679.md#1">п. 1 — Не устанавливайте признак Вызов сервера у всех серверных общих модулей «по умолчанию»</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/common-module-server-call.md">v8cs:common-module-server-call</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/common-module-server-call.md">v8cs:common-module-server-call</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — в управляемом приложении работа с экземплярами объектов (справочникобъект, документобъект и т.п.)" hidden data-empty="true">
@@ -6582,16 +6582,16 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — в конфигурациях для управляемого приложения обычно предполагается, что в клиент-серверном режиме код модулей: acc:361 acc:362 v8cs:module-accessibility-at-client">
         <h2 class="diagnostics-clause__title"><a href="../std/680.md#2">п. 2 — В конфигурациях для управляемого приложения обычно предполагается, что в клиент-серверном режиме код модулей:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/361.md">acc:361</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/362.md">acc:362</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/module-accessibility-at-client.md">v8cs:module-accessibility-at-client</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/361.md">acc:361</a>
+          <a class="diagnostic-chip" href="acc/362.md">acc:362</a>
+          <a class="diagnostic-chip" href="v8-code-style/module-accessibility-at-client.md">v8cs:module-accessibility-at-client</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — если это ограничение нужно снять, обеспечьте работу на клиенте: acc:256">
         <h2 class="diagnostics-clause__title"><a href="../std/680.md#3">п. 3 — Если это ограничение нужно снять, обеспечьте работу на клиенте:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/256.md">acc:256</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/256.md">acc:256</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — для расстановки фрагментов кода с инструкциями препроцессора можно использовать обработку с итс" hidden data-empty="true">
@@ -6688,10 +6688,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — параметру отказ не присваивайте ложь acc:144 bslls:usingcancelparameter v8cs:event-handler-boolean-param">
         <h2 class="diagnostics-clause__title"><a href="../std/686.md#1">п. 1 — Параметру Отказ не присваивайте Ложь</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/144.md">acc:144</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsingCancelParameter.md">bslls:UsingCancelParameter</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/event-handler-boolean-param.md">v8cs:event-handler-boolean-param</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/144.md">acc:144</a>
+          <a class="diagnostic-chip" href="bslls/UsingCancelParameter.md">bslls:UsingCancelParameter</a>
+          <a class="diagnostic-chip" href="v8-code-style/event-handler-boolean-param.md">v8cs:event-handler-boolean-param</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — вообще это правило подходит для любых возвращаемых булевых параметров, например стандартнаяобработка, выполнение" hidden data-empty="true">
@@ -6740,9 +6740,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — роли полныеправа и администраторсистемы обеспечивают максимальный доступ acc:419 acc:420">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#12">п. 1.2 — Роли ПолныеПрава и АдминистраторСистемы обеспечивают максимальный доступ</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/419.md">acc:419</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/420.md">acc:420</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/419.md">acc:419</a>
+          <a class="diagnostic-chip" href="acc/420.md">acc:420</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — ни одна роль, включая полныеправа и администраторсистемы, не должна давать интерактивное удаление ссылочных объектов" hidden data-empty="true">
@@ -6763,18 +6763,18 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.7 — для документов с проведением обычно включайте привилегированный режим проведения и отмены проведения acc:226 acc:227 acc:229 v8cs:document-post-in-privileged-mode">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#17">п. 1.7 — Для документов с проведением обычно включайте привилегированный режим проведения и отмены проведения</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/226.md">acc:226</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/227.md">acc:227</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/229.md">acc:229</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/document-post-in-privileged-mode.md">v8cs:document-post-in-privileged-mode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/226.md">acc:226</a>
+          <a class="diagnostic-chip" href="acc/227.md">acc:227</a>
+          <a class="diagnostic-chip" href="acc/229.md">acc:229</a>
+          <a class="diagnostic-chip" href="v8-code-style/document-post-in-privileged-mode.md">v8cs:document-post-in-privileged-mode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.8 — для функциональных опций обычно включайте привилегированный режим получения acc:228 v8cs:functional-option-privileged-get-mode">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#18">п. 1.8 — Для функциональных опций обычно включайте привилегированный режим получения</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/228.md">acc:228</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/functional-option-privileged-get-mode.md">v8cs:functional-option-privileged-get-mode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/228.md">acc:228</a>
+          <a class="diagnostic-chip" href="v8-code-style/functional-option-privileged-get-mode.md">v8cs:functional-option-privileged-get-mode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.9 — кроме стандартных ролей бсп не создавайте роли, дающие общие системные права (администрирование, тонкийклиент и т.п.)" hidden data-empty="true">
@@ -6783,14 +6783,14 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.10 — для неконфиденциальных и общедоступных данных права чтения включайте в: acc:541">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#110">п. 1.10 — Для неконфиденциальных и общедоступных данных права чтения включайте в:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/541.md">acc:541</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/541.md">acc:541</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.11 — одна роль не должна объединять права на объекты разных библиотек и разных подсистем acc:507">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#111">п. 1.11 — Одна роль не должна объединять права на объекты разных библиотек и разных подсистем</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/507.md">acc:507</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/507.md">acc:507</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — правила создания ролей к элементарным функциям" hidden data-empty="true">
@@ -6819,13 +6819,13 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — для функций со ссылочными объектами и независимыми регистрами сведений обычно создавайте две роли: acc:290 acc:291 acc:359 acc:360 acc:1421 acc:1422">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#31">п. 3.1 — Для функций со ссылочными объектами и независимыми регистрами сведений обычно создавайте две роли:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/290.md">acc:290</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/291.md">acc:291</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/359.md">acc:359</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/360.md">acc:360</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1421.md">acc:1421</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1422.md">acc:1422</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/290.md">acc:290</a>
+          <a class="diagnostic-chip" href="acc/291.md">acc:291</a>
+          <a class="diagnostic-chip" href="acc/359.md">acc:359</a>
+          <a class="diagnostic-chip" href="acc/360.md">acc:360</a>
+          <a class="diagnostic-chip" href="acc/1421.md">acc:1421</a>
+          <a class="diagnostic-chip" href="acc/1422.md">acc:1422</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — для регистров, подчиненных регистратору, права изменения обычно не назначают (см" hidden data-empty="true">
@@ -6834,8 +6834,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — журналы документов acc:1440">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#4">п. 4 — Журналы документов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1440.md">acc:1440</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1440.md">acc:1440</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.1 — если все документы журнала относятся к одной элементарной функции, права чтения и просмотра журнала включайте в роли этой функции" hidden data-empty="true">
@@ -6852,16 +6852,16 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.1 — если константу должен менять только администратор, права изменения должны быть только у полныеправа и/или администраторсистемы acc:232 acc:421 acc:422">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#51">п. 5.1 — Если константу должен менять только администратор, права изменения должны быть только у ПолныеПрава и/или АдминистраторСистемы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/232.md">acc:232</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/421.md">acc:421</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/422.md">acc:422</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/232.md">acc:232</a>
+          <a class="diagnostic-chip" href="acc/421.md">acc:421</a>
+          <a class="diagnostic-chip" href="acc/422.md">acc:422</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.2 — если константу может менять пользователь, добавляйте права в существующую настроечную роль или создавайте отдельную роль изменение&lt;имяконстанты&gt; acc:423">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#52">п. 5.2 — Если константу может менять пользователь, добавляйте права в существующую настроечную роль или создавайте отдельную роль Изменение&lt;ИмяКонстанты&gt;</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/423.md">acc:423</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/423.md">acc:423</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.3 — для большинства неконфиденциальных констант права чтения и просмотра назначайте базовым ролям библиотеки" hidden data-empty="true">
@@ -6870,8 +6870,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.4 — для конфиденциальных констант создавайте отдельную роль чтения, если это действительно нужно acc:424">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#54">п. 5.4 — Для конфиденциальных констант создавайте отдельную роль чтения, если это действительно нужно</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/424.md">acc:424</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/424.md">acc:424</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — подсистемы, отображаемые в главном командном интерфейсе" hidden data-empty="true">
@@ -6880,9 +6880,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.1 — для каждой подсистемы верхнего уровня создавайте роль подсистема&lt;имяподсистемы&gt; (subsystem&lt;subsystemname&gt;) с правом просмотра acc:233 acc:234">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#61">п. 6.1 — Для каждой подсистемы верхнего уровня создавайте роль Подсистема&lt;ИмяПодсистемы&gt; (Subsystem&lt;SubsystemName&gt;) с правом просмотра</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/233.md">acc:233</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/234.md">acc:234</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/233.md">acc:233</a>
+          <a class="diagnostic-chip" href="acc/234.md">acc:234</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6.2 — если часть функций подсистемы вынесена в отдельную форму (например, «настройки и справочники»), роль подсистемы должна включать права просмотра этой формы" hidden data-empty="true">
@@ -6919,8 +6919,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 8.2 — права на вспомогательные обработки и обработки с общим служебным кодом назначайте в роли базовыеправа&lt;имябиблиотеки&gt; acc:508">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#82">п. 8.2 — Права на вспомогательные обработки и обработки с общим служебным кодом назначайте в роли БазовыеПрава&lt;ИмяБиблиотеки&gt;</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/508.md">acc:508</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/508.md">acc:508</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 8.3 — права к обработкам только для администратора назначайте только через полныеправа и/или администраторсистемы" hidden data-empty="true">
@@ -6941,11 +6941,11 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 9.1 — для команды без изменения данных назначайте право просмотра тем же ролям, которые дают чтение соответствующего объекта acc:510 acc:511 acc:512 acc:513">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#91">п. 9.1 — Для команды без изменения данных назначайте право просмотра тем же ролям, которые дают чтение соответствующего объекта</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/510.md">acc:510</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/511.md">acc:511</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/512.md">acc:512</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/513.md">acc:513</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/510.md">acc:510</a>
+          <a class="diagnostic-chip" href="acc/511.md">acc:511</a>
+          <a class="diagnostic-chip" href="acc/512.md">acc:512</a>
+          <a class="diagnostic-chip" href="acc/513.md">acc:513</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 9.2 — для команды, которая изменяет данные, право просмотра назначайте роли, дающей право изменения соответствующих объектов" hidden data-empty="true">
@@ -6974,18 +6974,18 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 12 — права к устаревшим объектам acc:375 acc:1375">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#12_1">п. 12 — Права к устаревшим объектам</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/375.md">acc:375</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1375.md">acc:1375</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/375.md">acc:375</a>
+          <a class="diagnostic-chip" href="acc/1375.md">acc:1375</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:230 acc:336 acc:442 acc:443">
         <h2 class="diagnostics-clause__title"><a href="../std/689.md#std689">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/230.md">acc:230</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/336.md">acc:336</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/442.md">acc:442</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/443.md">acc:443</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/230.md">acc:230</a>
+          <a class="diagnostic-chip" href="acc/336.md">acc:336</a>
+          <a class="diagnostic-chip" href="acc/442.md">acc:442</a>
+          <a class="diagnostic-chip" href="acc/443.md">acc:443</a>
         </div>
       </section>
     </div>
@@ -7010,8 +7010,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — обработчик обновления состоит из двух частей: acc:1396">
         <h2 class="diagnostics-clause__title"><a href="../std/690.md#13">п. 1.3 — Обработчик обновления состоит из двух частей:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1396.md">acc:1396</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1396.md">acc:1396</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — расположение обработчиков обновления" hidden data-empty="true">
@@ -7048,8 +7048,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2.3 — вместо простого вызова: acc:1363">
         <h2 class="diagnostics-clause__title"><a href="../std/690.md#323">п. 3.2.3 — Вместо простого вызова:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1363.md">acc:1363</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1363.md">acc:1363</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.3 — перед процедурой-обработчиком должен быть комментарий" hidden data-empty="true">
@@ -7074,17 +7074,17 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — не передавайте в конструктор структуры более 3 значений acc:293 acc:295 bslls:numberofvaluesinstructureconstructor v8cs:structure-constructor-too-many-keys">
         <h2 class="diagnostics-clause__title"><a href="../std/693.md#1">п. 1 — Не передавайте в конструктор структуры более 3 значений</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/293.md">acc:293</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/295.md">acc:295</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/NumberOfValuesInStructureConstructor.md">bslls:NumberOfValuesInStructureConstructor</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/structure-constructor-too-many-keys.md">v8cs:structure-constructor-too-many-keys</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/293.md">acc:293</a>
+          <a class="diagnostic-chip" href="acc/295.md">acc:295</a>
+          <a class="diagnostic-chip" href="bslls/NumberOfValuesInStructureConstructor.md">bslls:NumberOfValuesInStructureConstructor</a>
+          <a class="diagnostic-chip" href="v8-code-style/structure-constructor-too-many-keys.md">v8cs:structure-constructor-too-many-keys</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — не используйте в конструкторе структуры конструкторы других объектов, если они принимают параметры acc:294">
         <h2 class="diagnostics-clause__title"><a href="../std/693.md#2">п. 2 — Не используйте в конструкторе структуры конструкторы других объектов, если они принимают параметры</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/294.md">acc:294</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/294.md">acc:294</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — не вызывайте в конструкторе структуры функции с большим числом параметров (более 3)" hidden data-empty="true">
@@ -7093,12 +7093,12 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.1 — не добавляйте свойства структуры в разных местах кода с последующей проверкой их наличия acc:1414 acc:1415 acc:1416 acc:1417 v8cs:structure-key-modification">
         <h2 class="diagnostics-clause__title"><a href="../std/693.md#41">п. 4.1 — Не добавляйте свойства структуры в разных местах кода с последующей проверкой их наличия</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1414.md">acc:1414</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1415.md">acc:1415</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1416.md">acc:1416</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1417.md">acc:1417</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/structure-key-modification.md">v8cs:structure-key-modification</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1414.md">acc:1414</a>
+          <a class="diagnostic-chip" href="acc/1415.md">acc:1415</a>
+          <a class="diagnostic-chip" href="acc/1416.md">acc:1416</a>
+          <a class="diagnostic-chip" href="acc/1417.md">acc:1417</a>
+          <a class="diagnostic-chip" href="v8-code-style/structure-key-modification.md">v8cs:structure-key-modification</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.2 — исключение — структуры с нефиксированным форматом:" hidden data-empty="true">
@@ -7219,13 +7219,13 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — в большинстве случаев создавайте предопределенные элементы автоматически acc:192 acc:193 acc:194 acc:195 acc:304 acc:1149">
         <h2 class="diagnostics-clause__title"><a href="../std/697.md#12">п. 1.2 — В большинстве случаев создавайте предопределенные элементы автоматически</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/192.md">acc:192</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/193.md">acc:193</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/194.md">acc:194</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/195.md">acc:195</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/304.md">acc:304</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1149.md">acc:1149</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/192.md">acc:192</a>
+          <a class="diagnostic-chip" href="acc/193.md">acc:193</a>
+          <a class="diagnostic-chip" href="acc/194.md">acc:194</a>
+          <a class="diagnostic-chip" href="acc/195.md">acc:195</a>
+          <a class="diagnostic-chip" href="acc/304.md">acc:304</a>
+          <a class="diagnostic-chip" href="acc/1149.md">acc:1149</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — уточнение действует для управляемого и обычного приложения" hidden data-empty="true">
@@ -7234,8 +7234,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.4 — для таблиц с предопределенными элементами, которые: acc:305">
         <h2 class="diagnostics-clause__title"><a href="../std/697.md#14">п. 1.4 — Для таблиц с предопределенными элементами, которые:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/305.md">acc:305</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/305.md">acc:305</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если наличие предопределенного элемента зависит от условий (функциональные опции, режим работы и т" hidden data-empty="true">
@@ -7252,8 +7252,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — установка внешних компонент и расширений должна быть интерактивной acc:150">
         <h2 class="diagnostics-clause__title"><a href="../std/700.md#11">п. 1.1 — Установка внешних компонент и расширений должна быть интерактивной</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/150.md">acc:150</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/150.md">acc:150</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — предлагайте установку в момент, когда пользователь запускает конкретное прикладное действие, зависящее от компоненты" hidden data-empty="true">
@@ -7262,8 +7262,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — если используется бсп, для сценариев работы с файлами применяйте api файловаясистемаклиент acc:1348">
         <h2 class="diagnostics-clause__title"><a href="../std/700.md#13">п. 1.3 — Если используется БСП, для сценариев работы с файлами применяйте API ФайловаяСистемаКлиент</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1348.md">acc:1348</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1348.md">acc:1348</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — в конфигурации должна быть отдельная функция, позволяющая установить компоненты и расширения в любой момент работы (например, из персональных или административных настроек)" hidden data-empty="true">
@@ -7312,12 +7312,12 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — через команду еще - изменить форму acc:148 acc:149 v8cs:form-list-field-ref-not-added v8cs:form-list-ref-use-always-flag-disabled v8cs:form-list-ref-user-visibility-enabled">
         <h2 class="diagnostics-clause__title"><a href="../std/702.md#1">п. 1 — Через команду Еще - Изменить форму</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/148.md">acc:148</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/149.md">acc:149</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-list-field-ref-not-added.md">v8cs:form-list-field-ref-not-added</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-list-ref-use-always-flag-disabled.md">v8cs:form-list-ref-use-always-flag-disabled</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-list-ref-user-visibility-enabled.md">v8cs:form-list-ref-user-visibility-enabled</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/148.md">acc:148</a>
+          <a class="diagnostic-chip" href="acc/149.md">acc:149</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-list-field-ref-not-added.md">v8cs:form-list-field-ref-not-added</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-list-ref-use-always-flag-disabled.md">v8cs:form-list-ref-use-always-flag-disabled</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-list-ref-user-visibility-enabled.md">v8cs:form-list-ref-user-visibility-enabled</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — при обращении к данным строки динамического списка в коде" hidden data-empty="true">
@@ -7326,8 +7326,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — для колонок, acc:160">
         <h2 class="diagnostics-clause__title"><a href="../std/702.md#22">п. 2.2 — Для колонок,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/160.md">acc:160</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/160.md">acc:160</a>
         </div>
       </section>
     </div>
@@ -7340,9 +7340,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — в конфигурациях, работающих в веб-клиенте, не используйте модальные формы и диалоги bslls:usingmodalwindows v8cs:dont-use-modality-mode">
         <h2 class="diagnostics-clause__title"><a href="../std/703.md#1">п. 1 — В конфигурациях, работающих в веб-клиенте, не используйте модальные формы и диалоги</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsingModalWindows.md">bslls:UsingModalWindows</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/dont-use-modality-mode.md">v8cs:dont-use-modality-mode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/UsingModalWindows.md">bslls:UsingModalWindows</a>
+          <a class="diagnostic-chip" href="v8-code-style/dont-use-modality-mode.md">v8cs:dont-use-modality-mode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — свойство конфигурации режим использования модальности должно быть установлено в не использовать" hidden data-empty="true">
@@ -7359,8 +7359,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — при переходе на асинхронные аналоги включайте проверку поиск использования синхронных вызовов в конфигураторе bslls:usingsynchronouscalls">
         <h2 class="diagnostics-clause__title"><a href="../std/703.md#5">п. 5 — При переходе на асинхронные аналоги включайте проверку Поиск использования синхронных вызовов в конфигураторе</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsingSynchronousCalls.md">bslls:UsingSynchronousCalls</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/UsingSynchronousCalls.md">bslls:UsingSynchronousCalls</a>
         </div>
       </section>
     </div>
@@ -7405,8 +7405,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — все объекты библиотеки должны относиться к одной корневой подсистеме acc:1147">
         <h2 class="diagnostics-clause__title"><a href="../std/705.md#1">п. 1 — Все объекты библиотеки должны относиться к одной корневой подсистеме</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1147.md">acc:1147</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1147.md">acc:1147</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — допустимо наличие нескольких дополнительных корневых подсистем, которые содержат командный интерфейс" hidden data-empty="true">
@@ -7603,9 +7603,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.3 — номер сборки acc:1426 acc:1427">
         <h2 class="diagnostics-clause__title"><a href="../std/709.md#53">п. 5.3 — Номер сборки</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1426.md">acc:1426</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1427.md">acc:1427</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1426.md">acc:1426</a>
+          <a class="diagnostic-chip" href="acc/1427.md">acc:1427</a>
         </div>
       </section>
     </div>
@@ -7634,10 +7634,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — подход с настройкой в коде дает преимущества: acc:386 acc:387 v8cs:data-composition-conditional-appearance-use">
         <h2 class="diagnostics-clause__title"><a href="../std/710.md#21">п. 2.1 — Подход с настройкой в коде дает преимущества:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/386.md">acc:386</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/387.md">acc:387</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/data-composition-conditional-appearance-use.md">v8cs:data-composition-conditional-appearance-use</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/386.md">acc:386</a>
+          <a class="diagnostic-chip" href="acc/387.md">acc:387</a>
+          <a class="diagnostic-chip" href="v8-code-style/data-composition-conditional-appearance-use.md">v8cs:data-composition-conditional-appearance-use</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — все настройки условного оформления выполняйте при создании формы" hidden data-empty="true">
@@ -7702,9 +7702,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — общая длина названия раздела не должна превышать 35 символов с учетом пробелов acc:311 v8cs:subsystem-synonym-too-long">
         <h2 class="diagnostics-clause__title"><a href="../std/712.md#21">п. 2.1 — Общая длина названия раздела не должна превышать 35 символов с учетом пробелов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/311.md">acc:311</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/subsystem-synonym-too-long.md">v8cs:subsystem-synonym-too-long</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/311.md">acc:311</a>
+          <a class="diagnostic-chip" href="v8-code-style/subsystem-synonym-too-long.md">v8cs:subsystem-synonym-too-long</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — названия разделов должны быть конкретными и запоминающимися" hidden data-empty="true">
@@ -7753,8 +7753,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — чтобы при стандартном разрешении не появлялась прокрутка, следите, чтобы название команды не превышало 38 символов, а лучше укладывалось в 30 acc:313">
         <h2 class="diagnostics-clause__title"><a href="../std/714.md#21">п. 2.1 — Чтобы при стандартном разрешении не появлялась прокрутка, следите, чтобы название команды не превышало 38 символов, а лучше укладывалось в 30</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/313.md">acc:313</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/313.md">acc:313</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — область команд включает блок навигации и блок действий, но для пользователя выглядит как единый список" hidden data-empty="true">
@@ -8131,9 +8131,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.5.2 — не формируйте вручную разделители пути и маску всех файлов acc:1365 acc:1366">
         <h2 class="diagnostics-clause__title"><a href="../std/723.md#252">п. 2.5.2 — Не формируйте вручную разделители пути и маску всех файлов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1365.md">acc:1365</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1366.md">acc:1366</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1365.md">acc:1365</a>
+          <a class="diagnostic-chip" href="acc/1366.md">acc:1366</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — для второстепенных сервисных функций допустимо отключать функциональность в linux/macos" hidden data-empty="true">
@@ -8158,12 +8158,12 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — не кешируйте данные, которые вычисляются быстрее, чем извлекаются из кеша acc:435 acc:436 acc:437 acc:438 acc:439">
         <h2 class="diagnostics-clause__title"><a href="../std/724.md#21">п. 2.1 — Не кешируйте данные, которые вычисляются быстрее, чем извлекаются из кеша</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/435.md">acc:435</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/436.md">acc:436</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/437.md">acc:437</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/438.md">acc:438</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/439.md">acc:439</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/435.md">acc:435</a>
+          <a class="diagnostic-chip" href="acc/436.md">acc:436</a>
+          <a class="diagnostic-chip" href="acc/437.md">acc:437</a>
+          <a class="diagnostic-chip" href="acc/438.md">acc:438</a>
+          <a class="diagnostic-chip" href="acc/439.md">acc:439</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — помещайте в кеш только данные, к которым будут часто обращаться" hidden data-empty="true">
@@ -8180,8 +8180,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — если в модуле с повторным использованием экспортные функции вызывают друг друга, acc:444">
         <h2 class="diagnostics-clause__title"><a href="../std/724.md#4">п. 4 — Если в модуле с повторным использованием экспортные функции вызывают друг друга,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/444.md">acc:444</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/444.md">acc:444</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — если у общего модуля свойство повторное использование возвращаемых значений" hidden data-empty="true">
@@ -8226,9 +8226,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — оператор подобно в тексте запроса используйте только bslls:incorrectuselikeinquery v8cs:ql-constants-in-binary-operation">
         <h2 class="diagnostics-clause__title"><a href="../std/726.md#1">п. 1 — Оператор ПОДОБНО в тексте запроса используйте только</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/IncorrectUseLikeInQuery.md">bslls:IncorrectUseLikeInQuery</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/ql-constants-in-binary-operation.md">v8cs:ql-constants-in-binary-operation</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/IncorrectUseLikeInQuery.md">bslls:IncorrectUseLikeInQuery</a>
+          <a class="diagnostic-chip" href="v8-code-style/ql-constants-in-binary-operation.md">v8cs:ql-constants-in-binary-operation</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — используйте такие шаблоны оператора подобно, которые работают одинаково на всех поддерживаемых субд" hidden data-empty="true">
@@ -8277,9 +8277,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — если реквизит составного типа используется в соединениях, отборах или сортировке, оставляйте в его составе только ссылочные типы: acc:1329 v8cs:db-object-ref-non-ref-type">
         <h2 class="diagnostics-clause__title"><a href="../std/728.md#11">п. 1.1 — Если реквизит составного типа используется в соединениях, отборах или сортировке, оставляйте в его составе только ссылочные типы:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1329.md">acc:1329</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/db-object-ref-non-ref-type.md">v8cs:db-object-ref-non-ref-type</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1329.md">acc:1329</a>
+          <a class="diagnostic-chip" href="v8-code-style/db-object-ref-non-ref-type.md">v8cs:db-object-ref-non-ref-type</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — если требуется совместить ссылку и произвольный ввод, используйте отдельный справочник вместо примитивного типа" hidden data-empty="true">
@@ -8292,9 +8292,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — для типизированных объектов метаданных, которые хранятся в иб, не используйте составные типы любаяссылка, справочникссылка, документссылка и аналогичные acc:1330 v8cs:db-object-anyref-type">
         <h2 class="diagnostics-clause__title"><a href="../std/728.md#21">п. 2.1 — Для типизированных объектов метаданных, которые хранятся в ИБ, не используйте составные типы ЛюбаяСсылка, СправочникСсылка, ДокументСсылка и аналогичные</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1330.md">acc:1330</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/db-object-anyref-type.md">v8cs:db-object-anyref-type</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1330.md">acc:1330</a>
+          <a class="diagnostic-chip" href="v8-code-style/db-object-anyref-type.md">v8cs:db-object-anyref-type</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — если составной тип массово используется в объектах подсистемы или всей конфигурации, применяйте #std704: определяемые типы" hidden data-empty="true">
@@ -8491,41 +8491,41 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — если в конфигурации много ролей (от нескольких десятков), не используйте ролевую настройку видимости в элементах форм: acc:341 acc:393 acc:394 acc:395 v8cs:form-item-visible-settings-by-roles">
         <h2 class="diagnostics-clause__title"><a href="../std/737.md#1">п. 1 — Если в конфигурации много ролей (от нескольких десятков), не используйте ролевую настройку видимости в элементах форм:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/341.md">acc:341</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/393.md">acc:393</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/394.md">acc:394</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/395.md">acc:395</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-item-visible-settings-by-roles.md">v8cs:form-item-visible-settings-by-roles</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/341.md">acc:341</a>
+          <a class="diagnostic-chip" href="acc/393.md">acc:393</a>
+          <a class="diagnostic-chip" href="acc/394.md">acc:394</a>
+          <a class="diagnostic-chip" href="acc/395.md">acc:395</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-item-visible-settings-by-roles.md">v8cs:form-item-visible-settings-by-roles</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — не используйте ролевую настройку видимости в командном интерфейсе конфигурации, интерфейсе основного раздела и рабочей области начальной страницы acc:457 acc:460 acc:461">
         <h2 class="diagnostics-clause__title"><a href="../std/737.md#2">п. 2 — Не используйте ролевую настройку видимости в командном интерфейсе конфигурации, интерфейсе основного раздела и рабочей области начальной страницы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/457.md">acc:457</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/460.md">acc:460</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/461.md">acc:461</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/457.md">acc:457</a>
+          <a class="diagnostic-chip" href="acc/460.md">acc:460</a>
+          <a class="diagnostic-chip" href="acc/461.md">acc:461</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — для проверки прав в коде используйте метод праводоступа acc:336 bslls:isinrolemethod v8cs:using-isinrole">
         <h2 class="diagnostics-clause__title"><a href="../std/737.md#3">п. 3 — Для проверки прав в коде используйте метод ПравоДоступа</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/336.md">acc:336</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/IsInRoleMethod.md">bslls:IsInRoleMethod</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/using-isinrole.md">v8cs:using-isinrole</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/336.md">acc:336</a>
+          <a class="diagnostic-chip" href="bslls/IsInRoleMethod.md">bslls:IsInRoleMethod</a>
+          <a class="diagnostic-chip" href="v8-code-style/using-isinrole.md">v8cs:using-isinrole</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.1 — если роль не дает прав на объекты метаданных и служит только маркером дополнительного права, используйте рольдоступна acc:514 acc:515">
         <h2 class="diagnostics-clause__title"><a href="../std/737.md#41">п. 4.1 — Если роль не дает прав на объекты метаданных и служит только маркером дополнительного права, используйте РольДоступна</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/514.md">acc:514</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/515.md">acc:515</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/514.md">acc:514</a>
+          <a class="diagnostic-chip" href="acc/515.md">acc:515</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4.2 — проектируйте роли с учетом влияния на командный интерфейс acc:1420">
         <h2 class="diagnostics-clause__title"><a href="../std/737.md#42">п. 4.2 — Проектируйте роли с учетом влияния на командный интерфейс</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1420.md">acc:1420</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1420.md">acc:1420</a>
         </div>
       </section>
     </div>
@@ -8566,9 +8566,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — чтобы минимизировать риск перехвата, не храните пароли и другую конфиденциальную информацию в информационной базе acc:345 v8cs:unsafe-password-ib-storage">
         <h2 class="diagnostics-clause__title"><a href="../std/740.md#2">п. 2 — Чтобы минимизировать риск перехвата, не храните пароли и другую конфиденциальную информацию в информационной базе</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/345.md">acc:345</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/unsafe-password-ib-storage.md">v8cs:unsafe-password-ib-storage</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/345.md">acc:345</a>
+          <a class="diagnostic-chip" href="v8-code-style/unsafe-password-ib-storage.md">v8cs:unsafe-password-ib-storage</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — иногда это неудобно или невозможно:" hidden data-empty="true">
@@ -8581,16 +8581,16 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — если используется бсп, применяйте безопасное хранилище паролей bslls:usinghardcodesecretinformation">
         <h2 class="diagnostics-clause__title"><a href="../std/740.md#32">п. 3.2 — Если используется БСП, применяйте безопасное хранилище паролей</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/UsingHardcodeSecretInformation.md">bslls:UsingHardcodeSecretInformation</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/UsingHardcodeSecretInformation.md">bslls:UsingHardcodeSecretInformation</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.3 — не храните пароль в реквизитах формы acc:339 acc:340 v8cs:secure-password-storage">
         <h2 class="diagnostics-clause__title"><a href="../std/740.md#33">п. 3.3 — Не храните пароль в реквизитах формы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/339.md">acc:339</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/340.md">acc:340</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/secure-password-storage.md">v8cs:secure-password-storage</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/339.md">acc:339</a>
+          <a class="diagnostic-chip" href="acc/340.md">acc:340</a>
+          <a class="diagnostic-chip" href="v8-code-style/secure-password-storage.md">v8cs:secure-password-storage</a>
         </div>
       </section>
     </div>
@@ -8611,15 +8611,15 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — объявляйте параметры формы на закладке «параметры» редактора формы v8cs:optional-form-parameter-access v8cs:unknown-form-parameter-access">
         <h2 class="diagnostics-clause__title"><a href="../std/741.md#3">п. 3 — Объявляйте параметры формы на закладке «Параметры» редактора формы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/optional-form-parameter-access.md">v8cs:optional-form-parameter-access</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/unknown-form-parameter-access.md">v8cs:unknown-form-parameter-access</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/optional-form-parameter-access.md">v8cs:optional-form-parameter-access</a>
+          <a class="diagnostic-chip" href="v8-code-style/unknown-form-parameter-access.md">v8cs:unknown-form-parameter-access</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1410">
         <h2 class="diagnostics-clause__title"><a href="../std/741.md#std741">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1410.md">acc:1410</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1410.md">acc:1410</a>
         </div>
       </section>
     </div>
@@ -8652,20 +8652,20 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для свойства история выбора у большинства объектов метаданных acc:412">
         <h2 class="diagnostics-clause__title"><a href="../std/744.md#1">п. 1 — Для свойства История выбора у большинства объектов метаданных</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/412.md">acc:412</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/412.md">acc:412</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — историю выбора в свойствах объекта метаданных рекомендуется отключать, acc:413">
         <h2 class="diagnostics-clause__title"><a href="../std/744.md#21">п. 2.1 — Историю выбора в свойствах объекта метаданных рекомендуется отключать,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/413.md">acc:413</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/413.md">acc:413</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.2 — после отключения истории выбора в свойствах объекта метаданных acc:414">
         <h2 class="diagnostics-clause__title"><a href="../std/744.md#22">п. 2.2 — После отключения истории выбора в свойствах объекта метаданных</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/414.md">acc:414</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/414.md">acc:414</a>
         </div>
       </section>
     </div>
@@ -8710,15 +8710,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — при работе с внешними ресурсами через объекты wsопределения, wsпрокси, httpсоединение, ftpсоединение, интернетпочтовыйпрофиль обязательно задавайте таймаут, то есть предельное время ожидания операции bslls:timeoutsinexternalresources">
         <h2 class="diagnostics-clause__title"><a href="../std/748.md#1">п. 1 — При работе с внешними ресурсами через объекты WSОпределения, WSПрокси, HTTPСоединение, FTPСоединение, ИнтернетПочтовыйПрофиль обязательно задавайте таймаут, то есть предельное время ожидания операции</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/TimeoutsInExternalResources.md">bslls:TimeoutsInExternalResources</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/TimeoutsInExternalResources.md">bslls:TimeoutsInExternalResources</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — время операции с внешним ресурсом обычно состоит из шести этапов: acc:397 acc:398">
         <h2 class="diagnostics-clause__title"><a href="../std/748.md#2">п. 2 — Время операции с внешним ресурсом обычно состоит из шести этапов:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/397.md">acc:397</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/398.md">acc:398</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/397.md">acc:397</a>
+          <a class="diagnostic-chip" href="acc/398.md">acc:398</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — чтобы снизить таймауты и повысить отзывчивость, используйте рекомендации ниже" hidden data-empty="true">
@@ -8755,10 +8755,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — все действия в обработчике передудалением выполняйте только после проверки обменданными.загрузка acc:75 bslls:dataexchangeloading v8cs:data-exchange-load">
         <h2 class="diagnostics-clause__title"><a href="../std/752.md#2">п. 2 — Все действия в обработчике ПередУдалением выполняйте только после проверки ОбменДанными.Загрузка</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/75.md">acc:75</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/75.md">acc:75</a>
+          <a class="diagnostic-chip" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
+          <a class="diagnostic-chip" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
         </div>
       </section>
     </div>
@@ -8823,8 +8823,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — псевдоним источника данных должен быть осмысленным и отражать назначение источника в текущем контексте acc:1434">
         <h2 class="diagnostics-clause__title"><a href="../std/758.md#1">п. 1 — Псевдоним источника данных должен быть осмысленным и отражать назначение источника в текущем контексте</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1434.md">acc:1434</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1434.md">acc:1434</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — для универсальных механизмов, работающих с произвольными таблицами, допустимы универсальные псевдонимы" hidden data-empty="true">
@@ -8841,28 +8841,28 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — следующие предупреждения проверки конфигурации обычно не являются критичными для работоспособности и не требуют обязательного исправления: acc:561 acc:562 acc:563 acc:564 acc:565 acc:566 acc:567 acc:568 acc:569 acc:570 acc:571 acc:572 acc:573 acc:574 acc:575 acc:576 acc:577 acc:578 acc:579 acc:582 acc:590">
         <h2 class="diagnostics-clause__title"><a href="../std/759.md#1">п. 1 — Следующие предупреждения проверки конфигурации обычно не являются критичными для работоспособности и не требуют обязательного исправления:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/561.md">acc:561</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/562.md">acc:562</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/563.md">acc:563</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/564.md">acc:564</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/565.md">acc:565</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/566.md">acc:566</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/567.md">acc:567</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/568.md">acc:568</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/569.md">acc:569</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/570.md">acc:570</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/571.md">acc:571</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/572.md">acc:572</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/573.md">acc:573</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/574.md">acc:574</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/575.md">acc:575</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/576.md">acc:576</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/577.md">acc:577</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/578.md">acc:578</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/579.md">acc:579</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/582.md">acc:582</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/590.md">acc:590</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/561.md">acc:561</a>
+          <a class="diagnostic-chip" href="acc/562.md">acc:562</a>
+          <a class="diagnostic-chip" href="acc/563.md">acc:563</a>
+          <a class="diagnostic-chip" href="acc/564.md">acc:564</a>
+          <a class="diagnostic-chip" href="acc/565.md">acc:565</a>
+          <a class="diagnostic-chip" href="acc/566.md">acc:566</a>
+          <a class="diagnostic-chip" href="acc/567.md">acc:567</a>
+          <a class="diagnostic-chip" href="acc/568.md">acc:568</a>
+          <a class="diagnostic-chip" href="acc/569.md">acc:569</a>
+          <a class="diagnostic-chip" href="acc/570.md">acc:570</a>
+          <a class="diagnostic-chip" href="acc/571.md">acc:571</a>
+          <a class="diagnostic-chip" href="acc/572.md">acc:572</a>
+          <a class="diagnostic-chip" href="acc/573.md">acc:573</a>
+          <a class="diagnostic-chip" href="acc/574.md">acc:574</a>
+          <a class="diagnostic-chip" href="acc/575.md">acc:575</a>
+          <a class="diagnostic-chip" href="acc/576.md">acc:576</a>
+          <a class="diagnostic-chip" href="acc/577.md">acc:577</a>
+          <a class="diagnostic-chip" href="acc/578.md">acc:578</a>
+          <a class="diagnostic-chip" href="acc/579.md">acc:579</a>
+          <a class="diagnostic-chip" href="acc/582.md">acc:582</a>
+          <a class="diagnostic-chip" href="acc/590.md">acc:590</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — в регламентной проверке конфигурации обычно не включайте флажок поиск использования синхронных вызовов" hidden data-empty="true">
@@ -8879,15 +8879,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — в прикладных решениях, ориентированных на работу в модели сервиса по технологии 1cfresh, не должно быть регламентных заданий, включенных в состав любого из разделителей acc:453 acc:454">
         <h2 class="diagnostics-clause__title"><a href="../std/760.md#1">п. 1 — В прикладных решениях, ориентированных на работу в модели сервиса по Технологии 1cFresh, не должно быть регламентных заданий, включенных в состав любого из разделителей</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/453.md">acc:453</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/454.md">acc:454</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/453.md">acc:453</a>
+          <a class="diagnostic-chip" href="acc/454.md">acc:454</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если нужно регулярно выполнять программный код в приложениях пользователя в разделенной иб, используйте подсистему бтс очередь заданий или аналогичный механизм очереди acc:455">
         <h2 class="diagnostics-clause__title"><a href="../std/760.md#2">п. 2 — Если нужно регулярно выполнять программный код в приложениях пользователя в разделенной ИБ, используйте подсистему БТС Очередь заданий или аналогичный механизм очереди</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/455.md">acc:455</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/455.md">acc:455</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — пример № 1" hidden data-empty="true">
@@ -8928,38 +8928,38 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — если в модулях конфигурации есть строки для интерфейса пользователя (сообщения, надписи на формах, тексты команд, выражения в настройках скд и т.п.), обеспечивайте их локализацию acc:1298 acc:1404 acc:1405 v8cs:bsl-nstr-string-literal-format">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#1">п. 1 — Если в модулях конфигурации есть строки для интерфейса пользователя (сообщения, надписи на формах, тексты команд, выражения в настройках СКД и т.п.), обеспечивайте их локализацию</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1298.md">acc:1298</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1404.md">acc:1404</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1405.md">acc:1405</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/bsl-nstr-string-literal-format.md">v8cs:bsl-nstr-string-literal-format</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1298.md">acc:1298</a>
+          <a class="diagnostic-chip" href="acc/1404.md">acc:1404</a>
+          <a class="diagnostic-chip" href="acc/1405.md">acc:1405</a>
+          <a class="diagnostic-chip" href="v8-code-style/bsl-nstr-string-literal-format.md">v8cs:bsl-nstr-string-literal-format</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — для составных строк, где части зависят от условий, используйте логически завершенные фразы и подстановку параметров через стршаблон acc:492 acc:1297">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#2">п. 2 — Для составных строк, где части зависят от условий, используйте логически завершенные фразы и подстановку параметров через СтрШаблон</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/492.md">acc:492</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1297.md">acc:1297</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/492.md">acc:492</a>
+          <a class="diagnostic-chip" href="acc/1297.md">acc:1297</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — если в конфигурации используется бсп, для составных форматированных строк вместо объекта форматированнаястрока применяйте функцию форматированнаястрока модулей строковыефункции или строковыефункцииклиент acc:1356">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#3">п. 3 — Если в конфигурации используется БСП, для составных форматированных строк вместо объекта ФорматированнаяСтрока применяйте функцию ФорматированнаяСтрока модулей СтроковыеФункции или СтроковыеФункцииКлиент</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1356.md">acc:1356</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1356.md">acc:1356</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — в нстр строку ограничивайте одинарными кавычками v8cs:bsl-nstr-string-literal-format">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#4">п. 4 — В НСтр строку ограничивайте одинарными кавычками</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/bsl-nstr-string-literal-format.md">v8cs:bsl-nstr-string-literal-format</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/bsl-nstr-string-literal-format.md">v8cs:bsl-nstr-string-literal-format</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — не выводите пользователю имена объектов метаданных и внутренние идентификаторы из кода acc:1357 acc:1358 acc:1359">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#5">п. 5 — Не выводите пользователю имена объектов метаданных и внутренние идентификаторы из кода</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1357.md">acc:1357</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1358.md">acc:1358</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1359.md">acc:1359</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1357.md">acc:1357</a>
+          <a class="diagnostic-chip" href="acc/1358.md">acc:1358</a>
+          <a class="diagnostic-chip" href="acc/1359.md">acc:1359</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5.1 — исключение: сообщения для разработчиков и интерфейсы инструментов разработчика/внедренца" hidden data-empty="true">
@@ -8968,20 +8968,20 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — при использовании функций числопрописью, представлениепериода, строкасчислом не указывайте параметр л= (l=) в строке форматирования acc:1299">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#6">п. 6 — При использовании функций ЧислоПрописью, ПредставлениеПериода, СтрокаСЧислом не указывайте параметр Л= (L=) в строке форматирования</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1299.md">acc:1299</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1299.md">acc:1299</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 7 — не вызывайте функцию получитьсклонениястрокипочислу, так как она предназначена только для русскоязычного интерфейса acc:1432">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#7">п. 7 — Не вызывайте функцию ПолучитьСклоненияСтрокиПоЧислу, так как она предназначена только для русскоязычного интерфейса</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1432.md">acc:1432</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1432.md">acc:1432</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 8 — в редких случаях (например, длинный лог действий пользователя) допустимо собирать сообщение конкатенацией, а не шаблоном v8cs:bsl-nstr-string-literal-format">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#8">п. 8 — В редких случаях (например, длинный лог действий пользователя) допустимо собирать сообщение конкатенацией, а не шаблоном</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/bsl-nstr-string-literal-format.md">v8cs:bsl-nstr-string-literal-format</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/bsl-nstr-string-literal-format.md">v8cs:bsl-nstr-string-literal-format</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 9 — при вызове показатьвопрос с указанием кнопок в параметре кнопки:" hidden data-empty="true">
@@ -8990,13 +8990,13 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1354 acc:1355 acc:1391 acc:1392 acc:1408 acc:1441">
         <h2 class="diagnostics-clause__title"><a href="../std/761.md#std761">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1354.md">acc:1354</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1355.md">acc:1355</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1391.md">acc:1391</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1392.md">acc:1392</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1408.md">acc:1408</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1441.md">acc:1441</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1354.md">acc:1354</a>
+          <a class="diagnostic-chip" href="acc/1355.md">acc:1355</a>
+          <a class="diagnostic-chip" href="acc/1391.md">acc:1391</a>
+          <a class="diagnostic-chip" href="acc/1392.md">acc:1392</a>
+          <a class="diagnostic-chip" href="acc/1408.md">acc:1408</a>
+          <a class="diagnostic-chip" href="acc/1441.md">acc:1441</a>
         </div>
       </section>
     </div>
@@ -9009,26 +9009,26 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — если строковые литералы из текста запроса выводятся пользователю, не оставляйте их в тексте #!sdbl acc:491 acc:1300">
         <h2 class="diagnostics-clause__title"><a href="../std/762.md#1">п. 1 — Если строковые литералы из текста запроса выводятся пользователю, не оставляйте их в тексте #!sdbl</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/491.md">acc:491</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1300.md">acc:1300</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/491.md">acc:491</a>
+          <a class="diagnostic-chip" href="acc/1300.md">acc:1300</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — те же требования применяйте к выражениям скд и запросам наборов данных скд, если они формируют интерфейсный текст acc:320 acc:462 acc:463 acc:1297 acc:1298 acc:1299">
         <h2 class="diagnostics-clause__title"><a href="../std/762.md#2">п. 2 — Те же требования применяйте к выражениям СКД и запросам наборов данных СКД, если они формируют интерфейсный текст</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/320.md">acc:320</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/462.md">acc:462</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/463.md">acc:463</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1297.md">acc:1297</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1298.md">acc:1298</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1299.md">acc:1299</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/320.md">acc:320</a>
+          <a class="diagnostic-chip" href="acc/462.md">acc:462</a>
+          <a class="diagnostic-chip" href="acc/463.md">acc:463</a>
+          <a class="diagnostic-chip" href="acc/1297.md">acc:1297</a>
+          <a class="diagnostic-chip" href="acc/1298.md">acc:1298</a>
+          <a class="diagnostic-chip" href="acc/1299.md">acc:1299</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — для поля выборки отчета скд, полученного вычислением с псевдонимом, задавайте синоним явно acc:465">
         <h2 class="diagnostics-clause__title"><a href="../std/762.md#3">п. 3 — Для поля выборки отчета СКД, полученного вычислением с псевдонимом, задавайте синоним явно</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/465.md">acc:465</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/465.md">acc:465</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — в заголовках отчетов скд, полей, вычисляемых полей и параметров допускаются параметры подстановки стршаблон:" hidden data-empty="true">
@@ -9037,8 +9037,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1354">
         <h2 class="diagnostics-clause__title"><a href="../std/762.md#std762">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1354.md">acc:1354</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1354.md">acc:1354</a>
         </div>
       </section>
     </div>
@@ -9051,26 +9051,26 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — при использовании функции формат в ряде случаев применяйте нстр для форматной строки acc:335">
         <h2 class="diagnostics-clause__title"><a href="../std/763.md#1">п. 1 — При использовании функции Формат в ряде случаев применяйте НСтр для форматной строки</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/335.md">acc:335</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/335.md">acc:335</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — при выводе дат учитывайте, что в разных странах различаются порядок и разделители компонентов даты acc:1367">
         <h2 class="diagnostics-clause__title"><a href="../std/763.md#11">п. 1.1 — При выводе дат учитывайте, что в разных странах различаются порядок и разделители компонентов даты</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1367.md">acc:1367</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1367.md">acc:1367</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — для чисел применяйте нстр к форматной строке, когда: acc:1368">
         <h2 class="diagnostics-clause__title"><a href="../std/763.md#12">п. 1.2 — Для чисел применяйте НСтр к форматной строке, когда:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1368.md">acc:1368</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1368.md">acc:1368</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — для вывода пользователю значений булево всегда применяйте нстр к форматной строке acc:1369">
         <h2 class="diagnostics-clause__title"><a href="../std/763.md#13">п. 1.3 — Для вывода пользователю значений Булево всегда применяйте НСтр к форматной строке</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1369.md">acc:1369</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1369.md">acc:1369</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.4 — не переопределяйте локализацию отображения данных по умолчанию (формат ос)" hidden data-empty="true">
@@ -9111,15 +9111,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — не локализуйте строковые константы с внутренними идентификаторами, которые не выводятся пользователю acc:334">
         <h2 class="diagnostics-clause__title"><a href="../std/764.md#1">п. 1 — Не локализуйте строковые константы с внутренними идентификаторами, которые не выводятся пользователю</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/334.md">acc:334</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/334.md">acc:334</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — не используйте в алгоритмах строковые представления объектов и типов acc:1391 acc:1392">
         <h2 class="diagnostics-clause__title"><a href="../std/764.md#2">п. 2 — Не используйте в алгоритмах строковые представления объектов и типов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1391.md">acc:1391</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1392.md">acc:1392</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1391.md">acc:1391</a>
+          <a class="diagnostic-chip" href="acc/1392.md">acc:1392</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.1 — чтобы получить предопределенное значение на клиенте, указывайте его строковое имя так, как оно задано в конфигураторе" hidden data-empty="true">
@@ -9128,13 +9128,13 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1297 acc:1298 acc:1299 acc:1354 acc:1408 acc:1441">
         <h2 class="diagnostics-clause__title"><a href="../std/764.md#std764">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1297.md">acc:1297</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1298.md">acc:1298</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1299.md">acc:1299</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1354.md">acc:1354</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1408.md">acc:1408</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1441.md">acc:1441</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1297.md">acc:1297</a>
+          <a class="diagnostic-chip" href="acc/1298.md">acc:1298</a>
+          <a class="diagnostic-chip" href="acc/1299.md">acc:1299</a>
+          <a class="diagnostic-chip" href="acc/1354.md">acc:1354</a>
+          <a class="diagnostic-chip" href="acc/1408.md">acc:1408</a>
+          <a class="diagnostic-chip" href="acc/1441.md">acc:1441</a>
         </div>
       </section>
     </div>
@@ -9147,14 +9147,14 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — не присваивайте реквизитам, которые используются в элементах формы, строковые значения без локализации acc:445">
         <h2 class="diagnostics-clause__title"><a href="../std/765.md#1">п. 1 — Не присваивайте реквизитам, которые используются в элементах формы, строковые значения без локализации</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/445.md">acc:445</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/445.md">acc:445</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — для всех таблиц и групп на форме задавайте заголовки acc:446">
         <h2 class="diagnostics-clause__title"><a href="../std/765.md#2">п. 2 — Для всех таблиц и групп на форме задавайте заголовки</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/446.md">acc:446</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/446.md">acc:446</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — сокращайте количество незначащей информации, которая попадает в локализацию" hidden data-empty="true">
@@ -9163,8 +9163,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — удаляйте бессмысленные подсказки у групп форм acc:447">
         <h2 class="diagnostics-clause__title"><a href="../std/765.md#31">п. 3.1 — Удаляйте бессмысленные подсказки у групп форм</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/447.md">acc:447</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/447.md">acc:447</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.2 — у реквизитов формы, которые не размещены на форме как элементы управления, очищайте заголовки" hidden data-empty="true">
@@ -9173,22 +9173,22 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — задавайте заголовок для колонок динамического списка, которые: acc:464 v8cs:form-dynamic-list-item-title">
         <h2 class="diagnostics-clause__title"><a href="../std/765.md#4">п. 4 — Задавайте заголовок для колонок динамического списка, которые:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/464.md">acc:464</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/form-dynamic-list-item-title.md">v8cs:form-dynamic-list-item-title</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/464.md">acc:464</a>
+          <a class="diagnostic-chip" href="v8-code-style/form-dynamic-list-item-title.md">v8cs:form-dynamic-list-item-title</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — для полей формы со списками выбора всегда устанавливайте свойство режимвыбораизсписка в значение истина acc:448 v8cs:input-field-list-choice-mode">
         <h2 class="diagnostics-clause__title"><a href="../std/765.md#5">п. 5 — Для полей формы со списками выбора всегда устанавливайте свойство РежимВыбораИзСписка в значение Истина</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/448.md">acc:448</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/input-field-list-choice-mode.md">v8cs:input-field-list-choice-mode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/448.md">acc:448</a>
+          <a class="diagnostic-chip" href="v8-code-style/input-field-list-choice-mode.md">v8cs:input-field-list-choice-mode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1429">
         <h2 class="diagnostics-clause__title"><a href="../std/765.md#std765">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1429.md">acc:1429</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1429.md">acc:1429</a>
         </div>
       </section>
     </div>
@@ -9201,8 +9201,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — обычно перевод табличных, текстовых и html-макетов не требует специальных подготовительных действий acc:497">
         <h2 class="diagnostics-clause__title"><a href="../std/766.md#1">п. 1 — Обычно перевод табличных, текстовых и HTML-макетов не требует специальных подготовительных действий</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/497.md">acc:497</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/497.md">acc:497</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — в многоязычной конфигурации может потребоваться в одном сеансе формировать печатные формы на языке, отличном от текущего языка интерфейса" hidden data-empty="true">
@@ -9219,9 +9219,9 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — используйте в макетах кодировку utf-8 acc:450 acc:1361">
         <h2 class="diagnostics-clause__title"><a href="../std/766.md#5">п. 5 — Используйте в макетах кодировку UTF-8</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/450.md">acc:450</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1361.md">acc:1361</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/450.md">acc:450</a>
+          <a class="diagnostic-chip" href="acc/1361.md">acc:1361</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 6 — по возможности группируйте однотипные макеты: используйте один макет вместо нескольких" hidden data-empty="true">
@@ -9242,9 +9242,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — для предопределенных регламентных заданий не задавайте наименование в конфигураторе acc:449 v8cs:mdo-scheduled-job-description">
         <h2 class="diagnostics-clause__title"><a href="../std/767.md#1">п. 1 — Для предопределенных регламентных заданий не задавайте наименование в конфигураторе</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/449.md">acc:449</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/mdo-scheduled-job-description.md">v8cs:mdo-scheduled-job-description</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/449.md">acc:449</a>
+          <a class="diagnostic-chip" href="v8-code-style/mdo-scheduled-job-description.md">v8cs:mdo-scheduled-job-description</a>
         </div>
       </section>
     </div>
@@ -9261,20 +9261,20 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — в редакторе запроса динамического списка acc:482">
         <h2 class="diagnostics-clause__title"><a href="../std/768.md#11">п. 1.1 — В редакторе запроса динамического списка</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/482.md">acc:482</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/482.md">acc:482</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — псевдонимы таблиц должны заканчиваться постфиксом переопределяемый, acc:483">
         <h2 class="diagnostics-clause__title"><a href="../std/768.md#12">п. 1.2 — Псевдонимы таблиц должны заканчиваться постфиксом Переопределяемый,</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/483.md">acc:483</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/483.md">acc:483</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — установку текста запроса и основной таблицы acc:484">
         <h2 class="diagnostics-clause__title"><a href="../std/768.md#13">п. 1.3 — Установку текста запроса и основной таблицы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/484.md">acc:484</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/484.md">acc:484</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — переопределяемые тексты запросов динамического списка" hidden data-empty="true">
@@ -9335,11 +9335,11 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1436 acc:1437 acc:1438 acc:1439">
         <h2 class="diagnostics-clause__title"><a href="../std/769.md#std769">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1436.md">acc:1436</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1437.md">acc:1437</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1438.md">acc:1438</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1439.md">acc:1439</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1436.md">acc:1436</a>
+          <a class="diagnostic-chip" href="acc/1437.md">acc:1437</a>
+          <a class="diagnostic-chip" href="acc/1438.md">acc:1438</a>
+          <a class="diagnostic-chip" href="acc/1439.md">acc:1439</a>
         </div>
       </section>
     </div>
@@ -9352,25 +9352,25 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — опасность представляет не только прямое выполнение кода пользователя, но и выполнение строк, собранных из параметров и переданных в серверные процедуры/функции bslls:executeexternalcode">
         <h2 class="diagnostics-clause__title"><a href="../std/770.md#1">п. 1 — Опасность представляет не только прямое выполнение кода пользователя, но и выполнение строк, собранных из параметров и переданных в серверные процедуры/функции</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/ExecuteExternalCode.md">bslls:ExecuteExternalCode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/ExecuteExternalCode.md">bslls:ExecuteExternalCode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — перед вызовом выполнить/вычислить в серверном коде включайте безопасный режим acc:486 acc:487 acc:488 acc:489 acc:490 v8cs:server-execution-safe-mode">
         <h2 class="diagnostics-clause__title"><a href="../std/770.md#2">п. 2 — Перед вызовом Выполнить/Вычислить в серверном коде включайте безопасный режим</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/486.md">acc:486</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/487.md">acc:487</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/488.md">acc:488</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/489.md">acc:489</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/490.md">acc:490</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/server-execution-safe-mode.md">v8cs:server-execution-safe-mode</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/486.md">acc:486</a>
+          <a class="diagnostic-chip" href="acc/487.md">acc:487</a>
+          <a class="diagnostic-chip" href="acc/488.md">acc:488</a>
+          <a class="diagnostic-chip" href="acc/489.md">acc:489</a>
+          <a class="diagnostic-chip" href="acc/490.md">acc:490</a>
+          <a class="diagnostic-chip" href="v8-code-style/server-execution-safe-mode.md">v8cs:server-execution-safe-mode</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — если код нельзя выполнить в безопасном режиме (например, есть доступ к файлам), запускайте его только после аудита и только из контролируемого источника bslls:executeexternalcodeincommonmodule">
         <h2 class="diagnostics-clause__title"><a href="../std/770.md#3">п. 3 — Если код нельзя выполнить в безопасном режиме (например, есть доступ к файлам), запускайте его только после аудита и только из контролируемого источника</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/ExecuteExternalCodeInCommonModule.md">bslls:ExecuteExternalCodeInCommonModule</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/ExecuteExternalCodeInCommonModule.md">bslls:ExecuteExternalCodeInCommonModule</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — если конфигурация работает в модели сервиса и поддерживает перенос из локальной версии, отключайте пользовательские фрагменты кода и тексты запросов, пришедшие из локальной базы" hidden data-empty="true">
@@ -9399,10 +9399,10 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 4 — не поддерживайте в обмене версию enterprisedata, если она не соответствует функциональным требованиям обмена acc:518 acc:519 acc:520">
         <h2 class="diagnostics-clause__title"><a href="../std/771.md#4">п. 4 — Не поддерживайте в обмене версию EnterpriseData, если она не соответствует функциональным требованиям обмена</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/518.md">acc:518</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/519.md">acc:519</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/520.md">acc:520</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/518.md">acc:518</a>
+          <a class="diagnostic-chip" href="acc/519.md">acc:519</a>
+          <a class="diagnostic-chip" href="acc/520.md">acc:520</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — в редких случаях обмен между прикладными решениями невозможен из-за отсутствия совместно поддерживаемых версий enterprisedata" hidden data-empty="true">
@@ -9423,10 +9423,10 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — в обработчиках событий передзаписью, призаписи, передудалением сначала проверяйте признак обменданными.загрузка acc:75 bslls:dataexchangeloading v8cs:data-exchange-load">
         <h2 class="diagnostics-clause__title"><a href="../std/773.md#1">п. 1 — В обработчиках событий ПередЗаписью, ПриЗаписи, ПередУдалением сначала проверяйте признак ОбменДанными.Загрузка</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/75.md">acc:75</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/75.md">acc:75</a>
+          <a class="diagnostic-chip" href="bslls/DataExchangeLoading.md">bslls:DataExchangeLoading</a>
+          <a class="diagnostic-chip" href="v8-code-style/data-exchange-load.md">v8cs:data-exchange-load</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — исключение: обмен, который при загрузке регистрирует изменения для выгрузки на другие узлы плана обмена" hidden data-empty="true">
@@ -9451,9 +9451,9 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — при запуске внешней программы из кода собирайте командную строку только из проверенных частей acc:534 bslls:externalappstarting">
         <h2 class="diagnostics-clause__title"><a href="../std/774.md#1">п. 1 — При запуске внешней программы из кода собирайте командную строку только из проверенных частей</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/534.md">acc:534</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/ExternalAppStarting.md">bslls:ExternalAppStarting</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/534.md">acc:534</a>
+          <a class="diagnostic-chip" href="bslls/ExternalAppStarting.md">bslls:ExternalAppStarting</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — при использовании бсп для запуска внешних программ применяйте профильный api" hidden data-empty="true">
@@ -9474,8 +9474,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.4 — для запуска исполняемых файлов, системных команд и серверных команд, а также для получения stdout/stderr используйте: acc:1425">
         <h2 class="diagnostics-clause__title"><a href="../std/774.md#24">п. 2.4 — Для запуска исполняемых файлов, системных команд и серверных команд, а также для получения stdout/stderr используйте:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1425.md">acc:1425</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1425.md">acc:1425</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2.5 — не формируйте динамически исполняемые файлы во временном каталоге (например, bat-файлы с последующим запуском)" hidden data-empty="true">
@@ -9496,15 +9496,15 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — при интеграции со сторонними приложениями через открытые интерфейсы (в частности, com) отключайте исполнение произвольного кода средствами вызываемого приложения v8cs:security-software-call">
         <h2 class="diagnostics-clause__title"><a href="../std/775.md#1">п. 1 — При интеграции со сторонними приложениями через открытые интерфейсы (в частности, COM) отключайте исполнение произвольного кода средствами вызываемого приложения</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/security-software-call.md">v8cs:security-software-call</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/security-software-call.md">v8cs:security-software-call</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — перед программным открытием документов microsoft word и microsoft excel через com запрещайте исполнение макросов acc:536 acc:537">
         <h2 class="diagnostics-clause__title"><a href="../std/775.md#2">п. 2 — Перед программным открытием документов Microsoft Word и Microsoft Excel через COM запрещайте исполнение макросов</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/536.md">acc:536</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/537.md">acc:537</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/536.md">acc:536</a>
+          <a class="diagnostic-chip" href="acc/537.md">acc:537</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — если по прикладной задаче требуется разрешать автозапуск макросов, реализуйте явные настройки безопасности" hidden data-empty="true">
@@ -9557,8 +9557,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3 — временные таблицы следует индексировать, когда это дает прирост производительности v8cs:ql-temp-table-index">
         <h2 class="diagnostics-clause__title"><a href="../std/777.md#3">п. 3 — Временные таблицы следует индексировать, когда это дает прирост производительности</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/ql-temp-table-index.md">v8cs:ql-temp-table-index</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="v8-code-style/ql-temp-table-index.md">v8cs:ql-temp-table-index</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 3.1 — индекс следует строить в случаях:" hidden data-empty="true">
@@ -9643,38 +9643,38 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.1 — исключение не отменяет транзакцию acc:325 acc:326 acc:327">
         <h2 class="diagnostics-clause__title"><a href="../std/783.md#11">п. 1.1 — Исключение не отменяет транзакцию</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/325.md">acc:325</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/326.md">acc:326</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/327.md">acc:327</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/325.md">acc:325</a>
+          <a class="diagnostic-chip" href="acc/326.md">acc:326</a>
+          <a class="diagnostic-chip" href="acc/327.md">acc:327</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.2 — начало транзакции и ее завершение (фиксацию) выполняйте в одном методе bslls:pairingbrokentransaction">
         <h2 class="diagnostics-clause__title"><a href="../std/783.md#12">п. 1.2 — Начало транзакции и ее завершение (фиксацию) выполняйте в одном методе</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="bslls/PairingBrokenTransaction.md">bslls:PairingBrokenTransaction</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="bslls/PairingBrokenTransaction.md">bslls:PairingBrokenTransaction</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.3 — используйте следующий паттерн для работы с транзакциями: acc:328 acc:329 acc:330 acc:331 acc:332 acc:415 acc:478 acc:521 acc:1319 acc:1320 bslls:begintransactionbeforetrycatch bslls:committransactionoutsidetrycatch bslls:wronguseofrollbacktransactionmethod v8cs:begin-transaction v8cs:commit-transaction v8cs:lock-out-of-try v8cs:rollback-transaction">
         <h2 class="diagnostics-clause__title"><a href="../std/783.md#13">п. 1.3 — Используйте следующий паттерн для работы с транзакциями:</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/328.md">acc:328</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/329.md">acc:329</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/330.md">acc:330</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/331.md">acc:331</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/332.md">acc:332</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/415.md">acc:415</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/478.md">acc:478</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/521.md">acc:521</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1319.md">acc:1319</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1320.md">acc:1320</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/BeginTransactionBeforeTryCatch.md">bslls:BeginTransactionBeforeTryCatch</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/CommitTransactionOutsideTryCatch.md">bslls:CommitTransactionOutsideTryCatch</a>
-          <a class="diagnostics-clause__diagnostic" href="bslls/WrongUseOfRollbackTransactionMethod.md">bslls:WrongUseOfRollbackTransactionMethod</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/begin-transaction.md">v8cs:begin-transaction</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/commit-transaction.md">v8cs:commit-transaction</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/lock-out-of-try.md">v8cs:lock-out-of-try</a>
-          <a class="diagnostics-clause__diagnostic" href="v8-code-style/rollback-transaction.md">v8cs:rollback-transaction</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/328.md">acc:328</a>
+          <a class="diagnostic-chip" href="acc/329.md">acc:329</a>
+          <a class="diagnostic-chip" href="acc/330.md">acc:330</a>
+          <a class="diagnostic-chip" href="acc/331.md">acc:331</a>
+          <a class="diagnostic-chip" href="acc/332.md">acc:332</a>
+          <a class="diagnostic-chip" href="acc/415.md">acc:415</a>
+          <a class="diagnostic-chip" href="acc/478.md">acc:478</a>
+          <a class="diagnostic-chip" href="acc/521.md">acc:521</a>
+          <a class="diagnostic-chip" href="acc/1319.md">acc:1319</a>
+          <a class="diagnostic-chip" href="acc/1320.md">acc:1320</a>
+          <a class="diagnostic-chip" href="bslls/BeginTransactionBeforeTryCatch.md">bslls:BeginTransactionBeforeTryCatch</a>
+          <a class="diagnostic-chip" href="bslls/CommitTransactionOutsideTryCatch.md">bslls:CommitTransactionOutsideTryCatch</a>
+          <a class="diagnostic-chip" href="bslls/WrongUseOfRollbackTransactionMethod.md">bslls:WrongUseOfRollbackTransactionMethod</a>
+          <a class="diagnostic-chip" href="v8-code-style/begin-transaction.md">v8cs:begin-transaction</a>
+          <a class="diagnostic-chip" href="v8-code-style/commit-transaction.md">v8cs:commit-transaction</a>
+          <a class="diagnostic-chip" href="v8-code-style/lock-out-of-try.md">v8cs:lock-out-of-try</a>
+          <a class="diagnostic-chip" href="v8-code-style/rollback-transaction.md">v8cs:rollback-transaction</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 1.4 — если можно избежать использования вложенных транзакций - постарайтесь избежать" hidden data-empty="true">
@@ -9739,8 +9739,8 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="стандарт в целом acc:1395">
         <h2 class="diagnostics-clause__title"><a href="../std/783.md#std783">Стандарт в целом</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1395.md">acc:1395</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1395.md">acc:1395</a>
         </div>
       </section>
     </div>
@@ -9753,22 +9753,22 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — автогенерируемые строки, которые программно записываются в информационную базу и выводятся пользователям, формируйте не на языке текущего пользователя, а на языке информационной базы acc:152 acc:153 acc:154 acc:156 acc:157 acc:161 acc:370 acc:371 acc:1413">
         <h2 class="diagnostics-clause__title"><a href="../std/784.md#1">п. 1 — Автогенерируемые строки, которые программно записываются в информационную базу и выводятся пользователям, формируйте не на языке текущего пользователя, а на языке информационной базы</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/152.md">acc:152</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/153.md">acc:153</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/154.md">acc:154</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/156.md">acc:156</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/157.md">acc:157</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/161.md">acc:161</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/370.md">acc:370</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/371.md">acc:371</a>
-          <a class="diagnostics-clause__diagnostic" href="acc/1413.md">acc:1413</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/152.md">acc:152</a>
+          <a class="diagnostic-chip" href="acc/153.md">acc:153</a>
+          <a class="diagnostic-chip" href="acc/154.md">acc:154</a>
+          <a class="diagnostic-chip" href="acc/156.md">acc:156</a>
+          <a class="diagnostic-chip" href="acc/157.md">acc:157</a>
+          <a class="diagnostic-chip" href="acc/161.md">acc:161</a>
+          <a class="diagnostic-chip" href="acc/370.md">acc:370</a>
+          <a class="diagnostic-chip" href="acc/371.md">acc:371</a>
+          <a class="diagnostic-chip" href="acc/1413.md">acc:1413</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — это же требование действует для обработчиков начального заполнения, которые заполняют строковые реквизиты предопределенных элементов справочников, пвх и т.п acc:1385">
         <h2 class="diagnostics-clause__title"><a href="../std/784.md#2">п. 2 — Это же требование действует для обработчиков начального заполнения, которые заполняют строковые реквизиты предопределенных элементов справочников, ПВХ и т.п</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1385.md">acc:1385</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1385.md">acc:1385</a>
         </div>
       </section>
     </div>
@@ -9809,8 +9809,8 @@ llms:
     <div class="diagnostics-standard__clauses">
       <section class="diagnostics-clause" data-clause data-search="п. 1 — при вычислении количества записей в запросе всегда используйте функцию количество, а не сумма acc:1398">
         <h2 class="diagnostics-clause__title"><a href="../std/787.md#1">п. 1 — При вычислении количества записей в запросе всегда используйте функцию КОЛИЧЕСТВО, а не СУММА</a></h2>
-        <div class="diagnostics-clause__links">
-          <a class="diagnostics-clause__diagnostic" href="acc/1398.md">acc:1398</a>
+        <div class="diagnostics-clause__links diagnostic-links">
+          <a class="diagnostic-chip" href="acc/1398.md">acc:1398</a>
         </div>
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 2 — если количество нужно вычислять условно и количество применить нельзя, расширяйте разрядность числа по умолчанию через выразить (например, до 17 разрядов)" hidden data-empty="true">

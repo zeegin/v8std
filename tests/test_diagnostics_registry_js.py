@@ -1,3 +1,4 @@
+import re
 import unittest
 from pathlib import Path
 
@@ -38,8 +39,42 @@ class DiagnosticsRegistryJavascriptTests(unittest.TestCase):
         self.assertIn(".diagnostics-standard__summary:focus-visible", source)
         self.assertIn(".diagnostics-standard__summary::before", source)
         self.assertIn("content: none", source)
-        self.assertIn(".diagnostics-clause__diagnostic", source)
+        self.assertIn(".diagnostic-links", source)
+        self.assertIn(".md-typeset .diagnostic-chip", source)
+        self.assertIn(".md-typeset .diagnostic-chip:focus-visible", source)
         self.assertIn("max-width: 44.984375em", source)
+
+    def test_registry_uses_the_shared_diagnostic_chip_class(self):
+        source = (ROOT / "docs/diagnostics/index.md").read_text(encoding="utf-8")
+
+        self.assertIn('class="diagnostic-chip"', source)
+        self.assertNotIn('class="diagnostics-clause__diagnostic"', source)
+
+    def test_help_pages_link_every_canonical_diagnostic_as_a_chip(self):
+        pattern = re.compile(
+            r"(?:acc:\d+|bslls:[A-Za-z][A-Za-z0-9_-]*|"
+            r"v8cs:[A-Za-z0-9][A-Za-z0-9_-]*)"
+        )
+        anchor = re.compile(
+            r'<a class="diagnostic-chip" href="[^"]+">'
+            r"(?:acc:\d+|bslls:[A-Za-z][A-Za-z0-9_-]*|"
+            r"v8cs:[A-Za-z0-9][A-Za-z0-9_-]*)</a>"
+        )
+
+        for relative_path in ("docs/search-help.md", "docs/mcp.md"):
+            with self.subTest(path=relative_path):
+                source = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertNotRegex(anchor.sub("", source), pattern)
+
+        search_help = (ROOT / "docs/search-help.md").read_text(encoding="utf-8")
+        mcp_help = (ROOT / "docs/mcp.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'class="diagnostic-chip" href="diagnostics/acc/1245.md"', search_help
+        )
+        self.assertIn(
+            'class="diagnostic-chip" href="diagnostics/bslls/UsingModalWindows.md"',
+            mcp_help,
+        )
 
 
 if __name__ == "__main__":
