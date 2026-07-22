@@ -79,13 +79,28 @@ def _clause_summary(lines: list[str]) -> str | None:
             continue
         if line.startswith(("<!--", "!!!", "???", "#", "- ", "* ", ">")):
             continue
-        text = MARKDOWN_LINK_RE.sub(r"\1", line)
+        text = re.sub(r"#![a-z]+\s+", "", line, flags=re.IGNORECASE)
+        text = MARKDOWN_LINK_RE.sub(r"\1", text)
         text = re.sub(r"[`*_~]", "", text).strip()
         if not text:
             continue
         sentence = re.split(r"(?<=[.!?])\s+", text, maxsplit=1)[0].rstrip(".!?")
         return sentence or None
     return None
+
+
+def _russian_count(value: int, forms: tuple[str, str, str]) -> str:
+    remainder_100 = value % 100
+    remainder_10 = value % 10
+    if 11 <= remainder_100 <= 14:
+        form = forms[2]
+    elif remainder_10 == 1:
+        form = forms[0]
+    elif 2 <= remainder_10 <= 4:
+        form = forms[1]
+    else:
+        form = forms[2]
+    return f"{value} {form}"
 
 
 def load_standard_pages(standards_dir: Path) -> dict[str, StandardPage]:
@@ -186,13 +201,20 @@ def render_registry_index(reviews: list | tuple, standard_pages: dict[str, Stand
         if overall:
             groups.append((StandardClause(standard, standard, "Стандарт в целом"), overall, True))
         empty_standard = not all_diagnostics
-        search = " ".join([standard, page.title, *all_diagnostics]).casefold()
+        searchable_diagnostics = sorted(
+            all_diagnostics, key=_registry_diagnostic_sort_key
+        )
+        search = " ".join([standard, page.title, *searchable_diagnostics]).casefold()
         hidden = ' hidden data-empty="true"' if empty_standard else ""
         lines.extend([
             f'  <details class="diagnostics-standard" data-standard data-search="{html.escape(search, quote=True)}"{hidden}>',
             '    <summary class="diagnostics-standard__summary">',
             f'      <span class="diagnostics-standard__title">#{standard}: {html.escape(page.title)}</span>',
-            f'      <span class="diagnostics-standard__counts">{len(all_diagnostics)} проверок · {clauses_with_checks} пунктов</span>',
+            '      <span class="diagnostics-standard__counts">'
+            + _russian_count(len(all_diagnostics), ("проверка", "проверки", "проверок"))
+            + " · "
+            + _russian_count(clauses_with_checks, ("пункт", "пункта", "пунктов"))
+            + "</span>",
             "    </summary>",
             '    <div class="diagnostics-standard__clauses">',
         ])
@@ -213,7 +235,7 @@ def render_registry_index(reviews: list | tuple, standard_pages: dict[str, Stand
                 lines.append('        <div class="diagnostics-clause__links">')
                 for diagnostic in diagnostics:
                     lines.append(
-                        f'          <a class="diagnostics-clause__diagnostic" href="{_registry_diagnostic_path(diagnostic).removesuffix(".md")}/">{html.escape(diagnostic)}</a>'
+                        f'          <a class="diagnostics-clause__diagnostic" href="{_registry_diagnostic_path(diagnostic)}">{html.escape(diagnostic)}</a>'
                     )
                 lines.append("        </div>")
             else:

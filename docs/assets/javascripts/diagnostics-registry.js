@@ -1,6 +1,10 @@
 (() => {
   function normalize(value) {
-    return value.toLocaleLowerCase("ru-RU").replace(/ё/g, "е").trim();
+    return value
+      .toLocaleLowerCase("ru-RU")
+      .replace(/ё/g, "е")
+      .trim()
+      .replace(/^#(?=std\d)/, "");
   }
 
   function initialize(root) {

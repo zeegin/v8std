@@ -566,12 +566,16 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
             pages = relationship_generator.load_standard_pages(standards)
             rendered = render_registry_index([confirmed, rejected, whole_standard], pages)
 
-        self.assertIn('href="acc/5/">acc:5</a>', rendered)
+        self.assertIn('href="acc/5.md">acc:5</a>', rendered)
         self.assertNotIn("acc:6", rendered)
         self.assertIn("п. 3.2 — Первое требование пункта", rendered)
         self.assertIn("../std/474.md#32", rendered)
         self.assertIn("Стандарт в целом", rendered)
         self.assertLess(rendered.index("п. 3.2"), rendered.index("Стандарт в целом"))
+        self.assertIn(
+            'data-search="std474 имя, синоним, комментарий acc:5 bslls:example"',
+            rendered,
+        )
 
     def test_standard_parser_orders_nested_clauses_and_skips_code_as_summary(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -579,7 +583,7 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
             (standards / "640.md").write_text(
                 "###### #std640\n\n# Параметры процедур и функций\n\n"
                 "###### 6.10.\nДесятый подпункт.\n\n"
-                "###### 6.2.\nВторой подпункт. Продолжение.\n\n"
+                "###### 6.2.\nВторой #!bsl подпункт. Продолжение.\n\n"
                 "###### 7.\n```bsl\nМетод();\n```\n",
                 encoding="utf-8",
             )
@@ -588,6 +592,30 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
         self.assertEqual([clause.clause for clause in page.clauses], ["6.2", "6.10", "7"])
         self.assertEqual(page.clauses[0].summary, "Второй подпункт")
         self.assertIsNone(page.clauses[2].summary)
+
+    def test_registry_uses_readable_russian_counts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            standards = Path(directory)
+            (standards / "474.md").write_text(
+                "###### #std474\n\n# Заголовок\n\n###### 1.\nТребование.\n",
+                encoding="utf-8",
+            )
+            review = LinkReview.from_dict(
+                {
+                    "diagnostic": "acc:5",
+                    "standard": "std474",
+                    "clause": "1",
+                    "anchor": "1",
+                    "evidence": [IMMUTABLE_EVIDENCE],
+                    "reason": "Confirmed.",
+                    "review": "confirmed",
+                }
+            )
+            rendered = render_registry_index(
+                [review], relationship_generator.load_standard_pages(standards)
+            )
+
+        self.assertIn("1 проверка · 1 пункт", rendered)
 
     def test_registry_rejects_confirmed_clause_missing_from_standard(self):
         confirmed = LinkReview.from_dict(

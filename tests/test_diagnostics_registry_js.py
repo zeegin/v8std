@@ -24,6 +24,7 @@ class DiagnosticsRegistryJavascriptTests(unittest.TestCase):
         self.assertIn("data-empty", source)
         self.assertIn("showEmpty.checked", source)
         self.assertIn("standard.open = true", source)
+        self.assertIn('replace(/^#(?=std\\d)/, "")', source)
 
     def test_zensical_loads_registry_module(self):
         config = (ROOT / "zensical.toml").read_text(encoding="utf-8")
