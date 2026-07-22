@@ -363,12 +363,19 @@ def render_standard_backlinks(
     for (standard, anchor, clause), items in sorted(grouped.items()):
         lines = [
             f"<!-- diagnostic-backlinks:start clause={clause} -->",
-            "###### Проверки",
-            "",
+            '<div class="diagnostic-links" aria-label="Проверки">',
         ]
         for review in sorted(items, key=lambda item: item.diagnostic):
-            lines.append(f"~[#{review.diagnostic}]({_diagnostic_path(review.diagnostic)})~")
-        lines.append(f"<!-- diagnostic-backlinks:end clause={clause} -->")
+            lines.append(
+                f'<a class="diagnostic-chip" href="{_diagnostic_path(review.diagnostic)}">'
+                f"{review.diagnostic}</a>"
+            )
+        lines.extend(
+            [
+                "</div>",
+                f"<!-- diagnostic-backlinks:end clause={clause} -->",
+            ]
+        )
         rendered.setdefault(standard, {})[anchor] = "\n".join(lines)
     return rendered
 

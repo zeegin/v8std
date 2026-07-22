@@ -299,6 +299,17 @@ class RelationshipRenderingTests(unittest.TestCase):
         self.assertIn(
             "../diagnostics/bslls/UsingModalWindows.md", reverse["std703"]["1"]
         )
+        self.assertIn(
+            '<div class="diagnostic-links" aria-label="Проверки">',
+            reverse["std703"]["1"],
+        )
+        self.assertIn(
+            '<a class="diagnostic-chip" href="../diagnostics/bslls/UsingModalWindows.md">'
+            "bslls:UsingModalWindows</a>",
+            reverse["std703"]["1"],
+        )
+        self.assertNotIn("###### Проверки", reverse["std703"]["1"])
+        self.assertNotIn("~[#", reverse["std703"]["1"])
 
     def test_acc_reverse_link_uses_the_acc_directory(self):
         review = self.confirmedReview(
@@ -409,8 +420,8 @@ source
 
         rewritten = rewrite_standard_page(source, "std762", [review])
 
-        self.assertLess(rewritten.index("Нормативный текст."), rewritten.index("#acc:1354"))
-        self.assertLess(rewritten.index("#acc:1354"), rewritten.index("###### Источник"))
+        self.assertLess(rewritten.index("Нормативный текст."), rewritten.index("acc:1354"))
+        self.assertLess(rewritten.index("acc:1354"), rewritten.index("###### Источник"))
 
     def test_whole_standard_and_last_clause_blocks_share_a_boundary_without_corruption(self):
         whole = self.confirmedReview(
@@ -463,8 +474,8 @@ source
             source, "std703", [self.confirmedReview(), acc_review]
         )
 
-        self.assertEqual(rewritten.count("#bslls:UsingModalWindows"), 1)
-        self.assertEqual(rewritten.count("#acc:17"), 1)
+        self.assertEqual(rewritten.count(">bslls:UsingModalWindows</a>"), 1)
+        self.assertEqual(rewritten.count(">acc:17</a>"), 1)
         managed = re.search(
             r"<!-- diagnostic-backlinks:start clause=1 -->(.*?)"
             r"<!-- diagnostic-backlinks:end clause=1 -->",
@@ -472,7 +483,7 @@ source
             re.DOTALL,
         )
         self.assertIsNotNone(managed)
-        self.assertIn("#acc:17", managed.group(1))
+        self.assertIn(">acc:17</a>", managed.group(1))
 
     def test_rewrite_standard_page_rejects_unreviewed_legacy_managed_link(self):
         source = """###### #std703
