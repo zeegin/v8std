@@ -86,7 +86,7 @@ class GenerateAiArtifactsTests(unittest.TestCase):
         for canonical_id, legacy_id in expected_aliases.items():
             self.assertIn(legacy_id, self.pages_by_id[canonical_id]["aliases"])
 
-    def test_builds_standard_diagnostic_and_edt_relations_from_markdown_links(self):
+    def test_builds_standard_diagnostic_and_edt_relations_from_links(self):
         std437 = self.pages_by_id["std437"]
         bslls = self.pages_by_id["bslls:AssignAliasFieldsInQuery"]
         acc = self.pages_by_id["acc:1245"]
@@ -301,12 +301,12 @@ class GenerateAiArtifactsTests(unittest.TestCase):
             )
         )
 
-    def test_normalizes_internal_markdown_links_to_absolute_urls(self):
+    def test_normalizes_internal_links_to_absolute_markdown_urls(self):
         std437 = self.pages_by_id["std437"]["body_markdown"]
         search_help = self.pages_by_id["search_help"]["body_markdown"]
 
         self.assertIn(
-            "[#bslls:AssignAliasFieldsInQuery](https://v8std.ru/diagnostics/bslls/AssignAliasFieldsInQuery/)",
+            "[bslls:AssignAliasFieldsInQuery](https://v8std.ru/diagnostics/bslls/AssignAliasFieldsInQuery/)",
             std437,
         )
         self.assertIn("[/llms.txt](https://v8std.ru/llms.txt)", search_help)

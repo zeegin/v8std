@@ -42,6 +42,11 @@ DIAGNOSTIC_BACKLINK_REGION_RE = re.compile(
     re.MULTILINE | re.DOTALL,
 )
 ACC_BACKLINK_LINE_RE = re.compile(r"^.*\[#acc:[^\n]+\n?", re.MULTILINE)
+ACC_BACKLINK_HTML_RE = re.compile(
+    r'^\s*<a\b[^>]*href=["\'][^"\']*/diagnostics/acc/[^"\']+["\'][^>]*>'
+    r"acc:\d+</a>\s*\n?",
+    re.IGNORECASE | re.MULTILINE,
+)
 MARKER_RE = re.compile(
     r"^#{6}\s+(?P<marker>#std\d+|(?:bslls|acc|v8cs):[A-Za-z0-9_-]+)\s*$",
     re.MULTILINE,
@@ -119,7 +124,8 @@ def normalize_plain_description(value: str, limit: int) -> str:
 def strip_acc_backlinks_from_search_content(content: str) -> str:
     def replace_region(match: re.Match[str]) -> str:
         retained = ACC_BACKLINK_LINE_RE.sub("", match.group(0))
-        return retained if MARKDOWN_LINK_RE.search(retained) else ""
+        retained = ACC_BACKLINK_HTML_RE.sub("", retained)
+        return retained if MARKDOWN_LINK_RE.search(retained) or HTML_ANCHOR_RE.search(retained) else ""
 
     return DIAGNOSTIC_BACKLINK_REGION_RE.sub(replace_region, content)
 
@@ -431,7 +437,12 @@ def extract_source_urls(content: str) -> list[str]:
 
 
 def extract_markdown_links(content: str) -> list[tuple[str, str]]:
-    return [(strip_markdown(text), target.strip()) for text, target in MARKDOWN_LINK_RE.findall(content)]
+    matches: list[tuple[int, str, str]] = []
+    for match in MARKDOWN_LINK_RE.finditer(content):
+        matches.append((match.start(), strip_markdown(match.group(1)), match.group(2).strip()))
+    for match in HTML_ANCHOR_RE.finditer(content):
+        matches.append((match.start(), clean_label(match.group(2)), match.group(1).strip()))
+    return [(label, target) for _, label, target in sorted(matches)]
 
 
 def local_link_target(source: Path, docs_dir: Path, target: str) -> Path | None:
