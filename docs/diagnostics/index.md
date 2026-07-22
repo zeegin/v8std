@@ -1455,8 +1455,8 @@ llms:
           <a class="diagnostic-chip" href="bslls/WrongDataPathForFormElements.md">bslls:WrongDataPathForFormElements</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 1.4 — поддержите работу в режиме толстого клиента обычного приложения в минимальном виде для администраторов acc:82 bslls:ordinaryappsupport">
-        <h2 class="diagnostics-clause__title"><a href="../std/467.md#14">п. 1.4 — Поддержите работу в режиме толстого клиента обычного приложения в минимальном виде для администраторов</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 1.4 — для обратной совместимости с собственными и сторонними решениями, внешними обработками и отчетами, разработанными для платформы 1с:предприятие 8.0 и 8.1, обеспечьте поддержку обоих режимов только для администраторов (пользователей с полными правами): acc:82 bslls:ordinaryappsupport">
+        <h2 class="diagnostics-clause__title"><a href="../std/467.md#14">п. 1.4 — Для обратной совместимости с собственными и сторонними решениями, внешними обработками и отчетами, разработанными для платформы 1С:Предприятие 8.0 и 8.1, обеспечьте поддержку обоих режимов только для администраторов (пользователей с полными правами):</a></h2>
         <div class="diagnostics-clause__links diagnostic-links">
           <a class="diagnostic-chip" href="acc/82.md">acc:82</a>
           <a class="diagnostic-chip" href="bslls/OrdinaryAppSupport.md">bslls:OrdinaryAppSupport</a>
