@@ -15,6 +15,7 @@
 - Existing `diagnostic-backlinks:start` and `diagnostic-backlinks:end` markers remain unchanged.
 - Search attributes and other invisible technical values are not converted into components.
 - Light theme, dark theme, keyboard focus, and narrow screens remain readable.
+- Before running Python commands, set `VIRTUAL_ENV=/Users/ingvarvilkman/Documents/git/v8std/.venv`; use `$VIRTUAL_ENV/bin/python` so project dependencies are available from the linked worktree.
 
 ---
 
@@ -50,7 +51,7 @@ Update rewrite fixtures so their expected managed region uses the new container 
 Run:
 
 ```bash
-python3.12 -m unittest tests.test_diagnostic_standard_links.RelationshipRenderingTests -v
+$VIRTUAL_ENV/bin/python -m unittest tests.test_diagnostic_standard_links.RelationshipRenderingTests -v
 ```
 
 Expected: failures because `render_standard_backlinks` still emits `###### Проверки` and strikethrough Markdown links.
@@ -82,9 +83,9 @@ Keep `_remove_empty_legacy_check_sections` so old empty headings can still be cl
 Run:
 
 ```bash
-python3.12 -m unittest tests.test_diagnostic_standard_links.RelationshipRenderingTests -v
-python3.12 scripts/generate_diagnostic_standard_links.py --write
-python3.12 scripts/generate_diagnostic_standard_links.py --check
+$VIRTUAL_ENV/bin/python -m unittest tests.test_diagnostic_standard_links.RelationshipRenderingTests -v
+$VIRTUAL_ENV/bin/python scripts/generate_diagnostic_standard_links.py --write
+$VIRTUAL_ENV/bin/python scripts/generate_diagnostic_standard_links.py --check
 ```
 
 Expected: tests pass; write updates managed regions; check exits successfully without another diff.
@@ -129,7 +130,7 @@ Also assert all visible diagnostic identifiers in `docs/search-help.md` and `doc
 Run:
 
 ```bash
-python3.12 -m unittest tests.test_diagnostics_registry_js -v
+$VIRTUAL_ENV/bin/python -m unittest tests.test_diagnostics_registry_js -v
 ```
 
 Expected: failures for the old registry class and unlinked inline-code examples.
@@ -182,9 +183,9 @@ Preserve noncanonical search examples such as `ACC 1245` as ordinary inline code
 Run:
 
 ```bash
-python3.12 scripts/generate_diagnostic_standard_links.py --write
-python3.12 scripts/generate_diagnostic_standard_links.py --check
-python3.12 -m unittest tests.test_diagnostics_registry_js -v
+$VIRTUAL_ENV/bin/python scripts/generate_diagnostic_standard_links.py --write
+$VIRTUAL_ENV/bin/python scripts/generate_diagnostic_standard_links.py --check
+$VIRTUAL_ENV/bin/python -m unittest tests.test_diagnostics_registry_js -v
 ```
 
 Expected: generator check is clean and all focused tests pass.
@@ -214,7 +215,7 @@ Run a Python check that scans Markdown outside generated search attributes and f
 Run:
 
 ```bash
-python3.12 -m unittest discover -s tests -v
+$VIRTUAL_ENV/bin/python -m unittest discover -s tests -v
 ```
 
 Expected: all tests pass.
@@ -224,7 +225,7 @@ Expected: all tests pass.
 Run:
 
 ```bash
-python3.12 scripts/generate_diagnostic_standard_links.py --check
+$VIRTUAL_ENV/bin/python scripts/generate_diagnostic_standard_links.py --check
 VIRTUAL_ENV="/Users/ingvarvilkman/Documents/git/v8std/.venv" ./scripts/zensical_docs.sh build --strict
 ```
 
