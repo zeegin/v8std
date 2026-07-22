@@ -236,7 +236,7 @@ def extract_list_summary(text: str, *, max_items: int = 3) -> str:
             skip_indented_block = False
         if not line:
             continue
-        if line == "###### Источник":
+        if line in {"###### Источник", "###### Источники"}:
             break
         if line.startswith("#"):
             continue

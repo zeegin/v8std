@@ -36,6 +36,15 @@ class StripMarkdownTests(unittest.TestCase):
         value = "Обычный `код` и [ссылка](https://example.com) с **выделением**."
         self.assertEqual(self.module.strip_markdown(value), "Обычный код и ссылка с выделением.")
 
+    def test_list_summary_stops_before_plural_source_section(self):
+        value = (
+            "Краткое описание.\n\n"
+            "###### Источники\n\n"
+            "- [Русская версия — ИТС](https://its.1c.ru/example)\n"
+            "- [English version — 1Ci Knowledge Base](https://kb.1ci.com/example)\n"
+        )
+        self.assertEqual(self.module.extract_list_summary(value), "")
+
 
 class BuildPageMetadataTests(unittest.TestCase):
     @classmethod

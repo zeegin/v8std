@@ -1,0 +1,793 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "standard": "std396",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/Event_handlers_____Filling/?language=en"
+    },
+    {
+      "standard": "std397",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Accessing_list_forms_with_common_commands/?language=en"
+    },
+    {
+      "standard": "std399",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Preventing_editing_of_table_fields_by_condition/?language=en"
+    },
+    {
+      "standard": "std402",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Scheduled_jobs/Scheduled_jobs_____Setting_up_schedules/?language=en"
+    },
+    {
+      "standard": "std404",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Opening_forms/?language=en"
+    },
+    {
+      "standard": "std407",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Report_parameters_in_Data_Composition_System/?language=en"
+    },
+    {
+      "standard": "std409",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/FormAttributeToValue_and_FormDataToValue_methods/?language=en"
+    },
+    {
+      "standard": "std412",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/Ordering_query_results/?language=en"
+    },
+    {
+      "standard": "std413",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Session_parameters/?language=en"
+    },
+    {
+      "standard": "std415",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Setting_data_access_rights/Restrictions_on_ALLOWED_clauses/?language=en"
+    },
+    {
+      "standard": "std432",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/String_attributes/?language=en"
+    },
+    {
+      "standard": "std434",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/UNION_and_UNION_ALL_clauses/?language=en"
+    },
+    {
+      "standard": "std435",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/FULL_OUTER_JOIN_clause/?language=en"
+    },
+    {
+      "standard": "std436",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/Merging_similar_queries/?language=en"
+    },
+    {
+      "standard": "std437",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/Query_style_guide/?language=en"
+    },
+    {
+      "standard": "std438",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/Checking_if_query_result_is_empty/?language=en"
+    },
+    {
+      "standard": "std439",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Compilation_directives_and_preprocessor_commands/?language=en"
+    },
+    {
+      "standard": "std440",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Duplicate_code/?language=en"
+    },
+    {
+      "standard": "std441",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/General_1C_Enterprise_application_development_practices/?language=en"
+    },
+    {
+      "standard": "std442",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Testing_variable_s_type/?language=en"
+    },
+    {
+      "standard": "std443",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Getting_predefined_values_on_the_client/?language=en"
+    },
+    {
+      "standard": "std444",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Line_wrapping/?language=en"
+    },
+    {
+      "standard": "std445",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Getting_object_s_metadata/?language=en"
+    },
+    {
+      "standard": "std447",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/InformationRegisterRecordManager_object/?language=en"
+    },
+    {
+      "standard": "std448",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Copying_rows_between_tables/?language=en"
+    },
+    {
+      "standard": "std449",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Getting_presentations_for_reference_values_in_spreadsheet_documents/?language=en"
+    },
+    {
+      "standard": "std450",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Writing_document_register_records/?language=en"
+    },
+    {
+      "standard": "std451",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Creating_applied_objects_programmatically/?language=en"
+    },
+    {
+      "standard": "std452",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Searching_in_collections/?language=en"
+    },
+    {
+      "standard": "std453",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Describing_procedures_and_functions/?language=en"
+    },
+    {
+      "standard": "std454",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Naming_variables/?language=en"
+    },
+    {
+      "standard": "std455",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Module_structure/?language=en"
+    },
+    {
+      "standard": "std456",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Module_texts/?language=en"
+    },
+    {
+      "standard": "std458",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/General_localization_guidelines/?language=en"
+    },
+    {
+      "standard": "std459",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Cashing_values_that_affect_application_behavior/?language=en"
+    },
+    {
+      "standard": "std460",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Data_processing_and_modification/Managed_lock_mode/?language=en"
+    },
+    {
+      "standard": "std463",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/Event_handlers_____FillCheckProcessing/?language=en"
+    },
+    {
+      "standard": "std464",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/Event_handlers_____BeforeWrite/?language=en"
+    },
+    {
+      "standard": "std465",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/Event_handlers_____OnWrite/?language=en"
+    },
+    {
+      "standard": "std466",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/Event_handlers_____OnCopy/?language=en"
+    },
+    {
+      "standard": "std467",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/General_requirements_for_configuration_development/?language=en"
+    },
+    {
+      "standard": "std468",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Custom_object_presentations/?language=en"
+    },
+    {
+      "standard": "std469",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Creating_common_modules/?language=en"
+    },
+    {
+      "standard": "std470",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Functional_options/?language=en"
+    },
+    {
+      "standard": "std473",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Coding_and_numbering_series/?language=en"
+    },
+    {
+      "standard": "std474",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Names__synonyms__and_comments/?language=en"
+    },
+    {
+      "standard": "std477",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Sustainability_of_registers/?language=en"
+    },
+    {
+      "standard": "std478",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Properties_____Tooltip_and_Required_field/?language=en"
+    },
+    {
+      "standard": "std480",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Business_process_flowcharts/?language=en"
+    },
+    {
+      "standard": "std482",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_version_management/Application_properties_and_release_details/?language=en"
+    },
+    {
+      "standard": "std483",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_version_management/Version_numbering/?language=en"
+    },
+    {
+      "standard": "std484",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_version_management/General_release_requirements/?language=en"
+    },
+    {
+      "standard": "std485",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Setting_data_access_rights/Privileged_mode/?language=en"
+    },
+    {
+      "standard": "std486",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Common_modules__object_modules__and_object_manager_modules/?language=en"
+    },
+    {
+      "standard": "std487",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Server_call_optimization/?language=en"
+    },
+    {
+      "standard": "std488",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Setting_data_access_rights/Standard_roles/?language=en"
+    },
+    {
+      "standard": "std489",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Dynamic_lists/?language=en"
+    },
+    {
+      "standard": "std490",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Data_processing_and_modification/Locking_objects_before_editing_programmatically/?language=en"
+    },
+    {
+      "standard": "std491",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Setting_data_access_rights/How_session_parameters_and_functional_options_affect_data_access_restrictions/?language=en"
+    },
+    {
+      "standard": "std492",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Attachable_form_event_handlers/?language=en"
+    },
+    {
+      "standard": "std494",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Local_variable_preinitialization/?language=en"
+    },
+    {
+      "standard": "std495",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Developing_commands_for_list_forms/?language=en"
+    },
+    {
+      "standard": "std496",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Data_processing_and_modification/Selective_reading_of_attributes/?language=en"
+    },
+    {
+      "standard": "std497",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Data_processing_and_modification/Tracking_user_history/?language=en"
+    },
+    {
+      "standard": "std498",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Event_log/?language=en"
+    },
+    {
+      "standard": "std499",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Catching_exceptions/?language=en"
+    },
+    {
+      "standard": "std531",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Comment_attribute_in_documents/?language=en"
+    },
+    {
+      "standard": "std532",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Setting_data_access_rights/Granting_access_rights_to_new_objects_and_fields/?language=en"
+    },
+    {
+      "standard": "std533",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Web_client_____Spreadsheet_documents/?language=en"
+    },
+    {
+      "standard": "std534",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Managing_obsolete_metadata_objects/?language=en"
+    },
+    {
+      "standard": "std535",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/Rounding_off_values_in_queries/?language=en"
+    },
+    {
+      "standard": "std536",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Accessing_automatically_created_controls_programmatically/?language=en"
+    },
+    {
+      "standard": "std537",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Object_modification_commands/?language=en"
+    },
+    {
+      "standard": "std539",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Scheduled_jobs/Scheduled_jobs_____Starting/?language=en"
+    },
+    {
+      "standard": "std540",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Scheduled_jobs/Scheduled_jobs_____General_requirements/?language=en"
+    },
+    {
+      "standard": "std542",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Accessing_file_system_programmatically/?language=en"
+    },
+    {
+      "standard": "std543",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Subsystems/?language=en"
+    },
+    {
+      "standard": "std544",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Restrictions_on_export_procedures_and_functions/?language=en"
+    },
+    {
+      "standard": "std545",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Accessing_interactively_created_controls_programmatically/?language=en"
+    },
+    {
+      "standard": "std547",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/GoTo_operator/?language=en"
+    },
+    {
+      "standard": "std548",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Generating_print_forms/?language=en"
+    },
+    {
+      "standard": "std550",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Names_of_metadata_objects/?language=en"
+    },
+    {
+      "standard": "std551",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Libraries_____Reusable_code_and_objects/?language=en"
+    },
+    {
+      "standard": "std552",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Libraries_____Avoiding_naming_collisions/?language=en"
+    },
+    {
+      "standard": "std553",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Libraries_____Overridable_and_non-overridable_objects/?language=en"
+    },
+    {
+      "standard": "std554",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Libraries_____Overriding_common_modules_in_a_hierarchy/?language=en"
+    },
+    {
+      "standard": "std556",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Configuration_initial_launch/?language=en"
+    },
+    {
+      "standard": "std557",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/User_settings/?language=en"
+    },
+    {
+      "standard": "std558",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Dynamic_refresh_of_list_views/?language=en"
+    },
+    {
+      "standard": "std603",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Document_posting_guidelines/?language=en"
+    },
+    {
+      "standard": "std628",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/FormDataCollection_object/?language=en"
+    },
+    {
+      "standard": "std629",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Optimization_of_the_client-side_code/?language=en"
+    },
+    {
+      "standard": "std630",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Creating_form_modules/?language=en"
+    },
+    {
+      "standard": "std632",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Constants/?language=en"
+    },
+    {
+      "standard": "std633",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Active_register_records/?language=en"
+    },
+    {
+      "standard": "std636",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Contextual_and_non-contextual_control_transfer_to_the_server/?language=en"
+    },
+    {
+      "standard": "std637",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Implementing_data_exchange/Configuring_classifier_synchronization/?language=en"
+    },
+    {
+      "standard": "std638",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Handling_inactive_objects/?language=en"
+    },
+    {
+      "standard": "std639",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_1C_Enterprise_language_structures/Variables/?language=en"
+    },
+    {
+      "standard": "std640",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Parameters_of_procedures_and_functions/?language=en"
+    },
+    {
+      "standard": "std641",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Using_structures_and_value_tables_as_procedure_and_function_parameters/?language=en"
+    },
+    {
+      "standard": "std642",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Long-running_operations_on_the_server/?language=en"
+    },
+    {
+      "standard": "std643",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Time_zones/?language=en"
+    },
+    {
+      "standard": "std644",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Libraries_____Backward_compatibility/?language=en"
+    },
+    {
+      "standard": "std647",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Naming_procedures_and_functions/?language=en"
+    },
+    {
+      "standard": "std648",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Data_processing_and_modification/Locking_reads/?language=en"
+    },
+    {
+      "standard": "std649",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Fine-tuning_metadata_objects/?language=en"
+    },
+    {
+      "standard": "std652",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Matching_indexes_and_query_conditions/?language=en"
+    },
+    {
+      "standard": "std654",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Dereferencing_composite_type_fields/?language=en"
+    },
+    {
+      "standard": "std655",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Joins_with_subqueries_and_virtual_tables/?language=en"
+    },
+    {
+      "standard": "std656",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Subqueries_in_join_conditions/?language=en"
+    },
+    {
+      "standard": "std657",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Accessing_virtual_tables/?language=en"
+    },
+    {
+      "standard": "std658",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Query_conditions/?language=en"
+    },
+    {
+      "standard": "std659",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Lock_management/Excessive_locks/?language=en"
+    },
+    {
+      "standard": "std661",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Lock_management/Locking_balance_reads_in_transactions/?language=en"
+    },
+    {
+      "standard": "std662",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Lock_management/Shifting_document_sequence_boundaries/?language=en"
+    },
+    {
+      "standard": "std663",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Lock_management/Separating_totals_in_accounting_registers/?language=en"
+    },
+    {
+      "standard": "std664",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Lock_management/Separating_totals_in_accumulation_registers/?language=en"
+    },
+    {
+      "standard": "std665",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Keyboard_shortcuts/?language=en"
+    },
+    {
+      "standard": "std668",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Libraries_____Developing_roles/?language=en"
+    },
+    {
+      "standard": "std677",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Common_attributes/?language=en"
+    },
+    {
+      "standard": "std678",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/General_security_issues/Server_API_security/?language=en"
+    },
+    {
+      "standard": "std679",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/General_security_issues/Common_modules__Server_call_property/?language=en"
+    },
+    {
+      "standard": "std680",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Thick_client_support_in_managed_applications__client_server_/?language=en"
+    },
+    {
+      "standard": "std683",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/General_data_storage_principles/?language=en"
+    },
+    {
+      "standard": "std686",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Module_formatting/Cancel_parameter_in_event_handlers/?language=en"
+    },
+    {
+      "standard": "std687",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Fonts/?language=en"
+    },
+    {
+      "standard": "std689",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Setting_data_access_rights/Configuring_roles_and_access_rights/?language=en"
+    },
+    {
+      "standard": "std690",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Infobase_update_handlers/?language=en"
+    },
+    {
+      "standard": "std693",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Structure_type_objects/?language=en"
+    },
+    {
+      "standard": "std697",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Managing_predefined_items/?language=en"
+    },
+    {
+      "standard": "std701",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Implementing_data_exchange/Developing_exchange_plans_with_filters/?language=en"
+    },
+    {
+      "standard": "std702",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Ref_attribute_in_dynamic_lists/?language=en"
+    },
+    {
+      "standard": "std703",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Restrictions_on_modal_windows_and_synchronous_calls/?language=en"
+    },
+    {
+      "standard": "std705",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Libraries_____Assigning_objects_to_subsystems/?language=en"
+    },
+    {
+      "standard": "std706",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Restrictions_on_renaming_metadata_objects/?language=en"
+    },
+    {
+      "standard": "std708",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Enabling_totals_for_periodic_information_registers/?language=en"
+    },
+    {
+      "standard": "std709",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Branched_configuration_development/?language=en"
+    },
+    {
+      "standard": "std710",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Conditional_appearance_in_forms/?language=en"
+    },
+    {
+      "standard": "std712",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Section_groups/?language=en"
+    },
+    {
+      "standard": "std716",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Document_forms/Document_command_bar/?language=en"
+    },
+    {
+      "standard": "std717",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Document_forms/List_formatting_in_tabular_sections/?language=en"
+    },
+    {
+      "standard": "std718",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Document_forms/Document_totals/?language=en"
+    },
+    {
+      "standard": "std719",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Document_forms/Document_fields_____Comment_and_Person_responsible/?language=en"
+    },
+    {
+      "standard": "std720",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Interface_elements/Segmented_buttons/?language=en"
+    },
+    {
+      "standard": "std721",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Interface_elements/Form_tooltips/?language=en"
+    },
+    {
+      "standard": "std722",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Form_layout/?language=en"
+    },
+    {
+      "standard": "std723",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Developing_configurations_for_Linux_and_macOS/?language=en"
+    },
+    {
+      "standard": "std724",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Memoization_modules/?language=en"
+    },
+    {
+      "standard": "std725",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Memory_optimization/?language=en"
+    },
+    {
+      "standard": "std726",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/LIKE_operator/?language=en"
+    },
+    {
+      "standard": "std727",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_interface_for_8.3/Screen_sizes/?language=en"
+    },
+    {
+      "standard": "std728",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Data_storage_arrangement/Composite_type_attributes/?language=en"
+    },
+    {
+      "standard": "std729",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Query_optimization_techniques/?language=en"
+    },
+    {
+      "standard": "std730",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/HTML_document_fields/?language=en"
+    },
+    {
+      "standard": "std731",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Installation_and_update_requirements/?language=en"
+    },
+    {
+      "standard": "std732",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Queries_in_dynamic_lists/?language=en"
+    },
+    {
+      "standard": "std733",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Accessing_the_Balance_virtual_table/?language=en"
+    },
+    {
+      "standard": "std734",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Vertical_scrolling_mode/?language=en"
+    },
+    {
+      "standard": "std737",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Setting_data_access_rights/Verifying_access_rights/?language=en"
+    },
+    {
+      "standard": "std739",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Development_and_use_of_libraries/Storing_subsystem_settings/?language=en"
+    },
+    {
+      "standard": "std740",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/General_security_issues/Secure_password_storage/?language=en"
+    },
+    {
+      "standard": "std741",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Opening_parameterized_forms/?language=en"
+    },
+    {
+      "standard": "std742",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Form_opening_modes/?language=en"
+    },
+    {
+      "standard": "std744",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_forms/Selection_history/?language=en"
+    },
+    {
+      "standard": "std745",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Date_field_in_lists/?language=en"
+    },
+    {
+      "standard": "std746",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/Event_handlers_____PresentationGetProcessing_and_PresentationFieldsGetProcessing/?language=en"
+    },
+    {
+      "standard": "std748",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Client_server_interaction/Timeouts_for_external_resources/?language=en"
+    },
+    {
+      "standard": "std752",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/Event_handlers_____BeforeDelete/?language=en"
+    },
+    {
+      "standard": "std755",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Long-running_operations_on_the_client/?language=en"
+    },
+    {
+      "standard": "std758",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/Data_source_aliases_in_queries/?language=en"
+    },
+    {
+      "standard": "std759",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/Negligible_warnings/?language=en"
+    },
+    {
+      "standard": "std760",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Scheduled_jobs/Scheduled_jobs_____SaaS_restrictions/?language=en"
+    },
+    {
+      "standard": "std761",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Interface_strings_in_modules/?language=en"
+    },
+    {
+      "standard": "std762",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Queries__dynamic_lists__and_DCS_reports/?language=en"
+    },
+    {
+      "standard": "std763",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Dates__numbers__and_Boolean/?language=en"
+    },
+    {
+      "standard": "std764",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____String_constants_in_modules/?language=en"
+    },
+    {
+      "standard": "std765",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Form_items/?language=en"
+    },
+    {
+      "standard": "std766",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Templates/?language=en"
+    },
+    {
+      "standard": "std767",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Scheduled_jobs/?language=en"
+    },
+    {
+      "standard": "std768",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Implementation_of_list_forms/Modifying_dynamic_list_queries/?language=en"
+    },
+    {
+      "standard": "std769",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Global_configuration_version/?language=en"
+    },
+    {
+      "standard": "std770",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/General_security_issues/Running_Eval_and_Execute_on_the_server/?language=en"
+    },
+    {
+      "standard": "std771",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Implementing_data_exchange/EnterpriseData_data_exchange_format/?language=en"
+    },
+    {
+      "standard": "std773",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Object_event_handlers/DataExchange.Load_flag_in_object_event_handlers/?language=en"
+    },
+    {
+      "standard": "std774",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/General_security_issues/Opening_external_applications/?language=en"
+    },
+    {
+      "standard": "std775",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/General_security_issues/Accessing_applications_through_public_interfaces/?language=en"
+    },
+    {
+      "standard": "std777",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Query_optimization/Temporary_tables/?language=en"
+    },
+    {
+      "standard": "std778",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Monetary_fields/?language=en"
+    },
+    {
+      "standard": "std781",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Sorting_features_in_value_tables/?language=en"
+    },
+    {
+      "standard": "std782",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Code_conventions/Using_applied_objects_and_universal_value_collections/Bulk_string_concatenation/?language=en"
+    },
+    {
+      "standard": "std783",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Data_processing_and_modification/Transaction_guidelines/?language=en"
+    },
+    {
+      "standard": "std784",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Localization_requirements/Localization_guidelines_____Autogenerated_data/?language=en"
+    },
+    {
+      "standard": "std785",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Creating_and_modifying_metadata_objects/Configuration_operation_arrangement/1C_Enterprise_platform_versions/?language=en"
+    },
+    {
+      "standard": "std787",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Data_processing/Working_with_queries/Counting_the_number_of_records_in_queries/?language=en"
+    },
+    {
+      "standard": "std789",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/Designing_user_interfaces/Print_forms_and_customizable_templates/?language=en"
+    },
+    {
+      "standard": "std794",
+      "english_url": "https://kb.1ci.com/1C_Enterprise_Platform/Guides/Developer_Guides/1C_Enterprise_Development_Standards/General_security_issues/Restrictions_on_external_developments/?language=en"
+    }
+  ]
+}
