@@ -7,6 +7,12 @@
       .replace(/^#(?=std\d)/, "");
   }
 
+  function standardIdFromQuery(query) {
+    if (/^\d+$/.test(query)) return `std${query}`;
+    if (/^std\d+$/.test(query)) return query;
+    return "";
+  }
+
   function initialize(root) {
     if (!(root instanceof HTMLElement) || root.dataset.initialized === "true") return;
     root.dataset.initialized = "true";
@@ -20,22 +26,28 @@
 
     function filter() {
       const query = normalize(search.value);
+      const requestedStandard = standardIdFromQuery(query);
       for (const standard of standards) {
+        const standardSearch = normalize(standard.dataset.search || "");
+        const standardId = standardSearch.split(/\s+/, 1)[0];
+        const exactStandardMatch = Boolean(requestedStandard) && standardId === requestedStandard;
         const clauses = Array.from(standard.querySelectorAll("[data-clause]"));
         let visibleClauses = 0;
         for (const clause of clauses) {
           const empty = clause.matches('[data-empty="true"]');
           const searchable = normalize(clause.dataset.search || "");
-          const visible = (!empty || showEmpty.checked) && (!query || searchable.includes(query));
+          const visible = exactStandardMatch ||
+            ((!empty || showEmpty.checked) && (!query || searchable.includes(query)));
           clause.hidden = !visible;
           if (visible) visibleClauses += 1;
         }
 
-        const standardMatches = normalize(standard.dataset.search || "").includes(query);
+        const standardMatches = standardSearch.includes(query);
         const emptyStandard = standard.matches('[data-empty="true"]');
-        standard.hidden =
-          (emptyStandard && !showEmpty.checked) ||
-          (Boolean(query) && !standardMatches && visibleClauses === 0);
+        standard.hidden = requestedStandard
+          ? !exactStandardMatch
+          : (emptyStandard && !showEmpty.checked) ||
+            (Boolean(query) && !standardMatches && visibleClauses === 0);
         if (query && !standard.hidden) standard.open = true;
         if (!query) standard.open = initialOpen.get(standard) || false;
       }

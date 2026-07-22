@@ -27,6 +27,16 @@ class DiagnosticsRegistryJavascriptTests(unittest.TestCase):
         self.assertIn("standard.open = true", source)
         self.assertIn('replace(/^#(?=std\\d)/, "")', source)
 
+    def test_exact_standard_query_keeps_every_clause_visible(self):
+        source = (ROOT / "docs/assets/javascripts/diagnostics-registry.js").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("function standardIdFromQuery(query)", source)
+        self.assertIn('return `std${query}`;', source)
+        self.assertIn("const exactStandardMatch =", source)
+        self.assertIn("const visible = exactStandardMatch ||", source)
+
     def test_zensical_loads_registry_module(self):
         config = (ROOT / "zensical.toml").read_text(encoding="utf-8")
 
