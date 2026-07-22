@@ -1672,6 +1672,15 @@ body[data-md-color-scheme=default]:not(:has(.v8std-home-hero)) .md-main a[href^=
     padding: 0.8rem 1rem;
 }
 
+.md-typeset .diagnostics-standard > .diagnostics-standard__summary {
+    padding-inline-start: 1rem;
+}
+
+.md-typeset .diagnostics-standard__summary::before {
+    content: none;
+    display: none;
+}
+
 .diagnostics-standard__summary:hover,
 .diagnostics-standard__summary:focus-visible {
     background: var(--md-default-fg-color--lightest);

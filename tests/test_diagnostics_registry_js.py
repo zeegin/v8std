@@ -36,6 +36,8 @@ class DiagnosticsRegistryJavascriptTests(unittest.TestCase):
 
         self.assertIn(".diagnostics-registry__controls", source)
         self.assertIn(".diagnostics-standard__summary:focus-visible", source)
+        self.assertIn(".diagnostics-standard__summary::before", source)
+        self.assertIn("content: none", source)
         self.assertIn(".diagnostics-clause__diagnostic", source)
         self.assertIn("max-width: 44.984375em", source)
 
