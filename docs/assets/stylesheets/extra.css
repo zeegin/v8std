@@ -1598,6 +1598,12 @@ body[data-md-color-scheme=default]:not(:has(.v8std-home-hero)) .md-main a[href^=
     margin: 0;
 }
 
+.md-typeset .autoformat-rules table th:first-child,
+.md-typeset .autoformat-rules table td:first-child {
+    min-width: 9rem;
+    width: 22%;
+}
+
 @media screen and (max-width: 44.984375em) {
     .diagnostics-registry__controls,
     .diagnostics-standard__summary {
