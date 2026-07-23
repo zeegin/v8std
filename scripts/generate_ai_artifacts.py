@@ -86,15 +86,16 @@ HTML_OPEN_TAG_START_RE = re.compile(
 REDIRECT_RE = re.compile(r"window\.location\.replace\([\"']([^\"']+)[\"']\);")
 KEYBOARD_KEY_RE = re.compile(r"\+\+([^\n]+?)\+\+")
 MARKER_HEADING_RE = re.compile(
-    r"^#{6}\s+(?P<marker>#std\d+|(?:bslls|acc|v8cs):[A-Za-z0-9_-]+)\s*$"
+    r"^#{6}\s+(?P<marker>#std\d+|autoformat|(?:bslls|acc|v8cs):[A-Za-z0-9_-]+)\s*$"
 )
 DEEP_HEADING_RE = re.compile(r"^#{6}\s+(.+?)\s*$")
 
 TYPE_ORDER = {
     "standard": 0,
     "diagnostic": 1,
-    "pattern": 2,
-    "service": 3,
+    "fix": 2,
+    "pattern": 3,
+    "service": 4,
 }
 
 
@@ -337,6 +338,8 @@ def classify_page(relative: Path) -> str:
         return "standard"
     if len(parts) >= 3 and parts[0] == "diagnostics" and relative.name != "index.md":
         return "diagnostic"
+    if relative == Path("diagnostics/autoformat/index.md"):
+        return "fix"
     if parts and parts[0] == "patterns":
         return "pattern"
     return "service"
@@ -356,6 +359,8 @@ def fallback_page_id(relative: Path, page_type: str) -> str:
             return f"bslls:{relative.stem}"
         if family == "v8-code-style":
             return f"v8cs:{relative.stem}"
+    if page_type == "fix":
+        return "autoformat"
 
     route = relative_route(relative).strip("/")
     normalized = route.replace("/", ":").replace("-", "_")

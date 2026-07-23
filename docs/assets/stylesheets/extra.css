@@ -1566,6 +1566,13 @@ body[data-md-color-scheme=default]:not(:has(.v8std-home-hero)) .md-main a[href^=
     gap: 0.4rem;
 }
 
+.fix-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+}
+
 .md-typeset .diagnostic-chip {
     background: var(--md-code-bg-color);
     border-radius: 0.3rem;
@@ -1573,6 +1580,11 @@ body[data-md-color-scheme=default]:not(:has(.v8std-home-hero)) .md-main a[href^=
     font-family: var(--md-code-font-family);
     font-size: 0.72rem;
     padding: 0.25rem 0.45rem;
+}
+
+.md-typeset .diagnostic-chip--fix {
+    background: var(--md-accent-fg-color--transparent);
+    box-shadow: inset 0 0 0 1px var(--md-accent-fg-color);
 }
 
 .md-typeset .diagnostic-chip:hover,

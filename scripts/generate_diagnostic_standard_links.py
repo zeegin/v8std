@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 try:
+    from scripts.autoformat_fixes import load_autoformat_catalog
     from scripts.acc_diagnostics import build_link_reviews, load_catalog as load_acc_catalog, load_overrides
     from scripts.diagnostic_articles import load_catalog
     from scripts.diagnostic_standard_links import (
@@ -16,6 +17,7 @@ try:
         rewrite_standard_page,
     )
 except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
+    from autoformat_fixes import load_autoformat_catalog
     from acc_diagnostics import build_link_reviews, load_catalog as load_acc_catalog, load_overrides
     from diagnostic_articles import load_catalog
     from diagnostic_standard_links import (
@@ -147,7 +149,11 @@ def _registry_diagnostic_sort_key(diagnostic: str) -> tuple:
     return (family, 1, identifier.casefold())
 
 
-def render_registry_index(reviews: list | tuple, standard_pages: dict[str, StandardPage]) -> str:
+def render_registry_index(
+    reviews: list | tuple,
+    standard_pages: dict[str, StandardPage],
+    autoformat_fixes: list | tuple = (),
+) -> str:
     by_clause: dict[tuple[str, str], set[str]] = {}
     for review in reviews:
         if review.review == "confirmed":
@@ -166,19 +172,30 @@ def render_registry_index(reviews: list | tuple, standard_pages: dict[str, Stand
             by_clause.setdefault((review.standard, review.clause), set()).add(
                 review.diagnostic
             )
+    fixes_by_clause: dict[tuple[str, str], bool] = {}
+    for fix in autoformat_fixes:
+        if fix.standard not in standard_pages:
+            raise ValueError(f"missing standard {fix.standard}")
+        if fix.clause != fix.standard:
+            clauses = {item.clause: item.anchor for item in standard_pages[fix.standard].clauses}
+            if clauses.get(fix.clause) != fix.anchor:
+                raise ValueError(
+                    f"missing autoformat clause {fix.standard}:{fix.clause}#{fix.anchor}"
+                )
+        fixes_by_clause[(fix.standard, fix.clause)] = True
     lines = [
         "---",
-        "title: Реестр диагностик по стандартам",
+        "title: Реестр проверок и исправлений по стандартам",
         "llms:",
         "  ignore: true",
         "---",
         "",
-        "# Реестр диагностик по стандартам",
+        "# Реестр проверок и исправлений по стандартам",
         "",
         '<div class="diagnostics-registry" data-diagnostics-registry>',
         '  <div class="diagnostics-registry__controls">',
-        '    <label>Поиск <input type="search" data-diagnostics-search placeholder="Стандарт, пункт или диагностика"></label>',
-        '    <label><input type="checkbox" data-show-empty> Показать пункты без проверок</label>',
+        '    <label>Поиск <input type="search" data-diagnostics-search placeholder="Стандарт, пункт, проверка или исправление"></label>',
+        '    <label><input type="checkbox" data-show-empty> Показать пункты без проверок и исправлений</label>',
         "  </div>",
     ]
     for standard in sorted(standard_pages, key=lambda item: int(item[3:])):
@@ -186,28 +203,37 @@ def render_registry_index(reviews: list | tuple, standard_pages: dict[str, Stand
         page = standard_pages[standard]
         groups = []
         all_diagnostics: set[str] = set()
-        clauses_with_checks = 0
+        clauses_with_capabilities = 0
         for clause in page.clauses:
             diagnostics = sorted(
                 by_clause.get((standard, clause.clause), ()),
                 key=_registry_diagnostic_sort_key,
             )
+            has_fix = fixes_by_clause.get((standard, clause.clause), False)
+            if diagnostics or has_fix:
+                clauses_with_capabilities += 1
             if diagnostics:
-                clauses_with_checks += 1
                 all_diagnostics.update(diagnostics)
-            groups.append((clause, diagnostics, False))
+            groups.append((clause, diagnostics, has_fix, False))
         overall = sorted(
             by_clause.get((standard, standard), ()),
             key=_registry_diagnostic_sort_key,
         )
         all_diagnostics.update(overall)
-        if overall:
-            groups.append((StandardClause(standard, standard, "Стандарт в целом"), overall, True))
-        empty_standard = not all_diagnostics
+        overall_fix = fixes_by_clause.get((standard, standard), False)
+        if overall or overall_fix:
+            groups.append(
+                (StandardClause(standard, standard, "Стандарт в целом"), overall, overall_fix, True)
+            )
+        fix_count = int(any(item[2] for item in groups))
+        empty_standard = not all_diagnostics and not fix_count
         searchable_diagnostics = sorted(
             all_diagnostics, key=_registry_diagnostic_sort_key
         )
-        search = " ".join([standard, page.title, *searchable_diagnostics]).casefold()
+        search_terms = [standard, page.title, *searchable_diagnostics]
+        if fix_count:
+            search_terms.append("autoformat")
+        search = " ".join(search_terms).casefold()
         hidden = ' hidden data-empty="true"' if empty_standard else ""
         lines.extend([
             f'  <details class="diagnostics-standard" data-standard data-search="{html.escape(search, quote=True)}"{hidden}>',
@@ -216,18 +242,24 @@ def render_registry_index(reviews: list | tuple, standard_pages: dict[str, Stand
             '      <span class="diagnostics-standard__counts">'
             + _russian_count(len(all_diagnostics), ("проверка", "проверки", "проверок"))
             + " · "
-            + _russian_count(clauses_with_checks, ("пункт", "пункта", "пунктов"))
+            + _russian_count(
+                clauses_with_capabilities, ("пункт", "пункта", "пунктов")
+            )
+            + " · "
+            + _russian_count(fix_count, ("исправление", "исправления", "исправлений"))
             + "</span>",
             "    </summary>",
             '    <div class="diagnostics-standard__clauses">',
         ])
-        for clause, diagnostics, overall_group in groups:
-            is_empty = not diagnostics
+        for clause, diagnostics, has_fix, overall_group in groups:
+            is_empty = not diagnostics and not has_fix
             empty = ' hidden data-empty="true"' if is_empty else ""
             label = "Стандарт в целом" if overall_group else f"п. {clause.clause}"
             if clause.summary and not overall_group:
                 label += f" — {clause.summary}"
-            clause_search = " ".join([label, *diagnostics]).casefold()
+            clause_search = " ".join(
+                [label, *diagnostics, *(["autoformat"] if has_fix else [])]
+            ).casefold()
             lines.append(
                 f'      <section class="diagnostics-clause" data-clause data-search="{html.escape(clause_search, quote=True)}"{empty}>'
             )
@@ -243,8 +275,17 @@ def render_registry_index(reviews: list | tuple, standard_pages: dict[str, Stand
                         f'          <a class="diagnostic-chip" href="{_registry_diagnostic_path(diagnostic)}">{html.escape(diagnostic)}</a>'
                     )
                 lines.append("        </div>")
-            else:
-                lines.append('        <p class="diagnostics-clause__empty">Нет проверок</p>')
+            if has_fix:
+                lines.append('        <div class="diagnostics-clause__links fix-links">')
+                lines.append(
+                    '          <a class="diagnostic-chip diagnostic-chip--fix" '
+                    'href="autoformat/index.md">autoformat</a>'
+                )
+                lines.append("        </div>")
+            if is_empty:
+                lines.append(
+                    '        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>'
+                )
             lines.append("      </section>")
         lines.extend(["    </div>", "  </details>"])
     lines.append("</div>")
@@ -343,6 +384,7 @@ def render_family_index(
 def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool, int]:
     catalog = load_catalog(root / "data/diagnostic-sources.json")
     reviews = load_all_reviews(root)
+    autoformat_catalog = load_autoformat_catalog(root / "data/autoformat-fixes.json")
     standard_pages = load_standard_pages(root / "docs/std")
     standard_titles = {standard: page.title for standard, page in standard_pages.items()}
     reviews_by_diagnostic: dict[str, list] = {}
@@ -397,14 +439,18 @@ def generate(root: Path, *, write: bool) -> tuple[int, int, int, bool, int]:
         standard_count += 1
         standard = f"std{path.stem}"
         source = path.read_text(encoding="utf-8")
-        expected = rewrite_standard_page(source, standard, reviews)
+        expected = rewrite_standard_page(
+            source, standard, reviews, autoformat_catalog.fixes
+        )
         if expected != source:
             changed_standards += 1
             if write:
                 path.write_text(expected, encoding="utf-8")
 
     registry_path = root / "docs/diagnostics/index.md"
-    expected_registry = render_registry_index(reviews, standard_pages)
+    expected_registry = render_registry_index(
+        reviews, standard_pages, autoformat_catalog.fixes
+    )
     registry_changed = registry_path.read_text(encoding="utf-8") != expected_registry
     if write and registry_changed:
         registry_path.write_text(expected_registry, encoding="utf-8")

@@ -35,6 +35,11 @@ DIAGNOSTIC_BACKLINKS_RE = re.compile(
     r"^<!-- diagnostic-backlinks:end clause=[^\n]+ -->\n?",
     re.MULTILINE | re.DOTALL,
 )
+FIX_BACKLINKS_RE = re.compile(
+    r"^<!-- fix-backlinks:start clause=[^\n]+ -->\n.*?"
+    r"^<!-- fix-backlinks:end clause=[^\n]+ -->\n?",
+    re.MULTILINE | re.DOTALL,
+)
 LEGACY_MANAGED_BACKLINK_RE = re.compile(
     r"^.*\[#(?P<family>acc|bslls|v8cs):(?P<identifier>[^\]]+)\]"
     r"\([^\n)]+\)~?[ \t]*\n?",
@@ -380,6 +385,25 @@ def render_standard_backlinks(
     return rendered
 
 
+def render_autoformat_backlinks(fixes: Iterable[Any]) -> dict[str, dict[str, str]]:
+    grouped: dict[tuple[str, str, str], list[Any]] = {}
+    for fix in fixes:
+        grouped.setdefault((fix.standard, fix.anchor, fix.clause), []).append(fix)
+    rendered: dict[str, dict[str, str]] = {}
+    for (standard, anchor, clause), _items in sorted(grouped.items()):
+        rendered.setdefault(standard, {})[anchor] = "\n".join(
+            [
+                f"<!-- fix-backlinks:start clause={clause} -->",
+                '<div class="fix-links" aria-label="Исправления">',
+                '<a class="diagnostic-chip diagnostic-chip--fix" '
+                'href="../diagnostics/autoformat/index.md">autoformat</a>',
+                "</div>",
+                f"<!-- fix-backlinks:end clause={clause} -->",
+            ]
+        )
+    return rendered
+
+
 def rewrite_diagnostic_page(
     source: str,
     diagnostic: str,
@@ -463,11 +487,13 @@ def rewrite_standard_page(
     source: str,
     standard: str,
     reviews: Iterable[LinkReview],
+    autoformat_fixes: Iterable[Any] = (),
 ) -> str:
     normalized = source.replace("\r\n", "\n").replace("\r", "\n")
     relevant = tuple(review for review in reviews if review.standard == standard)
     reviewed_pairs = {(review.diagnostic, review.standard) for review in relevant}
     without_generated = DIAGNOSTIC_BACKLINKS_RE.sub("", normalized)
+    without_generated = FIX_BACKLINKS_RE.sub("", without_generated)
 
     def remove_legacy(match: re.Match[str]) -> str:
         diagnostic = f"{match.group('family')}:{match.group('identifier')}"
@@ -480,6 +506,14 @@ def rewrite_standard_page(
     without_legacy = LEGACY_MANAGED_BACKLINK_RE.sub(remove_legacy, without_generated)
     rewritten = _remove_empty_legacy_check_sections(without_legacy).rstrip() + "\n"
     blocks = render_standard_backlinks(relevant).get(standard, {})
+    fix_blocks = render_autoformat_backlinks(
+        fix for fix in autoformat_fixes if fix.standard == standard
+    ).get(standard, {})
+    for anchor, fix_block in fix_blocks.items():
+        if anchor in blocks:
+            blocks[anchor] = blocks[anchor] + "\n\n" + fix_block
+        else:
+            blocks[anchor] = fix_block
     if not blocks:
         return rewritten
 

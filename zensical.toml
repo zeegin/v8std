@@ -894,6 +894,11 @@ description = "Мы используем файлы cookie для распозн
     { "Сводная таблица" = "diagnostics/acc/index.md" },
 ]
 
+[[project.nav."Диагностики"]]
+"Исправления" = [
+    { "Автоформатирование" = "diagnostics/autoformat/index.md" },
+]
+
 [[project.nav]]
 "MCP для ИИ-помощников" = "mcp.md"
 
