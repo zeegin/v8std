@@ -942,7 +942,7 @@ git commit -m "ci: validate architecture process"
 - Produces a complete immutable plan commit ready for local integration.
 - Produces no push, PR or deployment.
 
-- [ ] **Step 1: Request independent review**
+- [x] **Step 1: Request independent review**
 
 Use `superpowers:requesting-code-review`. Check all 18 process requirements and specifically verify:
 
@@ -955,11 +955,11 @@ Use `superpowers:requesting-code-review`. Check all 18 process requirements and 
 - Markdown commands are never dynamically executed;
 - `AGENTS.md`, skill and process schema do not contradict one another.
 
-- [ ] **Step 2: Resolve blocking findings correctly**
+- [x] **Step 2: Resolve blocking findings correctly**
 
 For implementation defects, add a failing regression test, prove RED, fix, and prove GREEN. For design contradictions, stop and return to brainstorming instead of changing architecture implicitly.
 
-- [ ] **Step 3: Run the pre-completion final gate**
+- [x] **Step 3: Run the pre-completion final gate**
 
 ```bash
 .venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref main
@@ -971,7 +971,7 @@ git diff --check
 
 Expected: validator exits 0, tests pass, strict build exits 0 and diff check is silent.
 
-- [ ] **Step 4: Mark plan complete and commit**
+- [x] **Step 4: Mark plan complete and commit**
 
 After Steps 1–3 succeed, mark their checkboxes and this Step 4 checkbox `[x]`.
 Confirm no unchecked plan steps remain and commit:
