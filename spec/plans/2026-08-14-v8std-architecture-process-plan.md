@@ -476,7 +476,7 @@ git commit -m "feat: enforce frozen architecture documents"
 - Preserves implemented MCP v2 and legacy monitoring contracts separately.
 - Commits no partially migrated corpus: all Phase A and Phase B steps form one transaction.
 
-- [ ] **Step 1: Add failing real-repository state assertions**
+- [x] **Step 1: Add failing real-repository state assertions**
 
 ```python
 PLANNED = {
@@ -496,13 +496,13 @@ The implemented-state assertions are deliberately added only after the
 historical evidence gate in Step 13, so that the full suite can prove the
 unchecked plans before those checkboxes change.
 
-- [ ] **Step 2: Run repository test and verify RED**
+- [x] **Step 2: Run repository test and verify RED**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_repository -v`
 
 Expected: FAIL because legacy documents are unstructured and in the root.
 
-- [ ] **Step 3: Move all six documents with `git mv`**
+- [x] **Step 3: Move all six documents with `git mv`**
 
 Use exact paths:
 
@@ -515,7 +515,7 @@ git mv spec/2026-07-22-english-standard-sources-plan.md spec/plans/
 git mv spec/2026-07-22-unified-diagnostic-chips-plan.md spec/plans/
 ```
 
-- [ ] **Step 4: Add exact requirement definitions and front matter**
+- [x] **Step 4: Add exact requirement definitions and front matter**
 
 | Design | Requirement codes |
 |---|---|
@@ -525,7 +525,7 @@ git mv spec/2026-07-22-unified-diagnostic-chips-plan.md spec/plans/
 
 Add one `### CODE` definition per obligation. Use `schema_version: 1`, `kind: design`, `scope: product`, `requirements.introduces`, empty lifecycle fields, no ADR/invariant refs, and contract refs from Step 6.
 
-- [ ] **Step 5: Structure historical plans but keep them incomplete**
+- [x] **Step 5: Structure historical plans but keep them incomplete**
 
 Add `schema_version`, `kind: plan`, matching `id`, typed `design`, and these
 exact `implements` values:
@@ -540,7 +540,7 @@ Normalize every implementation checkbox to `[ ]`. Do not mark historical
 plans complete until Step 13 proves all original evidence gates against the
 fully migrated corpus.
 
-- [ ] **Step 6: Create three extracted contracts**
+- [x] **Step 6: Create three extracted contracts**
 
 | Ref | Producer | Consumers | Governs | Conformance |
 |---|---|---|---|---|
@@ -550,7 +550,7 @@ fully migrated corpus.
 
 Set `compatibility: backward-compatible`, `required_when: implemented`, exact requirement refs, `supersedes: []`, and `deprecates: []`.
 
-- [ ] **Step 7: Run focused Phase A evidence without committing**
+- [x] **Step 7: Run focused Phase A evidence without committing**
 
 Run:
 
@@ -598,7 +598,7 @@ legacy MCP artifacts remain unstructured until Phase B of this same task.
 - Continues the Task 5 transaction and supplies the planned-state artifacts
   already asserted by Step 1.
 
-- [ ] **Step 8: Move MCP designs and define requirements**
+- [x] **Step 8: Move MCP designs and define requirements**
 
 Use `git mv`. Add exact requirements:
 
@@ -610,7 +610,7 @@ Use `git mv`. Add exact requirements:
 
 The `MCP_TEMPLATES_EXCLUDE_LANGUAGE_AND_METHOD_SOURCES` definition explicitly names both `lang` and `metod8dev`.
 
-- [ ] **Step 9: Rewrite four ADRs**
+- [x] **Step 9: Rewrite four ADRs**
 
 | Path | ID | Alias | Input requirements |
 |---|---|---|---|
@@ -621,7 +621,7 @@ The `MCP_TEMPLATES_EXCLUDE_LANGUAGE_AND_METHOD_SOURCES` definition explicitly na
 
 Each ADR has exactly one decision and the sections `Входные требования`, `Решение`, `Влияние на инварианты`, `Влияние на контракты`, `Отклонённые альтернативы`. Remove stored status and numeric current refs.
 
-- [ ] **Step 10: Create eight product invariants**
+- [x] **Step 10: Create eight product invariants**
 
 | ID | Introduced by | Check module | Required when |
 |---|---|---|---|
@@ -636,7 +636,7 @@ Each ADR has exactly one decision and the sections `Входные требов�
 
 Each invariant states the durable property, exact requirement refs, `owner: v8std maintainers`, command and why violation falsifies the ADR.
 
-- [ ] **Step 11: Create seven versioned contracts**
+- [x] **Step 11: Create seven versioned contracts**
 
 | Ref | Intent | Producer | Consumers | Required when |
 |---|---|---|---|---|
@@ -665,7 +665,7 @@ event, redaction and metric rules from those named sources. Existing contracts
 use current tests; design-only contracts declare future modules and are not
 executed until a complete plan marks them implemented.
 
-- [ ] **Step 12: Declare complete ADR impact maps**
+- [x] **Step 12: Declare complete ADR impact maps**
 
 - Endpoint isolation introduces `MCP_VERSION_ISOLATION`, `MCP_LEGACY_ENDPOINT_STABILITY`, preserves API v2 and introduces API v3.
 - Page reading introduces `MCP_RESOURCE_VERSION_PAGE_READING_VIA_RESOURCES`, `MCP_RESOURCE_LINKS_ARE_LISTABLE` and constrains API v3.
@@ -674,7 +674,7 @@ executed until a complete plan marks them implemented.
 
 All unused `preserves/replaces/cancels` collections are explicit empty values.
 
-- [ ] **Step 13: Prove historical implementation evidence and complete its plans**
+- [x] **Step 13: Prove historical implementation evidence and complete its plans**
 
 Run every evidence gate declared by the three July plans against the now fully
 migrated corpus:
@@ -711,7 +711,7 @@ Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_repository -v`
 Expected: the repository test passes with all three implemented assertions
 active; no conditional skip or bootstrap flag is introduced.
 
-- [ ] **Step 14: Validate the complete corpus and create one migration commit**
+- [x] **Step 14: Validate the complete corpus and create one migration commit**
 
 Run:
 

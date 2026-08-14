@@ -1,7 +1,76 @@
+---
+schema_version: 1
+kind: design
+id: mcp-monitoring-dashboard
+scope: product
+requirements:
+  introduces:
+    - MONITORING_SHOWS_AGENT_FAMILIES
+    - MONITORING_SHOWS_API_VERSIONS
+    - MONITORING_SHOWS_MCP_OPERATIONS
+    - PUBLIC_MONITORING_EXCLUDES_SENSITIVE_DATA
+    - OPERATOR_DETAILS_STAY_OUTSIDE_WEB_ROOT
+    - MONITORING_REMAINS_PUBLIC
+    - LEGACY_USAGE_EVENTS_REMAIN_READABLE
+  uses: []
+  replaces: {}
+  cancels: []
+decisions: [adr:PUBLIC_MCP_MONITORING]
+invariants:
+  - invariant:PUBLIC_MONITORING_EXCLUDES_SENSITIVE_DATA
+  - invariant:OPERATOR_DATA_STAYS_OUTSIDE_WEB_ROOT
+contracts:
+  - contract:MCP_USAGE_EVENTS@1.0
+  - contract:MCP_USAGE_EVENTS@2.0
+  - contract:MCP_MONITORING_PROJECTION@1.0
+  - contract:MCP_MONITORING_PROJECTION@2.0
+plans: []
+supersedes: []
+cancels: []
+---
+
 # Проект аналитики и редизайна мониторинга MCP
 
+## Требования
+
+### MONITORING_SHOWS_AGENT_FAMILIES
+
+Отчёт показывает нормализованные семейства подключавшихся MCP-клиентов, не
+публикуя произвольную исходную строку user-agent.
+
+### MONITORING_SHOWS_API_VERSIONS
+
+Статистика разделяет использование MCP v2 и MCP v3 и сохраняет явно
+обозначенную категорию для событий, версия которых неизвестна.
+
+### MONITORING_SHOWS_MCP_OPERATIONS
+
+Отчёт показывает частоты initialize, tools, resources/list и resources/read, а
+для tools — безопасную агрегацию по имени метода.
+
+### PUBLIC_MONITORING_EXCLUDES_SENSITIVE_DATA
+
+Публичная проекция не содержит IP, сырых user-agent, request ID, cursor, URI с
+пользовательскими параметрами, текстов запросов или малых идентифицируемых срезов.
+
+### OPERATOR_DETAILS_STAY_OUTSIDE_WEB_ROOT
+
+Детальные события и операторские отчёты хранятся с ограниченными правами вне
+каталога, публикуемого веб-сервером, и доступны оператору через SSH.
+
+### MONITORING_REMAINS_PUBLIC
+
+Безопасная агрегированная страница `/monitoring/` остаётся публичной и не
+получает обязательную аутентификацию.
+
+### LEGACY_USAGE_EVENTS_REMAIN_READABLE
+
+Новый агрегатор продолжает читать существующие legacy access/usage events и
+явно маркирует неизвестные измерения вместо отбрасывания истории.
+
 - Дата: 2026-08-14
-- Основание: [ADR-0002](adr/0002-public-mcp-monitoring.md)
+- Основание:
+  [PUBLIC_MCP_MONITORING](../adr/2026-08-14-public-mcp-monitoring.md)
 - Область: MCP v2, MCP v3 и сайт `https://ai.v8std.ru/monitoring/`
 
 ## Контекст
@@ -55,7 +124,8 @@
 - Не считать уникальных пользователей без аутентификации.
 - Не идентифицировать пользователя по IP, User-Agent или браузерному
   fingerprint.
-- Не строить real-time observability и алерты: это область ADR-0003.
+- Не строить real-time observability и алерты: это область
+  `LOCAL_OPENMETRICS_EXPOSITION`.
 - Не превращать статический сайт в отдельное серверное приложение или базу
   данных.
 - Не создавать закрытый web-интерфейс: оператор получает расширенный отчёт и
