@@ -13,6 +13,7 @@ from scripts.v8std_architecture_model import (
     ArchitectureDocument,
     ArchitectureGraph,
     ArchitectureModelError,
+    PROCESS_SCHEMA_PATH,
     ProcessSchema,
     _split_front_matter,
 )
@@ -98,6 +99,13 @@ REFERENCE_FIELDS: Mapping[str, Mapping[str, frozenset[str]]] = {
         "implements": frozenset({"design", "adr", "invariant", "contract", "process"}),
     },
     "process": {},
+}
+
+BOOTSTRAP_ADR_ALIASES: Mapping[str, str] = {
+    "ADR-0001": "MCP_VERSION_ENDPOINT_ISOLATION",
+    "ADR-0002": "PUBLIC_MCP_MONITORING",
+    "ADR-0003": "LOCAL_OPENMETRICS_EXPOSITION",
+    "ADR-0004": "PAGE_READING_VIA_RESOURCES",
 }
 
 
@@ -191,6 +199,27 @@ def validate_references(graph: ArchitectureGraph) -> list[ValidationIssue]:
     return issues
 
 
+def validate_scopes(graph: ArchitectureGraph) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    allowed_scopes = {
+        "design": {"product", "process"},
+        "adr": {"product"},
+        "invariant": {"product"},
+        "contract": {"product"},
+    }
+    for document in graph.documents.values():
+        allowed = allowed_scopes.get(document.kind)
+        if allowed is not None and document.scope not in allowed:
+            issues.append(
+                _issue(
+                    document,
+                    "INVALID_SCOPE",
+                    f"{document.kind} scope must be one of: {', '.join(sorted(allowed))}",
+                )
+            )
+    return issues
+
+
 def _requirement_fields(document: ArchitectureDocument) -> list[str]:
     value = document.front_matter.get("requirements")
     if document.kind == "design":
@@ -202,6 +231,21 @@ def _requirement_fields(document: ArchitectureDocument) -> list[str]:
         result.extend(_string_list(requirements.get("cancels")))
         return result
     return _string_list(value)
+
+
+def _active_requirement_fields(document: ArchitectureDocument) -> list[str]:
+    value = document.front_matter.get("requirements")
+    if document.kind != "design":
+        return _string_list(value)
+
+    requirements = _mapping(value)
+    result = _string_list(requirements.get("uses"))
+    result.extend(
+        value
+        for value in _mapping(requirements.get("replaces")).values()
+        if isinstance(value, str)
+    )
+    return result
 
 
 def _requirement_lifecycle(graph: ArchitectureGraph) -> tuple[set[str], dict[str, str]]:
@@ -247,6 +291,8 @@ def validate_requirements(graph: ArchitectureGraph) -> list[ValidationIssue]:
         for code, owner in graph.requirements.items()
         if graph.documents.get(owner) is not None and graph.documents[owner].scope == "process"
     }
+    states = compute_states(graph, frozenset(graph.documents))
+    terminal_states = {"SUPERSEDED", "CANCELLED", "DEPRECATED", "RETIRED"}
 
     for document in graph.documents.values():
         if document.kind == "design":
@@ -266,14 +312,32 @@ def validate_requirements(graph: ArchitectureGraph) -> list[ValidationIssue]:
             if code not in graph.requirements:
                 issues.append(_issue(document, "UNDEFINED_REQUIREMENT", f"requirement {code} is undefined"))
                 continue
-            if code in cancelled and document.key != graph.requirements.get(code):
-                issues.append(_issue(document, "CANCELLED_REQUIREMENT", f"requirement {code} is cancelled"))
             if document.scope == "product" and code in process_requirements:
                 issues.append(
                     _issue(
                         document,
                         "PROCESS_REQUIREMENT_USED_BY_PRODUCT",
                         f"product architecture cannot use process requirement {code}",
+                    )
+                )
+
+        if terminal_states.intersection(states[document.key]):
+            continue
+        for code in _active_requirement_fields(document):
+            if code in cancelled:
+                issues.append(
+                    _issue(
+                        document,
+                        "CANCELLED_REQUIREMENT",
+                        f"requirement {code} is cancelled",
+                    )
+                )
+            elif code in replaced:
+                issues.append(
+                    _issue(
+                        document,
+                        "REPLACED_REQUIREMENT",
+                        f"requirement {code} is replaced by {replaced[code]}",
                     )
                 )
 
@@ -378,6 +442,106 @@ def validate_adr_relations(graph: ArchitectureGraph) -> list[ValidationIssue]:
     return issues
 
 
+def _current_impact_targets(document: ArchitectureDocument, field: str) -> set[str]:
+    impact = _mapping(document.front_matter.get(field))
+    result = set(_string_list(impact.get("introduces")))
+    result.update(_string_list(impact.get("preserves")))
+    result.update(
+        value
+        for value in _mapping(impact.get("replaces")).values()
+        if isinstance(value, str)
+    )
+    return result
+
+
+def _disposed_impact_targets(document: ArchitectureDocument, field: str) -> set[str]:
+    impact = _mapping(document.front_matter.get(field))
+    result = set(_string_list(impact.get("preserves")))
+    result.update(_mapping(impact.get("replaces")))
+    result.update(_string_list(impact.get("cancels")))
+    return result
+
+
+def validate_adrs(graph: ArchitectureGraph) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    successors: dict[str, list[ArchitectureDocument]] = defaultdict(list)
+
+    for document in graph.documents.values():
+        if document.kind != "adr":
+            continue
+
+        requirements = document.front_matter.get("requirements")
+        if not isinstance(requirements, list) or not requirements or not all(
+            isinstance(value, str) for value in requirements
+        ):
+            issues.append(
+                _issue(
+                    document,
+                    "ADR_WITHOUT_REQUIREMENTS",
+                    "ADR requires at least one input requirement",
+                )
+            )
+
+        aliases = document.front_matter.get("aliases")
+        if not isinstance(aliases, list) or not all(
+            isinstance(alias, str)
+            and BOOTSTRAP_ADR_ALIASES.get(alias) == document.identity
+            for alias in aliases
+        ):
+            issues.append(
+                _issue(
+                    document,
+                    "INVALID_ADR_ALIAS",
+                    "only the fixed ADR-0001 through ADR-0004 bootstrap aliases are allowed",
+                )
+            )
+
+        for field in ("invariants", "contracts"):
+            impact = document.front_matter.get(field)
+            if not isinstance(impact, dict) or set(impact) != {
+                "introduces",
+                "preserves",
+                "replaces",
+                "cancels",
+            }:
+                issues.append(
+                    _issue(
+                        document,
+                        "INCOMPLETE_ADR_IMPACT",
+                        f"ADR {field} impact must declare introduces, preserves, replaces and cancels",
+                    )
+                )
+
+        for predecessor in (
+            _string_list(document.front_matter.get("supersedes"))
+            + _string_list(document.front_matter.get("cancels"))
+        ):
+            target = graph.documents.get(predecessor)
+            if target is not None and target.kind == "adr":
+                successors[predecessor].append(document)
+
+    for predecessor_key, replacements in successors.items():
+        predecessor = graph.documents[predecessor_key]
+        replacement = sorted(replacements, key=lambda document: document.path.as_posix())[0]
+        for field, issue_code in (
+            ("invariants", "UNDISPOSED_INVARIANT"),
+            ("contracts", "UNDISPOSED_CONTRACT"),
+        ):
+            affected = _current_impact_targets(predecessor, field)
+            disposed: set[str] = set()
+            for successor in replacements:
+                disposed.update(_disposed_impact_targets(successor, field))
+            for target in sorted(affected - disposed):
+                issues.append(
+                    _issue(
+                        replacement,
+                        issue_code,
+                        f"replacement of {predecessor_key} does not dispose {target}",
+                    )
+                )
+    return issues
+
+
 def _check_declaration_present(value: object) -> bool:
     if isinstance(value, str):
         return bool(value.strip())
@@ -389,6 +553,19 @@ def _check_declaration_present(value: object) -> bool:
             or (isinstance(command, str) and command.strip())
         )
     return False
+
+
+def _validate_fitness_timing(document: ArchitectureDocument) -> list[ValidationIssue]:
+    required_when = document.front_matter.get("required_when", "accepted")
+    if required_when in {"accepted", "implemented"}:
+        return []
+    return [
+        _issue(
+            document,
+            "INVALID_FITNESS_TIMING",
+            "required_when must be accepted or implemented",
+        )
+    ]
 
 
 def validate_invariants(graph: ArchitectureGraph) -> list[ValidationIssue]:
@@ -409,6 +586,7 @@ def validate_invariants(graph: ArchitectureGraph) -> list[ValidationIssue]:
             )
         if not _check_declaration_present(document.front_matter.get("check")):
             issues.append(_issue(document, "INVARIANT_WITHOUT_CHECK", "invariant has no check declaration"))
+        issues.extend(_validate_fitness_timing(document))
 
     for decision in graph.documents.values():
         if decision.kind != "adr":
@@ -455,6 +633,7 @@ def validate_contracts(graph: ArchitectureGraph) -> list[ValidationIssue]:
             issues.append(_issue(document, "CONTRACT_WITHOUT_CONSUMERS", "contract consumers are empty"))
         if not _check_declaration_present(document.front_matter.get("conformance")):
             issues.append(_issue(document, "CONTRACT_WITHOUT_CONFORMANCE", "contract has no conformance declaration"))
+        issues.extend(_validate_fitness_timing(document))
     return issues
 
 
@@ -469,8 +648,10 @@ def validate_plans(graph: ArchitectureGraph) -> list[ValidationIssue]:
 def validate_graph(graph: ArchitectureGraph) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     issues.extend(validate_references(graph))
+    issues.extend(validate_scopes(graph))
     issues.extend(validate_requirements(graph))
     issues.extend(validate_adr_relations(graph))
+    issues.extend(validate_adrs(graph))
     issues.extend(validate_invariants(graph))
     issues.extend(validate_contracts(graph))
     issues.extend(validate_plans(graph))
@@ -690,6 +871,32 @@ def validate_frozen_documents(
 
     current_by_key = graph.documents
     freeze_issues: list[ValidationIssue] = []
+    base_process = _run_git(
+        repo_root,
+        ["show", f"{base_ref}:{PROCESS_SCHEMA_PATH.as_posix()}"],
+        text=False,
+    )
+    if base_process.returncode == 0:
+        process_path = repo_root / PROCESS_SCHEMA_PATH
+        try:
+            current_process = process_path.read_bytes()
+        except OSError as error:
+            freeze_issues.append(
+                ValidationIssue(
+                    "FROZEN_DOCUMENT_DELETED",
+                    PROCESS_SCHEMA_PATH.as_posix(),
+                    str(error),
+                )
+            )
+        else:
+            if current_process != base_process.stdout:
+                freeze_issues.append(
+                    ValidationIssue(
+                        "FROZEN_DOCUMENT_MODIFIED",
+                        PROCESS_SCHEMA_PATH.as_posix(),
+                        "frozen process schema content changed",
+                    )
+                )
     for key, base_document in sorted(base_documents.items()):
         current = current_by_key.get(key)
         if current is None:

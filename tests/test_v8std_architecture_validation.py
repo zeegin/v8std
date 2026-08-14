@@ -237,6 +237,72 @@ class ArchitectureValidationTest(unittest.TestCase):
         self.assertIn("CANCELLED_REQUIREMENT", issue_codes)
         self.assertIn("DROPPED_REQUIREMENT", issue_codes)
 
+    def test_allows_comprehensive_requirement_cancellation(self) -> None:
+        original = design("original", introduces=("ORIGINAL_REQUIREMENT",))
+        old_decision = adr(
+            "OLD_DECISION",
+            "design:original",
+            requirements=("ORIGINAL_REQUIREMENT",),
+        )
+        successor = design(
+            "successor",
+            introduces=("NEW_DIRECTION",),
+            requirement_cancels=("ORIGINAL_REQUIREMENT",),
+            supersedes=("design:original",),
+        )
+        new_decision = adr(
+            "NEW_DECISION",
+            "design:successor",
+            requirements=("NEW_DIRECTION",),
+            supersedes=("adr:OLD_DECISION",),
+        )
+
+        issue_codes = codes(
+            validate_graph(
+                build_graph([original, old_decision, successor, new_decision])
+            )
+        )
+
+        self.assertNotIn("CANCELLED_REQUIREMENT", issue_codes)
+
+    def test_replaced_requirement_is_historical_not_current(self) -> None:
+        original = design("original", introduces=("ORIGINAL_REQUIREMENT",))
+        old_decision = adr(
+            "OLD_DECISION",
+            "design:original",
+            requirements=("ORIGINAL_REQUIREMENT",),
+        )
+        successor = design(
+            "successor",
+            introduces=("NEW_REQUIREMENT",),
+            replaces={"ORIGINAL_REQUIREMENT": "NEW_REQUIREMENT"},
+            supersedes=("design:original",),
+        )
+        new_decision = adr(
+            "NEW_DECISION",
+            "design:successor",
+            requirements=("NEW_REQUIREMENT",),
+            supersedes=("adr:OLD_DECISION",),
+        )
+        valid_graph = build_graph([original, old_decision, successor, new_decision])
+
+        self.assertNotIn("REPLACED_REQUIREMENT", codes(validate_graph(valid_graph)))
+
+        invalid_current = adr(
+            "INVALID_CURRENT",
+            "design:successor",
+            requirements=("ORIGINAL_REQUIREMENT",),
+        )
+        invalid_codes = codes(
+            validate_graph(
+                build_graph(
+                    [original, old_decision, successor, new_decision, invalid_current]
+                )
+            )
+        )
+
+        self.assertIn("REPLACED_REQUIREMENT", invalid_codes)
+
     def test_rejects_process_requirement_used_by_product_architecture(self) -> None:
         process_design = design(
             "architecture-process",
@@ -255,6 +321,141 @@ class ArchitectureValidationTest(unittest.TestCase):
         )
 
         self.assertIn("PROCESS_REQUIREMENT_USED_BY_PRODUCT", issue_codes)
+
+    def test_product_artifacts_cannot_claim_process_scope(self) -> None:
+        process_design = design(
+            "architecture-process",
+            scope="process",
+            introduces=("PROCESS_RULE",),
+        )
+        disguised = document(
+            "adr",
+            "DISGUISED_PRODUCT_DECISION",
+            scope="process",
+            design="design:architecture-process",
+            requirements=["PROCESS_RULE"],
+            aliases=[],
+            supersedes=[],
+            cancels=[],
+            invariants={
+                "introduces": [],
+                "preserves": [],
+                "replaces": {},
+                "cancels": [],
+            },
+            contracts={
+                "introduces": [],
+                "preserves": [],
+                "replaces": {},
+                "cancels": [],
+            },
+        )
+
+        self.assertIn(
+            "INVALID_SCOPE",
+            codes(validate_graph(build_graph([process_design, disguised]))),
+        )
+
+    def test_rejects_nonbootstrap_alias_and_adr_without_requirements(self) -> None:
+        feature = design("feature")
+        invalid = adr(
+            "NEW_DECISION",
+            "design:feature",
+            aliases=("ADR-9999",),
+        )
+
+        issue_codes = codes(validate_graph(build_graph([feature, invalid])))
+
+        self.assertIn("INVALID_ADR_ALIAS", issue_codes)
+        self.assertIn("ADR_WITHOUT_REQUIREMENTS", issue_codes)
+
+    def test_replacing_adr_disposes_all_dependent_artifacts(self) -> None:
+        feature = design("feature", introduces=("FEATURE_EXISTS",))
+        old_decision = adr(
+            "OLD_DECISION",
+            "design:feature",
+            requirements=("FEATURE_EXISTS",),
+            invariants={
+                "introduces": ["invariant:FEATURE_STAYS_AVAILABLE"],
+                "preserves": [],
+                "replaces": {},
+                "cancels": [],
+            },
+            contracts={
+                "introduces": ["contract:FEATURE_API@1.0"],
+                "preserves": [],
+                "replaces": {},
+                "cancels": [],
+            },
+        )
+        invariant = document(
+            "invariant",
+            "FEATURE_STAYS_AVAILABLE",
+            scope="product",
+            introduced_by="adr:OLD_DECISION",
+            requirements=["FEATURE_EXISTS"],
+            check={"module": "tests.test_v8std_architecture_validation"},
+        )
+        contract = document(
+            "contract",
+            "FEATURE_API",
+            scope="product",
+            version=1,
+            revision=0,
+            compatibility="backward-compatible",
+            design="design:feature",
+            producer="producer",
+            consumers=["consumer"],
+            requirements=["FEATURE_EXISTS"],
+            governs=["scripts/feature.py"],
+            conformance={"module": "tests.test_v8std_architecture_validation"},
+            supersedes=[],
+            deprecates=[],
+        )
+        incomplete_successor = adr(
+            "NEW_DECISION",
+            "design:feature",
+            requirements=("FEATURE_EXISTS",),
+            supersedes=("adr:OLD_DECISION",),
+        )
+
+        incomplete_codes = codes(
+            validate_graph(
+                build_graph(
+                    [feature, old_decision, invariant, contract, incomplete_successor]
+                )
+            )
+        )
+        self.assertIn("UNDISPOSED_INVARIANT", incomplete_codes)
+        self.assertIn("UNDISPOSED_CONTRACT", incomplete_codes)
+
+        complete_successor = adr(
+            "NEW_DECISION",
+            "design:feature",
+            requirements=("FEATURE_EXISTS",),
+            supersedes=("adr:OLD_DECISION",),
+            invariants={
+                "introduces": [],
+                "preserves": ["invariant:FEATURE_STAYS_AVAILABLE"],
+                "replaces": {},
+                "cancels": [],
+            },
+            contracts={
+                "introduces": [],
+                "preserves": ["contract:FEATURE_API@1.0"],
+                "replaces": {},
+                "cancels": [],
+            },
+        )
+        complete_codes = codes(
+            validate_graph(
+                build_graph(
+                    [feature, old_decision, invariant, contract, complete_successor]
+                )
+            )
+        )
+        self.assertNotIn("UNDISPOSED_INVARIANT", complete_codes)
+        self.assertNotIn("UNDISPOSED_CONTRACT", complete_codes)
 
     def test_rejects_invariant_without_basis_or_check(self) -> None:
         invalid = document(
@@ -328,7 +529,7 @@ class ArchitectureValidationTest(unittest.TestCase):
     def test_historical_alias_is_allowed_in_prose_but_not_current_reference(self) -> None:
         feature = design("feature")
         decision = adr(
-            "CURRENT_DECISION",
+            "PAGE_READING_VIA_RESOURCES",
             "design:feature",
             aliases=("ADR-0004",),
             body="Historical note: ADR-0004 used the old identity.",
@@ -486,6 +687,31 @@ class ArchitectureValidationTest(unittest.TestCase):
         self.assertIn(
             "MISSING_FITNESS_EVIDENCE",
             codes(validate_merge_readiness(implemented_graph)),
+        )
+
+    def test_rejects_unknown_fitness_timing(self) -> None:
+        feature = design("feature")
+        contract = document(
+            "contract",
+            "FUTURE_API",
+            scope="product",
+            version=1,
+            revision=0,
+            compatibility="backward-compatible",
+            design="design:feature",
+            producer="producer",
+            consumers=["consumer"],
+            requirements=[],
+            governs=["scripts/future.py"],
+            conformance={"module": "tests.test_v8std_architecture_validation"},
+            required_when="implmented",
+            supersedes=[],
+            deprecates=[],
+        )
+
+        self.assertIn(
+            "INVALID_FITNESS_TIMING",
+            codes(validate_graph(build_graph([feature, contract]))),
         )
 
 

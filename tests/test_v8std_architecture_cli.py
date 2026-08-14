@@ -222,6 +222,18 @@ class FrozenDocumentTest(RepositoryFixture):
 
         self.assertEqual(issue_codes, {"BASE_REF_UNRESOLVED"})
 
+    def test_process_schema_cannot_disable_its_own_freeze(self) -> None:
+        process = self.root / "spec/process/architecture-artifacts-v1.md"
+        process.write_text(
+            process.read_text(encoding="utf-8").replace(
+                "frozen_kinds: [design, adr, invariant, contract, plan, process]",
+                "frozen_kinds: []",
+            ),
+            encoding="utf-8",
+        )
+
+        self.assertIn("FROZEN_DOCUMENT_MODIFIED", self.freeze_codes())
+
 
 class ArchitectureCliTest(RepositoryFixture):
     def write_candidate(self) -> None:
@@ -351,6 +363,16 @@ class ArchitectureCliTest(RepositoryFixture):
         self.commit_all("base")
         base_ref = self.git("rev-parse", "HEAD").stdout.strip()
         script.write_text("VERSION = 2\n", encoding="utf-8")
+
+        working_code, working_output = self.run_cli(
+            "impact", "--root", str(self.root), "--base-ref", base_ref
+        )
+        self.assertEqual(working_code, 0)
+        self.assertIn(
+            "contract:MCP_API@2.0\tspec/contracts/mcp-api-v2-r0.md",
+            working_output,
+        )
+
         self.commit_all("change governed script")
         graph = self.graph()
 

@@ -430,7 +430,7 @@ Implement the exact callable signatures `build_parser() -> argparse.ArgumentPars
 `command_impact(args: argparse.Namespace) -> int`, and
 `main(argv: Sequence[str] | None = None) -> int`.
 
-`validate` combines structural, graph and optional freeze issues. Only `--merge-ready` adds readiness issues for incomplete plans and missing required accepted/implemented fitness evidence. `status` prints `<typed-ref>\t<comma-separated-states>`. `impact` obtains paths from `git diff --name-only <base-ref>...HEAD` and exits zero after reporting candidates.
+`validate` combines structural, graph and optional freeze issues. Only `--merge-ready` adds readiness issues for incomplete plans and missing required accepted/implemented fitness evidence. `status` prints `<typed-ref>\t<comma-separated-states>`. `impact` combines committed branch diff, staged/working-tree diff and untracked files, then exits zero after reporting governed candidates.
 
 - [x] **Step 7: Run architecture tests and commit**
 

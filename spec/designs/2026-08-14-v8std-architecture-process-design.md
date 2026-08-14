@@ -578,7 +578,7 @@ spec/
 | `SUPERSEDED` | Новый принятый документ содержит `supersedes` |
 | `CANCELLED` | Новый принятый ADR или design содержит `cancels` |
 | `DEPRECATED` | Новая версия контракта содержит `deprecates` |
-| `RETIRED` | Завершённый migration plan содержит `retires` |
+| `RETIRED` | Новый принятый ADR явно отменяет инвариант после проверки требований |
 | `IMPLEMENTED` | Завершённый plan в `main` перечисляет реализованные артефакты |
 | `DEPLOYED` | Точный SHA развёрнут и подтверждён внешней post-deploy проверкой |
 

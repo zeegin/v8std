@@ -88,29 +88,45 @@ def command_impact(args: argparse.Namespace) -> int:
         _print_issues([ValidationIssue("MODEL_ERROR", ".", str(error))])
         return 1
 
+    commands = (
+        ["git", "diff", "--name-only", f"{args.base_ref}...HEAD"],
+        ["git", "diff", "--name-only", "HEAD"],
+        ["git", "ls-files", "--others", "--exclude-standard"],
+    )
     try:
-        result = subprocess.run(
-            ["git", "diff", "--name-only", f"{args.base_ref}...HEAD"],
-            cwd=root,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        results = [
+            subprocess.run(
+                command,
+                cwd=root,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            for command in commands
+        ]
     except FileNotFoundError:
         _print_issues([ValidationIssue("GIT_UNAVAILABLE", ".", "git executable is unavailable")])
         return 1
-    if result.returncode != 0:
+    failed = next((result for result in results if result.returncode != 0), None)
+    if failed is not None:
         _print_issues(
             [
                 ValidationIssue(
                     "BASE_REF_UNRESOLVED",
                     ".",
-                    result.stderr.strip() or f"cannot diff {args.base_ref}...HEAD",
+                    failed.stderr.strip() or f"cannot inspect changes from {args.base_ref}",
                 )
             ]
         )
         return 1
-    changed_paths = [line for line in result.stdout.splitlines() if line]
+    changed_paths = sorted(
+        {
+            line
+            for result in results
+            for line in result.stdout.splitlines()
+            if line
+        }
+    )
     for key, path in find_impact_candidates(graph, changed_paths):
         print(f"{key}\t{path}")
     return 0
