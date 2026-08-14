@@ -214,7 +214,7 @@ git commit -m "docs: define architecture artifact schema"
 - Produces `discover_documents(repo_root, schema) -> list[ArchitectureDocument]`.
 - Produces `build_graph(documents) -> ArchitectureGraph`.
 
-- [ ] **Step 1: Write failing model tests**
+- [x] **Step 1: Write failing model tests**
 
 Cover valid ADR, invalid Gregorian date, filename/ID mismatch, forbidden `status`, typed contract ref, duplicate key, and complete/incomplete plan. Assert:
 
@@ -225,13 +225,13 @@ self.assertFalse(incomplete_plan.is_complete_plan)
 self.assertTrue(complete_plan.is_complete_plan)
 ```
 
-- [ ] **Step 2: Run model tests and verify RED**
+- [x] **Step 2: Run model tests and verify RED**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_model -v`
 
 Expected: FAIL because the model module is absent.
 
-- [ ] **Step 3: Implement immutable public types**
+- [x] **Step 3: Implement immutable public types**
 
 Implement:
 
@@ -283,11 +283,11 @@ class ArchitectureGraph:
 `ArtifactRef` implements `parse()` and canonical `__str__()`; `ArchitectureDocument`
 implements `key` so every later task uses one canonical typed identity.
 
-- [ ] **Step 4: Implement parsing and discovery**
+- [x] **Step 4: Implement parsing and discovery**
 
 Load schema only from `architecture-artifacts-v1.md`; parse YAML with `yaml.safe_load`; reject malformed front matter and forbidden fields. Parse typed refs, Gregorian dates and exact kebab projections. Scan only schema directories, ignore `README.md`, sort paths, and extract requirement definitions from `### UPPER_SNAKE_CASE` headings inside `## Требования`.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_model -v`
 
