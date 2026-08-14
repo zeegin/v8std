@@ -753,7 +753,7 @@ git commit -m "docs: migrate architecture specifications"
 - Produces impact classification and document-selection workflow for every mutation.
 - Produces mandatory branch, review, validation, merge and deploy rules visible before skill invocation.
 
-- [ ] **Step 1: Invoke `superpowers:writing-skills` and establish RED pressure baseline**
+- [x] **Step 1: Invoke `superpowers:writing-skills` and establish RED pressure baseline**
 
 Run these scenarios without the new skill and create
 `.agents/skills/v8std-architecture/references/pressure-scenarios.md` with one
@@ -769,7 +769,7 @@ table row per scenario: input, RED failure, expected behavior, GREEN result.
 8. ADR file is renamed to the merge date.
 9. Git workflow rule is proposed as a product invariant.
 
-- [ ] **Step 2: Write failing static policy tests**
+- [x] **Step 2: Write failing static policy tests**
 
 ```python
 agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
@@ -783,13 +783,13 @@ self.assertIn("spec/process/architecture-artifacts-v1.md", skill)
 self.assertNotIn("semantic_id_pattern", skill)
 ```
 
-- [ ] **Step 3: Run tests and verify RED**
+- [x] **Step 3: Run tests and verify RED**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_repository -v`
 
 Expected: FAIL because the skill is absent and current `AGENTS.md` permits direct main commits.
 
-- [ ] **Step 4: Replace `AGENTS.md` with the short mandatory set**
+- [x] **Step 4: Replace `AGENTS.md` with the short mandatory set**
 
 Retain root-cause, contradiction, logic-error and token-reporting rules. Replace Git permissions with:
 
@@ -806,7 +806,7 @@ Retain root-cause, contradiction, logic-error and token-reporting rules. Replace
 - Deploy выполняется только по явному запросу и только для проверенного SHA из `main`.
 ```
 
-- [ ] **Step 5: Create the concise repo skill and focused references**
+- [x] **Step 5: Create the concise repo skill and focused references**
 
 The `SKILL.md` trigger covers any requested v8std mutation, architecture/document/contract/ADR/invariant question, and discovery that may change impact classification. Its operation order is:
 
@@ -824,11 +824,11 @@ The `SKILL.md` trigger covers any requested v8std mutation, architecture/documen
 
 `impact-check.md` contains observable-boundary questions; `document-triggers.md` maps causes to artifacts; `failure-recovery.md` distinguishes implementation defect from project error; `pressure-scenarios.md` stores the nine inputs and expected behaviors. None copies schema fields.
 
-- [ ] **Step 6: Run GREEN pressure tests**
+- [x] **Step 6: Run GREEN pressure tests**
 
 Follow `superpowers:writing-skills` RED–GREEN–REFACTOR. Require branch/gate/document behavior in all nine scenarios. The direct-main and merge-date cases remain forbidden even on the trivial path.
 
-- [ ] **Step 7: Run static tests, validator and commit**
+- [x] **Step 7: Run static tests, validator and commit**
 
 Run:
 

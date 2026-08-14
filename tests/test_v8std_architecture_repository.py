@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -98,6 +99,42 @@ class ArchitectureRepositoryTest(unittest.TestCase):
             self.assertEqual(
                 set(document.front_matter["contracts"]), impact_keys, document.key
             )
+
+    def test_mandatory_architecture_policy_is_visible_before_skill_invocation(self) -> None:
+        agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+
+        self.assertIn("Прямые коммиты и push в `main` запрещены", agents)
+        self.assertIn(".agents/skills/v8std-architecture/SKILL.md", agents)
+        self.assertIn("локальный merge", agents)
+        self.assertIn("Deploy выполняется только по явному запросу", agents)
+
+    def test_repo_skill_uses_process_schema_without_copying_it(self) -> None:
+        skill_path = ROOT / ".agents/skills/v8std-architecture/SKILL.md"
+        self.assertTrue(skill_path.is_file(), skill_path)
+        skill = skill_path.read_text(encoding="utf-8")
+
+        self.assertIn("spec/process/architecture-artifacts-v1.md", skill)
+        self.assertNotIn("semantic_id_pattern", skill)
+        for name in (
+            "impact-check.md",
+            "document-triggers.md",
+            "failure-recovery.md",
+            "pressure-scenarios.md",
+        ):
+            self.assertTrue(
+                (skill_path.parent / "references" / name).is_file(),
+                name,
+            )
+
+    def test_repo_skill_is_not_hidden_by_gitignore(self) -> None:
+        skill_path = ROOT / ".agents/skills/v8std-architecture/SKILL.md"
+        ignored = subprocess.run(
+            ["git", "check-ignore", "-q", str(skill_path)],
+            cwd=ROOT,
+            check=False,
+        )
+
+        self.assertEqual(ignored.returncode, 1, skill_path)
 
 
 if __name__ == "__main__":
