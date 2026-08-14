@@ -312,7 +312,7 @@ git commit -m "feat: parse architecture artifacts"
 - Produces `validate_merge_readiness(graph) -> list[ValidationIssue]`.
 - Produces `compute_states(graph, accepted_keys) -> dict[str, frozenset[str]]`.
 
-- [ ] **Step 1: Write failing graph tests**
+- [x] **Step 1: Write failing graph tests**
 
 Cover dangling/wrong-type refs, duplicate IDs, replacement cycles, mixed cancel/supersede, one-to-many and many-to-one ADR replacements, and composite replacements split between designs. Require stable codes:
 
@@ -325,17 +325,17 @@ MIXED_CANCEL_AND_SUPERSEDE
 COMPOSITE_REPLACEMENT_SPLIT
 ```
 
-- [ ] **Step 2: Write failing lifecycle tests**
+- [x] **Step 2: Write failing lifecycle tests**
 
 Cover undefined/cancelled/dropped requirements, process requirement used by product ADR, invariant without basis/check, contract without producer/consumers/version/conformance, premature retirement, historical alias in prose versus current ref, accepted design without plan, and complete/incomplete plans. `validate_graph()` accepts a structurally correct incomplete candidate plan; `validate_merge_readiness()` returns `INCOMPLETE_PLAN`.
 
-- [ ] **Step 3: Run validation tests and verify RED**
+- [x] **Step 3: Run validation tests and verify RED**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_validation -v`
 
 Expected: FAIL because validation module is absent.
 
-- [ ] **Step 4: Implement stable issue collection and typed rules**
+- [x] **Step 4: Implement stable issue collection and typed rules**
 
 ```python
 @dataclass(frozen=True, order=True)
@@ -363,11 +363,11 @@ declared Python test modules for `required_when: accepted` artifacts and for
 missing required module is `MISSING_FITNESS_EVIDENCE`; a future module declared
 on an unimplemented artifact is valid.
 
-- [ ] **Step 5: Implement computed states without `status`**
+- [x] **Step 5: Implement computed states without `status`**
 
 Compute `CANDIDATE`, `ACCEPTED`, `SUPERSEDED`, `CANCELLED`, `DEPRECATED`, `RETIRED`, and `IMPLEMENTED`. A complete accepted plan makes only its typed `implements` targets implemented. Do not store or infer `DEPLOYED` from repository files.
 
-- [ ] **Step 6: Run GREEN and commit**
+- [x] **Step 6: Run GREEN and commit**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_validation -v`
 

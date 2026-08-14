@@ -128,12 +128,12 @@ class ArchitectureDocument:
     @property
     def key(self) -> str:
         if self.kind == "contract":
-            return (
-                f"contract:{self.identity}@"
-                f"{self.front_matter['version']}.{self.front_matter['revision']}"
-            )
+            version = self.front_matter.get("version")
+            revision = self.front_matter.get("revision")
+            return f"contract:{self.identity}@{version if isinstance(version, int) else '?'}.{revision if isinstance(revision, int) else '?'}"
         if self.kind == "process":
-            return f"process:{self.identity}@{self.front_matter['version']}"
+            version = self.front_matter.get("version")
+            return f"process:{self.identity}@{version if isinstance(version, int) else '?'}"
         return f"{self.kind}:{self.identity}"
 
     @property

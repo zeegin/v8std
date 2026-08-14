@@ -8,6 +8,7 @@ invariants: []
 contracts: []
 plans: [plan:v8std-architecture-process]
 supersedes: []
+cancels: []
 requirements:
   introduces:
     - ALL_CHANGES_USE_BRANCHES
