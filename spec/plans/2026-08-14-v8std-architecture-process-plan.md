@@ -859,11 +859,11 @@ git commit -m "docs: enforce v8std architecture workflow"
 - Produces post-main CI validation and local pre-merge commands.
 - Produces executable proof that internal specifications stay unpublished.
 
-- [ ] **Step 1: Add failing publication-boundary tests**
+- [x] **Step 1: Add failing publication-boundary tests**
 
 Build the existing AI index and assert no source path, title, URL or body originates in `spec/`. Recursively parse `zensical.toml` nav and reject targets beginning `spec/`. The rendered `site/` scan remains in Step 6 after the strict build creates fresh output.
 
-- [ ] **Step 2: Add architecture validation to GitHub Actions**
+- [x] **Step 2: Add architecture validation to GitHub Actions**
 
 Set checkout `fetch-depth: 2`, then add before Docker build:
 
@@ -876,7 +876,7 @@ Set checkout `fetch-depth: 2`, then add before Docker build:
 
 Keep existing Docker tests and strict build unchanged. Do not execute check commands from Markdown.
 
-- [ ] **Step 3: Run focused architecture tests**
+- [x] **Step 3: Run focused architecture tests**
 
 ```bash
 .venv/bin/python -m unittest \
@@ -889,16 +889,17 @@ Keep existing Docker tests and strict build unchanged. Do not execute check comm
 
 Expected: all architecture/process/publication tests PASS.
 
-- [ ] **Step 4: Run validator and impact evidence**
+- [x] **Step 4: Run validator and impact evidence**
 
 ```bash
 .venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref main
 .venv/bin/python scripts/v8std_architecture.py validate --root . --base-ref main
 ```
 
-Expected: impact reports affected process/contract candidates and validate exits 0.
+Expected: impact exits 0; an empty report confirms that this process-only branch
+does not change a path governed by a product contract or invariant. Validate exits 0.
 
-- [ ] **Step 5: Run full tests and strict build**
+- [x] **Step 5: Run full tests and strict build**
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
@@ -907,7 +908,7 @@ VIRTUAL_ENV="$PWD/.venv" ./scripts/zensical_docs.sh build --strict
 
 Expected: zero test failures/errors and strict build exit 0.
 
-- [ ] **Step 6: Scan public outputs and generator drift**
+- [x] **Step 6: Scan public outputs and generator drift**
 
 ```bash
 if rg -n 'spec/(designs|adr|invariants|contracts|plans|process)' \
@@ -921,7 +922,7 @@ git status --short
 
 Expected: no `spec/` publication, no whitespace errors and no unrelated file absorption.
 
-- [ ] **Step 7: Commit CI and publication gate**
+- [x] **Step 7: Commit CI and publication gate**
 
 Mark Task 7 complete and commit:
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import re
 import subprocess
 import unittest
@@ -135,6 +136,36 @@ class ArchitectureRepositoryTest(unittest.TestCase):
         )
 
         self.assertEqual(ignored.returncode, 1, skill_path)
+
+    def test_ai_index_does_not_publish_internal_specifications(self) -> None:
+        script_path = ROOT / "scripts/generate_ai_artifacts.py"
+        module_spec = importlib.util.spec_from_file_location(
+            "architecture_publication_boundary",
+            script_path,
+        )
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        module_spec.loader.exec_module(module)
+        index = module.build_site_ai_index(ROOT)
+
+        for page in index["pages"]:
+            for field in (
+                "source_path",
+                "title",
+                "url",
+                "markdown_url",
+                "body_markdown",
+            ):
+                self.assertNotIn("spec/", str(page.get(field, "")), (page["id"], field))
+
+    def test_ci_validates_complete_architecture_before_build(self) -> None:
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        validation = "python3 scripts/v8std_architecture.py validate"
+
+        self.assertIn("fetch-depth: 2", workflow)
+        self.assertIn("--base-ref HEAD^ --merge-ready", workflow)
+        self.assertLess(workflow.index(validation), workflow.index("docker build"))
 
 
 if __name__ == "__main__":
