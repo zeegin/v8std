@@ -1,3 +1,13 @@
+---
+schema_version: 1
+kind: plan
+id: v8std-architecture-process
+design: design:v8std-architecture-process
+implements:
+  - design:v8std-architecture-process
+  - process:architecture-artifacts@1
+---
+
 # V8std Architecture Process Bootstrap Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -80,7 +90,7 @@
 - Produces one machine-readable `schema` mapping read by validator and skill.
 - Produces document-key grammar and immutable repository layout.
 
-- [ ] **Step 1: Write the failing process-contract test**
+- [x] **Step 1: Write the failing process-contract test**
 
 Create a local YAML front-matter loader and assert:
 
@@ -101,13 +111,13 @@ self.assertEqual(
 
 Also assert `spec/` is not a Zensical nav path.
 
-- [ ] **Step 2: Run the test and verify RED**
+- [x] **Step 2: Run the test and verify RED**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_process -v`
 
 Expected: FAIL because the process specification is absent.
 
-- [ ] **Step 3: Create the single versioned schema source**
+- [x] **Step 3: Create the single versioned schema source**
 
 Create `spec/process/architecture-artifacts-v1.md` with this front matter:
 
@@ -148,7 +158,7 @@ The body defines exact per-kind fields and filename rules:
 
 Define that requirement lifecycle uses only `introduces/uses/replaces/cancels`; ADR impact uses explicit `introduces/preserves/replaces/cancels`; contract compatibility is `backward-compatible` or `breaking`; plan completion requires at least one checkbox and all checked; an incomplete candidate plan is allowed during implementation but rejected by the `--merge-ready` gate; process requirements cannot feed product architecture; the ADR creation date exists only in the filename and never changes to the merge date; numeric aliases are allowed only for migrated `ADR-0001`–`ADR-0004` and never in current typed refs; a base document becomes frozen when its base revision has valid structured front matter, which enables one bootstrap rewrite without a permanent bypass; declared commands are never dynamically executed.
 
-- [ ] **Step 4: Structure the accepted design and this plan**
+- [x] **Step 4: Structure the accepted design and this plan**
 
 Add to the process design front matter:
 
@@ -175,11 +185,11 @@ implements:
 ---
 ```
 
-- [ ] **Step 5: Replace `spec/README.md` with a short index**
+- [x] **Step 5: Replace `spec/README.md` with a short index**
 
 List the six directories, typed-reference examples, internal-only boundary and pre-merge command `.venv/bin/python scripts/v8std_architecture.py validate --root . --base-ref main --merge-ready`. Remove the old claims that design is mutable and that one ADR may replace only one predecessor.
 
-- [ ] **Step 6: Run GREEN and commit**
+- [x] **Step 6: Run GREEN and commit**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_process -v`
 

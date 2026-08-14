@@ -1,6 +1,12 @@
 ---
+schema_version: 1
 kind: design
 id: v8std-architecture-process
+scope: process
+decisions: []
+invariants: []
+contracts: []
+plans: [plan:v8std-architecture-process]
 supersedes: []
 requirements:
   introduces:
