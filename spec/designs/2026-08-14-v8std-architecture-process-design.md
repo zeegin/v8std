@@ -168,12 +168,14 @@ ADR перечисляет входные требования, а design свя
 
 ADR получает устойчивый смысловой идентификатор `UPPER_SNAKE_CASE` без цифр,
 например `PAGE_READING_VIA_RESOURCES`. Порядковый номер не является частью
-идентичности, имени файла или междокументной ссылки. Хронология вычисляется по
-первому появлению ADR в `main` и используется только для представления.
+идентичности или междокументной ссылки. Имя файла начинается с даты создания
+ADR в design-пакете и обеспечивает хронологическую сортировку:
+`YYYY-MM-DD-<semantic-slug>.md`. Эта дата не меняется при merge.
 
 **Проверка:** валидатор проверяет формат и уникальность идентификатора в графе
-`main + branch`, типизированные ссылки и слияние независимых ADR в любом
-порядке.
+`main + branch`, календарную дату, соответствие slug и ID, типизированные ссылки
+и слияние независимых ADR в любом порядке. Repo skill не переименовывает файл в
+дату merge.
 
 ### ARCHITECTURE_INVARIANTS_ARE_SEMANTIC
 
@@ -475,10 +477,13 @@ ADR содержит:
 - отклонённые альтернативы;
 - `supersedes` и `cancels`, если применимо.
 
-Имя файла является kebab-case-проекцией идентификатора:
+Имя файла состоит из даты создания ADR в design-пакете и kebab-case-проекции
+идентификатора:
 `PAGE_READING_VIA_RESOURCES` хранится в
-`spec/adr/page-reading-via-resources.md`. Ссылки типизированы и используют
-идентичность, а не путь: `adr:PAGE_READING_VIA_RESOURCES`.
+`spec/adr/2026-08-14-page-reading-via-resources.md`. Дата фиксируется при первом
+создании ADR в feature branch, не заменяется датой merge и не дублируется во
+front matter. Ссылки типизированы и используют идентичность, а не путь:
+`adr:PAGE_READING_VIA_RESOURCES`.
 
 Каждая ветка выбирает идентификаторы независимо. Валидатор сверяет их с
 актуальным `main` непосредственно перед merge. Совпадение означает возможное
@@ -498,10 +503,10 @@ ADR могут разложить один старый ADR. Все затрон
 Хранимого поля `status` нет. Эффективное состояние вычисляется по присутствию в
 Git и входящим отношениям.
 
-Порядок ADR не хранится в документах. При необходимости индекс показывает
-хронологию по первому появлению в `main`, но вычисленный номер не является
-стабильной ссылкой и не используется в графе. ADR, впервые появившиеся в одном
-коммите, упорядочиваются в представлении лексикографически по ID.
+Порядковый номер ADR не хранится. Каталог и индекс сортируются
+лексикографически по имени файла: сначала по дате создания, а внутри одной даты
+по смысловому slug. Этот порядок предназначен для навигации и не используется
+как идентичность или ссылка.
 
 ## Жизненный цикл инварианта
 
@@ -627,6 +632,10 @@ JSON Schema, URI, metric labels и план реализации в ADR не к�
 - отсутствует обязательный front matter;
 - основной смысловой код, для которого схема требует `UPPER_SNAKE_CASE`,
   содержит цифры или имеет другой формат;
+- имя ADR не соответствует `YYYY-MM-DD-<semantic-slug>.md`, содержит
+  несуществующую календарную дату либо slug не является точной kebab-case-
+  проекцией ADR ID;
+- дата ADR продублирована во front matter;
 - ADR использует порядковый номер как идентичность, имя нового файла или
   текущую междокументную ссылку;
 - новый ADR объявляет alias либо цифровой alias используется не как
@@ -731,10 +740,10 @@ fitness checks. Совпадение изменённого пути с `governs
 
 | Исторический alias | Новый ID | Новый файл |
 |---|---|---|
-| `ADR-0001` | `MCP_VERSION_ENDPOINT_ISOLATION` | `mcp-version-endpoint-isolation.md` |
-| `ADR-0002` | `PUBLIC_MCP_MONITORING` | `public-mcp-monitoring.md` |
-| `ADR-0003` | `LOCAL_OPENMETRICS_EXPOSITION` | `local-openmetrics-exposition.md` |
-| `ADR-0004` | `PAGE_READING_VIA_RESOURCES` | `page-reading-via-resources.md` |
+| `ADR-0001` | `MCP_VERSION_ENDPOINT_ISOLATION` | `2026-08-14-mcp-version-endpoint-isolation.md` |
+| `ADR-0002` | `PUBLIC_MCP_MONITORING` | `2026-08-14-public-mcp-monitoring.md` |
+| `ADR-0003` | `LOCAL_OPENMETRICS_EXPOSITION` | `2026-08-14-local-openmetrics-exposition.md` |
+| `ADR-0004` | `PAGE_READING_VIA_RESOURCES` | `2026-08-14-page-reading-via-resources.md` |
 
 Миграция является одноразовым исключением, разрешающим переписать документы,
 созданные до принятия правила заморозки. После bootstrap-merge исключение
@@ -750,6 +759,8 @@ Fixture-тесты покрывают:
 - независимые семантические ADR, сливаемые в любом порядке;
 - коллизию одинакового ADR ID между `main` и веткой;
 - запрет порядкового номера и разрешённые bootstrap-aliases;
+- валидную дату и соответствие filename slug семантическому ADR ID;
+- сортировку нескольких ADR одного дня;
 - замену одного ADR несколькими и нескольких ADR одним;
 - циклы и недопустимые отношения;
 - историческое и текущее упоминание отменённого ADR;
@@ -767,6 +778,7 @@ Pressure-сценарии сначала выполняются без ново�
 
 - пользователь называет контрактное изменение тривиальным;
 - пользователь просит быстро изменить и закоммитить непосредственно в `main`;
+- агент предлагает заменить дату создания ADR датой merge;
 - реализация опровергает design;
 - новый ADR молча теряет старый инвариант;
 - агент переписывает существующую версию контракта;
@@ -812,7 +824,7 @@ Pressure-сценарии сначала выполняются без ново�
 | `ARCHITECTURE_IMPACT_IS_RECHECKED` | финальный diff check | escalation fixture |
 | `REQUIREMENTS_ARE_TRACEABLE` | semantic requirement graph | graph validator |
 | `ARCHITECTURE_DECISIONS_ARE_ATOMIC` | ADR schema и review gate | replacement fixtures |
-| `ADR_IDENTITIES_ARE_SEMANTIC` | semantic ADR ID и typed references | parallel-branch fixtures |
+| `ADR_IDENTITIES_ARE_SEMANTIC` | dated filename, semantic ADR ID и typed references | filename and parallel-branch fixtures |
 | `ARCHITECTURE_INVARIANTS_ARE_SEMANTIC` | invariant schema | naming and source checks |
 | `OBSERVABLE_BOUNDARIES_ARE_CONTRACTED` | versioned contracts | producer/consumer/conformance checks |
 | `ARCHITECTURE_DOCUMENTS_ARE_IMMUTABLE` | merge-base comparison | frozen-document fixture |
