@@ -394,7 +394,7 @@ git commit -m "feat: validate architecture graph"
 - Produces `impact --root PATH --base-ref REF`.
 - Produces `validate_frozen_documents(repo_root, base_ref, graph)` and `find_impact_candidates(graph, changed_paths)`.
 
-- [ ] **Step 1: Write failing temp-Git freeze tests**
+- [x] **Step 1: Write failing temp-Git freeze tests**
 
 Initialize a temp Git repository and set local identity. Commit one structured design and one old unstructured file. Assert that editing, deleting or moving the structured design produces `FROZEN_DOCUMENT_MODIFIED`, `FROZEN_DOCUMENT_DELETED` or `FROZEN_DOCUMENT_MOVED`; adding a successor passes; moving the old unstructured file during bootstrap passes; editing its structured replacement after a commit fails.
 
@@ -403,25 +403,25 @@ subprocess.run(["git", "config", "user.name", "Architecture Test"], cwd=root, ch
 subprocess.run(["git", "config", "user.email", "architecture@example.invalid"], cwd=root, check=True)
 ```
 
-- [ ] **Step 2: Write failing CLI and impact tests**
+- [x] **Step 2: Write failing CLI and impact tests**
 
 Require exit `0` for a structurally valid graph containing an incomplete candidate plan. The same graph with `--merge-ready` returns `1` and `INCOMPLETE_PLAN`. Other invalid graphs return `1` plus `CODE path: message`. A changed `scripts/v8std_mcp_server.py` governed by a contract must be listed by `impact` but must not itself become a validation error.
 
-- [ ] **Step 3: Run tests and verify RED**
+- [x] **Step 3: Run tests and verify RED**
 
 Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_cli -v`
 
 Expected: FAIL because CLI and Git comparison are absent.
 
-- [ ] **Step 4: Implement base-revision loading and freeze comparison**
+- [x] **Step 4: Implement base-revision loading and freeze comparison**
 
 Use `git ls-tree -r --name-only <base-ref> -- spec` and `git show <base-ref>:<path>`. Treat a base file as frozen only when that base revision already has valid `schema_version: 1` front matter. Compare canonical key, path and bytes. A missing Git executable or unresolved requested base ref is a validation error, never a silent skip.
 
-- [ ] **Step 5: Implement non-blocking impact candidates**
+- [x] **Step 5: Implement non-blocking impact candidates**
 
 Match changed paths to contract/invariant `governs` entries by exact path or directory prefix ending in `/`. Print matching typed refs and paths. Do not infer a contract version change merely from a path match; skill review and conformance tests decide semantic impact.
 
-- [ ] **Step 6: Implement deterministic CLI**
+- [x] **Step 6: Implement deterministic CLI**
 
 Implement the exact callable signatures `build_parser() -> argparse.ArgumentParser`,
 `command_validate(args: argparse.Namespace) -> int`,
@@ -431,7 +431,7 @@ Implement the exact callable signatures `build_parser() -> argparse.ArgumentPars
 
 `validate` combines structural, graph and optional freeze issues. Only `--merge-ready` adds readiness issues for incomplete plans and missing required accepted/implemented fitness evidence. `status` prints `<typed-ref>\t<comma-separated-states>`. `impact` obtains paths from `git diff --name-only <base-ref>...HEAD` and exits zero after reporting candidates.
 
-- [ ] **Step 7: Run architecture tests and commit**
+- [x] **Step 7: Run architecture tests and commit**
 
 Run:
 

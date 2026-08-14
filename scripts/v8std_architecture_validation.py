@@ -3,11 +3,19 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 from collections import defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable, Mapping
 
-from scripts.v8std_architecture_model import ArchitectureDocument, ArchitectureGraph
+from scripts.v8std_architecture_model import (
+    ArchitectureDocument,
+    ArchitectureGraph,
+    ArchitectureModelError,
+    ProcessSchema,
+    _split_front_matter,
+)
 
 
 @dataclass(frozen=True, order=True)
@@ -566,3 +574,177 @@ def compute_states(
                 states[target].add("IMPLEMENTED")
 
     return {key: frozenset(value) for key, value in sorted(states.items())}
+
+
+@dataclass(frozen=True)
+class _BaseDocument:
+    key: str
+    path: str
+    content: bytes
+
+
+def _run_git(
+    repo_root: Path, arguments: list[str], *, text: bool = True
+) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["git", *arguments],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=text,
+    )
+
+
+def _base_key(payload: dict[str, object], schema: ProcessSchema) -> str | None:
+    kind = payload.get("kind")
+    identity = payload.get("id")
+    if (
+        payload.get("schema_version") != 1
+        or not isinstance(kind, str)
+        or kind not in schema.frozen_kinds
+        or not isinstance(identity, str)
+        or schema.forbidden_fields.intersection(payload)
+        or not REQUIRED_FIELDS.get(kind, frozenset()).issubset(payload)
+    ):
+        return None
+    identity_pattern = (
+        schema.semantic_id_pattern
+        if kind in {"adr", "invariant", "contract"}
+        else schema.document_id_pattern
+    )
+    if identity_pattern.fullmatch(identity) is None:
+        return None
+    if kind == "contract":
+        version = payload.get("version")
+        revision = payload.get("revision")
+        if not isinstance(version, int) or not isinstance(revision, int):
+            return None
+        return f"contract:{identity}@{version}.{revision}"
+    if kind == "process":
+        version = payload.get("version")
+        if not isinstance(version, int):
+            return None
+        return f"process:{identity}@{version}"
+    return f"{kind}:{identity}"
+
+
+def _load_base_documents(
+    repo_root: Path, base_ref: str, schema: ProcessSchema
+) -> tuple[dict[str, _BaseDocument], list[ValidationIssue]]:
+    try:
+        resolved = _run_git(repo_root, ["rev-parse", "--verify", f"{base_ref}^{{commit}}"])
+    except FileNotFoundError:
+        return {}, [ValidationIssue("GIT_UNAVAILABLE", ".", "git executable is unavailable")]
+    if resolved.returncode != 0:
+        return {}, [
+            ValidationIssue(
+                "BASE_REF_UNRESOLVED",
+                ".",
+                f"cannot resolve requested base ref {base_ref}",
+            )
+        ]
+
+    listing = _run_git(repo_root, ["ls-tree", "-r", "--name-only", base_ref, "--", "spec"])
+    if listing.returncode != 0:
+        return {}, [
+            ValidationIssue("GIT_READ_FAILED", "spec", listing.stderr.strip() or "git ls-tree failed")
+        ]
+
+    documents: dict[str, _BaseDocument] = {}
+    for path_text in sorted(line for line in listing.stdout.splitlines() if line.endswith(".md")):
+        shown = _run_git(repo_root, ["show", f"{base_ref}:{path_text}"], text=False)
+        if shown.returncode != 0:
+            return {}, [
+                ValidationIssue(
+                    "GIT_READ_FAILED",
+                    path_text,
+                    shown.stderr.decode("utf-8", errors="replace").strip()
+                    or "git show failed",
+                )
+            ]
+        content = shown.stdout
+        try:
+            text = content.decode("utf-8")
+            payload, _ = _split_front_matter(text, Path(path_text))
+        except (UnicodeDecodeError, ArchitectureModelError):
+            continue
+        key = _base_key(payload, schema)
+        if key is not None:
+            documents[key] = _BaseDocument(key=key, path=path_text, content=content)
+    return documents, []
+
+
+def validate_frozen_documents(
+    repo_root: Path,
+    base_ref: str,
+    graph: ArchitectureGraph,
+    schema: ProcessSchema | None = None,
+) -> list[ValidationIssue]:
+    if schema is None:
+        from scripts.v8std_architecture_model import load_process_schema
+
+        schema = load_process_schema(repo_root)
+    base_documents, issues = _load_base_documents(repo_root, base_ref, schema)
+    if issues:
+        return issues
+
+    current_by_key = graph.documents
+    freeze_issues: list[ValidationIssue] = []
+    for key, base_document in sorted(base_documents.items()):
+        current = current_by_key.get(key)
+        if current is None:
+            freeze_issues.append(
+                ValidationIssue(
+                    "FROZEN_DOCUMENT_DELETED",
+                    base_document.path,
+                    f"frozen document {key} was deleted",
+                )
+            )
+            continue
+        current_path = current.path.as_posix()
+        if current_path != base_document.path:
+            freeze_issues.append(
+                ValidationIssue(
+                    "FROZEN_DOCUMENT_MOVED",
+                    base_document.path,
+                    f"frozen document {key} moved to {current_path}",
+                )
+            )
+            continue
+        try:
+            current_content = (repo_root / current.path).read_bytes()
+        except OSError as error:
+            freeze_issues.append(
+                ValidationIssue("FROZEN_DOCUMENT_DELETED", current_path, str(error))
+            )
+            continue
+        if current_content != base_document.content:
+            freeze_issues.append(
+                ValidationIssue(
+                    "FROZEN_DOCUMENT_MODIFIED",
+                    current_path,
+                    f"frozen document {key} content changed",
+                )
+            )
+    return sorted(set(freeze_issues))
+
+
+def find_impact_candidates(
+    graph: ArchitectureGraph, changed_paths: Iterable[str]
+) -> list[tuple[str, str]]:
+    normalized_paths = {Path(path).as_posix() for path in changed_paths}
+    candidates: set[tuple[str, str]] = set()
+    for document in graph.documents.values():
+        if document.kind not in {"contract", "invariant"}:
+            continue
+        governed_paths = _string_list(document.front_matter.get("governs"))
+        for governed in governed_paths:
+            matches = (
+                any(path.startswith(governed) for path in normalized_paths)
+                if governed.endswith("/")
+                else governed in normalized_paths
+            )
+            if matches:
+                candidates.add((document.key, document.path.as_posix()))
+                break
+    return sorted(candidates)
