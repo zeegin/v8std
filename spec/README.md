@@ -3,24 +3,67 @@
 `spec/` — непубликуемый корпус требований, решений, контрактов и планов v8std.
 Он не входит в сайт, навигацию и AI-артефакты из `docs/`.
 
-## Каталоги
+Нормативный процесс: [`process:architecture-artifacts@1`](process/architecture-artifacts-v1.md).
+Обязательный рабочий маршрут агента: [repo skill](../.agents/skills/v8std-architecture/SKILL.md).
 
-- `spec/designs/` — принятые design и требования;
-- `spec/adr/` — атомарные архитектурные решения;
-- `spec/invariants/` — проверяемые свойства продукта;
-- `spec/contracts/` — версионированные наблюдаемые границы;
-- `spec/plans/` — исполнимые планы реализации;
-- `spec/process/` — версионированная схема архитектурного процесса.
+## Как работать
 
-Нормативная схема: `process:architecture-artifacts@1` в
-`spec/process/architecture-artifacts-v1.md`.
+1. Прочитать `AGENTS.md`, эту страницу и нормативную process specification.
+2. Создать отдельную ветку до первой записи.
+3. Изучить фактические файлы и выполнить `impact` относительно `main`.
+4. Если влияние на требования, ADR, инварианты или контракты исключено,
+   использовать тривиальный путь с теми же Git- и merge-gates.
+5. Если влияние найдено или не исключено, остановить изменения, выполнить
+   brainstorming и выбрать необходимые документы.
+6. После письменного согласования design создать plan до начала реализации.
+7. Если реализация опровергла design или impact check, вернуться к комплексному
+   проектированию, а не ослаблять gate.
+8. Перед локальным merge повторить impact check и выполнить все проверки.
 
-Типизированные ссылки имеют вид `design:mcp-v3-resource-contract`,
-`adr:PAGE_READING_VIA_RESOURCES`, `invariant:PAGE_IDENTITY_IS_STABLE`,
-`contract:MCP_RESOURCE_READING@3.0` и `plan:mcp-v3-resource-contract`.
+## Какой документ создавать
 
-Перед локальным merge в `main` запустить:
+| Причина | Документ |
+|---|---|
+| Новое или изменённое обязательство | `design` с кодом требования |
+| Выбор между архитектурными альтернативами | Один атомарный `ADR` |
+| Проверяемое долговечное свойство продукта | `invariant` и fitness declaration |
+| Наблюдаемая граница producer/consumer | Версионированный `contract` |
+| Связанный пакет требований и решений | `design`, соединяющий граф |
+| Согласованное нетривиальное изменение нужно реализовать | `plan` с явным `implements` |
+| Меняется сам процесс репозитория | `process`, skill или `AGENTS.md`, но не product invariant |
+
+Принятый design может не иметь plan и остаётся только `ACCEPTED`.
+`IMPLEMENTED` появляется лишь после завершённого принятого plan, который явно
+указывает артефакт в `implements`.
+Plan заканчивается до integration gate: commit, merge, push и deploy не являются
+его checkbox-задачами.
+
+## Каталоги и примеры структуры
+
+- [`spec/designs/`](designs/) — требования и связанные решения; [пример](designs/2026-08-14-mcp-v3-resource-contract-design.md);
+- [`spec/adr/`](adr/) — атомарные решения; [пример](adr/2026-08-14-page-reading-via-resources.md);
+- [`spec/invariants/`](invariants/) — свойства продукта; [пример](invariants/mcp-resource-version-page-reading-via-resources.md);
+- [`spec/contracts/`](contracts/) — наблюдаемые границы; [пример](contracts/mcp-api-v3-r0.md);
+- [`spec/plans/`](plans/) — планы реализации; [пример](plans/2026-08-14-v8std-architecture-process-plan.md);
+- [`spec/process/`](process/) — версии архитектурного процесса.
+
+Front matter хранит нормативные коды, ссылки и отношения. Markdown объясняет
+контекст, причины и последствия и не должен создавать второй нормативный список.
+Принятый structured-документ не редактируется: создаётся преемник, новая версия
+или ревизия.
+
+## Команды
 
 ```bash
+# Кандидаты архитектурного влияния текущего diff
+.venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref main
+
+# Вычисленные состояния документов
+.venv/bin/python scripts/v8std_architecture.py status --root . --main-ref main
+
+# Обычная проверка во время работы
+.venv/bin/python scripts/v8std_architecture.py validate --root .
+
+# Обязательная проверка перед локальным merge
 .venv/bin/python scripts/v8std_architecture.py validate --root . --base-ref main --merge-ready
 ```
