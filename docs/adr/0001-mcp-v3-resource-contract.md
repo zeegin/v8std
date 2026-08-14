@@ -321,11 +321,21 @@ runtime не должен молча обрезать ресурс.
 
 ## Результаты инструментов v3
 
-Каждый инструмент возвращает одновременно:
+Успешный вызов инструмента возвращает:
 
-1. `structuredContent` с машинными данными.
-2. Компактный JSON в `TextContent` для совместимости.
-3. Отдельные `ResourceLink` для доступных страниц.
+1. `structuredContent` с машинными данными, соответствующими опубликованной
+   `outputSchema` инструмента.
+2. Отдельные `ResourceLink` в `content` для доступных страниц.
+
+Сериализованная копия `structuredContent` в `TextContent` не возвращается. MCP
+рекомендует такое дублирование для обратной совместимости, но v3 намеренно
+меняет контракт, а совместимая поверхность сохраняется на `/mcp` v2. Клиенты v3
+обязаны поддерживать `structuredContent` и Resources.
+
+Если результат не содержит доступных ресурсов, `content` является пустым
+массивом, а данные остаются в `structuredContent`. `TextContent` используется
+только для вызовов с `isError: true`, чтобы модель получила понятное описание
+ошибки и способ исправить параметры.
 
 Вводится инвариант: каждый `resource_link`, возвращённый инструментом, обязательно
 присутствует в `resources/list` того же resource schema.
@@ -408,8 +418,9 @@ Mapper не использует произвольный alias resolution.
 
 ### `V3ToolResultAdapter`
 
-Добавляет `resource_uri`, создаёт `ResourceLink` и сохраняет структурированные
-поля существующих результатов поиска и объяснения.
+Добавляет `resource_uri`, создаёт `ResourceLink`, проверяет данные по
+`outputSchema` и возвращает `CallToolResult` без дублирующего JSON в
+`TextContent`.
 
 ### `V8StdResourceFastMCP`
 
@@ -506,13 +517,15 @@ usage-log не записываются.
 9. Неизвестные и поддельные URI возвращают `-32002`.
 10. Неверные и устаревшие cursor возвращают `-32602`.
 11. Каждый `resource_link` из инструментов присутствует в `resources/list`.
-12. `resources/read` возвращает полный, необрезанный Markdown.
-13. Capabilities содержат Resources, но не subscriptions и не `listChanged`.
-14. Проверка протокола через MCP Inspector.
-15. Проверка `@` и автоматического чтения в Claude Code.
-16. Проверка custom connector в Claude.ai или Claude Desktop.
-17. Полный набор unit-тестов репозитория.
-18. `./scripts/zensical_docs.sh build --strict`.
+12. Успешные tool results не содержат JSON-копию в `TextContent`.
+13. `structuredContent` каждого инструмента соответствует его `outputSchema`.
+14. `resources/read` возвращает полный, необрезанный Markdown.
+15. Capabilities содержат Resources, но не subscriptions и не `listChanged`.
+16. Проверка протокола через MCP Inspector.
+17. Проверка `@` и автоматического чтения в Claude Code.
+18. Проверка custom connector в Claude.ai или Claude Desktop.
+19. Полный набор unit-тестов репозитория.
+20. `./scripts/zensical_docs.sh build --strict`.
 
 Числовые проверки должны вычислять ожидаемый состав из fixture и политики
 видимости. Значения 1423/1420 используются как проверка текущего
@@ -567,4 +580,5 @@ usage-log не записываются.
 - [MCP Resources specification](https://modelcontextprotocol.io/specification/2025-11-25/server/resources)
 - [MCP Tool Resource Links](https://modelcontextprotocol.io/specification/2025-11-25/server/tools#resource-links)
 - [Claude Code MCP resources](https://code.claude.com/docs/en/mcp#use-mcp-resources)
+- [Claude tool structured content](https://code.claude.com/docs/en/agent-sdk/custom-tools#return-structured-data)
 - [Claude custom connector capabilities](https://claude.com/docs/connectors/building#protocol-features)
