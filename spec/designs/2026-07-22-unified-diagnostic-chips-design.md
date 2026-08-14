@@ -1,4 +1,42 @@
+---
+schema_version: 1
+kind: design
+id: unified-diagnostic-chips
+scope: product
+requirements:
+  introduces:
+    - DIAGNOSTIC_IDENTIFIERS_USE_SHARED_CHIPS
+    - DIAGNOSTIC_CHIPS_ARE_ACCESSIBLE
+    - GENERATED_DIAGNOSTIC_CHIPS_ARE_IDEMPOTENT
+  uses: []
+  replaces: {}
+  cancels: []
+decisions: []
+invariants: []
+contracts: [contract:DIAGNOSTIC_CHIP_MARKUP@1.0]
+plans: [plan:unified-diagnostic-chips]
+supersedes: []
+cancels: []
+---
+
 # Единое оформление ссылок на диагностики
+
+## Требования
+
+### DIAGNOSTIC_IDENTIFIERS_USE_SHARED_CHIPS
+
+Видимые упоминания канонических идентификаторов диагностик используют один
+семантический компонент chip во всех реестрах, справке и обратных ссылках.
+
+### DIAGNOSTIC_CHIPS_ARE_ACCESSIBLE
+
+Chip остаётся обычной доступной ссылкой с различимыми hover/focus-состояниями,
+достаточным контрастом и корректным переносом на узких экранах.
+
+### GENERATED_DIAGNOSTIC_CHIPS_ARE_IDEMPOTENT
+
+Повторная генерация не оборачивает уже оформленный идентификатор второй раз и
+не создаёт дрейфа Markdown или HTML.
 
 ## Контекст
 

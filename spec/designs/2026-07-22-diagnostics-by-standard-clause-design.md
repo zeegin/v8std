@@ -1,4 +1,54 @@
+---
+schema_version: 1
+kind: design
+id: diagnostics-by-standard-clause
+scope: product
+requirements:
+  introduces:
+    - DIAGNOSTICS_GROUP_BY_STANDARD_CLAUSE
+    - EMPTY_DIAGNOSTIC_CLAUSES_ARE_OPT_IN
+    - DIAGNOSTIC_REGISTRY_WORKS_WITHOUT_JAVASCRIPT
+    - CONFIRMED_DIAGNOSTIC_RELATIONS_ARE_LOSSLESS
+    - DIAGNOSTIC_CLAUSE_TEXT_IS_DERIVED
+  uses: []
+  replaces: {}
+  cancels: []
+decisions: []
+invariants: []
+contracts: [contract:DIAGNOSTIC_RELATION_GRAPH@1.0]
+plans: [plan:diagnostics-by-standard-clause]
+supersedes: []
+cancels: []
+---
+
 # Реестр диагностик по пунктам стандартов
+
+## Требования
+
+### DIAGNOSTICS_GROUP_BY_STANDARD_CLAUSE
+
+Реестр группирует диагностики сначала по странице стандарта, затем по
+конкретному пункту этой страницы и сохраняет количество связей в каждой группе.
+
+### EMPTY_DIAGNOSTIC_CLAUSES_ARE_OPT_IN
+
+Пункты без подтверждённых диагностик скрыты по умолчанию и показываются только
+после явного действия пользователя.
+
+### DIAGNOSTIC_REGISTRY_WORKS_WITHOUT_JAVASCRIPT
+
+Содержимое и ссылки реестра доступны в исходном HTML; JavaScript улучшает
+фильтрацию и раскрытие, но не является условием чтения данных.
+
+### CONFIRMED_DIAGNOSTIC_RELATIONS_ARE_LOSSLESS
+
+Генерация не теряет подтверждённые связи «диагностика — пункт стандарта» и
+детерминированно представляет каждую связь в прямой и обратной проекции.
+
+### DIAGNOSTIC_CLAUSE_TEXT_IS_DERIVED
+
+Краткий текст пункта стандарта вычисляется из канонического Markdown и не
+поддерживается как независимая вручную синхронизируемая копия.
 
 ## Цель
 

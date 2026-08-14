@@ -1,8 +1,98 @@
+---
+schema_version: 1
+kind: design
+id: mcp-v3-resource-contract
+scope: product
+requirements:
+  introduces:
+    - MCP_LEGACY_VERSION_REMAINS_COMPATIBLE
+    - MCP_VERSIONS_FAIL_INDEPENDENTLY
+    - MCP_RESOURCE_VERSION_PAGE_READING_USES_RESOURCES
+    - MCP_RESOURCE_VERSION_HAS_ONE_PRIMARY_PAGE_READER
+    - MCP_RESOURCE_CATALOG_IS_PAGINATED
+    - MCP_RESOURCE_LIST_USES_STABLE_SNAPSHOTS
+    - MCP_RESOURCE_NOTIFICATIONS_ARE_OMITTED
+    - MCP_RESOURCE_LINKS_RESOLVE_TO_LISTED_RESOURCES
+    - MCP_RESOURCES_EXCLUDE_SUPPORT_PAGES
+    - MCP_TEMPLATES_EXCLUDE_LANGUAGE_AND_METHOD_SOURCES
+  uses: []
+  replaces: {}
+  cancels: []
+decisions:
+  - adr:MCP_VERSION_ENDPOINT_ISOLATION
+  - adr:PAGE_READING_VIA_RESOURCES
+invariants:
+  - invariant:MCP_VERSION_ISOLATION
+  - invariant:MCP_LEGACY_ENDPOINT_STABILITY
+  - invariant:MCP_RESOURCE_VERSION_PAGE_READING_VIA_RESOURCES
+  - invariant:MCP_RESOURCE_LINKS_ARE_LISTABLE
+contracts:
+  - contract:MCP_API@2.0
+  - contract:MCP_API@3.0
+plans: []
+supersedes: []
+cancels: []
+---
+
 # Проект контракта resource-first MCP v3
 
+## Требования
+
+### MCP_LEGACY_VERSION_REMAINS_COMPATIBLE
+
+Действующий endpoint `/mcp` и его MCP v2 tools сохраняют имена, входы, ответы
+и эксплуатационное поведение для существующих клиентов.
+
+### MCP_VERSIONS_FAIL_INDEPENDENTLY
+
+Ошибка запуска, каталога или обработки запроса MCP v3 не нарушает доступность
+MCP v2; версии развёртываются и откатываются независимо.
+
+### MCP_RESOURCE_VERSION_PAGE_READING_USES_RESOURCES
+
+В MCP v3 содержимое страниц стандартов, диагностик и паттернов читается через
+`resources/read`, а не через page-reading tool.
+
+### MCP_RESOURCE_VERSION_HAS_ONE_PRIMARY_PAGE_READER
+
+У MCP v3 есть один основной механизм чтения страниц — Resources; legacy tool
+`v8std_get_page` в контракт v3 не входит.
+
+### MCP_RESOURCE_CATALOG_IS_PAGINATED
+
+`resources/list` ограничивает размер страницы и продолжает выдачу opaque
+cursor, не заставляя клиента получать весь каталог одним ответом.
+
+### MCP_RESOURCE_LIST_USES_STABLE_SNAPSHOTS
+
+Cursor продолжает тот же immutable snapshot каталога; refresh создаёт новый
+snapshot для последующего list, не меняя уже начатую пагинацию.
+
+### MCP_RESOURCE_NOTIFICATIONS_ARE_OMITTED
+
+Сервер не объявляет resource list-change notifications: стандарты read-only и
+публикуются редко, поэтому обновление списка выполняется явным новым list.
+
+### MCP_RESOURCE_LINKS_RESOLVE_TO_LISTED_RESOURCES
+
+Каждый resource link из результата tool разрешается в URI, который может быть
+получен через текущий каталог Resources и прочитан `resources/read`.
+
+### MCP_RESOURCES_EXCLUDE_SUPPORT_PAGES
+
+Служебные страницы `mcp`, `search_help` и `support` не публикуются как
+Resources; их возможности остаются tools или документацией поддержки.
+
+### MCP_TEMPLATES_EXCLUDE_LANGUAGE_AND_METHOD_SOURCES
+
+Источники `lang` и `metod8dev` не становятся resource templates. Templates
+зарезервированы для диагностик и паттернов с параметризуемой идентичностью.
+
 - Дата: 2026-08-14
-- Основание: [ADR-0001](adr/0001-separate-mcp-v3-endpoint.md) и
-  [ADR-0004](adr/0004-v3-page-reading-via-resources.md)
+- Основание:
+  [MCP_VERSION_ENDPOINT_ISOLATION](../adr/2026-08-14-mcp-version-endpoint-isolation.md)
+  и
+  [PAGE_READING_VIA_RESOURCES](../adr/2026-08-14-page-reading-via-resources.md)
 - Область: публичный и локальный MCP v8std
 
 ## Контекст

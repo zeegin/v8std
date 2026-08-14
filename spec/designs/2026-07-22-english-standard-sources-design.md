@@ -1,4 +1,48 @@
+---
+schema_version: 1
+kind: design
+id: english-standard-sources
+scope: product
+requirements:
+  introduces:
+    - ENGLISH_STANDARD_LINKS_REQUIRE_VERIFICATION
+    - RUSSIAN_STANDARD_SOURCE_REMAINS_PRIMARY
+    - STANDARD_SOURCE_REGISTRY_IS_DETERMINISTIC
+    - STANDARD_SOURCE_VALIDATION_IS_OFFLINE
+  uses: []
+  replaces: {}
+  cancels: []
+decisions: []
+invariants: []
+contracts: [contract:STANDARD_SOURCE_REGISTRY@1.0]
+plans: [plan:english-standard-sources]
+supersedes: []
+cancels: []
+---
+
 # Англоязычные источники стандартов разработки
+
+## Требования
+
+### ENGLISH_STANDARD_LINKS_REQUIRE_VERIFICATION
+
+Англоязычная ссылка добавляется только после подтверждения соответствия
+русскому стандарту по идентификатору, заголовку и отличительным признакам.
+
+### RUSSIAN_STANDARD_SOURCE_REMAINS_PRIMARY
+
+Каноническая русская ссылка ITS сохраняется первой и остаётся обязательной даже
+для страниц, у которых найден проверенный англоязычный источник.
+
+### STANDARD_SOURCE_REGISTRY_IS_DETERMINISTIC
+
+Один и тот же отсортированный реестр и корпус Markdown дают байт-в-байт
+одинаковый результат повторной генерации.
+
+### STANDARD_SOURCE_VALIDATION_IS_OFFLINE
+
+Проверка схемы, уникальности, соответствия страниц и уже записанных ссылок
+выполняется без сетевых запросов.
 
 ## Цель
 

@@ -31,6 +31,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - name: Validate architecture graph
+        run: |
+          python3 -m pip install --disable-pip-version-check PyYAML
+          python3 scripts/v8std_architecture.py validate --root . --base-ref HEAD^ --merge-ready
       - name: Build docs image
         run: |
           docker build -f docker-compose/docker/Dockerfile -t v8std-docs .

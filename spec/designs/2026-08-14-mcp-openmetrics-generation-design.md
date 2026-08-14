@@ -1,12 +1,65 @@
+---
+schema_version: 1
+kind: design
+id: mcp-openmetrics-generation
+scope: product
+requirements:
+  introduces:
+    - OPENMETRICS_IS_GENERATED_LOCALLY
+    - PROMETHEUS_INTEGRATION_IS_DEFERRED
+    - METRICS_EXCLUDE_HIGH_CARDINALITY_LABELS
+    - METRICS_ENDPOINTS_USE_LOOPBACK
+    - METRIC_NAMES_ARE_VERSIONED_CONTRACTS
+  uses: []
+  replaces: {}
+  cancels: []
+decisions: [adr:LOCAL_OPENMETRICS_EXPOSITION]
+invariants:
+  - invariant:METRICS_ENDPOINTS_ARE_LOOPBACK_ONLY
+  - invariant:METRICS_LABEL_CARDINALITY_IS_BOUNDED
+contracts: [contract:MCP_OPENMETRICS@1.0]
+plans: []
+supersedes: []
+cancels: []
+---
+
 # Проект генерации OpenMetrics для MCP v2 и v3
 
+## Требования
+
+### OPENMETRICS_IS_GENERATED_LOCALLY
+
+MCP v2 и v3 формируют валидную OpenMetrics exposition на том же узле, где
+возникают counters и gauges, без зависимости от внешнего collector.
+
+### PROMETHEUS_INTEGRATION_IS_DEFERRED
+
+Подключение к единому Prometheus, scrape configuration, dashboards и alerts не
+входят в текущую реализацию генерации и требуют отдельного решения.
+
+### METRICS_EXCLUDE_HIGH_CARDINALITY_LABELS
+
+Labels не содержат IP, user-agent, request ID, cursor, URI, query text и иные
+неограниченные или чувствительные значения.
+
+### METRICS_ENDPOINTS_USE_LOOPBACK
+
+Exposition endpoint слушает только loopback и не публикуется внешним reverse
+proxy или статическим сайтом.
+
+### METRIC_NAMES_ARE_VERSIONED_CONTRACTS
+
+Имена метрик, наборы labels и смысл значений являются наблюдаемым
+версионированным контрактом, а не внутренней деталью реализации.
+
 - Дата: 2026-08-14
-- Основание: [ADR-0003](adr/0003-local-openmetrics-exposition.md)
+- Основание:
+  [LOCAL_OPENMETRICS_EXPOSITION](../adr/2026-08-14-local-openmetrics-exposition.md)
 - Область: эксплуатационная телеметрия MCP v2 и MCP v3
 
 ## Контекст
 
-ADR-0002 сохраняет статический сайт мониторинга как продуктовую usage analytics:
+`PUBLIC_MCP_MONITORING` сохраняет статический сайт мониторинга как продуктовую usage analytics:
 какие агенты обращаются к MCP, какую API-версию и методы они используют, какие
 публичные страницы читают. Этот отчёт строится периодически из журналов и не
 предназначен для оперативных графиков или алертов.
@@ -66,7 +119,7 @@ MCP v2 и v3 получают независимые loopback-only endpoints `/m
 
 ## Рассмотренные варианты
 
-### Использовать только статический сайт ADR-0002
+### Использовать только статический сайт `PUBLIC_MCP_MONITORING`
 
 Отклонено. Batch-отчёт не хранит time series, не даёт надёжно вычислять rate и
 latency percentiles и не подходит для alerts.
@@ -268,7 +321,8 @@ Revision не является label. Свежесть вычисляется п
 v8std_mcp_agent_operations_total{api_version,agent_family,operation_class}
 ```
 
-`agent_family` использует тот же ограниченный classifier, что ADR-0002:
+`agent_family` использует тот же ограниченный classifier, что
+`PUBLIC_MCP_MONITORING`:
 
 ```text
 claude
@@ -318,14 +372,14 @@ Exact client name и client version не являются labels. Метрика
 
 Причина — безопасность и кардинальность. Каждая уникальная комбинация labels
 создаёт новую time series. Публичные страницы и диагностические коды допустимы в
-event analytics ADR-0002, но не в OpenMetrics.
+event analytics `PUBLIC_MCP_MONITORING`, но не в OpenMetrics.
 
-## Связь с ADR-0002
+## Связь с `PUBLIC_MCP_MONITORING`
 
 Оба решения используют одну нормализацию API version, method, tool, outcome и
 agent family, но имеют разные хранилища и назначение:
 
-| Свойство | ADR-0002 | ADR-0003 |
+| Свойство | `PUBLIC_MCP_MONITORING` | `LOCAL_OPENMETRICS_EXPOSITION` |
 |---|---|---|
 | Представление | JSONL events и статические отчёты | числовой snapshot |
 | История | log files | будущий Prometheus |
@@ -389,7 +443,7 @@ TLS proxy, рассмотренный вместе с единым Prometheus.
 2. Добавить tool counters.
 3. Добавить resource counters обеим версиям; три агрегированных ресурса v2
    нормализуются как `other`, а v3 использует типы resource catalog.
-4. Использовать общий agent classifier ADR-0002.
+4. Использовать общий agent classifier `PUBLIC_MCP_MONITORING`.
 5. Проверить, что instrumentation exceptions не меняют MCP response.
 
 ### Этап 3. Каталог и refresh
@@ -407,7 +461,7 @@ TLS proxy, рассмотренный вместе с единым Prometheus.
 4. Явно проверить production Nginx: публичные metrics URL возвращают `404`.
 5. Документировать локальный curl через SSH.
 
-На этом текущий объём ADR-0003 заканчивается. Prometheus configuration не
+На этом текущий объём `LOCAL_OPENMETRICS_EXPOSITION` заканчивается. Prometheus configuration не
 изменяется.
 
 ## Тестирование
