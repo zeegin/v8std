@@ -14,7 +14,7 @@ implements:
 
 **Goal:** Ввести проверяемый процесс требований, ADR, инвариантов, контрактов, design и plan, полностью мигрировать существующий `spec/` и закрепить branch-first workflow в repo skill и `AGENTS.md`.
 
-**Architecture:** Один атомарный bootstrap добавляет нормативную process specification, Python-валидатор графа и Git-заморозки, мигрированные документы, repo skill и обязательные инструкции. Structured Markdown остаётся единственным источником истины; состояния вычисляются из Git, типизированных связей и завершённости plan, а не хранятся в поле `status`.
+**Architecture:** Один атомарный bootstrap добавляет нормативную process specification, Python-валидатор графа и Git-заморозки, мигрированные документы, repo skill и обязательные инструкции. Полный legacy-корпус мигрируется одной транзакцией и одним commit до первого full-corpus gate. Structured Markdown остаётся единственным источником истины; состояния вычисляются из Git, типизированных связей и завершённости plan, а не хранятся в поле `status`.
 
 **Tech Stack:** Python 3.12, PyYAML, `unittest`, Markdown с YAML front matter, Git CLI, Codex repo skills, GitHub Actions, Zensical 0.0.47.
 
@@ -32,6 +32,7 @@ implements:
 - `spec/` не включать в `docs/`, навигацию, `llms.txt`, `llms-full.txt` или `pages.jsonl`.
 - Валидатор не исполняет команды из Markdown через shell; он только проверяет declarations.
 - Старые unstructured документы разрешено переписать только в bootstrap; постоянного legacy-флага не создавать.
+- Обе фазы Task 5 выполнить без промежуточного commit или full-corpus gate; проверять и фиксировать только полностью мигрированный корпус.
 - При проектной ошибке остановить задачу и вернуться к `superpowers:brainstorming`, а не ослаблять проверки.
 - Перед коммитом задачи отметить `[x]` только у реально выполненных шагов этой задачи и включить plan в коммит.
 - Локальный merge выполняется только после полного gate; push и deploy в plan не входят.
@@ -56,24 +57,24 @@ implements:
 
 | Process requirement | Implemented by |
 |---|---|
-| `ALL_CHANGES_USE_BRANCHES` | Task 7 AGENTS/skill and Task 9 integration |
-| `MAIN_ACCEPTS_ONLY_VALIDATED_MERGES` | Tasks 4, 8 and 9 |
-| `TRIVIALITY_IS_ASSESSED_NOT_ASSUMED` | Task 7 impact workflow and pressure tests |
-| `ARCHITECTURE_IMPACT_IS_RECHECKED` | Tasks 4, 7 and 9 |
-| `REQUIREMENTS_ARE_TRACEABLE` | Tasks 2, 3, 5 and 6 |
-| `ARCHITECTURE_DECISIONS_ARE_ATOMIC` | Tasks 3 and 6 |
-| `ADR_IDENTITIES_ARE_SEMANTIC` | Tasks 1, 2 and 6 |
-| `ARCHITECTURE_INVARIANTS_ARE_SEMANTIC` | Tasks 1, 3 and 6 |
-| `OBSERVABLE_BOUNDARIES_ARE_CONTRACTED` | Tasks 3, 5 and 6 |
+| `ALL_CHANGES_USE_BRANCHES` | Task 6 AGENTS/skill and Task 8 integration |
+| `MAIN_ACCEPTS_ONLY_VALIDATED_MERGES` | Tasks 4, 7 and 8 |
+| `TRIVIALITY_IS_ASSESSED_NOT_ASSUMED` | Task 6 impact workflow and pressure tests |
+| `ARCHITECTURE_IMPACT_IS_RECHECKED` | Tasks 4, 6 and 8 |
+| `REQUIREMENTS_ARE_TRACEABLE` | Tasks 2, 3 and 5 |
+| `ARCHITECTURE_DECISIONS_ARE_ATOMIC` | Tasks 3 and 5 |
+| `ADR_IDENTITIES_ARE_SEMANTIC` | Tasks 1, 2 and 5 |
+| `ARCHITECTURE_INVARIANTS_ARE_SEMANTIC` | Tasks 1, 3 and 5 |
+| `OBSERVABLE_BOUNDARIES_ARE_CONTRACTED` | Tasks 3 and 5 |
 | `ARCHITECTURE_DOCUMENTS_ARE_IMMUTABLE` | Task 4 and final merge-ready validation |
-| `PROJECT_ERRORS_TRIGGER_COMPREHENSIVE_REVIEW` | Task 7 recovery workflow and Task 9 review handling |
-| `DESIGN_APPROVAL_PRECEDES_IMPLEMENTATION` | Task 7 skill gates |
-| `ARCHITECTURE_PROCESS_IS_MACHINE_VALIDATED` | Tasks 1–4 and 8 |
-| `INTERNAL_SPECIFICATIONS_STAY_UNPUBLISHED` | Task 8 |
-| `DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST` | Task 7 AGENTS/skill and integration procedure |
-| `EXISTING_SPECIFICATIONS_USE_ONE_MODEL` | Tasks 5 and 6 |
-| `SUPERPOWERS_DRIVES_DESIGN_AND_PLANNING` | Task 7 skill workflow |
-| `PRODUCT_ARCHITECTURE_EXCLUDES_DEVELOPMENT_PROCESS` | Tasks 1, 3, 6 and 7 |
+| `PROJECT_ERRORS_TRIGGER_COMPREHENSIVE_REVIEW` | Task 6 recovery workflow and Task 8 review handling |
+| `DESIGN_APPROVAL_PRECEDES_IMPLEMENTATION` | Task 6 skill gates |
+| `ARCHITECTURE_PROCESS_IS_MACHINE_VALIDATED` | Tasks 1–4 and 7 |
+| `INTERNAL_SPECIFICATIONS_STAY_UNPUBLISHED` | Task 7 |
+| `DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST` | Task 6 AGENTS/skill and integration procedure |
+| `EXISTING_SPECIFICATIONS_USE_ONE_MODEL` | Task 5 atomic corpus migration |
+| `SUPERPOWERS_DRIVES_DESIGN_AND_PLANNING` | Task 6 skill workflow |
+| `PRODUCT_ARCHITECTURE_EXCLUDES_DEVELOPMENT_PROCESS` | Tasks 1, 3, 5 and 6 |
 
 ---
 
@@ -454,7 +455,7 @@ git add scripts/v8std_architecture.py scripts/v8std_architecture_validation.py \
 git commit -m "feat: enforce frozen architecture documents"
 ```
 
-### Task 5: Migrate implemented July designs, plans and contracts
+### Task 5: Atomically migrate the complete specification corpus
 
 **Files:**
 - Move: `spec/2026-07-22-diagnostics-by-standard-clause-design.md` → `spec/designs/2026-07-22-diagnostics-by-standard-clause-design.md`.
@@ -471,22 +472,29 @@ git commit -m "feat: enforce frozen architecture documents"
 **Interfaces:**
 - Produces three `IMPLEMENTED` designs backed by complete plans and current tests.
 - Produces three implemented observable contracts.
+- Produces accepted, not implemented MCP v3, monitoring redesign and OpenMetrics designs.
+- Preserves implemented MCP v2 and legacy monitoring contracts separately.
+- Commits no partially migrated corpus: all Phase A and Phase B steps form one transaction.
 
 - [ ] **Step 1: Add failing real-repository state assertions**
 
 ```python
-EXPECTED_IMPLEMENTED = {
-    "design:diagnostics-by-standard-clause",
-    "design:english-standard-sources",
-    "design:unified-diagnostic-chips",
+PLANNED = {
+    "design:mcp-v3-resource-contract",
+    "design:mcp-monitoring-dashboard",
+    "design:mcp-openmetrics-generation",
 }
-for ref in EXPECTED_IMPLEMENTED:
-    self.assertIn("IMPLEMENTED", states[ref])
+for ref in PLANNED:
+    self.assertEqual(states[ref], frozenset({"ACCEPTED"}))
 ```
 
 Build `states` with `accepted_keys=frozenset(graph.documents)` to model the
 target state after the atomic bootstrap merge. Assert every root-level
-`spec/*.md` file is `README.md`.
+`spec/*.md` file is `README.md`, numeric ADR paths are absent, aliases cannot
+be used by current front matter, and `validate_graph(graph)` returns no issues.
+The implemented-state assertions are deliberately added only after the
+historical evidence gate in Step 13, so that the full suite can prove the
+unchecked plans before those checkboxes change.
 
 - [ ] **Step 2: Run repository test and verify RED**
 
@@ -517,31 +525,20 @@ git mv spec/2026-07-22-unified-diagnostic-chips-plan.md spec/plans/
 
 Add one `### CODE` definition per obligation. Use `schema_version: 1`, `kind: design`, `scope: product`, `requirements.introduces`, empty lifecycle fields, no ADR/invariant refs, and contract refs from Step 6.
 
-- [ ] **Step 5: Structure and complete historical plans only after evidence**
+- [ ] **Step 5: Structure historical plans but keep them incomplete**
 
-Add `schema_version`, `kind: plan`, matching `id`, typed `design`, and `implements`. Run:
+Add `schema_version`, `kind: plan`, matching `id`, typed `design`, and these
+exact `implements` values:
 
-```bash
-.venv/bin/python -m unittest \
-  tests.test_standard_sources \
-  tests.test_diagnostic_standard_links \
-  tests.test_diagnostics_registry_js -v
-```
+| Plan | Implements |
+|---|---|
+| diagnostics-by-standard-clause | `design:diagnostics-by-standard-clause`, `contract:DIAGNOSTIC_RELATION_GRAPH@1.0` |
+| english-standard-sources | `design:english-standard-sources`, `contract:STANDARD_SOURCE_REGISTRY@1.0` |
+| unified-diagnostic-chips | `design:unified-diagnostic-chips`, `contract:DIAGNOSTIC_CHIP_MARKUP@1.0` |
 
-Expected: 65 tests PASS. Only then change every historical plan checkbox to `[x]`.
-
-Before checking the boxes, also run the completion gates present in those plans:
-
-```bash
-.venv/bin/python scripts/standard_sources.py --check
-.venv/bin/python scripts/generate_diagnostic_standard_links.py --check
-.venv/bin/python -m unittest discover -s tests -v
-VIRTUAL_ENV="$PWD/.venv" ./scripts/zensical_docs.sh build --strict
-```
-
-Expected: both generators report clean state, the full suite has zero failures,
-and strict build exits 0. Only this combined evidence authorizes marking the
-historical plans complete.
+Normalize every implementation checkbox to `[ ]`. Do not mark historical
+plans complete until Step 13 proves all original evidence gates against the
+fully migrated corpus.
 
 - [ ] **Step 6: Create three extracted contracts**
 
@@ -553,29 +550,24 @@ historical plans complete.
 
 Set `compatibility: backward-compatible`, `required_when: implemented`, exact requirement refs, `supersedes: []`, and `deprecates: []`.
 
-- [ ] **Step 7: Validate and commit migrated implemented specs**
+- [ ] **Step 7: Run focused Phase A evidence without committing**
 
 Run:
 
 ```bash
-.venv/bin/python scripts/v8std_architecture.py validate --root . --base-ref main
 .venv/bin/python -m unittest \
-  tests.test_v8std_architecture_repository \
   tests.test_standard_sources \
   tests.test_diagnostic_standard_links \
   tests.test_diagnostics_registry_js -v
+.venv/bin/python scripts/standard_sources.py --check
+.venv/bin/python scripts/generate_diagnostic_standard_links.py --check
 ```
 
-Expected: validator exits 0 and all selected tests PASS.
+Expected: 65 selected tests PASS and both generators report clean state. Do
+not run the full-corpus validator, mark historical plans complete or commit:
+legacy MCP artifacts remain unstructured until Phase B of this same task.
 
-Mark Task 5 complete and commit:
-
-```bash
-git add spec tests/test_v8std_architecture_repository.py
-git commit -m "docs: migrate implemented specifications"
-```
-
-### Task 6: Migrate MCP design-only architecture package
+#### Phase B: Migrate the MCP design-only architecture package
 
 **Files:**
 - Move: `spec/2026-08-14-mcp-v3-resource-contract-design.md` → `spec/designs/2026-08-14-mcp-v3-resource-contract-design.md`.
@@ -603,25 +595,10 @@ git commit -m "docs: migrate implemented specifications"
 - Modify: `tests/test_v8std_architecture_repository.py`.
 
 **Interfaces:**
-- Produces accepted, not implemented MCP v3, monitoring redesign and OpenMetrics designs.
-- Preserves implemented MCP v2 and legacy monitoring contracts separately.
+- Continues the Task 5 transaction and supplies the planned-state artifacts
+  already asserted by Step 1.
 
-- [ ] **Step 1: Add failing planned-state assertions**
-
-```python
-PLANNED = {
-    "design:mcp-v3-resource-contract",
-    "design:mcp-monitoring-dashboard",
-    "design:mcp-openmetrics-generation",
-}
-for ref in PLANNED:
-    self.assertEqual(states[ref], frozenset({"ACCEPTED"}))
-```
-
-Build target states with `accepted_keys=frozenset(graph.documents)`. Also assert
-numeric ADR paths are absent and aliases cannot be used by current front matter.
-
-- [ ] **Step 2: Move designs and define requirements**
+- [ ] **Step 8: Move MCP designs and define requirements**
 
 Use `git mv`. Add exact requirements:
 
@@ -633,7 +610,7 @@ Use `git mv`. Add exact requirements:
 
 The `MCP_TEMPLATES_EXCLUDE_LANGUAGE_AND_METHOD_SOURCES` definition explicitly names both `lang` and `metod8dev`.
 
-- [ ] **Step 3: Rewrite four ADRs**
+- [ ] **Step 9: Rewrite four ADRs**
 
 | Path | ID | Alias | Input requirements |
 |---|---|---|---|
@@ -644,7 +621,7 @@ The `MCP_TEMPLATES_EXCLUDE_LANGUAGE_AND_METHOD_SOURCES` definition explicitly na
 
 Each ADR has exactly one decision and the sections `Входные требования`, `Решение`, `Влияние на инварианты`, `Влияние на контракты`, `Отклонённые альтернативы`. Remove stored status and numeric current refs.
 
-- [ ] **Step 4: Create eight product invariants**
+- [ ] **Step 10: Create eight product invariants**
 
 | ID | Introduced by | Check module | Required when |
 |---|---|---|---|
@@ -659,7 +636,7 @@ Each ADR has exactly one decision and the sections `Входные требов�
 
 Each invariant states the durable property, exact requirement refs, `owner: v8std maintainers`, command and why violation falsifies the ADR.
 
-- [ ] **Step 5: Create seven versioned contracts**
+- [ ] **Step 11: Create seven versioned contracts**
 
 | Ref | Intent | Producer | Consumers | Required when |
 |---|---|---|---|---|
@@ -688,7 +665,7 @@ event, redaction and metric rules from those named sources. Existing contracts
 use current tests; design-only contracts declare future modules and are not
 executed until a complete plan marks them implemented.
 
-- [ ] **Step 6: Declare complete ADR impact maps**
+- [ ] **Step 12: Declare complete ADR impact maps**
 
 - Endpoint isolation introduces `MCP_VERSION_ISOLATION`, `MCP_LEGACY_ENDPOINT_STABILITY`, preserves API v2 and introduces API v3.
 - Page reading introduces `MCP_RESOURCE_VERSION_PAGE_READING_VIA_RESOURCES`, `MCP_RESOURCE_LINKS_ARE_LISTABLE` and constrains API v3.
@@ -697,7 +674,44 @@ executed until a complete plan marks them implemented.
 
 All unused `preserves/replaces/cancels` collections are explicit empty values.
 
-- [ ] **Step 7: Validate design-only state and commit**
+- [ ] **Step 13: Prove historical implementation evidence and complete its plans**
+
+Run every evidence gate declared by the three July plans against the now fully
+migrated corpus:
+
+```bash
+.venv/bin/python -m unittest \
+  tests.test_standard_sources \
+  tests.test_diagnostic_standard_links \
+  tests.test_diagnostics_registry_js -v
+.venv/bin/python scripts/standard_sources.py --check
+.venv/bin/python scripts/generate_diagnostic_standard_links.py --check
+.venv/bin/python -m unittest discover -s tests -v
+VIRTUAL_ENV="$PWD/.venv" ./scripts/zensical_docs.sh build --strict
+```
+
+Expected: 65 focused tests pass, both generators report clean state, the full
+suite has zero failures/errors and strict build exits 0. Only after all five
+commands succeed change every historical plan implementation checkbox to
+`[x]`; leave the MCP designs without implementation plans. Then add the final
+repository acceptance assertion and run it:
+
+```python
+EXPECTED_IMPLEMENTED = {
+    "design:diagnostics-by-standard-clause",
+    "design:english-standard-sources",
+    "design:unified-diagnostic-chips",
+}
+for ref in EXPECTED_IMPLEMENTED:
+    self.assertIn("IMPLEMENTED", states[ref])
+```
+
+Run: `.venv/bin/python -m unittest tests.test_v8std_architecture_repository -v`
+
+Expected: the repository test passes with all three implemented assertions
+active; no conditional skip or bootstrap flag is introduced.
+
+- [ ] **Step 14: Validate the complete corpus and create one migration commit**
 
 Run:
 
@@ -706,19 +720,24 @@ Run:
 .venv/bin/python -m unittest \
   tests.test_v8std_architecture_repository \
   tests.test_v8std_mcp_server \
-  tests.test_v8std_mcp_monitoring -v
+  tests.test_v8std_mcp_monitoring \
+  tests.test_standard_sources \
+  tests.test_diagnostic_standard_links \
+  tests.test_diagnostics_registry_js -v
 ```
 
-Expected: validator exits 0; current tests PASS; future designs are `ACCEPTED` without `IMPLEMENTED`.
+Expected: validator exits 0; repository and current product tests pass; no
+root-level legacy specifications remain; implemented July designs contain
+`IMPLEMENTED`; future MCP designs equal `frozenset({"ACCEPTED"})`.
 
-Mark Task 6 complete and commit:
+Mark all Task 5 steps complete and create the only corpus-migration commit:
 
 ```bash
 git add spec tests/test_v8std_architecture_repository.py
-git commit -m "docs: migrate MCP architecture package"
+git commit -m "docs: migrate architecture specifications"
 ```
 
-### Task 7: Repo skill and mandatory AGENTS rules
+### Task 6: Repo skill and mandatory AGENTS rules
 
 **Files:**
 - Create: `.agents/skills/v8std-architecture/SKILL.md`.
@@ -820,7 +839,7 @@ Run:
 
 Expected: tests PASS and validator exits 0.
 
-Mark Task 7 complete and commit:
+Mark Task 6 complete and commit:
 
 ```bash
 git add AGENTS.md .agents/skills/v8std-architecture \
@@ -829,7 +848,7 @@ git add AGENTS.md .agents/skills/v8std-architecture \
 git commit -m "docs: enforce v8std architecture workflow"
 ```
 
-### Task 8: CI, publication boundary and complete-corpus gate
+### Task 7: CI, publication boundary and complete-corpus gate
 
 **Files:**
 - Modify: `.github/workflows/ci.yml`.
@@ -904,7 +923,7 @@ Expected: no `spec/` publication, no whitespace errors and no unrelated file abs
 
 - [ ] **Step 7: Commit CI and publication gate**
 
-Mark Task 8 complete and commit:
+Mark Task 7 complete and commit:
 
 ```bash
 git add .github/workflows/ci.yml tests/test_v8std_architecture_repository.py \
@@ -912,7 +931,7 @@ git add .github/workflows/ci.yml tests/test_v8std_architecture_repository.py \
 git commit -m "ci: validate architecture process"
 ```
 
-### Task 9: Final review and plan completion
+### Task 8: Final review and plan completion
 
 **Files:**
 - Modify: `spec/plans/2026-08-14-v8std-architecture-process-plan.md`.
