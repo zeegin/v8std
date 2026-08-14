@@ -11,20 +11,23 @@ Classify impact before mutation and again before merge. A change is trivial
 only after evidence excludes requirement, ADR, invariant and observable-contract
 impact. Every mutation still uses a branch.
 
-The only artifact schema is
-`spec/process/architecture-artifacts-v1.md`. Read it; never reproduce its fields
-or regexes in this skill.
+The normative process specification is
+`spec/process/architecture-artifacts-v1.md`. The Python validator is its
+executable implementation, not a second policy source. Read the specification;
+never reproduce its fields or regexes in this skill.
 
 ## Required flow
 
-1. Read `AGENTS.md`, the current branch, `main`, and the process specification.
+1. Read `AGENTS.md`, `spec/README.md`, the current branch, `main`, and the
+   process specification.
 2. If the current branch is `main`, create a feature branch before the first write.
 3. Inspect the actual code/docs and run
    `.venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref main`.
 4. Apply [impact check](references/impact-check.md). Call the change trivial only
    when every architecture trigger is disproved.
-5. For a nontrivial change, use `superpowers:brainstorming` and select artifacts
-   with [document triggers](references/document-triggers.md).
+5. If architecture impact is found or remains unresolved, stop mutation, use
+   `superpowers:brainstorming`, and select artifacts with
+   [document triggers](references/document-triggers.md).
 6. After written design approval, use `superpowers:writing-plans` when
    implementation is requested.
 7. If implementation contradicts design or impact classification, stop and use
@@ -39,6 +42,7 @@ or regexes in this skill.
 |---|---|
 | Only implementation internals change; no boundary or architecture trigger | Trivial path, branch and gates still required |
 | Requirement, decision, durable property or boundary may change | Nontrivial; return to design |
+| Accepted target has no complete accepted plan | It remains accepted but is not `IMPLEMENTED` |
 | Complete accepted plan explicitly implements target | Target may be `IMPLEMENTED` |
 | Existing structured document is in `main` | Frozen; create successor/version/revision |
 | User requests deployment | Verify exact SHA is in `main`, then handle separately |

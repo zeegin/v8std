@@ -7,7 +7,9 @@
 - Любое изменение файлов выполняй в отдельной ветке, созданной до первой записи.
 - Прямые коммиты и push в `main` запрещены. После всех gate выполняй локальный merge без повторного выбора способа интеграции.
 - Работай в основном checkout. Worktree и pull request используй только по явному указанию пользователя.
-- Перед изменением используй `superpowers:brainstorming` и `.agents/skills/v8std-architecture/SKILL.md`; тривиальность является результатом impact check.
+- Перед изменением используй `.agents/skills/v8std-architecture/SKILL.md` и
+  выполни impact check; если архитектурное влияние найдено или не исключено,
+  до дальнейших изменений используй `superpowers:brainstorming`.
 - Нетривиальную реализацию не начинай до письменного согласования design-пакета и создания plan через `superpowers:writing-plans`.
 - Внутренние design, ADR, invariants, contracts, plans и process specifications храни только в `spec/`.
 - Не изменяй и не удаляй structured documents из `main`; создавай преемника, версию или ревизию.
