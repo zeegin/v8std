@@ -1,19 +1,8 @@
----
-title: "ADR-0003: Генерация OpenMetrics для MCP v2 и v3"
-hide:
-  - navigation
-  - toc
-  - feedback
-llms:
-  ignore: true
----
+# Проект генерации OpenMetrics для MCP v2 и v3
 
-# ADR-0003: Генерация OpenMetrics для MCP v2 и v3
-
-- Статус: принято
 - Дата: 2026-08-14
+- Основание: [ADR-0003](adr/0003-local-openmetrics-exposition.md)
 - Область: эксплуатационная телеметрия MCP v2 и MCP v3
-- Связанные решения: ADR-0001, ADR-0002
 
 ## Контекст
 

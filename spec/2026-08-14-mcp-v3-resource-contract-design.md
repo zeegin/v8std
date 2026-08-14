@@ -1,17 +1,8 @@
----
-title: "ADR-0001: Версионированный resource-first MCP v3"
-hide:
-  - navigation
-  - toc
-  - feedback
-llms:
-  ignore: true
----
+# Проект контракта resource-first MCP v3
 
-# ADR-0001: Версионированный resource-first MCP v3
-
-- Статус: принято
 - Дата: 2026-08-14
+- Основание: [ADR-0001](adr/0001-separate-mcp-v3-endpoint.md) и
+  [ADR-0004](adr/0004-v3-page-reading-via-resources.md)
 - Область: публичный и локальный MCP v8std
 
 ## Контекст
@@ -504,9 +495,9 @@ usage-log не записываются.
 
 Версионированная схема usage events, безопасная публичная проекция сайта и
 локальный операторский отчёт определены в
-[ADR-0002](0002-mcp-monitoring-dashboard.md). Контракт локальной генерации
-OpenMetrics без подключения Prometheus определён в
-[ADR-0003](0003-mcp-openmetrics-exposition.md).
+[проекте мониторинга](2026-08-14-mcp-monitoring-dashboard-design.md). Контракт
+локальной генерации OpenMetrics без подключения Prometheus определён в
+[проекте OpenMetrics](2026-08-14-mcp-openmetrics-generation-design.md).
 
 ## Тестирование
 
