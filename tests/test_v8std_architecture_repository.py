@@ -6,6 +6,8 @@ import subprocess
 import unittest
 from pathlib import Path
 
+import yaml
+
 from scripts.v8std_architecture_model import (
     build_graph,
     discover_documents,
@@ -104,10 +106,22 @@ class ArchitectureRepositoryTest(unittest.TestCase):
     def test_mandatory_architecture_policy_is_visible_before_skill_invocation(self) -> None:
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 
-        self.assertIn("Прямые коммиты и push в `main` запрещены", agents)
+        self.assertIn(
+            "Прямые коммиты в `main` и push feature-ветки непосредственно",
+            agents,
+        )
         self.assertIn(".agents/skills/v8std-architecture/SKILL.md", agents)
         self.assertIn("локальный merge", agents)
-        self.assertIn("Deploy выполняется только по явному запросу", agents)
+        self.assertIn(
+            "Push локального `main` выполняй только по явному запросу",
+            agents,
+        )
+        self.assertIn(
+            "автоматически запускает сборку и публикацию сайта",
+            agents,
+        )
+        self.assertIn("Deploy MCP-сервера выполняй отдельно", agents)
+        self.assertNotIn("Deploy выполняется только по явному запросу", agents)
 
     def test_repo_skill_uses_process_schema_without_copying_it(self) -> None:
         skill_path = ROOT / ".agents/skills/v8std-architecture/SKILL.md"
@@ -166,6 +180,31 @@ class ArchitectureRepositoryTest(unittest.TestCase):
         self.assertIn("fetch-depth: 2", workflow)
         self.assertIn("--base-ref HEAD^ --merge-ready", workflow)
         self.assertLess(workflow.index(validation), workflow.index("docker build"))
+
+    def test_site_deployment_is_triggered_by_main_after_all_gates(self) -> None:
+        workflow = yaml.load(
+            (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"),
+            Loader=yaml.BaseLoader,
+        )
+
+        self.assertEqual(workflow["on"]["push"]["branches"], ["main"])
+        steps = workflow["jobs"]["deploy"]["steps"]
+        deploy_index = next(
+            index
+            for index, step in enumerate(steps)
+            if step.get("uses") == "actions/deploy-pages@v5"
+        )
+        for required_name in (
+            "Validate architecture graph",
+            "Build",
+            "Test MCP retrieval",
+        ):
+            required_index = next(
+                index
+                for index, step in enumerate(steps)
+                if step.get("name") == required_name
+            )
+            self.assertLess(required_index, deploy_index)
 
 
 if __name__ == "__main__":

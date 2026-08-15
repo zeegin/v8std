@@ -38,8 +38,14 @@
 Принятый design может не иметь plan и остаётся только `ACCEPTED`.
 `IMPLEMENTED` появляется лишь после завершённого принятого plan, который явно
 указывает артефакт в `implements`.
-Plan заканчивается до integration gate: commit, merge, push и deploy не являются
+Plan заканчивается до integration gate: commit, merge, явно разрешённый push с
+автоматической публикацией сайта и отдельный ручной MCP deployment не являются
 его checkbox-задачами.
+
+После локального merge push проверенного `main` выполняется только по явному
+запросу и автоматически публикует сайт. Merge, push и site deployment не дают
+разрешения на MCP deployment: для него нужен отдельный явный запрос и точный SHA
+из `main`.
 
 ## Каталоги и примеры структуры
 

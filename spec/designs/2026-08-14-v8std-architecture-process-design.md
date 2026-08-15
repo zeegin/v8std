@@ -24,7 +24,8 @@ requirements:
     - DESIGN_APPROVAL_PRECEDES_IMPLEMENTATION
     - ARCHITECTURE_PROCESS_IS_MACHINE_VALIDATED
     - INTERNAL_SPECIFICATIONS_STAY_UNPUBLISHED
-    - DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST
+    - SITE_DEPLOYS_AUTOMATICALLY_FROM_MAIN
+    - MCP_SERVER_DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST
     - EXISTING_SPECIFICATIONS_USE_ONE_MODEL
     - SUPERPOWERS_DRIVES_DESIGN_AND_PLANNING
     - PRODUCT_ARCHITECTURE_EXCLUDES_DEVELOPMENT_PROCESS
@@ -51,7 +52,9 @@ requirements:
 - после локального merge в `main` содержание проектных документов неизменяемо;
 - соблюдение процесса обеспечивают `AGENTS.md`, repo skill и машинный
   валидатор;
-- deploy остаётся отдельной операцией и выполняется только по явному запросу.
+- явно разрешённый push проверенного `main` автоматически публикует сайт;
+- обновление MCP-сервера остаётся отдельной ручной операцией и выполняется
+  только по явному запросу.
 
 Процесс разработки является обязательной политикой репозитория, но не частью
 архитектуры работающего продукта. Git-правила и правила оформления документов
@@ -113,8 +116,9 @@ requirements:
 
 **Источник:** решение пользователя в ходе event storming.
 
-Прямые коммиты и push в `main` запрещены. После успешных проверок ветка локально
-сливается в `main`; способ интеграции не выбирается заново для каждой задачи.
+Прямые коммиты в `main` и push feature-ветки непосредственно в удалённый
+`main` запрещены. После успешных проверок ветка локально сливается в `main`;
+способ интеграции не выбирается заново для каждой задачи.
 
 **Проверка:** финальный impact check, архитектурный валидатор, проектные тесты и
 pressure-тест запроса «быстро закоммить прямо в main».
@@ -262,15 +266,28 @@ Design, ADR, инварианты, контракты, plan и process specifica
 
 **Проверка:** тест путей и строгая сборка сайта.
 
-### DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST
+### SITE_DEPLOYS_AUTOMATICALLY_FROM_MAIN
 
-**Источник:** согласованная граница полномочий.
+**Источник:** уточнение пользователя о двух независимых deployment-операциях.
 
-Локальный merge завершает реализацию в репозитории, но не разрешает изменение
-удалённого сервера. Deploy и post-deploy проверка выполняются только по явному
-запросу и используют точный SHA из `main`.
+Явно разрешённый push проверенного SHA из `main` запускает существующий GitHub
+Pages workflow. Отдельное разрешение на публикацию сайта не запрашивается:
+разрешение на push включает автоматическую сборку и публикацию сайта.
 
-**Проверка:** repo skill не включает deploy в подразумеваемое завершение.
+**Проверка:** repository test подтверждает trigger `push` для `main` и наличие
+шага `actions/deploy-pages` после architecture, test и strict-build gates.
+
+### MCP_SERVER_DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST
+
+**Источник:** уточнение пользователя о двух независимых deployment-операциях.
+
+Локальный merge, push `main` и автоматическая публикация сайта не разрешают
+обновление MCP-сервера. MCP deploy выполняется отдельно, вручную, только по
+явному запросу и только для проверенного SHA из `main`; после него выполняется
+отдельная post-deploy проверка MCP endpoint.
+
+**Проверка:** `AGENTS.md` и repo skill не выводят разрешение на MCP deploy из
+merge, push или site deployment; pressure-сценарий требует отдельного запроса.
 
 ### EXISTING_SPECIFICATIONS_USE_ONE_MODEL
 
@@ -326,14 +343,15 @@ Design отвечает на вопрос «что строим и почему 
 
 | Участник | Ответственность |
 |---|---|
-| Пользователь | Определяет цели, согласует требования и design-пакет, явно разрешает deploy |
+| Пользователь | Определяет цели, согласует требования и design-пакет, отдельно разрешает push и MCP deploy |
 | Brainstorming | Управляет исследованием, вариантами, секционным согласованием и письменным design |
 | `v8std-architecture` | Классифицирует влияние, строит граф и выбирает необходимые документы |
 | Writing Plans | Преобразует согласованный пакет в исполнимый plan |
 | Реализатор | Выполняет plan и останавливается при проектной ошибке |
 | Валидатор и тесты | Проверяют структуру, граф, контракты, инварианты и фактический diff |
 | `main` | Хранит замороженную принятую историю репозитория |
-| Удалённая система | Отражает только явно развёрнутый и проверенный SHA |
+| GitHub Pages | Автоматически публикует сайт после разрешённого push проверенного `main` |
+| MCP-сервер | Обновляется вручную только после отдельного явного запроса |
 
 ## Единый поток изменения
 
@@ -427,12 +445,16 @@ Read-only ответ, анализ или диагностика не требу
 
 1. Контекст и impact check можно читать из `main`.
 2. До первой записи создаётся отдельная ветка в основном checkout.
-3. Прямые коммиты и push в `main` запрещены.
+3. Прямые коммиты в `main` и push feature-ветки непосредственно в удалённый
+   `main` запрещены.
 4. Worktree и pull request используются только по явному запросу.
 5. После обязательных проверок выполняется автоматический локальный merge.
 6. Способ интеграции не запрашивается повторно для каждой задачи.
 7. Ветка удаляется после успешного merge.
-8. Deploy выполняется только по явному запросу и использует точный SHA `main`.
+8. Push локального `main` выполняется только по явному запросу и публикует сайт
+   автоматически через GitHub Pages workflow.
+9. Этот push не разрешает MCP deploy. MCP-сервер обновляется отдельной ручной
+   операцией только по явному запросу и для точного SHA из `main`.
 
 Если прямой коммит в `main` уже ошибочно создан, история молча не
 переписывается. Нарушение сообщается пользователю; дальнейшее исправление
@@ -579,9 +601,11 @@ spec/
 | `DEPRECATED` | Новая версия контракта содержит `deprecates` |
 | `RETIRED` | Новый принятый ADR явно отменяет инвариант после проверки требований |
 | `IMPLEMENTED` | Завершённый plan в `main` перечисляет реализованные артефакты |
-| `DEPLOYED` | Точный SHA развёрнут и подтверждён внешней post-deploy проверкой |
+| `SITE_DEPLOYED` | Проверенный SHA опубликован GitHub Pages workflow после push `main` |
+| `MCP_DEPLOYED` | Точный SHA вручную развёрнут на MCP-сервере и подтверждён post-deploy проверкой |
 
-`DEPLOYED` не хранится как архитектурный статус репозитория.
+`SITE_DEPLOYED` и `MCP_DEPLOYED` не хранятся как архитектурные статусы
+репозитория.
 
 После первого появления документа в `main` его содержимое и путь неизменяемы.
 Новый документ содержит прямую ссылку на предшественника. Обратная ссылка в
@@ -690,14 +714,17 @@ JSON Schema, URI, metric labels и план реализации в ADR не к�
 Содержит только безусловные правила:
 
 - всегда работать в отдельной ветке;
-- не коммитить и не push в `main` напрямую;
+- не коммитить в `main` и не push feature-ветку непосредственно в удалённый
+  `main`;
 - не использовать worktree или PR без явного указания;
 - применять brainstorming и `v8std-architecture`;
 - хранить внутренние спецификации только в `spec/`;
 - не реализовывать нетривиальное изменение до согласования design-пакета;
 - не изменять замороженные документы;
 - не выполнять merge без финального impact check, валидатора и тестов;
-- не выполнять deploy без явного запроса.
+- не выполнять push без явного запроса; разрешённый push автоматически
+  публикует сайт;
+- не выполнять MCP deploy без отдельного явного запроса.
 
 Полный процесс и схемы в `AGENTS.md` не дублируются.
 
@@ -851,7 +878,8 @@ Pressure-сценарии сначала выполняются без ново�
 | `DESIGN_APPROVAL_PRECEDES_IMPLEMENTATION` | written review gate | missing-plan and design-only fixtures |
 | `ARCHITECTURE_PROCESS_IS_MACHINE_VALIDATED` | validator and CI | full validator suite |
 | `INTERNAL_SPECIFICATIONS_STAY_UNPUBLISHED` | `spec/` scope | artifact and strict-build tests |
-| `DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST` | skill authority boundary | deploy pressure test |
+| `SITE_DEPLOYS_AUTOMATICALLY_FROM_MAIN` | push-triggered GitHub Pages workflow | workflow trigger and ordering test |
+| `MCP_SERVER_DEPLOYMENT_REQUIRES_EXPLICIT_REQUEST` | skill authority boundary | MCP deploy pressure test |
 | `EXISTING_SPECIFICATIONS_USE_ONE_MODEL` | bootstrap migration | no-legacy full-corpus check |
 | `SUPERPOWERS_DRIVES_DESIGN_AND_PLANNING` | required skill sequence | skill scenarios |
 | `PRODUCT_ARCHITECTURE_EXCLUDES_DEVELOPMENT_PROCESS` | separate process schema | artifact-kind validation |
@@ -865,8 +893,10 @@ Pressure-сценарии сначала выполняются без ново�
   условие и владельца решения; формулировка «проверить вручную» недостаточна.
 - Если migration обнаруживает противоречивые действующие документы, они не
   нормализуются молча: противоречие выносится пользователю до merge.
-- Если deploy не прошёл, репозиторий остаётся замороженным желаемым состоянием;
-  выполняется предусмотренный rollback удалённой системы, а документы не
+- Если site deployment не прошёл, push и SHA сохраняются, workflow исследуется
+  как публикационный сбой, а архитектурные документы не переписываются.
+- Если MCP deploy не прошёл, репозиторий остаётся желаемым состоянием;
+  выполняется предусмотренный rollback MCP-сервера, а документы не
   переписываются под аварию.
 
 ## Последствия
