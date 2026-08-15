@@ -9,7 +9,8 @@ description: Use when a v8std request may mutate files, affect architecture, req
 
 Classify impact before mutation and again before merge. A change is trivial
 only after evidence excludes requirement, ADR, invariant and observable-contract
-impact. Every mutation still uses a branch.
+impact. Before mutation this is a manual assessment of intent and intended paths;
+the CLI can inspect only an existing Git diff. Every mutation still uses a branch.
 
 The normative process specification is
 `spec/process/architecture-artifacts-v1.md`. The Python validator is its
@@ -21,10 +22,11 @@ never reproduce its fields or regexes in this skill.
 1. Read `AGENTS.md`, `spec/README.md`, the current branch, `main`, and the
    process specification.
 2. If the current branch is `main`, create a feature branch before the first write.
-3. Inspect the actual code/docs and run
-   `.venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref main`.
-4. Apply [impact check](references/impact-check.md). Call the change trivial only
-   when every architecture trigger is disproved.
+3. Inspect the actual code/docs and intended paths. A clean Git diff contains no
+   evidence about the requested change.
+4. Apply [impact check](references/impact-check.md) manually to the intent and
+   intended paths. Call the change trivial only when every architecture trigger
+   is disproved.
 5. If architecture impact is found or remains unresolved, stop mutation, use
    `superpowers:brainstorming`, and select artifacts with
    [document triggers](references/document-triggers.md).
@@ -32,8 +34,10 @@ never reproduce its fields or regexes in this skill.
    implementation is requested.
 7. If implementation contradicts design or impact classification, stop and use
    [failure recovery](references/failure-recovery.md).
-8. Before merge, repeat impact check; run `validate --merge-ready`, declared
-   fitness checks, the full test suite and strict build.
+8. After a diff exists and before merge, run CLI `impact`, inspect all changed
+   paths, repeat the semantic impact check, then run `validate --merge-ready`,
+   declared fitness checks, the full test suite and strict build. Empty CLI output
+   never proves triviality.
 9. Merge locally into `main`. Do not push or deploy without explicit authority.
 
 ## Quick reference

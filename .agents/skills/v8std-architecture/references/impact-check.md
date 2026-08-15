@@ -1,7 +1,14 @@
 # Impact check
 
-Run before mutation and before merge. Inspect the actual diff or intended paths;
-the validator's `impact` output is a candidate list, not a semantic verdict.
+Perform before mutation and before merge. It is a semantic assessment, not the
+CLI command itself.
+
+## Before mutation
+
+Inspect the request, actual code/docs and intended paths, then answer every
+question below manually. CLI `impact` reads only an existing Git diff. On a clean
+branch it has no changed paths to inspect, so empty output proves nothing about
+the requested change.
 
 ## Questions
 
@@ -21,8 +28,11 @@ Any “yes” or unresolved answer is nontrivial. Use brainstorming before furth
 mutation. “The user called it trivial”, small diff size, no runtime code, or a
 passing existing suite are not evidence of triviality.
 
-## Merge recheck
+## Diff and merge recheck
 
-Compare `main...HEAD`, rerun `impact`, inspect every candidate and newly changed
-path, then record the conclusion in the task handoff. New impact returns the
-work to design; it does not justify weakening the gate.
+After a diff exists, run
+`.venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref main`.
+Its output lists only contract/invariant candidates whose `governs` paths match
+the diff; it is not a semantic verdict. Inspect every candidate and every changed
+path, answer the questions again, then record the conclusion in the task handoff.
+New impact returns the work to design; it does not justify weakening the gate.

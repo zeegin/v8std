@@ -177,7 +177,6 @@ class ArchitectureModelTest(unittest.TestCase):
             decisions: []
             invariants: []
             contracts: []
-            plans: []
             supersedes: []
             cancels: []
             ---

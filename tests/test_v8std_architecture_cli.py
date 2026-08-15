@@ -78,7 +78,6 @@ class RepositoryFixture(unittest.TestCase):
             decisions: []
             invariants: []
             contracts: []
-            plans: []
             supersedes: []
             cancels: []
             ---
@@ -149,7 +148,6 @@ class FrozenDocumentTest(RepositoryFixture):
             decisions: []
             invariants: []
             contracts: []
-            plans: []
             supersedes: [design:feature]
             cancels: []
             ---
@@ -197,7 +195,6 @@ class FrozenDocumentTest(RepositoryFixture):
             decisions: []
             invariants: []
             contracts: []
-            plans: []
             supersedes: []
             cancels: []
             ---
@@ -237,13 +234,7 @@ class FrozenDocumentTest(RepositoryFixture):
 
 class ArchitectureCliTest(RepositoryFixture):
     def write_candidate(self) -> None:
-        design_path = self.valid_design()
-        design_path.write_text(
-            design_path.read_text(encoding="utf-8").replace(
-                "plans: []", "plans: [plan:feature]"
-            ),
-            encoding="utf-8",
-        )
+        self.valid_design()
         self.write(
             "spec/plans/2026-08-14-feature-plan.md",
             """

@@ -18,7 +18,6 @@ invariants:
   - invariant:METRICS_ENDPOINTS_ARE_LOOPBACK_ONLY
   - invariant:METRICS_LABEL_CARDINALITY_IS_BOUNDED
 contracts: [contract:MCP_OPENMETRICS@1.0]
-plans: []
 supersedes: []
 cancels: []
 ---

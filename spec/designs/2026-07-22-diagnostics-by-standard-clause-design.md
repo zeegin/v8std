@@ -16,7 +16,6 @@ requirements:
 decisions: []
 invariants: []
 contracts: [contract:DIAGNOSTIC_RELATION_GRAPH@1.0]
-plans: [plan:diagnostics-by-standard-clause]
 supersedes: []
 cancels: []
 ---

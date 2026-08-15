@@ -14,7 +14,6 @@ requirements:
 decisions: []
 invariants: []
 contracts: [contract:DIAGNOSTIC_CHIP_MARKUP@1.0]
-plans: [plan:unified-diagnostic-chips]
 supersedes: []
 cancels: []
 ---

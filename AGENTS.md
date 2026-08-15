@@ -8,11 +8,14 @@
 - Прямые коммиты и push в `main` запрещены. После всех gate выполняй локальный merge без повторного выбора способа интеграции.
 - Работай в основном checkout. Worktree и pull request используй только по явному указанию пользователя.
 - Перед изменением используй `.agents/skills/v8std-architecture/SKILL.md` и
-  выполни impact check; если архитектурное влияние найдено или не исключено,
-  до дальнейших изменений используй `superpowers:brainstorming`.
+  вручную оцени архитектурное влияние намерения и предполагаемых путей; если
+  влияние найдено или не исключено, до дальнейших изменений используй
+  `superpowers:brainstorming`.
 - Нетривиальную реализацию не начинай до письменного согласования design-пакета и создания plan через `superpowers:writing-plans`.
 - Внутренние design, ADR, invariants, contracts, plans и process specifications храни только в `spec/`.
 - Не изменяй и не удаляй structured documents из `main`; создавай преемника, версию или ревизию.
-- Перед merge повтори impact check, запусти `validate --merge-ready`, fitness checks, полный test suite и strict build.
+- Перед merge повтори semantic impact check по фактическому diff, запусти CLI
+  `impact`, `validate --merge-ready`, fitness checks, полный test suite и strict
+  build.
 - Если реализация опровергла design, остановись и верни работу в brainstorming с комплексным пересмотром графа.
 - Deploy выполняется только по явному запросу и только для проверенного SHA из `main`.
