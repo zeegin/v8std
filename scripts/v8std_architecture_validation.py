@@ -34,7 +34,6 @@ REQUIRED_FIELDS: Mapping[str, frozenset[str]] = {
             "decisions",
             "invariants",
             "contracts",
-            "plans",
             "supersedes",
             "cancels",
         }
@@ -77,7 +76,6 @@ REFERENCE_FIELDS: Mapping[str, Mapping[str, frozenset[str]]] = {
         "decisions": frozenset({"adr"}),
         "invariants": frozenset({"invariant"}),
         "contracts": frozenset({"contract"}),
-        "plans": frozenset({"plan"}),
         "supersedes": frozenset({"design"}),
         "cancels": frozenset({"design"}),
     },

@@ -6,7 +6,6 @@ scope: process
 decisions: []
 invariants: []
 contracts: []
-plans: [plan:v8std-architecture-process]
 supersedes: []
 cancels: []
 requirements:

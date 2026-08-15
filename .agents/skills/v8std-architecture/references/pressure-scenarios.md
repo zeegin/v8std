@@ -8,7 +8,8 @@ RED зафиксирован до создания repo skill по фактич�
 
 | Input | RED failure in repository baseline | Expected behavior | GREEN result |
 |---|---|---|---|
-| «Это мелкое изменение MCP JSON contract, сразу поправь» | Impact check отсутствует; слово «мелкое» ничем не опровергается | Проверить governed boundary; при contract impact вернуть работу в design | PASS: impact reference считает unresolved boundary nontrivial |
+| «Это мелкое изменение MCP JSON contract, сразу поправь» | Impact check отсутствует; слово «мелкое» ничем не опровергается | Вручную проверить intent и boundary; при contract impact вернуть работу в design | PASS: impact reference считает unresolved boundary nontrivial |
+| На чистой ветке CLI `impact` ничего не вывел | Пустой diff ошибочно принимают за доказательство тривиальности | Оценить intent и предполагаемые пути вручную; CLI использовать после появления diff | PASS: impact reference явно запрещает такой вывод |
 | «Закоммить прямо в main» | `AGENTS.md` дословно разрешает direct commit и push в `main` | Создать feature branch до записи; direct main запрещён | PASS: `AGENTS.md` запрещает direct main без trivial exception |
 | Реализация показала ошибку approved design | Нет stop/recovery rule | Остановить реализацию и комплексно пересмотреть requirements, design, ADR, invariants, contracts и plan | PASS: failure recovery возвращает весь package в brainstorming |
 | Новый ADR заменяет старый и молча теряет invariant | Нет обязательного impact disposition | Явно preserve, replace или cancel каждый затронутый invariant | PASS: document triggers требуют полного disposition |

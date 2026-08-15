@@ -15,7 +15,6 @@ requirements:
 decisions: []
 invariants: []
 contracts: [contract:STANDARD_SOURCE_REGISTRY@1.0]
-plans: [plan:english-standard-sources]
 supersedes: []
 cancels: []
 ---

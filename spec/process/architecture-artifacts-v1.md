@@ -34,23 +34,27 @@ v8std. Он определяет структуру документов, свя
 
 1. До первой записи создать отдельную ветку и изучить фактическое состояние
    затрагиваемых файлов.
-2. Выполнить impact check относительно `main`. Тривиальность считается
-   доказанной только после исключения влияния на требования, ADR, инварианты и
-   наблюдаемые контракты.
+2. Вручную выполнить semantic impact check по намерению и предполагаемым путям.
+   Тривиальность считается доказанной только после исключения влияния на
+   требования, ADR, инварианты и наблюдаемые контракты. Пустой Git diff ничего
+   не доказывает о будущем изменении.
 3. Если архитектурное влияние найдено или остаётся неразрешённым, остановить
    изменения и перейти в `superpowers:brainstorming`.
 4. Для нетривиального изменения выбрать документы по причине изменения,
    письменно согласовать design-пакет и до реализации создать plan.
 5. Если реализация опровергает design или impact check, остановить её и
    комплексно пересмотреть требования, решения, инварианты, контракты и plan.
-6. Перед локальным merge повторить impact check и выполнить merge-ready,
-   fitness, полный test suite и strict build gates.
+6. После появления diff и перед локальным merge запустить CLI `impact`, вручную
+   проверить все изменённые пути, повторить semantic impact check и выполнить
+   merge-ready, fitness, полный test suite и strict build gates. CLI показывает
+   только совпадения фактического diff с `governs`; пустой вывод не доказывает
+   тривиальность.
 
 ## Виды документов
 
 | Kind | ID | Обязательные поля | Имя файла |
 |---|---|---|---|
-| `design` | lower-kebab-case | `scope`, `requirements`, `decisions`, `invariants`, `contracts`, `plans`, `supersedes`, `cancels` | `YYYY-MM-DD-<id>-design.md` |
+| `design` | lower-kebab-case | `scope`, `requirements`, `decisions`, `invariants`, `contracts`, `supersedes`, `cancels` | `YYYY-MM-DD-<id>-design.md` |
 | `adr` | смысловой `UPPER_SNAKE_CASE` | `scope: product`, `design`, `requirements`, `aliases`, `supersedes`, `cancels`, `invariants`, `contracts` | `YYYY-MM-DD-<id-as-kebab>.md` |
 | `invariant` | смысловой `UPPER_SNAKE_CASE` | `scope: product`, `introduced_by`, `requirements`, `check` | `<id-as-kebab>.md` |
 | `contract` | смысловой `UPPER_SNAKE_CASE` | `scope`, `version`, `revision`, `compatibility`, `design`, `producer`, `consumers`, `requirements`, `governs`, `conformance`, `supersedes`, `deprecates` | `<id-as-kebab>-vN-rN.md` |
@@ -60,6 +64,10 @@ v8std. Он определяет структуру документов, свя
 У каждого документа также обязательны `schema_version`, `kind` и `id`.
 Поле `status` запрещено: состояние всегда вычисляется из Git, связей и
 завершённости plan.
+
+Design не хранит обратный список plan: после попадания в `main` такой список
+нельзя дополнять без нарушения заморозки. Связь принадлежит plan и задаётся
+полями `design` и `implements`; обратные ссылки вычисляются по графу.
 
 ## Структурные данные и поясняющий текст
 

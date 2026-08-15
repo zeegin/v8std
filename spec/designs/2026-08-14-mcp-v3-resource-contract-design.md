@@ -29,7 +29,6 @@ invariants:
 contracts:
   - contract:MCP_API@2.0
   - contract:MCP_API@3.0
-plans: []
 supersedes: []
 cancels: []
 ---

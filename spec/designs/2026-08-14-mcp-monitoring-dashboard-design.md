@@ -24,7 +24,6 @@ contracts:
   - contract:MCP_USAGE_EVENTS@2.0
   - contract:MCP_MONITORING_PROJECTION@1.0
   - contract:MCP_MONITORING_PROJECTION@2.0
-plans: []
 supersedes: []
 cancels: []
 ---

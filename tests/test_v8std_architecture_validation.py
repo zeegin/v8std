@@ -78,7 +78,6 @@ def design(
     requirement_cancels: tuple[str, ...] = (),
     supersedes: tuple[str, ...] = (),
     cancels: tuple[str, ...] = (),
-    plans: tuple[str, ...] = (),
 ) -> ArchitectureDocument:
     return document(
         "design",
@@ -93,7 +92,6 @@ def design(
         decisions=[],
         invariants=[],
         contracts=[],
-        plans=list(plans),
         supersedes=list(supersedes),
         cancels=list(cancels),
         requirement_definitions=introduces,
@@ -548,8 +546,23 @@ class ArchitectureValidationTest(unittest.TestCase):
         self.assertNotIn("HISTORICAL_ALIAS_REFERENCE", valid_codes)
         self.assertIn("HISTORICAL_ALIAS_REFERENCE", invalid_codes)
 
+    def test_plan_owns_design_association_without_reverse_plan_field(self) -> None:
+        feature = design("feature")
+        implementation = document(
+            "plan",
+            "feature-implementation",
+            design="design:feature",
+            implements=["design:feature"],
+            checkbox_count=1,
+            checked_count=1,
+        )
+
+        issue_codes = codes(validate_graph(build_graph([feature, implementation])))
+
+        self.assertNotIn("MISSING_REQUIRED_FIELD", issue_codes)
+
     def test_incomplete_candidate_is_valid_but_not_merge_ready(self) -> None:
-        feature = design("feature", plans=("plan:feature",))
+        feature = design("feature")
         candidate = document(
             "plan",
             "feature",
@@ -568,7 +581,7 @@ class ArchitectureValidationTest(unittest.TestCase):
         )
 
     def test_complete_plan_implements_only_explicit_targets(self) -> None:
-        first = design("first", plans=("plan:first",))
+        first = design("first")
         second = design("second")
         plan = document(
             "plan",
