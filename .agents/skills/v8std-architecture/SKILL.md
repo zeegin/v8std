@@ -38,7 +38,10 @@ never reproduce its fields or regexes in this skill.
    paths, repeat the semantic impact check, then run `validate --merge-ready`,
    declared fitness checks, the full test suite and strict build. Empty CLI output
    never proves triviality.
-9. Merge locally into `main`. Do not push or deploy without explicit authority.
+9. Merge locally into `main`. Push local `main` only with explicit authority; an
+   authorized push automatically builds and publishes the site. Never infer MCP
+   server deployment authority from merge, push or site publication: it requires
+   a separate explicit request and an exact verified SHA from `main`.
 
 ## Quick reference
 
@@ -49,13 +52,15 @@ never reproduce its fields or regexes in this skill.
 | Accepted target has no complete accepted plan | It remains accepted but is not `IMPLEMENTED` |
 | Complete accepted plan explicitly implements target | Target may be `IMPLEMENTED` |
 | Existing structured document is in `main` | Frozen; create successor/version/revision |
-| User requests deployment | Verify exact SHA is in `main`, then handle separately |
+| User authorizes push of local `main` | Verify local `main`; push automatically publishes the site |
+| User requests MCP server deployment | Verify the exact SHA in `main`; deploy and post-check MCP separately |
 
 ## Red flags
 
 Stop on: “small contract tweak”, direct `main`, merge-date ADR rename, editing an
 accepted contract in place, incomplete plan, design-only called implemented,
-silent invariant loss, or Git workflow proposed as a product invariant.
+silent invariant loss, site publication treated as MCP deployment authority, or
+Git workflow proposed as a product invariant.
 
 The matching RED/GREEN cases are in
 [pressure scenarios](references/pressure-scenarios.md).
