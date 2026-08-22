@@ -109,6 +109,17 @@ def require_text(value: Any, field_name: str, max_chars: int) -> str:
     return value
 
 
+def truncate_for_query(text: str, max_chars: int = MAX_QUERY_CHARS) -> str:
+    """Обрезает построенный поисковый текст до лимита query, не разрывая слово."""
+    if len(text) <= max_chars:
+        return text
+    cut = text[:max_chars]
+    boundary = cut.rfind(" ")
+    if boundary > max_chars // 2:
+        cut = cut[:boundary]
+    return cut.strip()
+
+
 def require_string_list(values: Any, field_name: str, item_max_chars: int) -> list[str] | None:
     if values is None:
         return None
@@ -592,7 +603,8 @@ class V8StdIndex:
                 *signal_targets,
             ]
         )
-        search_result = self.search(signal_text or snippet, types=None, mode="hybrid", limit=limit)
+        search_text = truncate_for_query(signal_text or snippet)
+        search_result = self.search(search_text, types=None, mode="hybrid", limit=limit)
 
         diagnostics = []
         standards = []
