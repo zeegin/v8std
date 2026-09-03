@@ -36,9 +36,16 @@ class ArchitectureRepositoryTest(unittest.TestCase):
             ["README.md"],
         )
 
-    def test_future_mcp_designs_are_accepted_not_implemented(self) -> None:
-        planned = {
+    def test_mcp_design_lifecycle_reflects_combined_endpoint_decision(self) -> None:
+        superseded = {
             "design:mcp-v3-resource-contract",
+            "design:mcp-100k-agent-capacity",
+        }
+
+        for reference in superseded:
+            self.assertIn("SUPERSEDED", self.states[reference])
+
+        planned = {
             "design:mcp-monitoring-dashboard",
             "design:mcp-openmetrics-generation",
         }

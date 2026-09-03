@@ -5,6 +5,9 @@ JSON-RPC messages with `POST`; the service deliberately rejects unsolicited
 `GET` SSE streams with HTTP 405. This keeps agent connections at the edge and
 prevents one idle stream from consuming one Python and one nginx connection.
 
+There is one combined runtime and one public `/mcp` endpoint. Do not add a
+`/v3/mcp` listener or a second systemd service when the Resources profile grows.
+
 The nginx fragments in `deploy/nginx/` reject the optional event-stream GET at
 the edge before opening an upstream connection and are intended for every edge node. The
 capacity example assumes four or more edge nodes, each admitting at most

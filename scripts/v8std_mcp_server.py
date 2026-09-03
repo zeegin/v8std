@@ -47,6 +47,7 @@ MCP_EVENT_STREAM_DISABLED_MESSAGE = (
     "This stateless MCP endpoint does not provide an unsolicited SSE stream; "
     "send JSON-RPC requests with POST."
 )
+MCP_API_PROFILES = ["legacy-tools", "resources"]
 MAX_USAGE_TEXT_CHARS = 240
 MAX_USAGE_RESULTS = 50
 MAX_USAGE_CODES = 500
@@ -659,7 +660,9 @@ def build_server(
 
     @server.custom_route("/version", methods=["GET"], include_in_schema=False)
     async def version(_: Request) -> Response:
-        return JSONResponse({"service": "v8std-mcp", "api": "v2", **index.status()})
+        return JSONResponse(
+            {"service": "v8std-mcp", "api": "v2", "api_profiles": MCP_API_PROFILES, **index.status()}
+        )
 
     install_self_documenting_mcp_app(server, mcp_path=mcp_path)
 
