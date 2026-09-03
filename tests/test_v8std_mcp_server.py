@@ -322,16 +322,17 @@ class SelfDocumentingMcpAppTests(unittest.TestCase):
         self.assertEqual(body, b"")
         self.assertEqual(downstream.calls, [])
 
-    def test_mcp_get_with_event_stream_accept_reaches_downstream(self):
+    def test_mcp_get_with_event_stream_accept_is_rejected(self):
         app, downstream = self.app()
 
-        status, _headers, body = asyncio.run(
+        status, headers, body = asyncio.run(
             asgi_request(app, "GET", "/mcp", {"Accept": "application/json, text/event-stream"})
         )
 
-        self.assertEqual(status, 209)
-        self.assertEqual(body, b"downstream")
-        self.assertEqual(downstream.calls, [{"method": "GET", "path": "/mcp"}])
+        self.assertEqual(status, 405)
+        self.assertEqual(headers["allow"], "POST, HEAD")
+        self.assertIn(b"does not provide an unsolicited SSE stream", body)
+        self.assertEqual(downstream.calls, [])
 
     def test_post_reaches_downstream_even_with_bad_accept(self):
         app, downstream = self.app()

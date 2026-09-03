@@ -43,6 +43,10 @@ MCP_CURL_EXAMPLE = (
     "\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},"
     "\"clientInfo\":{\"name\":\"curl\",\"version\":\"1\"}}}'"
 )
+MCP_EVENT_STREAM_DISABLED_MESSAGE = (
+    "This stateless MCP endpoint does not provide an unsolicited SSE stream; "
+    "send JSON-RPC requests with POST."
+)
 MAX_USAGE_TEXT_CHARS = 240
 MAX_USAGE_RESULTS = 50
 MAX_USAGE_CODES = 500
@@ -364,6 +368,10 @@ class SelfDocumentingMcpApp:
             await self._send_self_documentation(send, prefer_json=False, include_body=False)
             return
 
+        if path == self.mcp_path and method == "GET" and self._accepts_event_stream(scope):
+            await self._send_event_stream_not_available(send)
+            return
+
         if path == self.mcp_path and method == "GET" and not self._accepts_event_stream(scope):
             await self._send_self_documentation(send, prefer_json=self._prefers_json(scope), include_body=True)
             return
@@ -444,6 +452,15 @@ class SelfDocumentingMcpApp:
             [],
             content_type,
             body if include_body else b"",
+        )
+
+    async def _send_event_stream_not_available(self, send: Any) -> None:
+        await self._send_response(
+            send,
+            405,
+            [(b"allow", b"POST, HEAD")],
+            b"text/plain; charset=utf-8",
+            MCP_EVENT_STREAM_DISABLED_MESSAGE.encode("utf-8"),
         )
 
     async def _send_empty_response(self, send: Any, status: int, extra_headers: list[tuple[bytes, bytes]]) -> None:

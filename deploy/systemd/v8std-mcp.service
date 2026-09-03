@@ -1,0 +1,30 @@
+[Unit]
+Description=v8std.ru read-only MCP server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=v8std-mcp
+Group=v8std-mcp
+WorkingDirectory=/opt/v8std-mcp
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPYCACHEPREFIX=/var/lib/v8std-mcp/pycache
+ExecStart=/opt/v8std-mcp/venv/bin/python /opt/v8std-mcp/scripts/v8std_mcp_server.py --index-url https://v8std.ru/ai/pages.jsonl --vectors-url https://v8std.ru/ai/search-vectors.jsonl --cache-dir /var/lib/v8std-mcp --host 127.0.0.1 --port 8765 --mcp-path /mcp --usage-log /var/lib/v8std-mcp/tool-usage.jsonl
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=45s
+KillMode=mixed
+LimitNOFILE=131072
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/v8std-mcp
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictRealtime=true
+SystemCallArchitectures=native
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

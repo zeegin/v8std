@@ -1,0 +1,18 @@
+# Minimal events/http fragment for a capacity-sized edge node. Merge these
+# directives with the host's existing nginx.conf; do not run this file as a
+# complete configuration without adding the site's MIME/certificate policy.
+
+worker_processes auto;
+worker_shutdown_timeout 30s;
+
+events {
+    worker_connections 65536;
+    multi_accept on;
+}
+
+http {
+    keepalive_timeout 30s;
+    keepalive_requests 1000;
+    include http-v8std-mcp.conf;
+    include server-v8std-mcp.conf;
+}
