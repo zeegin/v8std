@@ -1,0 +1,20 @@
+--- etc/nginx/nginx.conf
++++ etc/nginx/nginx.conf
+@@ -2,0 +3,2 @@
++worker_rlimit_nofile 8192;
++worker_shutdown_timeout 30s;
+@@ -8 +10 @@
+-	worker_connections 768;
++	worker_connections 4096;
+--- etc/nginx/sites-available/ai.v8std.ru
++++ etc/nginx/sites-available/ai.v8std.ru
+@@ -3,0 +4 @@
++    keepalive_timeout 30s;
+@@ -42,0 +44,7 @@
++        # Stateless MCP needs no unsolicited SSE GET stream.
++        if ($v8std_emergency_sse_get) {
++            return 405;
++        }
++        add_header Allow $v8std_emergency_allow always;
++        add_header Retry-After $v8std_emergency_retry_after always;
++        limit_req_status 429;
