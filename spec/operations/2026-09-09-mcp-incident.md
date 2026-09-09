@@ -37,7 +37,9 @@ vhost configuration are preserved. This is not a 100k-capacity claim.
 1. Save exact nginx.conf, ai.v8std.ru vhost, service/PID state and logs in a
    private timestamped incident directory on the host.
 2. Check the exact patch with `patch --dry-run`; install the HTTP map and
-   apply only the two reviewed configuration hunks.
+   apply only the two reviewed configuration files. The patch uses zero-context
+   insertions: first compare live files byte-for-byte with the incident backups;
+   do not reuse it against another host or a changed configuration.
 3. Run `nginx -t`. Restore saved files if validation fails; leave active
    workers untouched on this path.
 4. Restart nginx once to clear old binary generations and stale SSE sockets.
@@ -71,3 +73,66 @@ exhaustion risk and is only for a regression of this hotfix.
 References: [nginx core directives](https://nginx.org/en/docs/ngx_core_module.html),
 [limit_conn semantics](https://nginx.org/en/docs/http/ngx_http_limit_conn_module.html),
 [MCP GET SSE transport](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports).
+
+## Recovery evidence
+
+- Deployed configuration source: local main commit
+  `d707daa9b6d487ae4cf9d93d6c34ff86fa6b5793`. Only the emergency nginx patch
+  and map were applied. No Git push or application update occurred.
+- Backup/evidence directory (root-only):
+  `/root/v8std-incident-20260909-kkl40C` on ai.v8std.ru.
+- At 17:59:50, exact patch dry-run and host nginx 1.24.0 `nginx -t` passed.
+  Existing unrelated OCSP warning for 0x1c.ru remained.
+- Restart began at 17:59:58 and completed at 18:00:08 UTC (21:00:08 MSK).
+  systemd MainPID and nginx pid-file both became 643435. Two workers stuck in
+  shutdown and the obsolete master were cleared by the unit restart.
+- Established TCP connections dropped from 1,133 to 6 immediately, then 41
+  after 33 seconds of live reconnects. Python FDs dropped from 384 to 8.
+- External health, browser GET, HEAD, initialize, tools/list, search and page
+  retrieval passed. Monitoring and 0x1c.ru returned 200. SSE GET returned 405
+  with `Allow: POST, HEAD` in 0.364 seconds.
+- Real Python MCP SDK 1.27.0 completed initialize -> list five tools -> search
+  with protocol 2025-11-25 and no tool error.
+- An additional 30 sequential calls (10 lists, 10 searches, 10 page reads)
+  all returned HTTP 200 without JSON-RPC/tool errors: p95 0.311 seconds,
+  max 0.541 seconds, measured from the operator's machine. This is a smoke
+  sample, not a capacity benchmark.
+- Reload at 18:01:12 passed. At 18:02:08 only master 643435 and worker 643662
+  remained (12/16 FDs); no old worker remained past the 30-second deadline.
+- Through 18:02:08, post-recovery access logs contained zero 5xx, 134 POST 200,
+  17 POST 202 and 382 deliberately rejected SSE GETs. All 15,691 earlier 500
+  responses had absent/zero upstream processing time.
+- Local validation: 286 tests, architecture merge-ready, diff check and strict
+  site build passed. Actual nginx syntax and live lifecycle were tested on host.
+
+Applied configuration SHA-256:
+
+```text
+7bf6520c75b8d35318acb91a52360e80324c763d8cebca5a79a48753e790ee6a  /etc/nginx/nginx.conf
+288f013098b88e617e9c8920237fa6a72eab978c72378967e778b8a7bf61339d  /etc/nginx/sites-available/ai.v8std.ru
+61ff46e3bb0929178410ad8dbea72b384837be8681d416389a73b2423b50d867  /etc/nginx/conf.d/v8std-mcp-emergency.conf
+```
+
+Application file SHA remained unchanged before/after:
+`423017ecab0e96003dde0451fe6d5f7579d33f25b18ed52455968d22e69a968c`.
+
+## Postmortem conclusions and release discussion
+
+The confirmed failure was edge connection-slot exhaustion before an upstream
+request could be processed. Long-lived unsolicited streams kept backend and
+edge sockets occupied; the low worker limit and unreaped binary generations
+amplified the problem. The application was alive throughout our investigation.
+Initial successful probes did not disprove the intermittent failure.
+
+A prior local merge was incorrectly easy to read as an operational fix; it
+had no production effect. Future completion reports must name the deployed
+component, checksum/SHA and observed post-deploy behavior. The emergency repair
+now has those observations. The proposed 100k topology remains unmeasured.
+
+For the next discussion: first agree the public tools-only contract and the
+compatibility cost of Resource removal; then measure request CPU, refresh
+blocking, response bytes and concurrency limits. Add a small set of operational
+signals (real tool probes, connections/FDs, 5xx/429, p95, memory), review nginx
+templates with a real parser, and benchmark before sizing horizontal replicas.
+Resources, the old v3 design, monitoring redesign and the architecture-process
+bootstrap are not prerequisites for this emergency recovery.
