@@ -3,7 +3,7 @@ FROM python:3.12-slim
 WORKDIR /opt/v8std
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends fonts-dejavu-core \
+    && apt-get install -y --no-install-recommends fonts-dejavu-core git \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /opt/v8std/requirements.txt

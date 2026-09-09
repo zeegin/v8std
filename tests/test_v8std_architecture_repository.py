@@ -213,6 +213,20 @@ class ArchitectureRepositoryTest(unittest.TestCase):
             )
             self.assertLess(required_index, deploy_index)
 
+    def test_ci_runs_build_and_tests_as_checkout_owner(self) -> None:
+        workflow = yaml.load(
+            (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"),
+            Loader=yaml.BaseLoader,
+        )
+        steps = workflow["jobs"]["deploy"]["steps"]
+        for name in ("Build", "Test MCP retrieval"):
+            step = next(step for step in steps if step.get("name") == name)
+            commands = re.split(r"(?m)^\s*docker run\b", step["run"])[1:]
+            self.assertTrue(commands, name)
+            for command in commands:
+                with self.subTest(step=name, command=command):
+                    self.assertIn('--user "$(id -u):$(id -g)"', command)
+
 
 if __name__ == "__main__":
     unittest.main()
