@@ -1,0 +1,8 @@
+**
+!requirements-mcp.txt
+!scripts/
+!scripts/**
+!docs/
+!docs/**
+!zensical.toml
+!retrieval-rules.yml

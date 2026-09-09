@@ -31,6 +31,18 @@ if [ ! -s "${PAGES_PATH}" ]; then
     exit 1
 fi
 
+extra_transport_args=()
+if [ -n "${V8STD_MCP_ALLOWED_HOSTS:-}" ]; then
+    for pattern in ${V8STD_MCP_ALLOWED_HOSTS//,/ }; do
+        extra_transport_args+=(--allowed-host "${pattern}")
+    done
+fi
+if [ -n "${V8STD_MCP_ALLOWED_ORIGINS:-}" ]; then
+    for pattern in ${V8STD_MCP_ALLOWED_ORIGINS//,/ }; do
+        extra_transport_args+=(--allowed-origin "${pattern}")
+    done
+fi
+
 exec python "${SCRIPT_DIR}/v8std_mcp_server.py" \
     --pages "${PAGES_PATH}" \
     --vectors "${VECTORS_PATH}" \
@@ -42,4 +54,5 @@ exec python "${SCRIPT_DIR}/v8std_mcp_server.py" \
     --allowed-host "localhost:*" \
     --allowed-host "v8std-mcp:*" \
     --allowed-origin "http://127.0.0.1:*" \
-    --allowed-origin "http://localhost:*"
+    --allowed-origin "http://localhost:*" \
+    "${extra_transport_args[@]}"
