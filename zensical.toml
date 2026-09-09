@@ -924,6 +924,8 @@ logo = "docs/assets/images/logo-social.png"
 
 [project.markdown_extensions.admonition]
 
+[project.markdown_extensions."scripts.v8std_markdown"]
+
 [project.markdown_extensions.abbr]
 
 [project.markdown_extensions.attr_list]
