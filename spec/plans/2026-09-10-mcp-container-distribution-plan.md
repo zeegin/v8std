@@ -218,6 +218,10 @@ self.assertEqual(coordinator.current().corpus_id, "fixture-generation-a")
 **Files:** create `scripts/v8std_mcp_runtime.py`,
 `scripts/v8std_mcp_presentation.py`, `tests/test_v8std_mcp_runtime.py`,
 `tests/test_v8std_mcp_presentation.py`; modify index/server and focused tests.
+Integrate publisher-side link validation in `generate_mcp_snapshot.py` and its
+focused tests, reusing the presentation parser/catalog rather than a second
+link grammar. Treat the three Resources and published license paths as explicit
+auxiliary catalog entries, not corpus pages or arbitrary allowed paths.
 
 **Interfaces produced:**
 
@@ -265,6 +269,9 @@ self.assertEqual(result["page"]["source_urls"], ["https://its.1c.ru/db/v8std/con
   external provenance/query/fragment. Local URLs accepted as page lookup inputs
   resolve to canonical keys without affecting ranking. All nested result URLs
   and three legacy Resource bodies use the same policy; no global string replace.
+  Validate publisher links against the same catalog. Preserve generated bare
+  internal `URL:`/`HTML:` fields and resolve relative links in their page context;
+  ordinary code literals and external source records are not link nodes.
 - [ ] **GREEN runtime:** Startup chooses snapshot mode from SITE_URL/default,
   supports stdio and HTTP from same build_server. Legacy explicit files remain
   usable; ambiguous legacy URLs plus site setting fail before network. Default
@@ -283,6 +290,10 @@ self.assertEqual(result["page"]["source_urls"], ["https://its.1c.ru/db/v8std/con
 `scripts/build_local_site.py`, `tests/test_v8std_mcp_distribution.py`,
 `scripts/check_mcp_container.py`, `deploy/docker-catalog/server.yaml`;
 modify `overrides/main.html`, docs and build wrapper only where profile needs it.
+Add an explicit index for the three already published license text files in
+`scripts/publish_license_texts.py` and cover it in its existing tests: the current
+attribution page links `/LICENSES/`, which otherwise has no page when directory
+listing is disabled. Both public and local builds must resolve this same path.
 
 **Consumes:** Task 1 producer CLI and Task 3 runtime CLI. Runtime container
 default CMD selects stdio; HTTP command selects host 0.0.0.0/port 8000.
