@@ -69,7 +69,7 @@ corpus/runtime (1–3), container distribution (4), delivery (5–6). Их inter
 
 | Task | Write scope | Responsibility |
 |---|---|---|
-| 1 | `scripts/v8std_mcp_snapshot_format.py`, `scripts/generate_mcp_snapshot.py`, `tests/test_v8std_mcp_snapshot_format.py`, `tests/mcp_snapshot_fixtures.py` | Pure format validation, deterministic producer; no network/index refresh. |
+| 1 | `scripts/v8std_mcp_snapshot_format.py`, `scripts/generate_mcp_snapshot.py`, `scripts/v8std_mcp_chunks.py`, `scripts/generate_search_vectors.py`, `tests/test_v8std_mcp_snapshot_format.py`, `tests/mcp_snapshot_fixtures.py` | Pure format validation, deterministic producer and shared unchanged chunk rules; no network/index refresh. |
 | 2 | `scripts/v8std_mcp_snapshots.py`, `tests/test_v8std_mcp_snapshots.py` | URL trust boundary, HTTP/cache transaction, background coordinator. |
 | 3 | `scripts/v8std_mcp_runtime.py`, `scripts/v8std_mcp_presentation.py`, `scripts/v8std_mcp_index.py`, `scripts/v8std_mcp_server.py`, runtime tests | Frozen generation construction, request facade, stdio/HTTP lifecycle. |
 | 4 | Dockerfiles/Compose/lock, local-profile script, tests, docs | Build and exercise the two images and local site. |
@@ -168,8 +168,16 @@ class SnapshotCoordinator:
 commit and returns its result; without prepare it returns VerifiedSnapshot.
 Preparation failure preserves the former disk pointer as well as process state.
 The coordinator owns the active reference and stores network/parse work outside
-the request path. Prepare in a bounded worker with a lifecycle that is stopped
-on close; no network/CPU build on the ASGI event loop. Test/store internals may
+the request path. A supervised `multiprocessing` worker using the `spawn` start
+method owns blocking source I/O, validation, generation preparation and cache
+commit. The parent enforces the whole-attempt deadline and terminates/reaps the
+worker on timeout or close; a daemon thread alone is not cancellation. Internal
+builder callables and their results must support this trusted process boundary.
+Only IPC from the application's own worker may carry serialized Python objects;
+never load pickle from downloaded data or a persistent/shared cache. Task 3 adds
+the minimal frozen-index serialization hook to reconstruct its process-local
+lock. Measure transfer/startup/staging RSS and query latency during integration.
+No network/CPU build runs on the ASGI event loop. Test/store internals may
 inject monotonic clock/transport at their actual dependency boundary, never
 test-only methods on production classes.
 
@@ -232,7 +240,9 @@ def present_result(value, *, canonical_site_url: str, site_url: str,
 ```
 
 Construct one V8StdIndex from already validated bytes without network. Add a
-focused factory for this to existing index; retain legacy direct file entrypoints
+focused factory and a trusted-IPC serialization hook (exclude/recreate the
+process-local lock, never deserialize a persistent pickle cache) to existing
+index; retain legacy direct file entrypoints
 for current tests/developer use. Never mutate this index after construction.
 Facade captures coordinator.current() once per top-level call, invokes that
 generation including nested snippet/search/related operations, then transforms
