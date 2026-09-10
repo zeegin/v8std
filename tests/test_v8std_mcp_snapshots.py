@@ -21,6 +21,7 @@ import threading
 import time
 import unittest
 from unittest.mock import patch
+import weakref
 
 from tests import mcp_snapshot_fixtures as fixture
 
@@ -567,6 +568,68 @@ class SnapshotStoreTests(SnapshotTestCase):
         (self.store.namespace / "state.json").write_bytes(b"broken JSON")
         self.assertEqual(self.store.cached().archive_sha256, first.archive_sha256)
 
+    def pointer_recovery_pair(self, case):
+        self.source.archive, self.source.manifest = fixture.snapshot_fixture()
+        store = self.loader.SnapshotStore(self.source.url, self.cache / case)
+        previous = store.refresh()
+        self.source.next_generation("pointer-current")
+        current = store.refresh()
+        return store, previous, current
+
+    def test_noninteger_pointer_versions_use_rollback_and_allow_refresh(self):
+        for case, version in (("float-version", 1.0), ("bool-version", True)):
+            with self.subTest(version=version):
+                store, previous, _ = self.pointer_recovery_pair(case)
+                pointer = store.namespace / "state.json"
+                state = json.loads(pointer.read_bytes())
+                state["schema_version"] = version
+                pointer.write_bytes(fixture.json_bytes(state))
+                self.assertEqual(store.cached().archive_sha256, previous.archive_sha256,
+                                 "noninteger version must not select the current pointer")
+                self.source.next_generation("pointer-recovered")
+                refreshed = store.refresh()
+                committed = json.loads(pointer.read_bytes())
+                self.assertEqual(refreshed.metadata["corpus_id"], self.source.manifest["corpus_id"])
+                self.assertEqual(committed["previous"], previous.archive_sha256)
+                self.assertIs(type(committed["schema_version"]), int)
+                self.assertEqual(store.refresh().archive_sha256, refreshed.archive_sha256)
+
+    def test_noncanonical_pointer_extensions_fall_back_and_do_not_block_refresh(self):
+        for case, extra in (("float-field", .5), ("nested-float", {"values": [1, .5]})):
+            with self.subTest(extension=extra):
+                store, previous, _ = self.pointer_recovery_pair(case)
+                pointer = store.namespace / "state.json"
+                state = json.loads(pointer.read_bytes())
+                state["extension"] = extra
+                pointer.write_bytes(fixture.json_bytes(state))
+                self.source.next_generation("pointer-recovered")
+                try:
+                    refreshed = store.refresh()
+                except (self.loader.LoaderError, self.loader.SnapshotError) as error:
+                    self.fail("malformed current pointer blocked rollback refresh: " + error.code)
+                committed = json.loads(pointer.read_bytes())
+                backup = json.loads((store.namespace / "rollback.json").read_bytes())
+                self.assertEqual(refreshed.metadata["corpus_id"], self.source.manifest["corpus_id"])
+                self.assertEqual(committed["previous"], previous.archive_sha256)
+                self.assertEqual(backup["active"], previous.archive_sha256)
+                self.assertNotIn("extension", backup)
+                self.assertEqual(store.refresh().archive_sha256, refreshed.archive_sha256)
+
+    def test_canonical_pointer_extensions_remain_usable_and_survive_rollback_commit(self):
+        store, _, current = self.pointer_recovery_pair("canonical-field")
+        pointer = store.namespace / "state.json"
+        state = json.loads(pointer.read_bytes())
+        extension = {"values": [1, True, None, "release-note"]}
+        state["extension"] = extension
+        pointer.write_bytes(fixture.json_bytes(state))
+        self.assertEqual(store.cached().archive_sha256, current.archive_sha256)
+        self.source.next_generation("pointer-recovered")
+        refreshed = store.refresh()
+        backup = json.loads((store.namespace / "rollback.json").read_bytes())
+        self.assertEqual(refreshed.metadata["corpus_id"], self.source.manifest["corpus_id"])
+        self.assertEqual(backup["active"], current.archive_sha256)
+        self.assertEqual(backup["extension"], extension)
+
     def test_gc_preserves_last_verified_rollback_when_newer_pointer_targets_are_bad(self):
         first = self.store.refresh()
         self.source.next_generation()
@@ -864,6 +927,43 @@ class SnapshotCoordinatorTests(SnapshotTestCase):
             self.assertEqual(coordinator._delay(1), 30)
         with patch("v8std_mcp_snapshots.random.uniform", return_value=1.2):
             self.assertEqual(coordinator._delay(10000), 3600)
+
+
+class SnapshotLifetimeTests(unittest.TestCase):
+    def test_same_hash_refresh_releases_unused_generation_before_idle_wait(self):
+        loader = importlib.import_module("v8std_mcp_snapshots")
+        references = []
+
+        class CompletedStore:
+            # The spawn/IPC boundary is covered by the real store tests. Here
+            # weakrefs isolate ownership after a completed result is delivered.
+            def _run(self, mode, prepare, stop):
+                generation = Generation("same-corpus", os.getpid(), "completed-ipc")
+                references.append(weakref.ref(generation))
+                return generation, {"corpus_id": "same-corpus", "archive_sha256": "a" * 64}
+
+        class ObservedStop(threading.Event):
+            def __init__(self):
+                super().__init__()
+                self.idle = threading.Event()
+
+            def wait(self, timeout=None):
+                self.idle.set()
+                return super().wait(timeout)
+
+        coordinator = loader.SnapshotCoordinator(CompletedStore(), build)
+        stop = ObservedStop()
+        coordinator._stop = stop
+        try:
+            coordinator.start()
+            self.assertTrue(stop.idle.wait(2), "coordinator never entered its refresh interval")
+            self.assertEqual(len(references), 2)
+            self.assertIs(coordinator.current(), references[0]())
+            self.assertIsNone(references[1](), "unused same-hash result remains alive during idle")
+            self.assertTrue(coordinator._thread.is_alive())
+            self.assertFalse(stop.is_set())
+        finally:
+            coordinator.close()
 
 
 if __name__ == "__main__":

@@ -256,11 +256,16 @@ class SnapshotStore:
         for name in ("state.json", "rollback.json"):
             try:
                 state = strict_json(_read_file(self.namespace / name, MAX_MANIFEST_BYTES))
-                if (state.get("schema_version") != 1 or state.get("site_url") != self.site_url
+                if (type(state.get("schema_version")) is not int or state["schema_version"] != 1
+                        or state.get("site_url") != self.site_url
                         or not self._digest(state.get("active"))
                         or (state.get("previous") is not None
                             and not self._digest(state["previous"]))):
                     continue
+                # Recovery retains this record for the next rollback commit,
+                # including unknown fields. Reject it before selecting a corpus
+                # unless that same commit serializer can represent every field.
+                canonical_json(state)
                 yield state
             except (OSError, SnapshotError, LoaderError):
                 continue
@@ -670,6 +675,7 @@ class SnapshotCoordinator:
             result, metadata = self.store._run("cached", self.build, self._stop)
             if metadata:
                 self._accept(result, metadata, checked=False)
+            del result  # The active reference owns the accepted bootstrap result.
         except (LoaderError, SnapshotError):
             pass
         failures = 0
@@ -679,6 +685,9 @@ class SnapshotCoordinator:
                 if self._stop.is_set():
                     return
                 self._accept(result, metadata, checked=True)
+                # Same-hash candidates are not adopted. Drop the loop's reference
+                # outside the query lock, before sleeping for a refresh interval.
+                del result
                 failures = 0
             except (LoaderError, SnapshotError) as error:
                 if self._stop.is_set():
