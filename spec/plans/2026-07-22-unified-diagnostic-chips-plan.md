@@ -25,7 +25,7 @@ implements:
 - Existing `diagnostic-backlinks:start` and `diagnostic-backlinks:end` markers remain unchanged.
 - Search attributes and other invisible technical values are not converted into components.
 - Light theme, dark theme, keyboard focus, and narrow screens remain readable.
-- Before running Python commands, set `VIRTUAL_ENV=/Users/ingvarvilkman/Documents/git/v8std/.venv`; use `$VIRTUAL_ENV/bin/python` so project dependencies are available from the linked worktree.
+- Before running Python commands, set `VIRTUAL_ENV="$PWD/.venv"` from the checkout root; use `$VIRTUAL_ENV/bin/python` so project dependencies are available from the linked worktree.
 
 ---
 
@@ -236,7 +236,7 @@ Run:
 
 ```bash
 $VIRTUAL_ENV/bin/python scripts/generate_diagnostic_standard_links.py --check
-VIRTUAL_ENV="/Users/ingvarvilkman/Documents/git/v8std/.venv" ./scripts/zensical_docs.sh build --strict
+VIRTUAL_ENV="$PWD/.venv" ./scripts/zensical_docs.sh build --strict
 ```
 
 Expected: both generator checks succeed and Zensical reports no strict-build errors.

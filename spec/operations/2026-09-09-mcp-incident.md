@@ -79,17 +79,17 @@ References: [nginx core directives](https://nginx.org/en/docs/ngx_core_module.ht
 - Deployed configuration source: local main commit
   `d707daa9b6d487ae4cf9d93d6c34ff86fa6b5793`. Only the emergency nginx patch
   and map were applied. No Git push or application update occurred.
-- Backup/evidence directory (root-only):
-  `/root/v8std-incident-20260909-kkl40C` on ai.v8std.ru.
+- Backup/evidence was retained in a root-only directory; its location is
+  recorded privately.
 - At 17:59:50, exact patch dry-run and host nginx 1.24.0 `nginx -t` passed.
-  Existing unrelated OCSP warning for 0x1c.ru remained.
+  An existing OCSP warning unrelated to MCP remained.
 - Restart began at 17:59:58 and completed at 18:00:08 UTC (21:00:08 MSK).
   systemd MainPID and nginx pid-file both became 643435. Two workers stuck in
   shutdown and the obsolete master were cleared by the unit restart.
 - Established TCP connections dropped from 1,133 to 6 immediately, then 41
   after 33 seconds of live reconnects. Python FDs dropped from 384 to 8.
 - External health, browser GET, HEAD, initialize, tools/list, search and page
-  retrieval passed. Monitoring and 0x1c.ru returned 200. SSE GET returned 405
+  retrieval passed. Monitoring and unrelated service checks returned 200. SSE GET returned 405
   with `Allow: POST, HEAD` in 0.364 seconds.
 - Real Python MCP SDK 1.27.0 completed initialize -> list five tools -> search
   with protocol 2025-11-25 and no tool error.

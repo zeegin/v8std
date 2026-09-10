@@ -126,9 +126,8 @@ HTTP body before/after SHA-256:
 `06cf99bbcab3a96a58f8afe006d594c86eabdaae2e342d133c3aa8a077e79876`.
 Evidence: `serve.json`, `serve.log`, `serve-initial.html`, `serve-rebuilt.html`.
 
-Docker context was explicitly `desktop-linux`, endpoint
-`unix:///Users/ingvarvilkman/.docker/run/docker.sock`; client/server preflight
-29.7.2. Real local Docker build, image import from `/tmp` with
+Docker context was explicitly `desktop-linux`, using its local Unix socket;
+client/server preflight 29.7.2. Real local Docker build, image import from `/tmp` with
 `PYTHONPATH=/opt/v8std`, and project-config render through a read-only `/docs`
 mount all exited 0. The rendered compact BSL fixture contained standalone
 before/code/after blocks and passed `check_html` (1 article, 0 violations).
