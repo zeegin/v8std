@@ -73,7 +73,7 @@ corpus/runtime (1–3), container distribution (4), delivery (5–6). Их inter
 | 2 | `scripts/v8std_mcp_snapshots.py`, `tests/test_v8std_mcp_snapshots.py` | URL trust boundary, HTTP/cache transaction, background coordinator. |
 | 3 | `scripts/v8std_mcp_runtime.py`, `scripts/v8std_mcp_presentation.py`, `scripts/v8std_mcp_index.py`, `scripts/v8std_mcp_server.py`, runtime tests | Frozen generation construction, request facade, stdio/HTTP lifecycle. |
 | 4 | Dockerfiles/Compose/lock, local-profile script, tests, docs | Build and exercise the two images and local site. |
-| 5 | `deploy/container/`, `scripts/v8std_mcp_release.py`, `tests/test_v8std_mcp_release.py` | Typed host transaction, nginx index store and recovery. |
+| 5 | `deploy/container/`, `scripts/v8std_mcp_release.py`, release tests; snapshot/runtime integration and focused tests | Typed host transaction, nginx index store, fixed release generation and recovery. |
 | 6 | workflows, publication scripts, architecture policy/test references, docs/operations | Fail-closed CI delivery, process v2 synchronization, integration evidence. |
 
 ### Task 1: Deterministic corpus format and producer
@@ -336,6 +336,8 @@ self.assertEqual(container_inspect["Config"]["User"], "10001:10001")
 **Files:** create `scripts/v8std_mcp_release.py`, `tests/test_v8std_mcp_release.py`,
 `deploy/container/release.schema.json`, controller/service/nginx configurations
 under `deploy/container/`, `spec/operations/mcp-container-activation.md`.
+Extend snapshot/runtime modules and their focused tests only for the release
+contract's generation hold, selected rollback corpus and refresh resumption.
 
 **Interfaces produced:** CLI `validate-envelope`, `deploy`, `recover`, `status`,
 `publish-index`; inputs are typed bounded JSON or fixed paths under configured
@@ -359,6 +361,16 @@ self.assertTrue(predecessor_snapshot_path.is_file())
   nginx test then atomic switch/reload, public smoke then commit/drain. Enforce
   5min transaction, 90s readiness, 30s smoke/drain, 45s final stop; loss of caller
   does not kill host recovery. Stale retry cannot supersede current sequence.
+  Integrate a bounded trusted host-control path that holds the selected verified
+  generation during readiness/switch/rollback and resumes normal refresh after
+  commit. Cache pins retain bytes; they do not select or freeze a process's
+  generation. Likewise, zero refresh interval alone is not a release hold: the
+  current coordinator performs a warm-start network refresh. Exercise a changing
+  source manifest during the transaction, a postcommit worker failure, restart
+  from the selected predecessor and refresh resumption. Neither a retained
+  archive nor a disk pointer alone proves the endpoint serves the required
+  corpus ID. Preserve ordinary local stdio/HTTP behavior and the single public
+  SITE_URL setting; release control must not be exposed as an MCP tool.
 - [ ] **GREEN static store/operations:** Independent read-only nginx alias for
   `/indexes/v1/` with GET/HEAD, hash cache headers and bounded download admission;
   publisher stages/verifies/renames objects and tracks references/pins before GC.
