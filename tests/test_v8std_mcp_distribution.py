@@ -15,6 +15,26 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DistributionTests(unittest.TestCase):
+    def test_actual_compose_resolution_preserves_site_override_and_local_defaults(self):
+        env = {key: value for key, value in os.environ.items()
+               if not key.startswith("V8STD_")}
+        env.update(V8STD_SITE_IMAGE="local-site:test", V8STD_MCP_IMAGE="local-mcp:test")
+        cases = [({}, "http://v8std.localhost:18765/"),
+                 ({"V8STD_SITE_PORT": "19875", "V8STD_SITE_PREFIX": "/kb/"},
+                  "http://v8std.localhost:19875/kb/"),
+                 ({"V8STD_SITE_PORT": "19875", "V8STD_SITE_PREFIX": "/unused/",
+                   "V8STD_MCP_SITE_URL": "http://alternate.localhost:19876/knowledge/"},
+                  "http://alternate.localhost:19876/knowledge/")]
+        for settings, expected in cases:
+            with self.subTest(settings=settings):
+                resolved = json.loads(subprocess.check_output(
+                    ["docker", "compose", "--env-file", os.devnull, "-f", str(ROOT / "compose.yaml"),
+                     "--profile", "mcp", "config", "--format", "json"],
+                    env={**env, **settings}, text=True, timeout=20))
+                mcp = resolved["services"]["mcp"]
+                self.assertEqual(mcp["environment"]["V8STD_MCP_SITE_URL"], expected)
+                self.assertNotIn("--site-url", mcp["command"])
+
     def test_images_are_thin_pinned_and_unprivileged(self):
         runtime = (ROOT / "Dockerfile.mcp").read_text()
         static = (ROOT / "Dockerfile.site").read_text()

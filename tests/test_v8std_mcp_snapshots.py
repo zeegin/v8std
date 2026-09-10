@@ -289,6 +289,10 @@ class SnapshotTestCase(unittest.TestCase):
 
 
 class SnapshotStoreTests(SnapshotTestCase):
+    def test_default_attempt_and_read_budgets_are_independent(self):
+        self.assertEqual(self.store._attempt_seconds, 360)
+        self.assertEqual(self.store._read_seconds, 20)
+
     def test_verified_archive_is_streamed_into_staging_before_compressed_input_ends(self):
         extract = getattr(self.store, "_extract_verified", None)
         self.assertIsNotNone(extract, "Task2 must stream extraction into private staging")

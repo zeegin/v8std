@@ -44,7 +44,7 @@ from v8std_mcp_snapshot_format import (
     validate_manifest, verify_archive,
 )
 
-ATTEMPT_SECONDS = 60
+ATTEMPT_SECONDS = 360
 READ_SECONDS = 20
 CACHE_BYTES = 256 * 1024 * 1024
 _CHUNK = 64 * 1024

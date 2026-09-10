@@ -32,6 +32,9 @@ INIT = {"protocolVersion": "2025-03-26", "capabilities": {},
 SIGNAL = 'Предупреждение("Текст");'
 TOOLS = {"v8std_search", "v8std_get_page", "v8std_get_related",
          "v8std_explain_snippet", "v8std_explain_diagnostics"}
+# Whole-attempt budget plus bounded interpreter/container startup margin.
+# This is only polling readiness; individual RPC/read/stop budgets stay shorter.
+STARTUP_SECONDS = 360 + 30
 
 
 @cache
@@ -135,7 +138,8 @@ def check_tools(request, site_url, *, resources=True):
     assert snippet["inputSchema"]["properties"]["snippet"]["maxLength"] == 4000
     def call(name, args):
         return content(request("tools/call", {"name": name, "arguments": args}))
-    search = eventually(lambda: call("v8std_search", {"query": "std437", "limit": 3}))
+    search = eventually(lambda: call("v8std_search", {"query": "std437", "limit": 3}),
+                        seconds=STARTUP_SECONDS)
     assert search["results"][0]["id"] == "std437", search
     assert search["results"][0]["url"] == site_url + "std/437/", search
     ranking = call("v8std_search", {"query": "модальные окна", "limit": 5})
@@ -323,7 +327,8 @@ def main():
             probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             probe.bind(("127.0.0.1", port))
     assert args.prefix.startswith("/") and args.prefix.endswith("/")
-    site_url = f"http://v8std.localhost:{args.site_port}{args.prefix}"
+    local_default = f"http://v8std.localhost:{args.site_port}{args.prefix}"
+    site_url = os.environ.get("V8STD_MCP_SITE_URL") or local_default
     project = "v8std-task4-" + uuid.uuid4().hex[:10]
     env = {**os.environ, "V8STD_SITE_IMAGE": args.site_image, "V8STD_MCP_IMAGE": args.mcp_image,
            "V8STD_SITE_PORT": str(args.site_port), "V8STD_MCP_PORT": str(args.mcp_port),
@@ -331,12 +336,19 @@ def main():
     compose = ["docker", "compose", "-p", project, "-f", str(ROOT / "compose.yaml")]
     names = []
     report = {"platform": args.platform, "site_url": site_url}
+    resolved = json.loads(run(*compose, "--profile", "mcp", "config", "--format", "json", env=env))
+    assert resolved["services"]["mcp"]["environment"]["V8STD_MCP_SITE_URL"] == site_url
+    report["compose_site_url"] = site_url
     with tempfile.TemporaryDirectory(prefix=project) as directory:
         directory = Path(directory)
         try:
             run(*compose, "up", "-d", "site", env=env)
             site = run(*compose, "ps", "-q", "site", env=env)
             eventually(lambda: http(site_url)[0] == 200)
+            if site_url != local_default:
+                assert http(local_default + "ai/mcp/v1/manifest.json")[0] == 404, \
+                    "override regression requires an unavailable default source"
+                report["default_source_status"] = 404
             manifest_url = site_url + "ai/mcp/v1/manifest.json"
             status, headers, payload = http(manifest_url)
             assert status == 200 and headers.get("Cache-Control") == "no-store"
@@ -355,6 +367,8 @@ def main():
             for license_name in ("LGPL-3.0", "GPL-3.0", "EPL-2.0"):
                 assert http(site_url + f"LICENSES/{license_name}.txt")[2] == (ROOT / f"LICENSES/{license_name}.txt").read_bytes()
             report["corpus_id"] = manifest["corpus_id"]
+            report["corpus_source_sha"] = manifest["source_sha"]
+            report["archive_sha256"] = manifest["archive"]["sha256"]
             if args.chrome:
                 report["browser"] = browser_graph(args.chrome, args.node, site_url, directory)
             network = project + "_corpus"
@@ -387,12 +401,16 @@ def main():
                 return json.loads(run("docker", "exec", name, "python", "-c", code))
 
             for iteration, network_name in enumerate((network, "none")):
+                started = time.monotonic()
+                print(f"stdio {iteration}: starting {network_name}", file=sys.stderr, flush=True)
                 name = project + f"-stdio-{iteration}"
                 with (directory / f"stdio-{iteration}.log").open("w") as log:
                     session = Stdio(container(name, network_name), log)
                     try:
                         session.initialize()
                         ranking = check_tools(session.request, site_url)
+                        report[f"stdio_{iteration}_ready_seconds"] = round(time.monotonic() - started, 2)
+                        print(f"stdio {iteration}: ready", file=sys.stderr, flush=True)
                         state = inspect(name)
                         if iteration == 0:
                             code = "import importlib.metadata as m,json; from pathlib import Path; " \
@@ -406,6 +424,8 @@ def main():
                             report["installed_runtime_graph"] = json.loads(run("docker", "exec", name, "python", "-c", code))
                         current = cache_state(name)
                         assert current and all(value[0] == 10001 for value in current.values())
+                        namespace = "v1-" + hashlib.sha256(site_url.encode()).hexdigest() + "/"
+                        assert all(path.startswith(namespace) for path in current), current
                         if iteration == 0:
                             original, original_ranking = current, ranking
                             report["mcp_image_id"] = state["Image"]
@@ -429,7 +449,8 @@ def main():
                     assert tool["inputSchema"]["properties"]["snippet"]["maxLength"] == 32000
                     body = " " * (32000 - len(SIGNAL)) + SIGNAL
                     result = eventually(lambda: content(session.request("tools/call", {
-                        "name": "v8std_explain_snippet", "arguments": {"snippet": body, "limit": 1}})))
+                        "name": "v8std_explain_snippet", "arguments": {"snippet": body, "limit": 1}})),
+                        seconds=STARTUP_SECONDS)
                     assert result["diagnostics"][0]["id"] == "bslls:UsingModalWindows"
                     run("docker", "stop", "-t", "15", terminated)
                     report["stdio_sigterm_exit"] = session.process.wait(timeout=20)
@@ -466,10 +487,15 @@ def main():
                     process.wait(timeout=20)
                 process.stdin.close()
 
+            started = time.monotonic()
+            print("HTTP cold-online: starting", file=sys.stderr, flush=True)
             run(*compose, "--profile", "mcp", "up", "-d", env=env)
             mcp = run(*compose, "ps", "-q", "mcp", env=env)
             endpoint = f"http://127.0.0.1:{args.mcp_port}"
-            health = eventually(lambda: json.loads(http(endpoint + "/healthz")[2]) if http(endpoint + "/healthz")[0] == 200 else None)
+            health = eventually(lambda: json.loads(http(endpoint + "/healthz")[2]) if http(endpoint + "/healthz")[0] == 200 else None,
+                                seconds=STARTUP_SECONDS)
+            report["http_cold_ready_seconds"] = round(time.monotonic() - started, 2)
+            print("HTTP cold-online: ready", file=sys.stderr, flush=True)
             assert health["corpus_id"] == manifest["corpus_id"], health
             count = 0
             def request(method, params=None):
@@ -483,13 +509,55 @@ def main():
             assert http(endpoint + "/mcp", {"jsonrpc":"2.0", "id":999,
                         "method":"initialize", "params":INIT}, headers={"Host":"untrusted.invalid"})[0] == 421
             check_tools(request, site_url)
-            inspect(mcp)
+            state = inspect(mcp)
+            expected_sha = json.loads(run("docker", "image", "inspect", args.mcp_image))[0]["Config"]["Labels"]["org.opencontainers.image.revision"]
+            assert health["runtime_sha"] == expected_sha, health
+            assert "V8STD_MCP_SITE_URL=" + site_url in state["Config"]["Env"]
+            http_cache = cache_state(mcp)
+            http_volume = next(m["Name"] for m in state["Mounts"] if m["Destination"] == "/var/lib/v8std-mcp")
             assert list(json.loads(run("docker", "inspect", mcp))[0]["NetworkSettings"]["Networks"]) == [network]
             report["http"] = health
             report["site_image_id"] = json.loads(run("docker", "inspect", site))[0]["Image"]
             run(*compose, "stop", "-t", "15", "mcp", env=env)
-            report["warm_http_sigterm_exit"] = json.loads(run("docker", "inspect", mcp))[0]["State"]["ExitCode"]
-            assert report["warm_http_sigterm_exit"] in (0, 143)
+            report["online_http_sigterm_exit"] = json.loads(run("docker", "inspect", mcp))[0]["State"]["ExitCode"]
+            assert report["online_http_sigterm_exit"] in (0, 143)
+
+            # Same Compose cache, but no network: exercise real warm HTTP startup.
+            warm = project + "-warm-http"
+            started = time.monotonic()
+            print("HTTP warm-network-none: starting", file=sys.stderr, flush=True)
+            with (directory / "warm-http.log").open("w") as log:
+                process = subprocess.Popen(container(warm, "none", "streamable-http", cache=http_volume)
+                    + ["--host", "0.0.0.0", "--port", "8000"], stdin=subprocess.PIPE,
+                    stdout=subprocess.DEVNULL, stderr=log)
+                try:
+                    code = "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/healthz',timeout=10).read().decode())"
+                    warm_health = eventually(lambda: json.loads(run("docker", "exec", warm, "python", "-c", code,
+                        stderr=subprocess.DEVNULL)), seconds=STARTUP_SECONDS)
+                    assert warm_health["corpus_id"] == health["corpus_id"]
+                    assert warm_health["runtime_sha"] == expected_sha
+                    def warm_request(method, params=None):
+                        message = {"jsonrpc": "2.0", "id": 1, "method": method, "params": params or {}}
+                        code = "import json,sys,urllib.request; r=urllib.request.Request('http://127.0.0.1:8000/mcp',data=sys.argv[1].encode(),headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream'}); body=urllib.request.urlopen(r,timeout=10).read(); print(body.decode())"
+                        body = run("docker", "exec", warm, "python", "-c", code, json.dumps(message))
+                        if body.startswith("event:"):
+                            body = next(line[6:] for line in body.splitlines() if line.startswith("data: "))
+                        return json.loads(body)["result"]
+                    assert warm_request("initialize", INIT)["serverInfo"]["name"] == "v8std"
+                    check_tools(warm_request, site_url)
+                    assert cache_state(warm) == http_cache, "offline warm HTTP rewrote cache"
+                    assert inspect(warm)["HostConfig"]["NetworkMode"] == "none"
+                    report["http_warm_ready_seconds"] = round(time.monotonic() - started, 2)
+                    report["http_warm"] = warm_health
+                    print("HTTP warm-network-none: ready", file=sys.stderr, flush=True)
+                    run("docker", "stop", "-t", "15", warm)
+                    report["warm_http_sigterm_exit"] = process.wait(timeout=20)
+                    assert report["warm_http_sigterm_exit"] in (0, 143)
+                finally:
+                    if process.poll() is None:
+                        run("docker", "stop", "-t", "15", warm)
+                        process.wait(timeout=20)
+                    process.stdin.close()
             report["limits"] = {"mcp_memory_bytes": 1536 * 1024**2, "mcp_cpus": 2,
                                 "site_memory_bytes": 128 * 1024**2, "site_cpus": 0.5}
             print(json.dumps(report, ensure_ascii=False, indent=2))
