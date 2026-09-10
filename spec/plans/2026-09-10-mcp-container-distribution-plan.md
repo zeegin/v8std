@@ -222,6 +222,11 @@ Integrate publisher-side link validation in `generate_mcp_snapshot.py` and its
 focused tests, reusing the presentation parser/catalog rather than a second
 link grammar. Treat the three Resources and published license paths as explicit
 auxiliary catalog entries, not corpus pages or arbitrary allowed paths.
+If reliable source-preserving parsing needs a small parser dependency, include
+its pinned runtime/build requirement and focused dependency-boundary tests in
+this task. The producer must not import a docs builder; standalone Python `-S`
+was an implementation check, not an approved prohibition on parser dependencies.
+Keep the pure snapshot format reader independent of docs tooling.
 
 **Interfaces produced:**
 
