@@ -10,6 +10,7 @@ import tempfile
 import types
 import unittest
 from pathlib import Path
+from functools import lru_cache
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -45,7 +46,7 @@ EXPECTED_TOOL_GUIDANCE = {
     ],
     "v8std_explain_snippet": [
         "Use this when",
-        "short BSL or SDBL code fragment",
+        "one BSL procedure or SDBL code fragment",
         "applicable standards",
         "Do not use it for ordinary prose",
     ],
@@ -181,34 +182,12 @@ def _constant_string(value: ast.AST) -> str | None:
     return None
 
 
+@lru_cache(maxsize=1)
 def registered_tools() -> dict[str, str]:
-    tree = ast.parse(SERVER_PATH.read_text(encoding="utf-8"))
-    tools: dict[str, str] = {}
-
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.FunctionDef):
-            continue
-
-        for decorator in node.decorator_list:
-            if not isinstance(decorator, ast.Call):
-                continue
-            if not isinstance(decorator.func, ast.Attribute):
-                continue
-            if decorator.func.attr != "tool":
-                continue
-
-            name = None
-            description = None
-            for keyword in decorator.keywords:
-                if keyword.arg == "name":
-                    name = _constant_string(keyword.value)
-                if keyword.arg == "description":
-                    description = _constant_string(keyword.value)
-
-            if name is not None and description is not None:
-                tools[name] = description
-
-    return tools
+    module = load_server_module()
+    server = module.build_server(module.V8StdIndex(), host="127.0.0.1", port=8765,
+        mcp_path="/mcp", allowed_hosts=["127.0.0.1:*"], allowed_origins=[])
+    return {tool.name: tool.description or "" for tool in asyncio.run(server.list_tools())}
 
 
 def registered_tool_names() -> list[str]:
@@ -255,7 +234,7 @@ class V8StdMcpServerToolNameTests(unittest.TestCase):
         for expected in [
             "read-only",
             "does not run analyzers",
-            "short BSL/SDBL snippet",
+            "one BSL procedure or SDBL fragment",
             "diagnostic codes",
             "clean Markdown",
             "arbitrary prose search",

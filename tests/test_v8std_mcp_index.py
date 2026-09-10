@@ -241,6 +241,26 @@ class V8StdMcpIndexTests(unittest.TestCase):
             expected,
         )
 
+    def test_explain_snippet_accepts_long_snippet(self):
+        # Регресс: длинный сниппет падал с "query is too long: max 500 characters",
+        # хотя explain_snippet заявляет лимит MAX_SNIPPET_CHARS (4000).
+        snippet = (
+            'Процедура ПриЗаписи(Источник, Отказ) Экспорт\n'
+            '\tПопытка\n'
+            '\t\tОбработатьИсточник(Источник);\n'
+            '\tИсключение\n'
+            '\t\tЗаписьЖурналаРегистрации("Пример", УровеньЖурналаРегистрации.Ошибка, , '
+            'Источник.Ссылка, ПодробноеПредставлениеОшибки(ИнформацияОбОшибке()));\n'
+            '\tКонецПопытки;\n'
+            'КонецПроцедуры\n'
+        ) * 3
+        self.assertGreater(len(snippet), 500)
+        self.assertLess(len(snippet), 4000)
+        result = self.index.explain_snippet(snippet)
+        self.assertIn("diagnostics", result)
+        self.assertIn("signals", result)
+        self.assertIn("std498", [item["id"] for item in result["standards"]])
+
     def test_explain_snippet_and_batch_diagnostics(self):
         snippet = self.index.explain_snippet(
             'Запрос = Новый Запрос("ВЫБРАТЬ РАЗРЕШЕННЫЕ ...")'

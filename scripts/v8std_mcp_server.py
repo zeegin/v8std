@@ -6,14 +6,16 @@ import argparse
 import html
 import json
 import logging
+import os
 import sys
 from contextvars import ContextVar
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
+from pydantic import Field
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
@@ -23,7 +25,10 @@ from v8std_mcp_index import (
     DEFAULT_REFRESH_SECONDS,
     DEFAULT_VECTORS_URL,
     MAX_BODY_CHARS,
+    MAX_SNIPPET_CHARS,
+    MAX_SNIPPET_LIMIT_CHARS,
     V8StdIndex,
+    validate_max_snippet_chars,
 )
 
 
@@ -513,7 +518,7 @@ def build_server(
             "Use this read-only MCP as a v8std.ru knowledge source for 1C:Enterprise "
             "BSL/SDBL standards, diagnostics, aliases, relations, source URLs, and "
             "clean Markdown. It does not run analyzers, inspect projects, or change code. "
-            "Tool selection: use v8std_explain_snippet for a short BSL/SDBL snippet; "
+            "Tool selection: use v8std_explain_snippet for one BSL procedure or SDBL fragment; "
             "use v8std_explain_diagnostics for ACC, BSLLS, or EDT/v8-code-style "
             "diagnostic codes; use v8std_get_page when you already have an id, alias, "
             "path, or URL and need the full clean Markdown page; use v8std_get_related "
@@ -590,17 +595,6 @@ def build_server(
         tool_usage.record("v8std_get_related", system=_usage_system(current_client_system()))
         return index.related(id_or_alias_or_url, relations=relations, limit=limit)
 
-    @server.tool(
-        name="v8std_explain_snippet",
-        description=(
-            "Use this when the input is a short BSL or SDBL code fragment and the goal "
-            "is to identify applicable standards, likely diagnostics, and confidence "
-            "from code tokens or calls, for example ВЫБРАТЬ РАЗРЕШЕННЫЕ, "
-            "ОткрытьФормуМодально, Предупреждение, or Вопрос. Do not use it for ordinary "
-            "prose such as 'модальные окна'; use v8std_search for prose. For full rule "
-            "text, call v8std_get_page on returned ids."
-        ),
-    )
     def explain_snippet(
         snippet: str,
         language: str = "auto",
@@ -608,6 +602,29 @@ def build_server(
     ) -> dict[str, Any]:
         tool_usage.record("v8std_explain_snippet", system=_usage_system(current_client_system()))
         return index.explain_snippet(snippet, language=language, limit=limit)
+
+    # Publish the effective bound without Pydantic echoing source code in a
+    # length ValidationError. The index enforces this same bound on every call.
+    explain_snippet.__annotations__["snippet"] = Annotated[
+        str, Field(json_schema_extra={"maxLength": index.max_snippet_chars})
+    ]
+    server.tool(
+        name="v8std_explain_snippet",
+        description=(
+            "Use this when the input is one BSL procedure or SDBL code fragment and the goal "
+            "is to identify applicable standards, likely diagnostics, and confidence "
+            "from code tokens or calls, for example ВЫБРАТЬ РАЗРЕШЕННЫЕ, "
+            "ОткрытьФормуМодально, Предупреждение, or Вопрос. Do not use it for ordinary "
+            "prose such as 'модальные окна'; use v8std_search for prose. For full rule "
+            "text, call v8std_get_page on returned ids. "
+            f"This instance accepts at most {index.max_snippet_chars} Unicode characters. "
+            "Known signals are checked throughout the accepted fragment; this is not a full analyzer. "
+            "Send one relevant procedure, not a whole module. On a size error, reduce the fragment; "
+            "do not retry the same input or automatically fan out a module into parallel calls. "
+            "An operator may explicitly increase the limit on a local server and restart it. "
+            "Returns compact previews and at most limit recommendations in total."
+        ),
+    )(explain_snippet)
 
     @server.tool(
         name="v8std_explain_diagnostics",
@@ -681,6 +698,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--mcp-path", default="/mcp")
     parser.add_argument(
+        "--max-snippet-chars", default=None,
+        help=(f"Maximum decoded snippet characters ({MAX_SNIPPET_CHARS}..{MAX_SNIPPET_LIMIT_CHARS}). "
+              "Overrides V8STD_MCP_MAX_SNIPPET_CHARS; default is 4000."),
+    )
+    parser.add_argument(
         "--log-level",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         default=DEFAULT_LOG_LEVEL,
@@ -709,7 +731,21 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         ],
         help="Allowed Origin header for MCP transport security. Can be repeated.",
     )
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    raw_limit = args.max_snippet_chars
+    if raw_limit is None:
+        raw_limit = os.environ.get("V8STD_MCP_MAX_SNIPPET_CHARS", str(MAX_SNIPPET_CHARS))
+    raw_limit = raw_limit.strip()
+    try:
+        if not raw_limit.isascii() or not raw_limit.isdecimal():
+            raise ValueError("not an ASCII integer")
+        args.max_snippet_chars = validate_max_snippet_chars(int(raw_limit))
+    except ValueError:
+        parser.error(
+            "--max-snippet-chars / V8STD_MCP_MAX_SNIPPET_CHARS must be an integer "
+            f"from {MAX_SNIPPET_CHARS} to {MAX_SNIPPET_LIMIT_CHARS}"
+        )
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -722,6 +758,7 @@ def main(argv: list[str] | None = None) -> int:
         vectors_url=args.vectors_url,
         cache_dir=args.cache_dir,
         refresh_seconds=args.refresh_seconds,
+        max_snippet_chars=args.max_snippet_chars,
     )
     index.load()
 
