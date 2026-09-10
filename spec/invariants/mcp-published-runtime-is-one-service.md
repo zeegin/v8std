@@ -34,6 +34,10 @@ Local stdio/HTTP и catalog используют тот же multi-platform imag
 snippet-поведение совпадают. CPU architecture, транспорт и конфигурация сайта
 не выбирают другую кодовую реализацию MCP.
 
+Равенство артефакта и API не означает равенства флагов изоляции launchers.
+Production/direct Docker/Compose и Gateway применяют явно различённые профили
+distribution contract; это не отдельные сборки или сервисы.
+
 Fitness — будущие проверки digest/reference parity, surface parity, отсутствие
 v3 route, warm agent session и ограниченный old/new overlap. Наличие этого
 файла не означает, что контейнеры уже собраны или опубликованы.

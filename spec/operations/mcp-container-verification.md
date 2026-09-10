@@ -240,12 +240,120 @@ adds init/no-new-privileges and configurable resource/user/network arguments,
 but not read-only root, cap-drop or tmpfs. Catalog approval alone cannot correct
 that mismatch. No daemon changes or privileged retry were authorized.
 
-Implementation is paused at the architecture failure-recovery gate for revised
-written design/scope approval. Task4 remains incomplete; release controller and
-CI Tasks5/6 have not started. Keeping full direct/Compose/production hardening
-and making Gateway a separately accepted channel is a proposal, not an approved
-contract change. The60s runtime bound remains unchanged, and amd64 acceptance
-is not claimed. Do not merge, publish or close PR33 from this partial result.
+Initial review paused implementation at the architecture failure-recovery gate.
+The subsequent user-approved360-second/Compose correction is recorded below;
+Gateway profile/scope remains unresolved. Task4 remains incomplete; release
+controller and CI Tasks5/6 have not started. Deferring Catalog or accepting
+different launcher security profiles requires an explicit design choice, not
+inference from the timeout instruction. Do not merge, publish or close PR33
+from this partial result.
+
+### Approved360-second attempt and Compose override — scoped fix
+
+User explicitly requested «поставь 360 секунд и продолжай». Candidate
+design/contract/plan refinement: `068c127`; signed code correction:
+`9c1f3a72ce370fc816c32a6e0eeb2f773f23fb03`. Independent scoped re-review accepted
+the timeout/Compose fixes without new critical or important findings. Runtime
+now uses360seconds per attempt and20seconds per network read.
+RPC/shutdown budgets are unchanged; early cancellation does not wait360seconds.
+This is a changed safety budget, not a retrieval-performance improvement.
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_distribution.DistributionTests tests.test_v8std_mcp_runtime.RuntimeTests tests.test_v8std_mcp_runtime.WireTests -q
+V8STD_MCP_SITE_URL=http://v8std.localhost:18765/kb/ .venv/bin/python scripts/check_mcp_container.py --mcp-image v8std-task4-mcp:fix360-9c1f3a7-amd64 --site-image sha256:78e79de36ed45fc9d620d66b8e8c4d0b673c276a867ed4d5bfe4b16e72bdcbfd --platform linux/amd64 --prefix /deliberately-unused/
+```
+
+Two focused tests first failed on60≠360 and the ignored explicit SITE_URL,
+then passed. Combined **79tests passed in55.810seconds**, including accelerated
+real worker timeout/reaping, close and wire lifecycle tests. The existing
+Starlette warning remains recorded. Ordinary graph validation and diff checks
+passed; this is not the final full suite/strict-build gate.
+
+The runtime image was built after the scoped commit from a clean checkout,
+with exact source SHA9c1f3a7. Local Engine index ID:
+`sha256:0c282c458e6e19092c8d4e0db92b87eb2f8b05fa83ec6e7d5765221424579b79`;
+amd64 platform manifest:
+`sha256:26f35e15fd61beb5feca4a392e4701ac9757debdd43e15f15f0b4f2f1a8e15f8`.
+These are local artifact identities, not a published multi-platform release.
+The unchanged site prototype/corpus source SHA remainsf5c45d2; runtime and
+corpus provenance are deliberately independent, not relabelled to match.
+
+Actual supervised amd64/QEMU harness exited0:
+
+| Scenario | Startup/polling/check duration | Result |
+| --- | --- | --- |
+| Cold-online stdio |118.81s| Ready, tools/Resources/snippet/links pass; EOF0 |
+| Warm-offline stdio |111.58s| Verified cache and ranking preserved; EOF0 |
+| Cold-online Compose HTTP |122.61s| Ready200,1423rows, exact runtimeSHA |
+| Warm-offline HTTP |135.80s| Same corpus/cache, tools/links pass |
+
+These durations are not isolated generation CPU measurements. The harness
+allows390seconds only for readiness polling; individual RPC/read/stop limits
+were not inflated. Cold-offline HTTP still returned live200/ready503;
+HTTP SIGTERM exited143 within the bounded stop, stdio SIGTERM exited0.
+An explicit `/kb/` SITE_URL worked while the computed default
+`/deliberately-unused/` source returned404. Cache namespace, selected source
+and returned links followed the override. No public fallback was used.
+
+Direct/Compose non-root/read-only/cap-drop/no-new-privileges/init constraints
+remain; MCP2CPU/1536MiB, site0.5CPU/128MiB. Own containers/networks/cache volumes
+were removed, unrelated resources preserved, and no tests remained
+running at handoff. The new image and evidence log remain for inspection.
+Gateway was not changed or rerun; native amd64, registry and production evidence
+are still absent. The earlier60-second failure remains valid historical evidence
+and must not be rewritten as a pass.
+
+Scoped review retains a minor harness limitation for final integration: any
+differing SITE_URL override currently requires the computed default source to
+return404, unnecessarily rejecting valid fixtures where both URLs exist. Keep
+that assertion specific to the override regression scenario when repairing the
+integration helper. This does not invalidate the saved run where default404
+was intentional, and is not a runtime routing defect. Gateway remains the only
+open important finding from Task4; no profile change was approved yet.
+
+### Subsequent approved Gateway profile
+
+The user subsequently approved launcher-owned profiles: production and our
+direct Docker/Compose retain read-only/cap-drop; Gateway uses its actual native
+isolation with explicitly documented differences. Missing readonly/capdrop/tmpfs
+alone no longer defer Catalog. Candidate design/ADR/invariant/distribution
+contract and the scoped Task4 plan were amended together. Required non-root,
+init/no-new-privileges, nonprivileged mode and absence of Docker socket inside
+MCP will be checked on each created Gateway server. This decision does not
+claim that verification already passed or that cold routing, native amd64,
+registry/Catalog acceptance or target-host deployment happened. Historical findings
+above describe the contract at the time of the corresponding review.
+
+Focused implementation now passes15tests (0.246s): required controls and exact
+owned cache mount, rejection of root/privileged/missing controls/socket aliases,
+DinD preflight before launch (also under Python optimization), and explicit
+default404 regression mode. Generic overrides no longer require a broken
+default. Compose/runtime/images were not modified by this fix.
+
+Narrow actual verification used Gateway0.43.3 and two simultaneous warm stdio
+sessions on network none; both initialized, listed/called tools, retained the
+same server IDs across repeated calls and exited0 on EOF. Each server had
+user10001:10001, init=true, SecurityOpt=no-new-privileges, privileged=false and
+exactly the owned named cache volume, with no bind/socket. Observed readonly=false,
+capdrop=null and tmpfs=null match the approved native profile. Fresh cache
+preparation through the runtime took8.02s. This is launcher-profile evidence,
+not a repeated full arm64/QEMU suite or cold-routing Gateway proof.
+
+The run intentionally reused earlier local arm64 prototypes, not a new release:
+MCP Engine image ID `sha256:bec25fa5b9f240225db206c5e21d35a8c28e2d4ae30b1b878d272eacd9df1031`,
+site ID `sha256:ef6ceb9d711a1cd6830f3536d593fccb9c82bb0f6257a3da04c81460b785bb43`,
+both labelled source`f5c45d23fc31285e96920719285b0a9253e4a6fe`.
+No current-source provenance claim follows from these prototype labels.
+Evidence log: `/tmp/v8std-task4-gateway.Fi3MeO/acceptance.log`.
+Only owned project`v8std-task4-5137d494d1` containers/networks/cache and temporary
+Gateway config were removed; unrelated containers were preserved.
+Independent scoped review accepted both remaining findings: Gateway profile
+conformance and the generic default404 helper defect are ADDRESSED; no new
+Critical/Important breakage or out-of-scope findings. The reviewer inspected
+the immutable diff, report and actual saved two-server log without rerunning
+tests. Task4 local implementation/verification is complete, not published or
+signed as a new commit. Commit signing was not completed at this stage. Tasks5/6 and
+final release gates are still pending; signing was not bypassed.
 
 ### Local build environment
 
@@ -275,7 +383,7 @@ and query set on the implemented snapshot runtime.
 | --- | --- |
 | Bounded refresh/cache, crashes, shared volume, offline recovery | Task review accepted locally; Linux/runtime integration remains. |
 | Frozen generations, URL presentation, stdio/HTTP lifecycle | Task review accepted; known image-alt edge remains final release gate. |
-| Runtime/static-site images, local request graph, Gateway sessions | Arm64/local profile and warm host Gateway pass; review requires Compose fix and explicit Gateway/gate design resolution; amd64 acceptance remains open. |
+| Runtime/static-site images, local request graph, Gateway sessions | Task4 local review accepted, including360-second QEMU/Compose fixes and native Gateway15focused tests/two warm sessions. Latest fix remains uncommitted pending signing permission. Cold Gateway routing/native amd64 remain external gates. |
 | Restricted host controller, rollback and independent index delivery | Pending. |
 | Fail-closed publication, process v2 synchronization | Pending. |
 | Final semantic impact, merge-ready, fitness, strict build and full suite | Pending after all changes; strict build precedes the suite. |

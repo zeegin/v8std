@@ -8,10 +8,150 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+import check_mcp_container as harness
+
+
+class GatewayProfileTests(unittest.TestCase):
+    def validate(self, state):
+        return harness.validate_gateway_profile(state, expected_cache={
+            "Name": "owned-cache", "Mountpoint": "/var/lib/docker/volumes/owned-cache/_data"})
+
+    def test_unsafe_inherited_gateway_settings_are_rejected_without_mutation(self):
+        for value in ("true", "1", "false", "0"):
+            env = {"DOCKER_MCP_IN_DIND": value, "PATH": "/some/path"}
+            before = dict(env)
+            with self.subTest(value=value), self.assertRaises(AssertionError):
+                harness.gateway_environment(env)
+            self.assertEqual(env, before)
+        env = {"PATH": "/some/path"}
+        self.assertEqual(harness.gateway_environment(env), env)
+
+    def state(self):
+        return {"Id": "session-server", "Image": "sha256:" + "a" * 64,
+                "Config": {"User": "10001:10001", "WorkingDir": "/opt/v8std"},
+                "HostConfig": {"Init": True, "Privileged": False,
+                               "SecurityOpt": ["no-new-privileges=true"],
+                               "ReadonlyRootfs": False, "CapDrop": None,
+                               "Tmpfs": None, "NetworkMode": "none"},
+                "Mounts": [{"Type": "volume", "Name": "owned-cache",
+                            "Source": "/var/lib/docker/volumes/owned-cache/_data",
+                            "Destination": "/var/lib/v8std-mcp", "RW": True}]}
+
+    def test_privileged_environment_is_rejected_before_any_gateway_or_docker_launch(self):
+        with patch.dict(os.environ, {"DOCKER_MCP_IN_DIND": "1"}), \
+                patch.object(harness, "run") as docker, patch.object(harness, "Stdio") as launch:
+            with self.assertRaisesRegex(AssertionError, "unsafe DOCKER_MCP_IN_DIND"):
+                harness.host_gateway_check("not-launched", "test-image", "test-cache",
+                                           "http://v8std.localhost/", Path("/not-used"))
+            docker.assert_not_called()
+            launch.assert_not_called()
+
+    def test_privileged_preflight_is_not_disabled_by_python_optimization(self):
+        code = "from check_mcp_container import gateway_environment; gateway_environment({'DOCKER_MCP_IN_DIND':'1'})"
+        result = subprocess.run([sys.executable, "-O", "-c", code], cwd=ROOT / "scripts",
+                                capture_output=True, text=True, timeout=10)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unsafe DOCKER_MCP_IN_DIND", result.stderr)
+
+    def test_native_profile_reports_required_and_optional_controls(self):
+        for security_opt in ("no-new-privileges", "no-new-privileges:true", "no-new-privileges=true"):
+            state = self.state()
+            state["HostConfig"]["SecurityOpt"] = [security_opt]
+            result = self.validate(state)
+            self.assertEqual(result["id"], state["Id"])
+            self.assertEqual(result["image_id"], state["Image"])
+            self.assertEqual(result["user"], "10001:10001")
+            self.assertTrue(result["init"])
+            self.assertTrue(result["no_new_privileges"])
+            self.assertFalse(result["privileged"])
+            self.assertFalse(result["read_only"])
+            self.assertIsNone(result["cap_drop"])
+            self.assertIsNone(result["tmpfs"])
+            self.assertEqual(result["mounts"], state["Mounts"])
+
+    def test_native_profile_rejects_each_missing_or_disabled_required_control(self):
+        for section, key, value in (("Config", "User", "0:0"),
+                                    ("Config", "User", "10001:0"),
+                                    ("HostConfig", "Init", False),
+                                    ("HostConfig", "Privileged", True),
+                                    ("HostConfig", "SecurityOpt", []),
+                                    ("HostConfig", "SecurityOpt", ["no-new-privileges=false"]),
+                                    ("HostConfig", "SecurityOpt", ["no-new-privileges:true", "no-new-privileges:false"])):
+            for missing in (False, True):
+                with self.subTest(key=key, value=value, missing=missing):
+                    state = self.state()
+                    if missing:
+                        del state[section][key]
+                    else:
+                        state[section][key] = value
+                    with self.assertRaises(AssertionError):
+                        self.validate(state)
+        state = self.state()
+        del state["Mounts"]
+        with self.assertRaises(AssertionError):
+            self.validate(state)
+
+    def test_socket_sources_aliases_and_destinations_cannot_hide_in_mounts(self):
+        mounts = [
+            {"Type": "bind", "Source": "/var/run/docker.sock", "Destination": "/socket-alias"},
+            {"Type": "bind", "Source": "/Users/operator/.docker/run/docker.sock", "Destination": "/var/lib/v8std-mcp"},
+            {"Type": "bind", "Source": "/tmp/opaque-daemon-alias", "Destination": "/var/lib/v8std-mcp"},
+            {"Type": "bind", "Source": "/tmp/opaque-daemon-alias", "Destination": "/run/docker.sock"},
+            {"Type": "volume", "Source": "/var/run/docker.raw.sock", "Destination": "/var/lib/v8std-mcp"},
+            {"Type": "volume", "Source": "/cache", "Destination": "/var/run/docker.sock"},
+            {"Type": "bind", "Source": "/run", "Destination": "/daemon-directory"},
+        ]
+        for mount in mounts:
+            with self.subTest(mount=mount), self.assertRaises(AssertionError):
+                state = self.state()
+                state["Mounts"] = [mount]
+                self.validate(state)
+
+    def test_only_exact_writable_owned_cache_mount_is_allowed(self):
+        for field, value in (("Name", "other-cache"), ("Source", "/unexpected/alias"),
+                             ("Destination", "/unexpected"), ("RW", False)):
+            state = self.state()
+            state["Mounts"][0][field] = value
+            with self.subTest(field=field), self.assertRaises(AssertionError):
+                self.validate(state)
+        state = self.state()
+        state["Mounts"].append(dict(state["Mounts"][0]))
+        with self.assertRaises(AssertionError):
+            self.validate(state)
+
+    def test_optional_hardening_is_reported_when_present(self):
+        state = self.state()
+        state["HostConfig"].update(ReadonlyRootfs=True, CapDrop=["ALL"], Tmpfs={"/tmp": "size=64m"})
+        result = self.validate(state)
+        self.assertTrue(result["read_only"])
+        self.assertEqual(result["cap_drop"], ["ALL"])
+        self.assertEqual(result["tmpfs"], {"/tmp": "size=64m"})
+
+
+class SiteOverrideTests(unittest.TestCase):
+    def test_two_valid_urls_do_not_require_default_to_fail(self):
+        with patch.object(harness, "http", return_value=(200, {}, b"")) as request:
+            self.assertEqual(harness.check_default_source("http://selected.localhost/kb/",
+                                                        "http://default.localhost/kb/"), {})
+            request.assert_not_called()
+
+    def test_explicit_regression_flag_requires_404_and_distinct_source(self):
+        selected, default = "http://selected.localhost/kb/", "http://default.localhost/kb/"
+        with patch.object(harness, "http", return_value=(200, {}, b"")):
+            with self.assertRaises(AssertionError):
+                harness.check_default_source(selected, default, require_404=True)
+        with patch.object(harness, "http", return_value=(404, {}, b"")) as request:
+            self.assertEqual(harness.check_default_source(selected, default, require_404=True),
+                             {"default_source_status": 404})
+            request.assert_called_once_with(default + "ai/mcp/v1/manifest.json")
+            with self.assertRaises(AssertionError):
+                harness.check_default_source(selected, selected, require_404=True)
 
 
 class DistributionTests(unittest.TestCase):

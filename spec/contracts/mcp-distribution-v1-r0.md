@@ -80,9 +80,14 @@ install на старте. Default transport — `stdio`, explicit
 `--cache-dir`/`V8STD_MCP_CACHE_DIR` и `--refresh-seconds`. Точное существующее
 имя snippet env и диапазон наследуются из design крупных процедур; не вводится
 параллельный alias. Cache path в образе — `/var/lib/v8std-mcp`, persistent volume
-с документированным UID/GID. Образ работает non-root, read-only rootfs,
-`cap-drop ALL`, `no-new-privileges`, без Docker socket, с writable cache и
-ограниченным tmpfs. Stdio stdout чистый; healthcheck HTTP не применяется к stdio.
+с документированным UID/GID. Во всех каналах MCP работает non-root, без
+privileged mode и Docker socket. Writable cache сохраняется между запусками.
+Профиль запуска принадлежит launcher, а не image: production controller и наши
+direct Docker/Compose используют read-only rootfs, `cap-drop ALL`,
+`no-new-privileges`, init и ограниченный tmpfs. Gateway использует свой нативный
+профиль, описанный ниже; отсутствие у него отдельных флагов не меняет образ и
+само по себе не блокирует Catalog. Stdio stdout чистый; healthcheck HTTP не
+применяется к stdio.
 
 HTTP слушает внутренний port 8000 на `0.0.0.0`; production публикует его только
 на loopback для host nginx, local Compose по умолчанию только на loopback host.
@@ -105,11 +110,12 @@ static-site image + опциональный MCP HTTP image + persistent cache. 
 Production использует тот же MCP image; nginx/TLS/storage host — окружение,
 не другой MCP Dockerfile. Старый docs development Compose остаётся явно dev.
 
-Оператор выбирает один site URL, достижимый с host и из контейнера. Для desktop
-пример использует опубликованный host port и проверенное разрешение
-`host.docker.internal` на выбранной платформе; для LAN — общий DNS/адрес host.
+Оператор выбирает один site URL, достижимый с host и из контейнера. Desktop
+пример использует общий `.localhost` адрес: loopback в браузере и DNS alias
+в сети Compose, с одним портом и base-prefix; для LAN — общий DNS/адрес host.
 Именно этот адрес виден и в ссылках ответов. Linux example включает явную
-проверку host-gateway, а не предполагает desktop DNS. Site base-prefix и
+проверку маршрута; `host.docker.internal`/host-gateway допустимы только после
+проверки доступа с обеих сторон, не по факту наличия имени внутри Docker. Site base-prefix и
 redirects проверяются end-to-end. Никакой скрытой подмены source на `site`
 с сохранением другого public URL не допускается.
 
@@ -124,6 +130,17 @@ Catalog entry ссылается на наш опубликованный image 
 агентов: Gateway может изолировать сессии. Shared volume экономит downloads,
 не объединяет автоматически Python heaps независимых процессов.
 
+Согласованный профиль Gateway проверяет фактический non-root user, init,
+`no-new-privileges`, отсутствие privileged mode и Docker socket внутри MCP.
+Для Gateway v0.43.3 read-only rootfs, cap-drop и tmpfs недоступны через нативную
+схему запуска Catalog; эти ограничения не обещаются для данного канала.
+Оператору, которому они нужны, предназначен direct Docker/Compose. Обновление
+Gateway требует повторной проверки создаваемых контейнеров; одного текста
+Catalog недостаточно. Нельзя расширять права Gateway или менять настройки
+Docker оператора ради прохождения проверки. Различие профилей не заменяет
+остальные gates: lifecycle, доступность выбранного source, warm/cold сценарии,
+проверенное происхождение образа и внешняя приёмка Catalog проверяются отдельно.
+
 Каталог может временно указывать предыдущую проверенную версию, пока Docker
 рассматривает обновление entry. Для каждого release image digest одинаков во
 всех каналах этой версии; одновременное равенство версий каталога и production
@@ -136,7 +153,8 @@ direct Docker и production путь и не даёт оснований соо�
 
 ## Приёмка
 
-Будущие container tests проверяют оба platform artifacts, non-root/read-only,
+Будущие container tests проверяют оба platform artifacts и профиль каждого
+launcher: non-root/read-only для owned launches и явно описанный профиль Gateway,
 чистый stdio, реальный HTTP POST, сохранение лимитов и cache, cold-offline
 неготовность, warm-offline работу и локальный сайт с запрещённым internet egress.
 Egress-проверка браузера включает fonts/analytics, а не только MCP socket trace.

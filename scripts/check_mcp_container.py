@@ -80,6 +80,52 @@ def http(url, message=None, headers=None):
         return response.status, dict(response.headers), data
 
 
+def check_default_source(site_url, local_default, *, require_404=False):
+    """A working alternate source does not imply the default must be broken."""
+    if not require_404:
+        return {}
+    assert site_url != local_default, "404 regression requires an explicit alternate source"
+    status = http(local_default + "ai/mcp/v1/manifest.json")[0]
+    assert status == 404, "override regression requires an unavailable default source"
+    return {"default_source_status": status}
+
+
+def gateway_environment(environ):
+    """Reject Gateway's privileged DinD switch before any launch, never unset it."""
+    if environ.get("DOCKER_MCP_IN_DIND"):
+        raise AssertionError("unsafe DOCKER_MCP_IN_DIND: Gateway may add --privileged")
+    return dict(environ)
+
+
+def validate_gateway_profile(state, *, expected_cache):
+    """Validate this harness's native Gateway launch with its sole named cache.
+
+    Match the volume identity/source/destination, not socket filenames: a bind
+    mounted socket (or its parent directory) may have an arbitrary alias.
+    Optional hardening is observed, not required by the native Gateway profile.
+    """
+    config, host = state.get("Config", {}), state.get("HostConfig", {})
+    assert config.get("User") == "10001:10001", "Gateway user must be 10001:10001"
+    assert host.get("Init") is True, "Gateway init is required"
+    assert host.get("Privileged") is False, "Gateway must not be privileged"
+    security = host.get("SecurityOpt") or []
+    nnp = [option for option in security if option.startswith("no-new-privileges")]
+    assert nnp and all(option in ("no-new-privileges", "no-new-privileges:true",
+                                  "no-new-privileges=true") for option in nnp), "Gateway no-new-privileges is required"
+    mounts = state.get("Mounts")
+    assert isinstance(mounts, list) and len(mounts) == 1, "only the expected Gateway cache mount is allowed"
+    mount = mounts[0]
+    assert (mount.get("Type") == "volume" and mount.get("Name") == expected_cache["Name"]
+            and mount.get("Source") == expected_cache["Mountpoint"]
+            and mount.get("Destination") == "/var/lib/v8std-mcp" and mount.get("RW") is True), \
+        "unexpected Gateway mount; bind mounts/socket aliases are forbidden"
+    return {"id": state["Id"], "image_id": state["Image"], "user": config["User"],
+            "init": host["Init"], "privileged": host["Privileged"],
+            "no_new_privileges": True, "security_opt": security, "mounts": mounts,
+            "network": host.get("NetworkMode"), "read_only": host.get("ReadonlyRootfs"),
+            "cap_drop": host.get("CapDrop"), "tmpfs": host.get("Tmpfs")}
+
+
 class Stdio:
     def __init__(self, command, stderr, env=None):
         self.process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -247,6 +293,8 @@ def host_gateway_check(project, image, volume, site_url, directory):
     Containerized Gateway's site-network routing is a separate acceptance gate.
     No HOME override, active catalog modification, or extra Docker privileges.
     """
+    env = gateway_environment(os.environ)
+    expected_cache = json.loads(run("docker", "volume", "inspect", volume))[0]
     catalog_root = Path.home() / ".docker/mcp/catalogs"
     catalog_root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=project + "-", dir=catalog_root) as catalog_dir:
@@ -272,7 +320,7 @@ def host_gateway_check(project, image, volume, site_url, directory):
             with contextlib.ExitStack() as stack:
                 for number in range(2):
                     log = stack.enter_context((directory / f"gateway-{number}.log").open("w"))
-                    session = Stdio(command, log)
+                    session = Stdio(command, log, env=env)
                     sessions.append(session)
                     session.initialize(name=None)
                     check_tools(session.request, site_url, resources=False)
@@ -283,16 +331,15 @@ def host_gateway_check(project, image, volume, site_url, directory):
                     check_tools(session.request, site_url, resources=False)
                 assert set(ids) == set(run("docker", "ps", "-q", "--filter", "label=docker-mcp-name=" + project).splitlines())
                 states = json.loads(run("docker", "inspect", *ids))
+                profiles = [validate_gateway_profile(state, expected_cache=expected_cache) for state in states]
                 for state in states:
-                    assert state["Config"]["User"] == "10001:10001"
                     assert state["Config"]["WorkingDir"] == "/opt/v8std"
                     assert state["HostConfig"]["NetworkMode"] == "none"
                 for session in sessions:
                     session.close()
                 return {"sessions": 2, "servers": len(ids), "network": "none",
                         "warm_cache": True, "long_lived_same_ids": True,
-                        "read_only": states[0]["HostConfig"]["ReadonlyRootfs"],
-                        "cap_drop": states[0]["HostConfig"]["CapDrop"]}
+                        "profile": "native-gateway", "server_profiles": profiles}
         finally:
             for session in sessions:
                 if session.process.poll() is None:
@@ -319,7 +366,15 @@ def main():
     parser.add_argument("--node", default="node")
     parser.add_argument("--host-gateway", action="store_true",
                         help="Two Gateway sessions using warm cache and network none")
+    parser.add_argument("--gateway-warm-only", action="store_true",
+                        help="Prepare one owned cache, then only check two warm host Gateway sessions")
+    parser.add_argument("--require-default-source-404", action="store_true",
+                        help="Explicit override regression: additionally require the default manifest to be absent")
     args = parser.parse_args()
+    if args.host_gateway or args.gateway_warm_only:
+        gateway_environment(os.environ)
+    if args.gateway_warm_only and args.chrome:
+        parser.error("--gateway-warm-only excludes browser acceptance")
     canonical_ranking()
     for port in (args.site_port, args.mcp_port):
         with socket.socket() as probe:
@@ -345,10 +400,8 @@ def main():
             run(*compose, "up", "-d", "site", env=env)
             site = run(*compose, "ps", "-q", "site", env=env)
             eventually(lambda: http(site_url)[0] == 200)
-            if site_url != local_default:
-                assert http(local_default + "ai/mcp/v1/manifest.json")[0] == 404, \
-                    "override regression requires an unavailable default source"
-                report["default_source_status"] = 404
+            report.update(check_default_source(site_url, local_default,
+                          require_404=args.require_default_source_404))
             manifest_url = site_url + "ai/mcp/v1/manifest.json"
             status, headers, payload = http(manifest_url)
             assert status == 200 and headers.get("Cache-Control") == "no-store"
@@ -400,7 +453,7 @@ def main():
                        "for f in p.rglob('*') if f.is_file() and f.name in ('state.json','snapshot.tar.gz')}))"
                 return json.loads(run("docker", "exec", name, "python", "-c", code))
 
-            for iteration, network_name in enumerate((network, "none")):
+            for iteration, network_name in enumerate((network,) if args.gateway_warm_only else (network, "none")):
                 started = time.monotonic()
                 print(f"stdio {iteration}: starting {network_name}", file=sys.stderr, flush=True)
                 name = project + f"-stdio-{iteration}"
@@ -438,6 +491,11 @@ def main():
                             run("docker", "stop", "-t", "15", name)
                             session.process.wait(timeout=20)
                 assert not json.loads(run("docker", "inspect", name))[0]["State"]["OOMKilled"]
+            if args.gateway_warm_only:
+                report["stdio"] = "owned cold-online cache preparation only; EOF=0; cache UID10001"
+                report["gateway"] = host_gateway_check(project, args.mcp_image, volume, site_url, directory)
+                print(json.dumps(report, ensure_ascii=False, indent=2))
+                return
             report["stdio"] = "cold-online + warm-network-none; EOF=0; cache UID10001 and bytes/mtime stable"
             terminated = project + "-stdio-term"
             with (directory / "stdio-term.log").open("w") as log:

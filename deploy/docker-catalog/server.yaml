@@ -1,6 +1,12 @@
 # Docker mcp-registry source schema (pkg/servers/types.go), NOT a submitted entry.
 # Release publication replaces release-pending and RELEASE_SOURCE_SHA with the
 # verified multi-platform index digest and its matching source commit.
+# Launcher-owned profiles: direct Docker/Compose retain read-only, cap-drop ALL
+# and bounded tmpfs. Native Gateway v0.43.3 supplies init/no-new-privileges;
+# inspect every MCP server for UID/GID 10001:10001, nonprivileged mode and only
+# the expected cache volume (no Docker socket or aliased bind mounts).
+# Native Catalog cannot request read-only/cap-drop/tmpfs; no invented fields.
+# This distinction does not waive source routing, provenance or external review.
 name: v8std
 image: ghcr.io/zeegin/v8std-mcp:release-pending
 type: server

@@ -145,11 +145,22 @@ Gateway v0.43.3 не имеет флага подключения к допол�
 источника требуется отдельно проверенная маршрутизация containerized Gateway;
 его доступ к Docker API требует полномочий оператора. Не монтируйте socket в MCP.
 
-В v0.43.3 Gateway задаёт `init` и `no-new-privileges`, но не поддерживает
-read-only rootfs, cap-drop и tmpfs через эту схему Catalog. Поэтому прохождение
-его lifecycle-теста не подтверждает весь hardening-контракт. Используйте direct
-Docker/Compose, когда нужны перечисленные ограничения; внешняя приёмка Catalog,
-registry publication и native CI остаются отдельными проверками.
+Профиль изоляции задаёт launcher, а не образ. Production controller и наши
+direct Docker/Compose используют строгий профиль: UID/GID `10001:10001`,
+nonprivileged, без Docker socket, `init`, `no-new-privileges`, read-only rootfs,
+`cap-drop ALL` и ограниченный tmpfs. Native Gateway v0.43.3 использует другой
+согласованный профиль: тот же UID/GID, nonprivileged, без Docker socket,
+`init` и `no-new-privileges`. Read-only rootfs, cap-drop и tmpfs через его схему
+Catalog не задаются и для этого канала не обещаются. Их отсутствие само по себе
+не блокирует Catalog; если эти ограничения нужны, используйте direct Docker/Compose.
+
+После обновления Gateway проверяйте фактические controls и mounts **каждого**
+созданного MCP-сервера. Warm harness допускает только ожидаемый named cache
+volume; неожиданный bind mount отклоняется независимо от имени socket alias.
+До запуска harness отклоняет непустой `DOCKER_MCP_IN_DIND`, который может
+заставить Gateway добавить `--privileged`; настройки пользователя не меняются.
+Соответствие native-профилю не заменяет проверку cold source routing,
+происхождения образа, внешнюю приёмку Catalog, registry publication или native CI.
 
 ## Проверка разработчиком
 
@@ -187,3 +198,10 @@ Harness проверяет реальные HTTP/stdio, холодный и тё
 сети; она не подменяет проверку сети containerized Gateway. Harness выбирает
 уникальные имена ресурсов, проверяет свободные порты и удаляет только свои
 контейнеры, сети, cache и временный Catalog. Образы остаются для анализа.
+
+Для узкой повторной проверки native Gateway используйте `--gateway-warm-only`
+вместо `--host-gateway`: harness подготовит один новый cache и проверит две
+warm-сессии без сети, пропуская остальные HTTP/browser сценарии. Это не тест
+cold routing Gateway. Обычный SITE_URL override допускает работающий default
+source; только явный флаг `--require-default-source-404` дополнительно требует
+404 от default manifest для специальной регрессии запрета fallback.

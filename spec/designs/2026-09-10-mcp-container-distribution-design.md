@@ -199,6 +199,17 @@ SIGTERM прекращают фоновые задачи. Warm cache переи�
 Проверки включают cold/warm start, reconnect и несколько независимых сессий
 агента, в том числе через Docker Gateway; контейнер на каждый tool call не нужен.
 
+Согласованное уточнение после проверки Gateway: единый артефакт не означает
+идентичные флаги всех launchers. Production и наши direct Docker/Compose
+сохраняют read-only rootfs, cap-drop ALL, no-new-privileges, init и ограниченный
+tmpfs. Gateway использует нативную изоляцию с проверкой non-root, init,
+no-new-privileges, отсутствия privileged mode и Docker socket внутри MCP.
+Отсутствующие в Gateway v0.43.3 read-only/cap-drop/tmpfs явно описываются как
+различие канала, а не требование отдельного образа или причина отложить Catalog.
+Обязательства по источнику данных, lifecycle, отсутствию фонового public egress
+для локального сайта и проверяемому происхождению остаются без ослабления.
+Реальная cold-маршрутизация Gateway и внешняя приёмка не следуют из warm-теста.
+
 ### MCP_RELEASE_SWITCH_IS_REVERSIBLE
 
 Ошибки pull, подготовки corpus, readiness, переключения nginx и smoke после

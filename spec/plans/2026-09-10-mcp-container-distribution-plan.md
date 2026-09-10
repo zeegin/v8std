@@ -45,6 +45,7 @@ requirements:
 - Snippet: 4000 default, 32000 maximum; query 500, preview 1000, tokens 80 и суммарно 4000; один hybrid search, прежний ranking и отсутствие raw procedure в usage logs.
 - Tool/resource request не скачивает данные и не ждёт refresh; одновременно видит одно валидное поколение.
 - Один multi-platform image на версию, `linux/amd64` и `linux/arm64`; catalog review может отставать, но не создаёт другую сборку той же версии.
+- Production/наш direct Docker/Compose сохраняют read-only rootfs, cap-drop ALL, no-new-privileges, init и bounded tmpfs. Gateway использует нативный профиль: non-root/init/no-new-privileges, без privileged MCP и Docker socket; отсутствующие readonly/capdrop/tmpfs документируются, не блокируя Catalog сами по себе.
 - Local site и MCP не делают background public egress. Cold-offline thin image без cache не готов; warm-offline с проверенным cache работает.
 - Основной checkout, существующая ветка `codex/mcp-container-distribution-design`; не создавать worktree, не менять main, не пушить и не деплоить во время реализации.
 - TDD и focused tests для каждого поведения. Strict build выполняется **до** полного suite: tests читают `site/LICENSES`, параллельная пересборка разрушает их вход.
@@ -305,7 +306,7 @@ default CMD selects stdio; HTTP command selects host 0.0.0.0/port 8000.
 Static image consumes already built local `site` and included snapshot, not
 the runtime image. Keep existing source-bind Compose explicitly dev.
 
-- [ ] **RED:** Tests execute the local-profile build into a temporary directory,
+- [x] **RED:** Tests execute the local-profile build into a temporary directory,
   then assert HTTP pages+manifest/archive work without external network. Container
   harness initializes stdio twice with shared volume and verifies a tool call,
   generation ID/cache reuse, EOF exit and runtime readiness:
@@ -318,19 +319,20 @@ self.assertEqual(container_inspect["Config"]["User"], "10001:10001")
 
   Use actual current serverInfo name from build_server if it differs; this is
   a named compatibility check, not permission to rename the server.
-- [ ] **GREEN images/profile:** Resolve pinned base digests and full dependency
+- [x] **GREEN images/profile:** Resolve pinned base digests and full dependency
   lock; copy only runtime modules/rules/licenses. Non-root UID/GID 10001, read-only
-  root, persistent writable cache, tmpfs, cap-drop and init. Local profile disables
+  root, persistent writable cache, tmpfs, cap-drop and init in our owned launches;
+  native Gateway uses the separately approved profile below. Local profile disables
   analytics/recorder and external fonts/assets, preserving public profile. Same
   archive bytes are used for public/local manifests. Build on arm64 and exercise
   amd64 in available Docker emulation, noting native-CI gate separately.
-- [ ] **GREEN launch/catalog:** Compose references published image coordinates
+- [x] **GREEN launch/catalog:** Compose references published image coordinates
   with explicit version/digest override for local test images, loopback published
   ports, optional MCP profile, named cache and one common routable SITE_URL.
   Document/test desktop host access and Linux host-gateway. Catalog points to
   self-published image, declares site/snippet/cache and long-lived stdio behavior;
   validate against current Docker schema without submitting an external PR.
-- [ ] **Verify:** Run distribution unit/integration harness, real Docker stdio/HTTP,
+- [x] **Verify:** Run distribution unit/integration harness, real Docker stdio/HTTP,
   non-root read-only startup, persistent cache offline restart, local site request
   graph without public egress and multi-session Gateway where locally available.
   Verify licenses/SBOM inputs. Record unavailable external catalog acceptance
@@ -343,26 +345,58 @@ This supersedes the original numerical budget only. Gateway scope/security
 decisions and external mutation authority are not inferred from that change.
 Keep historical measurements labelled with their original 60-second build.
 
-- [ ] **RED:** In `tests/test_v8std_mcp_snapshots.py`, assert a default store
+- [x] **RED:** In `tests/test_v8std_mcp_snapshots.py`, assert a default store
   uses `360` attempt seconds and `20` read seconds; retain accelerated real
   worker timeout/reaping, close and responsive-query tests. In distribution
   tests resolve Compose with an explicit alternate SITE_URL and prove it is
   passed intact instead of replaced by the default local URL.
-- [ ] **GREEN:** Set `ATTEMPT_SECONDS = 360` in
+- [x] **GREEN:** Set `ATTEMPT_SECONDS = 360` in
   `scripts/v8std_mcp_snapshots.py`. Compose consumes
   `${V8STD_MCP_SITE_URL:-http://v8std.localhost:${V8STD_SITE_PORT:-18765}${V8STD_SITE_PREFIX:-/}}`.
   Test actual Compose interpolation; do not assume nested defaults work without
   executing its config resolver. Preserve local default, prefix and one setting.
   Adapt only the integration startup wait to allow the accepted attempt plus
   bounded startup margin; do not turn RPC/read/shutdown timeouts into360seconds.
-- [ ] **VERIFY:** Run focused snapshot/distribution tests, commit the exact
+- [x] **VERIFY:** Run focused snapshot/distribution tests, commit the exact
   changed runtime, build a new amd64 image from that clean source SHA and rerun
   full-corpus supervised cold/warm stdio/HTTP acceptance under QEMU. Exercise an
   explicit reachable SITE_URL override end-to-end, checking source and returned
   links. No privileged Gateway retry, image publication or native-CI claim.
-- [ ] **REVIEW:** Independent scoped review of the fix diff and evidence.
-  Gateway discrepancy remains separately open until an approved design decision;
-  passing these checks alone does not close Task4 or the full release plan.
+- [x] **REVIEW:** Independent scoped review of the fix diff and evidence.
+  These checks resolved Compose/QEMU findings only. The subsequent explicit
+  Gateway profile approval and its scoped verification are recorded below.
+
+#### Task 4 reviewed fixes — approved launcher-owned security profiles
+
+User approved retaining the strict owned-launch profile and using Gateway's
+actual native isolation, without deferring Catalog solely for absent flags.
+The candidate design/ADR/invariant/distribution contract now express that
+distinction. No main structured document, public API, image identity or other
+release acceptance boundary changes. This approval does not authorize daemon,
+socket, host or registry changes.
+
+- [x] **RED:** Add focused inspection-validator tests in
+  `tests/test_v8std_mcp_distribution.py`: an actual-shaped native Gateway state
+  with `ReadonlyRootfs=False`/`CapDrop=None` is accepted only with user10001:10001,
+  init/no-new-privileges, nonprivileged mode and no Docker socket mount. Reject
+  each missing required control and socket aliases/mount destinations. Verify
+  the generic override helper accepts two valid URLs; require default404 only
+  when the explicit regression flag is enabled.
+- [x] **GREEN:** In `scripts/check_mcp_container.py`, validate and report every
+  created Gateway server's required controls and observed optional controls.
+  Add `--require-default-source-404` for the intentional override regression;
+  keep source/link/namespace checks for every override. Update Catalog comments
+  and `docs/container-installation.md` to state both profiles and remaining
+  external gates. Do not invent unsupported Catalog fields or modify Compose
+  protections. Keep helper logic importable for focused tests.
+- [x] **VERIFY:** Run focused distribution tests and actual two-session warm
+  Gateway check using isolated config, already verified cache and network none.
+  Inspect all session containers and retain actual profile evidence. Use only
+  task-owned Docker resources; no socket escalation, cold-network workaround,
+  public publication or unnecessary repeat of accepted QEMU/360 tests.
+- [x] **REVIEW:** Scoped re-review of the Gateway finding against the approved
+  amended contract, helper regression and observed evidence before closing
+  Task4. Cold Gateway routing/native CI/publication remain external gates.
 
 ### Task 5: Restricted release transaction and independent index store
 
