@@ -230,15 +230,21 @@ def _file_lock(path, deadline):
         os.close(fd)  # OS releases flock even on process termination/crash.
 
 
-def _prepare(snapshot, prepare):
+def _prepare(snapshot, prepare, *, current_archive=None):
     try:
-        result = snapshot if prepare is None else prepare(snapshot)
+        metadata = {"corpus_id": snapshot.metadata["corpus_id"],
+                    "source_sha": snapshot.metadata["source_sha"],
+                    "archive_sha256": snapshot.archive_sha256}
+        if current_archive == snapshot.archive_sha256:
+            # Only a verified reusable entry may take this private path. The
+            # caller's identity belongs to its already accepted ready generation.
+            result = None
+            metadata["unchanged"] = True
+        else:
+            result = snapshot if prepare is None else prepare(snapshot)
         # Serialization is also preparation: an unpickleable lock must not
         # advance the disk pointer. These bytes go ONLY to our private IPC socket.
-        return pickle.dumps(("ok", result, {
-            "corpus_id": snapshot.metadata["corpus_id"],
-            "archive_sha256": snapshot.archive_sha256,
-        }), protocol=pickle.HIGHEST_PROTOCOL)
+        return pickle.dumps(("ok", result, metadata), protocol=pickle.HIGHEST_PROTOCOL)
     except Exception:
         raise LoaderError("prepare_failed") from None
 
@@ -440,7 +446,15 @@ class SnapshotStore:
             path.unlink()
         # Unknown/symlink paths are not owned cleanup targets.
 
-    def _refresh(self, prepare, deadline):
+    def _reuse_checked_entry(self, entry, prepare, deadline, current_archive):
+        result = _prepare(entry[0], prepare, current_archive=current_archive)
+        if current_archive == entry[0].archive_sha256:
+            # A rollback recovery can leave the on-disk current pointer damaged.
+            # Metadata-only success must also leave a durable consistent pointer.
+            self._commit_state(entry[2], entry[2], deadline)
+        return result
+
+    def _refresh(self, prepare, deadline, *, current_archive=None):
         _directory(self.cache_dir, create=True)
         _directory(self.namespace, create=True)
         _directory(self.namespace / "generations", create=True)
@@ -448,7 +462,7 @@ class SnapshotStore:
             with _file_lock(self.cache_dir / ".volume.lock", deadline):
                 entry = self._cached_entry()
                 if waited and entry:
-                    return _prepare(entry[0], prepare)
+                    return self._reuse_checked_entry(entry, prepare, deadline, current_archive)
                 self._gc((entry[0].archive_sha256,) if entry else ())
                 headers = {}
                 if entry:
@@ -465,7 +479,7 @@ class SnapshotStore:
                 if status == 304:
                     if entry is None:
                         raise LoaderError("http_status")
-                    return _prepare(entry[0], prepare)
+                    return self._reuse_checked_entry(entry, prepare, deadline, current_archive)
                 manifest = validate_manifest(raw)
                 archive_url, boundary = _archive_url(manifest, final_url, self.site_url)
                 digest = manifest["archive"]["sha256"]
@@ -477,7 +491,14 @@ class SnapshotStore:
                     "validators": validators,
                 }
                 try:
-                    reusable, _ = self._generation(digest, manifest)
+                    if entry and manifest == entry[1]:
+                        # The complete validated manifest equals the one just
+                        # verified against archive AND expanded cache bytes.
+                        # Any changed field takes the existing strict path below;
+                        # no format/metadata consistency rules are duplicated here.
+                        reusable = entry[0]
+                    else:
+                        reusable, _ = self._generation(digest, manifest)
                 except (OSError, LoaderError):
                     reusable = None
                 except SnapshotError:
@@ -487,7 +508,8 @@ class SnapshotStore:
                         raise
                     reusable = None
                 if reusable is not None:
-                    result = _prepare(reusable, prepare)
+                    result = _prepare(reusable, prepare, current_archive=(
+                        current_archive if entry and entry[0].archive_sha256 == digest else None))
                     self._commit_state(state, old, deadline)
                     return result
                 self._space(manifest["archive"]["bytes"] + manifest["archive"]["unpacked_bytes"]
@@ -528,12 +550,12 @@ class SnapshotStore:
                     if stage.exists():
                         self._remove_owned(stage)
 
-    def _run(self, mode, prepare, stop=None):
+    def _run(self, mode, prepare, stop=None, *, current_archive=None):
         deadline = time.monotonic() + self._attempt_seconds
         stop = stop if stop is not None else threading.Event()
         parent, child = socket.socketpair()
         process = multiprocessing.get_context("spawn").Process(
-            target=_worker, args=(self, mode, prepare, deadline, child),
+            target=_worker, args=(self, mode, prepare, deadline, child, current_archive),
             name="v8std-snapshot-worker", daemon=True)
         started = False
         try:
@@ -589,13 +611,13 @@ def _cache_walk_error():
     raise LoaderError("cache_io")
 
 
-def _worker(store, mode, prepare, deadline, channel):
+def _worker(store, mode, prepare, deadline, channel, current_archive):
     try:
         if mode == "cached":
             snapshot = store.cached()
             payload = _prepare(snapshot, prepare) if snapshot else pickle.dumps(("ok", None, None))
         else:
-            payload = store._refresh(prepare, deadline)
+            payload = store._refresh(prepare, deadline, current_archive=current_archive)
         _remaining(deadline)
     except SnapshotError as error:
         payload = pickle.dumps(("format_error", error.code, None))
@@ -653,6 +675,10 @@ class SnapshotCoordinator:
         now = time.time()
         retired = None
         with self._lock:
+            if metadata.get("unchanged") and (not self._state["ready"]
+                    or metadata["archive_sha256"] != self._archive_sha256
+                    or metadata["corpus_id"] != self._state["corpus_id"]):
+                raise LoaderError("worker_failed")
             if metadata["archive_sha256"] != self._archive_sha256:
                 retired = self._current
                 self._current = result
@@ -681,7 +707,10 @@ class SnapshotCoordinator:
         failures = 0
         while not self._stop.is_set():
             try:
-                result, metadata = self.store._run("refresh", self.build, self._stop)
+                with self._lock:
+                    current_archive = self._archive_sha256 if self._state["ready"] else None
+                result, metadata = self.store._run("refresh", self.build, self._stop,
+                                                   current_archive=current_archive)
                 if self._stop.is_set():
                     return
                 self._accept(result, metadata, checked=True)

@@ -24,7 +24,7 @@ from generate_mcp_snapshot import build_snapshot
 from search_benchmark import collect_case_ids, read_case_payloads, run_ranked_case, run_diagnostics_case, percentile
 from v8std_mcp_index import V8StdIndex
 from v8std_mcp_runtime import SnapshotIndex, build_generation
-from v8std_mcp_snapshots import SnapshotStore
+from v8std_mcp_snapshots import SnapshotCoordinator, SnapshotStore
 from tests.test_v8std_mcp_runtime import Current
 from tests.test_v8std_mcp_snapshots import Source
 from tests import mcp_snapshot_fixtures as fixture
@@ -125,6 +125,8 @@ def main():
             profile = Path(directory) / "profile.jsonl"
             store = ObservedStore(source.url, Path(directory) / "cache", profile)
             facade = SnapshotIndex(site_url=source.url, cache_dir=Path(directory) / "cache")
+            coordinator = SnapshotCoordinator(store,
+                partial(observed_build, profile=profile, site_url=source.url))
             active = None
             for phase in ("cold", "warm", "same_hash", "new_generation", "slow_source"):
                 if phase == "new_generation":
@@ -164,16 +166,17 @@ def main():
                 def decode(*args, **kwargs):
                     start, cpu = time.perf_counter(), time.process_time()
                     value = original(*args, **kwargs)
-                    record(profile, "parent_decode", start, cpu)
+                    record(profile, "parent_decode", start, cpu, bytes=len(args[0]))
                     return value
                 start, cpu = time.perf_counter(), time.process_time()
                 try:
                     with patch("pickle.loads", side_effect=decode):
                         result, metadata = store._run("cached" if phase == "warm" else "refresh",
-                                                     partial(observed_build, profile=profile, site_url=source.url))
+                            coordinator.build, current_archive=(
+                                coordinator._archive_sha256 if active is not None else None))
                     elapsed = time.perf_counter() - start
                     parent_cpu = time.process_time() - cpu
-                    samples.append(tree_rss())  # Both old and reconstructed new still retained.
+                    samples.append(tree_rss())  # Before acceptance: includes any reconstructed candidate.
                 finally:
                     done.set()
                     sampler.join()
@@ -184,16 +187,26 @@ def main():
                 print(json.dumps({"phase": phase, "seconds": elapsed, "parent_cpu_seconds": parent_cpu,
                     "tree_peak_rss_bytes": max(samples), "query_count": len(queries),
                     "query_p95_ms": percentile(queries, 95), "query_max_ms": max(queries, default=0),
-                    "observations": observations}), flush=True)
-                active = result
+                    "metadata": metadata, "observations": observations}), flush=True)
+                previous = active
+                coordinator._accept(result, metadata, checked=phase != "warm")
+                active = coordinator.current()
+                if metadata.get("unchanged"):
+                    assert result is None and active is previous
                 del result
+                del previous
                 facade.coordinator = Current(active)
                 gc.collect()
-            after, ranks_after = ranked(facade)
-            assert ranks_after == ranks_before
-            for query, expected in scores_before.items():
-                assert active.index.search(query) == expected
-            print(json.dumps({"after": after, "identical_ranks": True, "identical_score_samples": True}), flush=True)
+                if phase == "cold":
+                    # Compare the exact initial corpus before the refresh fixture
+                    # changes llms/metadata (even though retrieval rows stay equal).
+                    assert active.corpus_id == manifest["corpus_id"]
+                    after, ranks_after = ranked(facade)
+                    assert ranks_after == ranks_before
+                    for query, expected in scores_before.items():
+                        assert active.index.search(query) == expected
+                    print(json.dumps({"after": after, "corpus_id": active.corpus_id,
+                        "identical_ranks": True, "identical_score_samples": True}), flush=True)
             for name in ("pages.jsonl", "llms.txt", "llms-full.txt"):
                 start = time.perf_counter()
                 body = facade.read_resource_text(name)

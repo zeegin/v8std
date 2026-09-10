@@ -28,6 +28,8 @@ from tests import mcp_snapshot_fixtures as fixture
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from v8std_mcp_snapshots import SnapshotStore
+
 
 @dataclass(frozen=True)
 class Generation:
@@ -39,6 +41,23 @@ class Generation:
 def build(snapshot):
     return Generation(snapshot.metadata["corpus_id"], os.getpid(),
                       multiprocessing.get_start_method())
+
+
+@dataclass
+class RecordingBuild:
+    log: Path
+
+    def __call__(self, snapshot):
+        with self.log.open("a") as stream:
+            stream.write(snapshot.archive_sha256 + "\n")
+        return build(snapshot)
+
+
+class RecordingStore(SnapshotStore):
+    def _generation(self, *args, **kwargs):
+        with self.verifications.open("a") as stream:
+            stream.write(args[0] + "\n")
+        return super()._generation(*args, **kwargs)
 
 
 def fail_build(snapshot):
@@ -178,6 +197,7 @@ class Source:
         self.requests = []
         self.fault = None
         self.headers = {}
+        self.etag = '"fixture-v1"'
         self.redirect = None
         self.redirects = {}
         self.requested = threading.Event()
@@ -213,7 +233,7 @@ class Source:
                     payload = bytes([payload[0] ^ 1]) + payload[1:]
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json" if is_manifest else "application/gzip")
-                self.send_header("ETag", '"fixture-v1"')
+                self.send_header("ETag", source.etag)
                 self.send_header("Last-Modified", "Thu, 10 Sep 2026 00:00:00 GMT")
                 if "Content-Length" not in source.headers:
                     self.send_header("Content-Length", str(len(payload)))
@@ -929,6 +949,211 @@ class SnapshotCoordinatorTests(SnapshotTestCase):
             self.assertEqual(coordinator._delay(10000), 3600)
 
 
+class IdentityRefreshTests(SnapshotTestCase):
+    coordinator = SnapshotCoordinatorTests.coordinator
+    wait_until = SnapshotCoordinatorTests.wait_until
+
+    def test_ready_200_and_304_build_only_at_bootstrap_and_verify_once_per_attempt(self):
+        self.store.refresh()
+        for fault in (None, "conditional"):
+            with self.subTest(fault=fault):
+                self.source.fault = fault
+                log = Path(self.temp.name) / f"build-{fault}"
+                store = RecordingStore(self.source.url, self.cache)
+                store.verifications = Path(self.temp.name) / f"verify-{fault}"
+                coordinator = self.loader.SnapshotCoordinator(store, RecordingBuild(log))
+                self.addCleanup(coordinator.close)
+                schedule = RecordingStop(2)
+                coordinator._stop = schedule
+                coordinator.start()
+                self.wait_until(schedule.is_set)
+                self.assertEqual(log.read_text().splitlines(), [self.source.manifest["archive"]["sha256"]])
+                self.assertEqual(len(store.verifications.read_text().splitlines()), 3)
+                self.assertEqual(coordinator.current().start_method, "spawn")
+                status = coordinator.status()
+                self.assertLess(status["loaded_at"], status["last_success_at"])
+                self.assertIsNone(status["refresh_error_code"])
+        self.assertEqual(sum(p.endswith(".tar.gz") for p, _ in self.source.requests), 1)
+
+    def test_unchanged_ipc_is_metadata_only_after_validator_commit(self):
+        current = self.store.refresh()
+        self.source.etag = '"fixture-revalidated"'
+        result, metadata = self.store._run("refresh", fail_build,
+                                          current_archive=current.archive_sha256)
+        self.assertIsNone(result)
+        self.assertEqual(metadata, {"corpus_id": current.metadata["corpus_id"],
+            "source_sha": fixture.SOURCE_SHA, "archive_sha256": current.archive_sha256,
+            "unchanged": True})
+        state = json.loads((self.store.namespace / "state.json").read_bytes())
+        self.assertEqual(state["active"], metadata["archive_sha256"])
+        self.assertEqual(state["validators"]["ETag"], self.source.etag)
+        self.source.fault = "conditional"
+        self.assertIsNone(self.store._run("refresh", fail_build,
+                                         current_archive=current.archive_sha256)[0])
+        self.assertEqual(self.source.requests[-1][1]["If-None-Match"], self.source.etag)
+
+    def test_cold_warm_and_public_refresh_without_ready_identity_always_build(self):
+        log = Path(self.temp.name) / "builds"
+        prepare = RecordingBuild(log)
+        cold, metadata = self.store._run("refresh", prepare)
+        self.source.fault = "missing"
+        warm, _ = self.store._run("cached", prepare, current_archive=metadata["archive_sha256"])
+        self.source.fault = "conditional"
+        refreshed = self.store.refresh(prepare=prepare)
+        self.assertEqual([cold.corpus_id, warm.corpus_id, refreshed.corpus_id],
+                         [self.source.manifest["corpus_id"]] * 3)
+        self.assertEqual(len(log.read_text().splitlines()), 3)
+
+    def test_changed_archive_builds_even_when_corpus_id_matches(self):
+        current = self.store.refresh()
+        # Gzip OS byte is outside the corpus descriptor; the format accepts it.
+        archive = bytearray(self.source.archive)
+        archive[9] ^= 1
+        self.source.archive = bytes(archive)
+        self.source.manifest = fixture.manifest_for(self.source.archive, current.files)
+        result, metadata = self.store._run("refresh", build, current_archive=current.archive_sha256)
+        self.assertIsInstance(result, Generation)
+        self.assertEqual(result.corpus_id, current.metadata["corpus_id"])
+        self.assertNotEqual(metadata["archive_sha256"], current.archive_sha256)
+        self.assertFalse(metadata.get("unchanged", False))
+        self.assertEqual(self.store.cached().archive_sha256, metadata["archive_sha256"])
+
+    def test_changed_source_metadata_builds_and_invalid_same_archive_claims_fail(self):
+        current = self.store.refresh()
+        pointer = self.store.namespace / "state.json"
+        original = pointer.read_bytes()
+        for field, value in (("source_sha", "2" * 40), ("corpus_id", "0" * 64),
+                             ("vector_dim", 128), ("schema_version", 2)):
+            with self.subTest(field=field):
+                old = self.source.manifest[field]
+                self.source.manifest[field] = value
+                with self.assertRaises(self.loader.SnapshotError):
+                    self.store._run("refresh", fail_build, current_archive=current.archive_sha256)
+                self.assertEqual(pointer.read_bytes(), original)
+                self.source.manifest[field] = old
+        for field in ("bytes", "unpacked_bytes"):
+            with self.subTest(field=field):
+                self.source.manifest["archive"][field] += 1
+                with self.assertRaises(self.loader.SnapshotError):
+                    self.store._run("refresh", fail_build, current_archive=current.archive_sha256)
+                self.assertEqual(pointer.read_bytes(), original)
+                self.source.manifest["archive"][field] -= 1
+        files = fixture.with_metadata(fixture.corpus_files(), mutate=lambda m: m.update(source_sha="2" * 40))
+        self.source.archive, self.source.manifest = fixture.snapshot_fixture(files=files)
+        result, metadata = self.store._run("refresh", build, current_archive=current.archive_sha256)
+        self.assertIsInstance(result, Generation)
+        self.assertEqual(metadata["source_sha"], "2" * 40)
+        self.assertNotEqual(result.corpus_id, current.metadata["corpus_id"])
+
+    def test_corrupt_cache_never_shortcuts_prepare_on_redownload(self):
+        for name in ("snapshot.tar.gz", "pages.jsonl", "manifest.json"):
+            with self.subTest(name=name):
+                current = self.store.refresh()
+                path = self.store.namespace / "generations" / current.archive_sha256 / name
+                path.write_bytes(b"corrupt")
+                self.source.fault = "conditional"
+                with self.assertRaises(self.loader.LoaderError) as caught:
+                    self.store._run("refresh", fail_build, current_archive=current.archive_sha256)
+                self.assertEqual(caught.exception.code, "prepare_failed")
+                self.assertNotIn("If-None-Match", self.source.requests[-2][1])
+                self.assertEqual(path.read_bytes(), b"corrupt")
+                self.source.fault = None
+
+    def test_304_without_cache_does_not_trust_parent_identity(self):
+        self.source.fault = "304"
+        with self.assertRaises(self.loader.LoaderError) as caught:
+            self.store._run("refresh", fail_build,
+                            current_archive=self.source.manifest["archive"]["sha256"])
+        self.assertEqual(caught.exception.code, "http_status")
+        self.assertEqual(len(self.source.requests), 2)
+
+    def test_recovered_304_repairs_pointer_before_unchanged_success(self):
+        current = self.store.refresh()
+        self.store.refresh()  # Durable rollback of the same verified generation.
+        pointer = self.store.namespace / "state.json"
+        pointer.write_bytes(b"invalid")
+        self.source.fault = "conditional"
+        result, metadata = self.store._run("refresh", fail_build, current_archive=current.archive_sha256)
+        self.assertIsNone(result)
+        self.assertEqual(json.loads(pointer.read_bytes())["active"], metadata["archive_sha256"])
+
+    def test_unchanged_commit_failure_preserves_pointer_for_200_and_304(self):
+        current = self.store.refresh()
+        pointer = self.store.namespace / "state.json"
+        before = pointer.read_bytes()
+        for fault in (None, "conditional"):
+            with self.subTest(fault=fault):
+                self.source.fault = fault
+                with patch("v8std_mcp_snapshots.os.fsync", side_effect=OSError(errno.ENOSPC, "full")):
+                    with self.assertRaises(OSError):
+                        self.store._refresh(fail_build, time.monotonic() + 5,
+                                            current_archive=current.archive_sha256)
+                self.assertEqual(pointer.read_bytes(), before)
+
+    def test_lock_waiter_reuses_verified_current_without_network_or_build(self):
+        current = self.store.refresh()
+        self.source.requests.clear()
+        fd = os.open(self.store.namespace / ".lock", os.O_RDWR)
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        release = threading.Timer(.5, lambda: fcntl.flock(fd, fcntl.LOCK_UN))
+        release.start()
+        try:
+            result, metadata = self.store._run("refresh", fail_build,
+                                              current_archive=current.archive_sha256)
+            self.assertIsNone(result)
+            self.assertTrue(metadata["unchanged"])
+            self.assertEqual(self.source.requests, [])
+        finally:
+            release.join()
+            os.close(fd)
+
+    def test_other_process_committed_archive_still_builds_for_older_parent(self):
+        current = self.store.refresh()
+        self.source.next_generation()
+        committed = self.store.refresh()
+        result, metadata = self.store._run("refresh", build, current_archive=current.archive_sha256)
+        self.assertIsInstance(result, Generation)
+        self.assertEqual(metadata["archive_sha256"], committed.archive_sha256)
+        self.assertFalse(metadata.get("unchanged", False))
+
+    def test_changed_manifest_optional_fields_are_verified_without_rebuilding_current(self):
+        current = self.store.refresh()
+        self.source.manifest["optional"] = {"weight": .5}
+        result, metadata = self.store._run("refresh", fail_build, current_archive=current.archive_sha256)
+        self.assertIsNone(result)
+        self.assertTrue(metadata["unchanged"])
+        # Valid format path is nevertheless forbidden for this selected local site.
+        self.source.manifest["archive"]["path"] = (
+            "https://ai.v8std.ru/indexes/v1/" + self.source.manifest["archive"]["path"])
+        with self.assertRaises(self.loader.LoaderError) as caught:
+            self.store._run("refresh", fail_build, current_archive=current.archive_sha256)
+        self.assertEqual(caught.exception.code, "url_policy")
+
+    def test_unready_coordinator_rejects_metadata_only_acceptance(self):
+        coordinator = self.coordinator(refresh_seconds=0)
+        with self.assertRaises(self.loader.LoaderError):
+            coordinator._accept(None, {"corpus_id": "untrusted", "archive_sha256": "a" * 64,
+                                      "unchanged": True}, checked=True)
+        self.assertFalse(coordinator.status()["ready"])
+
+    def test_unchanged_marker_must_match_accepted_archive_and_corpus(self):
+        coordinator = self.coordinator(refresh_seconds=0)
+        generation = Generation("original", os.getpid(), "accepted")
+        metadata = {"corpus_id": "original", "archive_sha256": "a" * 64}
+        coordinator._accept(generation, metadata, checked=False)
+        before = coordinator.status()
+        for mismatch in ({"archive_sha256": "b" * 64}, {"corpus_id": "different"}):
+            with self.subTest(mismatch=mismatch):
+                with self.assertRaises(self.loader.LoaderError):
+                    coordinator._accept(None, {**metadata, **mismatch, "unchanged": True}, checked=True)
+                self.assertIs(coordinator.current(), generation)
+                self.assertEqual(coordinator.status(), before)
+        coordinator._accept(None, {**metadata, "unchanged": True}, checked=True)
+        self.assertIs(coordinator.current(), generation)
+        self.assertEqual(coordinator.status()["loaded_at"], before["loaded_at"])
+        self.assertIsNotNone(coordinator.status()["last_success_at"])
+
+
 class SnapshotLifetimeTests(unittest.TestCase):
     def test_same_hash_refresh_releases_unused_generation_before_idle_wait(self):
         loader = importlib.import_module("v8std_mcp_snapshots")
@@ -937,7 +1162,7 @@ class SnapshotLifetimeTests(unittest.TestCase):
         class CompletedStore:
             # The spawn/IPC boundary is covered by the real store tests. Here
             # weakrefs isolate ownership after a completed result is delivered.
-            def _run(self, mode, prepare, stop):
+            def _run(self, mode, prepare, stop, *, current_archive=None):
                 generation = Generation("same-corpus", os.getpid(), "completed-ipc")
                 references.append(weakref.ref(generation))
                 return generation, {"corpus_id": "same-corpus", "archive_sha256": "a" * 64}
