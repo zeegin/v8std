@@ -198,7 +198,7 @@ self.assertEqual(coordinator.current().corpus_id, "fixture-generation-a")
 - [x] **GREEN URL/network:** Resolve manifest below selected base prefix;
   permit fixed ai archive origin only for default public site; validate every
   redirect, no downgrade, no credentials and three redirects maximum. Stream
-  reads enforce byte caps plus 60s whole attempt/20s read timeout. Validate
+  reads enforce byte caps plus 360s whole attempt/20s read timeout. Validate
   Content-Encoding and length; reuse ETag/Last-Modified only with a valid cache.
 - [x] **GREEN cache/lifecycle:** Namespace by normalized source/schema; verify
   cache before use; retain active+previous and pins. File lock serializes
@@ -335,6 +335,34 @@ self.assertEqual(container_inspect["Config"]["User"], "10001:10001")
   graph without public egress and multi-session Gateway where locally available.
   Verify licenses/SBOM inputs. Record unavailable external catalog acceptance
   explicitly, not as a passed test. Commit task and perform review.
+
+#### Task 4 reviewed fixes — approved attempt-budget update
+
+User explicitly requested `360` seconds after reviewing the original timeout.
+This supersedes the original numerical budget only. Gateway scope/security
+decisions and external mutation authority are not inferred from that change.
+Keep historical measurements labelled with their original 60-second build.
+
+- [ ] **RED:** In `tests/test_v8std_mcp_snapshots.py`, assert a default store
+  uses `360` attempt seconds and `20` read seconds; retain accelerated real
+  worker timeout/reaping, close and responsive-query tests. In distribution
+  tests resolve Compose with an explicit alternate SITE_URL and prove it is
+  passed intact instead of replaced by the default local URL.
+- [ ] **GREEN:** Set `ATTEMPT_SECONDS = 360` in
+  `scripts/v8std_mcp_snapshots.py`. Compose consumes
+  `${V8STD_MCP_SITE_URL:-http://v8std.localhost:${V8STD_SITE_PORT:-18765}${V8STD_SITE_PREFIX:-/}}`.
+  Test actual Compose interpolation; do not assume nested defaults work without
+  executing its config resolver. Preserve local default, prefix and one setting.
+  Adapt only the integration startup wait to allow the accepted attempt plus
+  bounded startup margin; do not turn RPC/read/shutdown timeouts into360seconds.
+- [ ] **VERIFY:** Run focused snapshot/distribution tests, commit the exact
+  changed runtime, build a new amd64 image from that clean source SHA and rerun
+  full-corpus supervised cold/warm stdio/HTTP acceptance under QEMU. Exercise an
+  explicit reachable SITE_URL override end-to-end, checking source and returned
+  links. No privileged Gateway retry, image publication or native-CI claim.
+- [ ] **REVIEW:** Independent scoped review of the fix diff and evidence.
+  Gateway discrepancy remains separately open until an approved design decision;
+  passing these checks alone does not close Task4 or the full release plan.
 
 ### Task 5: Restricted release transaction and independent index store
 

@@ -167,9 +167,17 @@ scores/IDs для одного запроса и corpus; различаются 
 | llms / llms-full | 4 / 16 MiB |
 | Одна JSONL строка | 1 MiB UTF-8 |
 | Pages / vector rows | По 100 000 |
-| Вся попытка обновления | 60 секунд monotonic deadline |
+| Вся попытка обновления | 360 секунд monotonic deadline |
 | Блокирующий сетевой read | Не более 20 секунд и остатка общего deadline |
 | Cache на экземпляр volume | 256 MiB, включая staging и pinned generations |
+
+Общий бюджет уточнён прямым решением пользователя «поставь 360 секунд и
+продолжай» до первого выпуска этого контракта. Он включает download,
+verification, generation construction и передачу результата координатору;
+это не timeout tool call. Предел одного сетевого read остаётся 20 секунд.
+Close/SIGTERM отменяет worker, не ожидая исчерпания всех 360 секунд.
+Более короткие readiness/transaction budgets host-controller независимы:
+контроллер вправе отменить ещё не готовый candidate раньше этого предела.
 
 Content-Length проверяется, но не заменяет счётчик фактически прочитанных
 байтов. Число JSON nesting levels ограничено 32; строки, числа и arrays
