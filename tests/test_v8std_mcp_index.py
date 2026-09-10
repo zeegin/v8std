@@ -259,6 +259,7 @@ class V8StdMcpIndexTests(unittest.TestCase):
         result = self.index.explain_snippet(snippet)
         self.assertIn("diagnostics", result)
         self.assertIn("signals", result)
+        self.assertIn("std498", [item["id"] for item in result["standards"]])
 
     def test_explain_snippet_and_batch_diagnostics(self):
         snippet = self.index.explain_snippet(

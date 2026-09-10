@@ -31,6 +31,7 @@ governs:
   - deploy/nginx/server-v8std-mcp.conf
   - deploy/systemd/v8std-mcp.service
   - docs/mcp.md
+  - docs/support.md
   - tests/test_v8std_mcp_server.py
   - tests/test_v8std_mcp_index.py
   - tests/test_v8std_mcp_snippet.py
@@ -99,5 +100,6 @@ SDBL уточняет set-like семантику `signals`, уже примен
 
 Wire conformance проверяет discovery и вызовы одного и того же экземпляра
 для default/override, ошибки, оба JSON-представления Unicode и неизменные
-legacy tools. Полная матрица приёмки находится в design. На этапе candidate
-новая conformance-декларация не свидетельствует о выполненной реализации.
+legacy tools. Полная матрица приёмки находится в design. Conformance-декларация
+сама по себе не свидетельствует о выполненной реализации; результаты
+проверок находятся в [verification evidence](../operations/2026-09-10-mcp-snippet-verification.md).

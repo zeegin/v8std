@@ -31,4 +31,5 @@ services:
       V8STD_MCP_GENERATE_INDEX: auto
       V8STD_MCP_HOST: 0.0.0.0
       V8STD_MCP_PORT: "8765"
+      V8STD_MCP_MAX_SNIPPET_CHARS: "${V8STD_MCP_MAX_SNIPPET_CHARS-4000}"
     entrypoint: ["/opt/v8std/scripts/run_v8std_mcp.sh"]

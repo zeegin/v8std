@@ -9,10 +9,14 @@ import yaml
 
 
 WORD_RE = re.compile(r"[A-Za-zА-Яа-яЁё0-9_:-]+")
+MAX_SNIPPET_PREVIEW_CHARS = 1000
+MAX_SNIPPET_PREVIEW_TOKENS = 80
+MAX_SNIPPET_TOKEN_CHARS = 4000
 SECRET_IDENTIFIER_RE = re.compile(
     r"(парол|password|passwd|pwd|secret|token|api[_-]?key)",
     re.IGNORECASE,
 )
+SECRET_NAME_RE = re.compile(r"[A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*", re.IGNORECASE)
 SECRET_ASSIGNMENT_RE = re.compile(
     r"(?P<name>[A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)\s*=\s*"
     r"(?P<quote>\"|')(?P<value>.{4,160}?)(?P=quote)",
@@ -181,9 +185,17 @@ class RetrievalRules:
                 }
             )
 
+        preview_tokens = []
+        token_chars = 0
+        for token in tokens[:MAX_SNIPPET_PREVIEW_TOKENS]:
+            if token_chars + len(token) > MAX_SNIPPET_TOKEN_CHARS:
+                break
+            preview_tokens.append(token)
+            token_chars += len(token)
+
         return {
-            "normalized_text": normalized[:1000],
-            "tokens": tokens[:80],
+            "normalized_text": normalized[:MAX_SNIPPET_PREVIEW_CHARS],
+            "tokens": preview_tokens,
             "signals": signals,
         }
 
@@ -223,7 +235,16 @@ def extract_query_strings(snippet: str) -> list[str]:
 
 
 def has_secret_literal(snippet: str) -> bool:
-    for match in SECRET_ASSIGNMENT_RE.finditer(snippet):
+    consumed_until = 0
+    for identifier in SECRET_NAME_RE.finditer(snippet):
+        if identifier.start() < consumed_until:
+            continue
+        # An unanchored assignment regex retries every suffix of a long name.
+        # Only its maximal identifier can end at the following assignment.
+        match = SECRET_ASSIGNMENT_RE.match(snippet, identifier.start())
+        if match is None:
+            continue
+        consumed_until = match.end()
         name = match.group("name")
         value = match.group("value").strip()
         if not value or value.startswith("&"):

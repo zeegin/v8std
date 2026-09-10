@@ -39,6 +39,7 @@ DEFAULT_LIMIT = 10
 MAX_BODY_CHARS = 12000
 MAX_BODY_LIMIT_CHARS = 30000
 MAX_SNIPPET_CHARS = 4000
+MAX_SNIPPET_LIMIT_CHARS = 32000
 MAX_DIAGNOSTIC_CODES = 500
 MAX_DIAGNOSTIC_CODE_CHARS = 200
 MAX_ENUM_CHARS = 64
@@ -115,9 +116,17 @@ def truncate_for_query(text: str, max_chars: int = MAX_QUERY_CHARS) -> str:
         return text
     cut = text[:max_chars]
     boundary = cut.rfind(" ")
-    if boundary > max_chars // 2:
+    if boundary > 0:
         cut = cut[:boundary]
     return cut.strip()
+
+
+def validate_max_snippet_chars(value: int) -> int:
+    if type(value) is not int or not MAX_SNIPPET_CHARS <= value <= MAX_SNIPPET_LIMIT_CHARS:
+        raise ValueError(
+            f"max_snippet_chars must be an integer from {MAX_SNIPPET_CHARS} to {MAX_SNIPPET_LIMIT_CHARS}"
+        )
+    return value
 
 
 def require_string_list(values: Any, field_name: str, item_max_chars: int) -> list[str] | None:
@@ -375,7 +384,9 @@ class V8StdIndex:
         refresh_seconds: int = DEFAULT_REFRESH_SECONDS,
         request_timeout: int = 20,
         rules_path: Path | None = None,
+        max_snippet_chars: int = MAX_SNIPPET_CHARS,
     ) -> None:
+        self._max_snippet_chars = validate_max_snippet_chars(max_snippet_chars)
         self.pages_path = pages_path
         self.vectors_path = vectors_path
         self.index_url = index_url
@@ -395,6 +406,10 @@ class V8StdIndex:
         self._bm25_body = BM25Corpus({})
         self._metadata_terms_by_id: dict[str, set[str]] = {}
         self._missing_rule_targets: list[dict[str, str]] = []
+
+    @property
+    def max_snippet_chars(self) -> int:
+        return self._max_snippet_chars
 
     @property
     def metadata(self) -> IndexMetadata | None:
@@ -583,7 +598,7 @@ class V8StdIndex:
         language: str = "auto",
         limit: int | None = None,
     ) -> dict[str, Any]:
-        snippet = require_text(snippet, "snippet", MAX_SNIPPET_CHARS)
+        snippet = require_text(snippet, "snippet", self.max_snippet_chars)
         language = require_text(language, "language", MAX_ENUM_CHARS)
         if language not in {"auto", "bsl", "sdbl"}:
             raise ValueError("language must be one of: auto, bsl, sdbl")
@@ -591,24 +606,26 @@ class V8StdIndex:
         requested_limit = clamp_limit(limit)
         self.refresh_if_needed()
         analysis = self.rules.analyze_snippet(snippet)
-        signal_targets = [
-            target_id
-            for signal in analysis["signals"]
-            for target_id in signal.get("target_ids", [])
-        ]
-        signal_text = " ".join(
-            [
-                analysis["normalized_text"],
-                *[signal["value"] for signal in analysis["signals"]],
-                *signal_targets,
-            ]
+        # Only the snippet response is set-like. Ordinary search uses the
+        # shared analyzer's signal multiplicity as part of its term weights.
+        signals = []
+        seen_signals = set()
+        for signal in analysis["signals"]:
+            key = (signal["type"], signal.get("rule"), signal["value"], tuple(signal["target_ids"]))
+            if key not in seen_signals:
+                signals.append(signal)
+                seen_signals.add(key)
+        analysis["signals"] = signals
+        search_text = truncate_for_query(analysis["normalized_text"])
+        search_result = self.search(
+            search_text, types=["diagnostic", "standard", "pattern"],
+            mode="hybrid", limit=requested_limit,
         )
-        search_text = truncate_for_query(signal_text or snippet)
-        search_result = self.search(search_text, types=None, mode="hybrid", limit=limit)
+        results = self._rank_snippet_results(analysis["signals"], search_result["results"], requested_limit)
 
         diagnostics = []
         standards = []
-        for result in search_result["results"]:
+        for result in results:
             if result["type"] == "diagnostic":
                 diagnostics.append(result)
             elif result["type"] in {"standard", "pattern"}:
@@ -617,8 +634,8 @@ class V8StdIndex:
         confidence = 0.0
         if analysis["signals"]:
             confidence += 0.45
-        if search_result["results"]:
-            confidence += min(search_result["results"][0]["score"] / 5000, 0.55)
+        if results:
+            confidence += min(results[0]["score"] / 5000, 0.55)
 
         return {
             "language": language,
@@ -629,6 +646,48 @@ class V8StdIndex:
             "standards": standards[:requested_limit],
             "confidence": round(min(confidence, 1.0), 3),
         }
+
+    def _rank_snippet_results(
+        self, signals: list[dict[str, Any]], results: list[dict[str, Any]], limit: int,
+    ) -> list[dict[str, Any]]:
+        """Merge rule evidence outside the text budget, without another search."""
+        primary_by_rule = {rule.id: rule.primary for rule in self.rules.rules}
+        priorities: dict[str, int] = {}
+        reasons: dict[str, list[str]] = defaultdict(list)
+        for signal in signals:
+            targets = signal.get("target_ids", [])
+            primary = (
+                primary_by_rule.get(signal.get("rule"), "")
+                if signal["type"] == "snippet_call" else next(iter(targets), "")
+            )
+            reason = f"snippet_signal:{signal.get('rule') or signal['type']}"
+            for target_id in targets:
+                priority = 0 if target_id == primary else 1
+                priorities[target_id] = min(priorities.get(target_id, 2), priority)
+                if reason not in reasons[target_id]:
+                    reasons[target_id].append(reason)
+
+        entries = {entry["id"]: dict(entry) for entry in results}
+        with self._lock:
+            for target_id, priority in priorities.items():
+                page = self._pages_by_id.get(target_id)
+                if not page or page["type"] not in {"diagnostic", "standard", "pattern"}:
+                    continue
+                entry = entries.get(target_id)
+                if entry is None:
+                    entry = self._search_entry(page, 0, {"reasons": [], "details": {}})
+                    entries[target_id] = entry
+                bonus = 4200 if priority == 0 else 2200
+                entry["score"] = round(entry["score"] + bonus, 6)
+                entry["score_details"] = {**entry["score_details"], "snippet_signal": bonus}
+                entry["match_reasons"] = (reasons[target_id] + entry["match_reasons"])[:12]
+
+            # Use original pages: search entries do not include source_path.
+            ranked = sorted(entries.values(), key=lambda entry: (
+                priorities.get(entry["id"], 2), -entry["score"],
+                concrete_rank(self._pages_by_id.get(entry["id"], entry)), entry["type"], entry["id"],
+            ))
+        return ranked[:limit]
 
     def explain_diagnostics(self, codes: list[str]) -> dict[str, Any]:
         if not isinstance(codes, list):
