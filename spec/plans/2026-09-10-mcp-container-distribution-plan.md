@@ -109,7 +109,7 @@ Producer converts canonical page URLs into additional `site_path`/`markdown_path
 without rewriting canonical body text; generated vectors and text hashes remain
 valid. Site-level generator outputs currently consumed elsewhere stay intact.
 
-- [ ] **RED:** Add behavior tests with hand-authored one-page docs and independently
+- [x] **RED:** Add behavior tests with hand-authored one-page docs and independently
   constructed hostile tar members. The first test asserts the producer module
   exists using `importlib.util.find_spec`, then execute the producer twice and
   require exact archive byte equality. Example expected path is literal:
@@ -124,7 +124,7 @@ with self.assertRaisesRegex(SnapshotError, "archive_member"):
 
   Run `.venv/bin/python -m unittest tests.test_v8std_mcp_snapshot_format -v`;
   missing implementation must fail before production code is written.
-- [ ] **GREEN format:** Implement strict JSON with duplicate-key/depth/type
+- [x] **GREEN format:** Implement strict JSON with duplicate-key/depth/type
   guards; exact five regular members; deterministic gzip/tar; independent
   descriptor/archive hashes; compressed/decompressed/member/row/line bounds;
   no symlink, trailing gzip data, PAX, duplicate or traversal member. Count all
@@ -132,12 +132,12 @@ with self.assertRaisesRegex(SnapshotError, "archive_member"):
   Validate page/vector IDs, finite components, model/dim and chunk text hashes
   against the existing chunk rules. Reuse those pure rules without importing
   docs/Pillow. Normalize site URL and preserve base prefix.
-- [ ] **GREEN producer:** CLI accepts `--docs`, `--output`, `--source-sha`,
+- [x] **GREEN producer:** CLI accepts `--docs`, `--output`, `--source-sha`,
   `--site-url`, `--public-delivery`; publishes immutable hash directory first,
   manifest last with atomic write. In local mode archive path is relative;
   public mode uses the fixed ai delivery origin. Existing same-hash bytes are
   verified, never overwritten with different contents.
-- [ ] **Verify:** Real current docs corpus round-trip, deterministic rebuild,
+- [x] **Verify:** Real current docs corpus round-trip, deterministic rebuild,
   bad vectors/schema/count/hash and all archive budget cases pass. Record exact
   focused command and results, run existing vector/index tests, self-review,
   then commit only this task's files and submit for spec+quality review.
