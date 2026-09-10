@@ -50,6 +50,11 @@ requirements:
 - Основной checkout, существующая ветка `codex/mcp-container-distribution-design`; не создавать worktree, не менять main, не пушить и не деплоить во время реализации.
 - TDD и focused tests для каждого поведения. Strict build выполняется **до** полного suite: tests читают `site/LICENSES`, параллельная пересборка разрушает их вход.
 - Утверждение о 100 000 подключений запрещено без production-like mixed-load evidence.
+- Первый выпуск — опубликованный Docker image; Docker Catalog и upstream PR
+  отложены отдельным решением пользователя и не являются блокерами этого выпуска.
+- Первичная ручная миграция может использовать назначенное пользователем окно
+  до двух часов без old/new overlap; автоматический rollout сохраняет overlap gate.
+  Дата окна ещё не назначена. Согласование plan не разрешает остановку production.
 
 ## Scope and acceptance boundaries
 
@@ -412,6 +417,13 @@ state/store roots. Release controller effects go through a narrow adapter to
 Docker/nginx/systemd; tests use disposable processes/filesystems and record exact
 calls at this external boundary, not pretend mocked return values prove health.
 
+**Resume boundary:** Task5 has uncommitted implementation from `3165cc7` and
+is paused for the current planning turn. Resume the same owner; preserve the
+existing files. The last29 release tests passed, but three failures in the
+89-test snapshot/runtime run were only claimed repaired and need a fresh run.
+Hold regressions, ingress/security review, Docker/nginx evidence, activation
+runbook and independent task review remain. This is not a completed task.
+
 - [ ] **RED:** Test unknown schema, invalid digest/namespace/config path, stale or
   mutated duplicate ID, concurrent releases, failed pull/ready/switch/smoke,
   rollback failure and restart reconciliation. Example visible invariant:
@@ -451,13 +463,83 @@ self.assertTrue(predecessor_snapshot_path.is_file())
   claiming 100k. Commit and review the host code as security-sensitive code,
   not an authorization to install it on production.
 
+#### First-migration completion slice — before Task6 integration
+
+**Files:** extend `scripts/v8std_mcp_release.py`,
+`tests/test_v8std_mcp_release.py`, `tests/mcp_release_fixture.py`,
+`deploy/container/` and `spec/operations/mcp-container-activation.md`.
+Use a separate scoped review after the ordinary controller is stable. Do not
+add a second runtime, change snapshot format or enlarge the CI command allowlist.
+
+**Interface:** operator-only CLI `bootstrap`, `bootstrap-recover`,
+`bootstrap-status`, dispatched in the existing release module; the restricted
+CI entry must reject all three. Bootstrap consumes the existing validated
+release envelope plus a root-owned, size-bounded window/legacy record from the
+installed policy directory, not arbitrary CLI paths. That record contains UTC
+start/end (at most7200seconds), exact envelope SHA256, the fixed legacy unit
+`v8std-mcp.service` and hashes of saved config/data. Legacy startup/config paths
+come from verified host inventory and root-owned policy, never from CI input.
+It produces the existing bounded status shape and an initial accepted container
+record only after real smoke. Reuse digest/attestation/hold/inspection/smoke code.
+Prepare immutable artifacts/backup before the window; mint and authorize the
+execution envelope just before each bounded attempt so its300second deadline
+has not expired during preparation. Recovery of an already-started attempt
+must remain allowed after window expiry; only new attempts are refused.
+
+- [ ] **RED initial boundary:** Execute CLI against a disposable fixture and
+  show rejection outside/missing window, wrong envelope hash, existing active
+  container, CI entry invocation and insufficient single-runtime capacity.
+  Add subprocess fault cases after legacy stop, after candidate start, after
+  switch and during initial active-record persistence. Assert the endpoint,
+  exact served data and owned process count, not just a successful exit.
+- [ ] **GREEN initial transition:** Add a serialized initial journal and
+  independently scheduled host recovery before stopping legacy. Stop/start is
+  allowed only inside the operator window. Commit the first container record
+  after local/public smoke, or restore verified Python config/data/upstream.
+  A no-predecessor ordinary `deploy` remains rejected; do not fabricate its
+  required `active.json`. Failures after accepted commit reconcile persistence,
+  not blindly roll back an already accepted container. Before acceptance,
+  startup/reboot recovery restores the saved legacy service; after acceptance
+  it starts the exact accepted digest, without racing the still-enabled legacy unit.
+- [ ] **VERIFY initial transition:** Run the real disposable process fixture
+  under restricted memory, including no-overlap, SIGKILL/lost SSH, crash at each
+  persistence boundary, duplicate request and rollback failure. Record absence
+  of any simultaneous legacy/candidate process in stop/start mode. Keep static
+  archive GET/HEAD available throughout. Before the host window, replay the
+  tested runbook on native Linux and measure return-to-legacy time.
+
+Required observable outcomes (the fixture's CLI returns JSON with these fields):
+
+```python
+self.assertEqual(result["state"], "ROLLED_BACK")
+self.assertEqual(served_runtime_sha, saved_legacy_sha)
+self.assertEqual(served_data_sha, saved_legacy_data_sha)
+self.assertEqual(candidate_process_count, 0)
+self.assertEqual(static_archive_sha, published_archive_sha)
+```
+
+Here `result` is the parsed bootstrap CLI status. `served_runtime_sha` is the
+restarted process's verified source identity, `served_data_sha` the legacy
+health/data hash, and `candidate_process_count` the fixture-owned PID count;
+the archive values come from an independent GET and the published manifest.
+Do not compare legacy health fields against the new runtime's different schema.
+
+Run existing release/hold/snapshot/runtime tests explicitly before the scoped
+review; do not mark the live migration complete from these fixtures:
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_release tests.test_v8std_mcp_release_hold tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_runtime -v
+```
+
 ### Task 6: Fail-closed publication CI, policy and final integration
 
 **Files:** workflows under `.github/workflows/`, `scripts/publish_mcp_artifacts.py`,
 `tests/test_mcp_publication.py`, process plan
 `spec/plans/2026-09-10-mcp-ci-deployment-policy-plan.md`, `AGENTS.md`,
 `spec/README.md`, repo skill references, architecture loader/policy tests,
-`spec/operations/mcp-container-verification.md`, public installation docs.
+`spec/operations/mcp-container-verification.md`, public installation docs and
+Catalog release metadata/harness under `deploy/docker-catalog/`,
+`scripts/check_mcp_container.py`, `tests/test_v8std_mcp_distribution.py`.
 
 **Consumes:** producer, image harness and typed release controller CLIs.
 Publisher first places and externally verifies immutable corpus, then emits
@@ -481,12 +563,32 @@ Pages manifest. Every runtime deployment references published exact digest.
   permission for push. Align all current policy references; historic v1 and old
   structured plans stay frozen. Write reproducible commands/evidence and separate
   external gates for registry/Catalog/target-host. Do not publish internal specs.
+- [ ] **VERIFY release scope and independent activation:** Image publication
+  and corpus upload can run while runtime deployment is disabled. Test that
+  first-bootstrap success alone does not activate automatic runtime deployment;
+  failed overlap capacity leaves the running endpoint untouched. Document
+  image-only scope without claiming Docker Catalog acceptance. Preserve the
+  `longLived` source declaration and distinguish local test-catalog diagnostics
+  from the actual Docker-published catalog; no upstream PR is a release prerequisite.
 - [ ] **Final gates:** Run semantic impact on actual paths, CLI `impact`,
   `validate --merge-ready`, all applicable fitness; strict build, then full suite;
   container smoke and shared-host mixed load on disposable local stack, review
   whole branch and repair concrete findings. Record exact SHA/results and
   unperformed external operations. No push, merge of incomplete plan, PR closure
   or production deployment inferred from these green tests.
+
+### Deferred external Docker Catalog gate
+
+The user's current choice is image-only publication. A later Catalog submission
+uses the same published digest and `longLived: true`, followed by real repeated
+tool calls without a masking global `--long-lived` flag. The upstream
+`task catalog`/`ToTile` diagnostic loses this field, but it is a **test** catalog
+generator. On2026-09-10 actual Docker v2/v3 catalogs contain the field for
+Playwright and four other servers. Therefore its repair is not a necessary
+precondition for image publication or even submission. No Catalog publication
+or default end-user lifecycle success for v8std is claimed by removing the
+incorrect pre-merge gate. Keep the original diagnostic and its correction in
+the verification record; do not repeat it simply to rediscover the known defect.
 
 ## Evidence
 

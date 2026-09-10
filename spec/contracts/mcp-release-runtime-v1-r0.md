@@ -55,6 +55,10 @@ Release ID идемпотентен: повтор с теми же полями 
 
 ## Состояния и переходы
 
+Этот автоматический путь применяется к уже зарегистрированному container
+predecessor. Первая ручная миграция описана отдельно ниже; отсутствие
+`active.json` не разрешает подставить фиктивный predecessor.
+
 ```text
 RECEIVED → VERIFIED → PREPARED → READY → SWITCHED → COMMITTED
    └──────── до SWITCHED: FAILED, старый runtime продолжает работать
@@ -83,7 +87,41 @@ drain старого runtime до 30 секунд и окончательный 
 проверяет старый endpoint; candidate прекращает admission и завершается.
 Rollback failure — отдельный terminal `RECOVERY_REQUIRED` с alert и сохранёнными
 артефактами; нельзя обозначать его как успешный rollback. Предыдущий runtime
-не останавливается до успешного post-switch smoke нового.
+не останавливается до успешного post-switch smoke нового в автоматическом пути.
+
+## Первая ручная миграция
+
+Оператор заранее фиксирует проверенный main SHA, image/platform/configuration
+digests, corpus ID, начало и конец окна в UTC и сохранённый Python deployment.
+Окно не длиннее двух часов; без назначенного окна или при уже принятом container
+predecessor первоначальный stop/start запрещён. CI forced command не принимает
+bootstrap и не может менять операторское разрешение. Вход не содержит shell.
+Истечение окна запрещает новую попытку, но не восстановление уже начатой.
+
+Предпочтителен overlap, если его capacity проверена. При нехватке overlap RAM
+допускается только в этом окне: сохранить прежние config/data → заранее получить
+и проверить образ/corpus → запустить независимый от SSH recovery guard →
+остановить старый MCP → запустить candidate → readiness и MCP smoke →
+nginx switch/public smoke → зарегистрировать первый container predecessor.
+nginx, TLS, мониторинг и static index store не останавливаются.
+
+Если подготовка, запуск или smoke неуспешны, owned candidate останавливается,
+возвращаются прежний upstream и Python service, проверяются endpoint и прежние
+данные. При невозможности восстановления результат — `RECOVERY_REQUIRED`,
+не успешный rollback. Journal и recovery guard охватывают также промежуток
+между stop старого и start нового и сбой при записи первого `active.json`.
+Повтор не создаёт ещё один runtime; искусственная запись `COMMITTED` запрещена.
+
+Одна попытка сохраняет бюджеты 300 s transaction / 90 s readiness / 30 s smoke /
+45 s stop и запас на rollback; 360 s loader и 20 s read не увеличиваются до двух
+часов. Повтор возможен только после проверенного восстановления и с новым ID.
+Не позднее чем за 30 минут до конца окна новые попытки прекращаются; если новый
+сервис не принят, выполняется возврат и проверка старого. Если репетиция требует
+больше времени на возврат, резерв увеличивается до начала окна.
+
+Первый успех не включает автоматический runtime deploy сам по себе. Для него
+по-прежнему нужны отдельная активация и память для old/new overlap. Эта ручная
+процедура не является скрытым stop/start fallback автоматического контроллера.
 
 ## Crash recovery и данные
 
@@ -117,7 +155,9 @@ wrapper без готового контейнера не удовлетворя
 
 Перед переключением capacity check проверяет disk headroom для pull/staging,
 RAM для old+new runtime и index preparation, file descriptors и сетевой бюджет.
-При дефиците switch не начинается. Admission ограничивает одновременно
+При дефиците автоматический switch не начинается. Для первой ручной миграции
+без overlap измеряются один новый runtime, preparation, nginx и системные службы;
+само двухчасовое окно не компенсирует недостаток RAM. Admission ограничивает одновременно
 выполняемые MCP запросы, idle keep-alive и большие downloads раздельно;
 перегрузка отвечает retryable status по прежней edge policy. Конкретные
 настройки допускаются в production только после mixed-load evidence.

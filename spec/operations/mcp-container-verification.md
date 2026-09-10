@@ -383,13 +383,66 @@ and query set on the implemented snapshot runtime.
 | --- | --- |
 | Bounded refresh/cache, crashes, shared volume, offline recovery | Task review accepted locally; Linux/runtime integration remains. |
 | Frozen generations, URL presentation, stdio/HTTP lifecycle | Task review accepted; known image-alt edge remains final release gate. |
-| Runtime/static-site images, local request graph, Gateway sessions | Task4 local review accepted, including360-second QEMU/Compose fixes and native Gateway15focused tests/two warm sessions. Latest fix remains uncommitted pending signing permission. Cold Gateway routing/native amd64 remain external gates. |
-| Restricted host controller, rollback and independent index delivery | Pending. |
+| Runtime/static-site images, local request graph, Gateway sessions | Task4 local review accepted, including360-second QEMU/Compose fixes and native Gateway15focused tests/two warm sessions; signed handoff3165cc7 completed. Cold Gateway routing/native amd64 remain external gates. |
+| Restricted host controller, rollback and independent index delivery | Task5 partial/uncommitted:29 release tests passed; regression reruns, review and first-bootstrap slice remain. |
 | Fail-closed publication, process v2 synchronization | Pending. |
 | Final semantic impact, merge-ready, fitness, strict build and full suite | Pending after all changes; strict build precedes the suite. |
 | Final image smoke, refresh RSS/CPU, disposable mixed load | Pending; cannot establish production 100k capacity. |
 
 ## External acceptance boundary
+
+### Refreshed release-request preflight
+
+Normal signed commit`3165cc7e6ef2afcf12cdeca66c8070ab0737ba5b` now contains the
+approved Gateway fix and candidate graph/evidence. The four reviewed packaging
+files matched their immutable review snapshot before commit. Signing-pending
+statements above are historical. Tasks5/6 are not completed by this commit.
+
+Read-only checks on2026-09-10 found the public default snapshot manifest still404;
+legacy `https://ai.v8std.ru/healthz` is200 with1423pages/3281vectors.
+nginx syntax succeeds. Private host and TLS inventory is retained outside Git;
+these observations do not establish capacity or migration readiness.
+No host mutation, cleanup, tariff change or MCP cutover was performed.
+
+GitHub main remains`b7bef11e145a188b30e7a7b17df2be4cb1acbd0c`.
+Protection, environment and credential readiness require separate private checks.
+An anonymous GHCR token request for`zeegin/v8std-mcp:pull` also returned403.
+This establishes no public availability, not proof of package nonexistence or
+of future workflow inability to publish with its own permitted GITHUB_TOKEN.
+
+### Catalog producer round-trip gap
+
+Docker registry remains at`8c773729f13f036da8c909be503fe433923a9aa2`.
+Actual `catalog.ToTile` from that pinned upstream module was executed on the
+current source entry, not a hand-built projection. It returned:
+
+```json
+{"input_long_lived":true,"output_long_lived_present":false,
+ "input_defaults":{"cache_volume":"v8std-mcp-cache","max_snippet_chars":4000,"site_url":"https://v8std.ru/"},
+ "output_defaults":{"cache_volume":null,"max_snippet_chars":null,"site_url":null}}
+```
+
+User/env/volume settings survive. Source `pkg/catalog/types.go` has no LongLived
+field and `tile.go` cannot propagate it; the documented `cmd/catalog` uses this
+conversion. Gateway0.43.3 defaults its global long-lived option to false, while
+client reuse requires the server flag or global option. Therefore the earlier
+explicit `--long-lived` warm harness does not prove the generated Catalog path.
+No failed end-user session is claimed from this conversion-only probe; actual
+generated-entry lifecycle acceptance must accompany the repair.
+
+Probe used pinned Go1.25.11 image, non-root/read-only/cap-drop/no-new-privileges,
+2CPU/768MiB,180s outer bound and no Docker socket. Final run copied go.mod to a
+private non-root temp subdirectory (Go ignores a go.mod at the temp root), then
+ran the exact upstream module; exit0. Source/evidence inputs remain in
+`/tmp/v8std-catalog-path.r0u2kk/`. Both disposable probe containers exited and
+were automatically removed; no default Catalog or user Docker settings changed.
+The local GitHub license label is Other/NOASSERTION; upstream's actual license
+filter rejects gpl/agpl/npl prefixes, so Other is not an automatic validator
+failure. No license text or licensing terms were changed.
+
+Limited static-index/CI setup and an upstream PR preserving LongLived require
+separate authorization; local verification does not authorize those writes. Direct image publication and external Docker review
+remain distinct outcomes; the server/runtime artifact contract is unchanged.
 
 Registry release digests, provenance verification against those releases,
 Docker Catalog acceptance, GitHub protection/environment/secrets, target-host
@@ -398,3 +451,44 @@ The existing Python deployment remains the initial rollback path until that
 activation is explicitly performed and verified. An automatically enabled
 release path must not be inferred from a locally passing test or a written
 workflow.
+
+### Correction: test Catalog versus Docker-published Catalog, 2026-09-10
+
+The earlier `ToTile` result is real but establishes a defect in the **local
+test-catalog generator**, not loss in Docker's published catalog. Upstream
+[Taskfile](https://github.com/docker/mcp-registry/blob/8c773729f13f036da8c909be503fe433923a9aa2/Taskfile.yml)
+explicitly labels that command as generating a test catalog. Live GET of both
+official catalogs on2026-09-10 found `longLived: true` for desktop-commander,
+playwright, apify-mcp-server, inspektor-gadget and schemacrawler-ai.
+
+| Published artifact | Entries | Remote entries | SHA256 |
+|---|---:|---:|---|
+| [v2](https://desktop.docker.com/mcp/catalog/v2/catalog.yaml) |270|30|`fc371f25332f1509983734c642c92b6319a0589e1c2b41edce2ad547675a9208`|
+| [v3](https://desktop.docker.com/mcp/catalog/v3/catalog.yaml) |317|77|`274afe7ad34b083c3d3140664a3bc8762246f3887e840a9b4d4a3c44fce3b80a`|
+
+Support was merged in [Gateway PR26](https://github.com/docker/mcp-gateway/pull/26).
+The exact production transformation was not traced, and no v8std published
+entry/default end-user session was tested. Requiring an upstream generator fix
+before submitting an entry or releasing the image was an unsupported inference.
+The user chose image-only publication; no upstream PR/Catalog submission occurred.
+The implementation plan now separates this future channel gate from release.
+
+### Planning handoff: first migration and remaining implementation
+
+The planned first-migration stop/start is bounded to two hours if old/new
+cannot coexist. The actual window must be separately authorized. This does not extend
+loader/transaction deadlines, authorize stopping production now, or prove enough
+memory for the new runtime alone. Normal automatic rollout still requires overlap.
+
+Task5 owner paused safely on request for this planning turn; no new commits or
+owned diagnostics remain. Last29 release tests passed in60.515s; earlier2 hold
+tests passed before subsequent edits. The89-test snapshot/runtime run had3 failures;
+the owner reports fixes, but verification has not been rerun. Security/ingress
+review, Docker/nginx checks, regressions, activation runbook/report and independent
+Task5 review remain. The working ordinary controller requires an existing
+container `active.json`; initial Python-to-container bootstrap is a separate
+unfinished slice, now explicit in the plan. No successful release is inferred.
+
+See [the remaining-work roadmap](mcp-first-container-release-roadmap.md) for
+local gates, external source/image publication, initial window, rollback reserve
+and conditional activation of subsequent automated runtime updates.
