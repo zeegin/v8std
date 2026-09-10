@@ -11,6 +11,8 @@ import os
 from pathlib import Path
 import tempfile
 
+from v8std_mcp_presentation import PresentationError, validate_links
+
 from v8std_mcp_snapshot_format import (
     DEFAULT_SITE_URL, JSONL_MEMBERS, MAX_ARCHIVE_BYTES, MAX_MANIFEST_BYTES,
     MAX_UNPACKED_BYTES, MEMBER_LIMITS, MEMBERS, PUBLIC_DELIVERY_URL,
@@ -47,6 +49,14 @@ def build_snapshot(docs_dir: Path, source_sha: str, canonical_site_url: str) -> 
             raise SnapshotError("member_size")
         page_count += 1
     files["pages.jsonl"] = bytes(pages)
+    rows = list(jsonl_rows(files["pages.jsonl"]))
+    page_paths = {row["id"]: row for row in rows}
+    for row in rows:
+        validate_links(row.get("body_markdown", ""), canonical_site_url=site_url,
+                       page_paths=page_paths, context=site_url + row["site_path"])
+    for name in ("llms.txt", "llms-full.txt"):
+        validate_links(files[name].decode("utf-8"), canonical_site_url=site_url,
+                       page_paths=page_paths, generated_fields=True)
     vector_count = sum(1 for _ in jsonl_rows(files["search-vectors.jsonl"]))
     counts = dict(zip(JSONL_MEMBERS, (page_count, vector_count)))
     descriptor = {
@@ -169,7 +179,7 @@ def main() -> int:
     try:
         path = publish_snapshot(args.docs, args.output, args.source_sha, site_url,
                                 public_delivery=args.public_delivery)
-    except SnapshotError as error:
+    except (SnapshotError, PresentationError) as error:
         parser.exit(1, f"{error.code}\n")
     print(f"wrote {path}")
     return 0

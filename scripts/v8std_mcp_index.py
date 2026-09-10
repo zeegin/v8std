@@ -406,6 +406,27 @@ class V8StdIndex:
         self._bm25_body = BM25Corpus({})
         self._metadata_terms_by_id: dict[str, set[str]] = {}
         self._missing_rule_targets: list[dict[str, str]] = []
+        self._frozen = False
+
+    @classmethod
+    def from_validated_bytes(cls, pages: bytes, vectors: bytes, *, max_snippet_chars: int = MAX_SNIPPET_CHARS):
+        """Build from a VerifiedSnapshot's canonical bytes without corpus I/O."""
+        index = cls(max_snippet_chars=max_snippet_chars)
+        payload = pages.decode("utf-8")
+        entries, metadata = index._parse_vectors(vectors.decode("utf-8"), "snapshot")
+        index._replace_index(index._parse_pages(payload), "snapshot", payload, entries, metadata)
+        index._frozen = True
+        return index
+
+    def __getstate__(self):
+        # Trusted spawn IPC only; this is not a persistent pickle cache format.
+        state = self.__dict__.copy()
+        del state["_lock"]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._lock = threading.RLock()
 
     @property
     def max_snippet_chars(self) -> int:
@@ -420,6 +441,8 @@ class V8StdIndex:
         return self._vector_metadata
 
     def load(self, *, force_refresh: bool = False) -> None:
+        if self._frozen:
+            raise RuntimeError("index is frozen")
         with self._lock:
             payload, source = self._load_payload(force_refresh=force_refresh)
             pages = self._parse_pages(payload)
@@ -427,7 +450,7 @@ class V8StdIndex:
             self._replace_index(pages, source, payload, vectors, vector_metadata)
 
     def refresh_if_needed(self) -> None:
-        if self.pages_path is not None:
+        if self._frozen or self.pages_path is not None:
             return
         metadata = self._metadata
         if metadata is None or time.time() - metadata.loaded_at >= self.refresh_seconds:
@@ -755,6 +778,8 @@ class V8StdIndex:
             return self._pages_by_key.get(key)
 
     def read_resource_text(self, resource_name: str) -> str:
+        if self._frozen:
+            raise RuntimeError("snapshot resources belong to the generation")
         self.refresh_if_needed()
         if resource_name == "pages.jsonl" and self.pages_path is not None:
             return self.pages_path.read_text(encoding="utf-8")
@@ -779,7 +804,8 @@ class V8StdIndex:
         payload, _source = self._load_remote_resource(resource_name, remote_path)
         return payload
 
-    def _validate_types(self, types: list[str] | None) -> set[str] | None:
+    @staticmethod
+    def _validate_types(types: list[str] | None) -> set[str] | None:
         values = require_string_list(types, "types", MAX_ENUM_CHARS)
         if values is None:
             return None
@@ -787,13 +813,15 @@ class V8StdIndex:
             raise ValueError("invalid page type")
         return set(values)
 
-    def _validate_mode(self, mode: str) -> str:
+    @staticmethod
+    def _validate_mode(mode: str) -> str:
         mode = require_text(mode, "mode", MAX_ENUM_CHARS)
         if mode not in VALID_MODES:
             raise ValueError("invalid search mode")
         return mode
 
-    def _validate_relations(self, relations: list[str] | None) -> set[str] | None:
+    @staticmethod
+    def _validate_relations(relations: list[str] | None) -> set[str] | None:
         values = require_string_list(relations, "relations", MAX_ENUM_CHARS)
         if values is None:
             return None
@@ -1113,6 +1141,9 @@ class V8StdIndex:
             except IndexLoadError:
                 return [], None
 
+        return self._parse_vectors(payload, source)
+
+    def _parse_vectors(self, payload: str, source: str) -> tuple[list[VectorEntry], VectorMetadata | None]:
         vectors: list[VectorEntry] = []
         model = ""
         dim = 0

@@ -7,13 +7,18 @@ import html
 import json
 import logging
 import os
+import signal
 import sys
+from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Any
 
+import anyio
+
 from mcp.server.fastmcp import FastMCP
+from mcp.server.stdio import stdio_server
 from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import Field
 from starlette.requests import Request
@@ -30,6 +35,8 @@ from v8std_mcp_index import (
     V8StdIndex,
     validate_max_snippet_chars,
 )
+from v8std_mcp_runtime import SnapshotIndex
+from v8std_mcp_snapshot_format import DEFAULT_SITE_URL, SnapshotError, normalize_site_url
 
 
 MCP_SELF_DOC_MESSAGE = "This is a MCP Streamable HTTP endpoint"
@@ -490,17 +497,89 @@ class SelfDocumentingMcpApp:
         await send({"type": "http.response.body", "body": body})
 
 
-def install_self_documenting_mcp_app(server: FastMCP, *, mcp_path: str) -> None:
+def install_self_documenting_mcp_app(server: FastMCP, *, mcp_path: str, index=None) -> None:
     original_streamable_http_app = server.streamable_http_app
 
     def streamable_http_app_with_self_documentation():
-        return SelfDocumentingMcpApp(original_streamable_http_app(), mcp_path=mcp_path)
+        app = original_streamable_http_app()
+        if isinstance(index, SnapshotIndex):
+            original_lifespan = app.router.lifespan_context
+
+            @asynccontextmanager
+            async def lifespan(app):
+                index.start()
+                try:
+                    async with original_lifespan(app) as state:
+                        yield state
+                finally:
+                    with anyio.CancelScope(shield=True):
+                        await anyio.to_thread.run_sync(index.close)
+
+            app.router.lifespan_context = lifespan
+        return SelfDocumentingMcpApp(app, mcp_path=mcp_path)
 
     server.streamable_http_app = streamable_http_app_with_self_documentation  # type: ignore[method-assign]
 
 
+class _StdioLines:
+    """Cancellable POSIX pipe input for the SDK's stdio transport.
+
+    AsyncFile.readline delegates a blocking pipe read to a shielded worker
+    thread. Waiting on readiness first lets SIGTERM cancel without requiring
+    the client to close its write end. No JSON/protocol handling lives here.
+    """
+    def __init__(self, fd):
+        self.fd = fd
+        self.buffer = bytearray()
+        self.eof = False
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        while True:
+            newline = self.buffer.find(b"\n")
+            if newline >= 0 or self.eof:
+                if not self.buffer:
+                    raise StopAsyncIteration
+                end = newline + 1 if newline >= 0 else len(self.buffer)
+                line = bytes(self.buffer[:end])
+                del self.buffer[:end]
+                return line.decode("utf-8", errors="replace")
+            await anyio.wait_readable(self.fd)
+            block = os.read(self.fd, 65536)
+            self.buffer.extend(block)
+            self.eof = not block
+
+
+def install_stdio_lifecycle(server: FastMCP, index) -> None:
+
+    async def run_stdio():
+        if isinstance(index, SnapshotIndex):
+            index.start()
+        try:
+            async with anyio.create_task_group() as group:
+                async def terminate_on_signal():
+                    with anyio.open_signal_receiver(signal.SIGTERM) as signals:
+                        async for _ in signals:
+                            group.cancel_scope.cancel()
+                            break
+
+                group.start_soon(terminate_on_signal)
+                async with stdio_server(stdin=_StdioLines(sys.stdin.fileno())) as (read_stream, write_stream):
+                    await server._mcp_server.run(read_stream, write_stream,
+                                                server._mcp_server.create_initialization_options())
+                group.cancel_scope.cancel()
+        finally:
+            if isinstance(index, SnapshotIndex):
+                with anyio.CancelScope(shield=True):
+                    await anyio.to_thread.run_sync(index.close)
+
+    server.run_stdio_async = run_stdio  # type: ignore[method-assign]
+
+
 def build_server(
-    index: V8StdIndex,
+    index: V8StdIndex | SnapshotIndex,
     *,
     host: str,
     port: int,
@@ -675,13 +754,18 @@ def build_server(
         status_code = 200 if status.get("ok") else 503
         return JSONResponse(status, status_code=status_code)
 
+    @server.custom_route("/livez", methods=["GET"], include_in_schema=False)
+    async def livez(_: Request) -> Response:
+        return JSONResponse({"ok": True})
+
     @server.custom_route("/version", methods=["GET"], include_in_schema=False)
     async def version(_: Request) -> Response:
         return JSONResponse(
             {"service": "v8std-mcp", "api": "v2", "api_profiles": MCP_API_PROFILES, **index.status()}
         )
 
-    install_self_documenting_mcp_app(server, mcp_path=mcp_path)
+    install_self_documenting_mcp_app(server, mcp_path=mcp_path, index=index)
+    install_stdio_lifecycle(server, index)
 
     return server
 
@@ -690,8 +774,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the v8std.ru read-only MCP server.")
     parser.add_argument("--pages", type=Path, help="Read pages JSONL from a local file.")
     parser.add_argument("--vectors", type=Path, help="Read search vectors JSONL from a local file.")
-    parser.add_argument("--index-url", default=DEFAULT_INDEX_URL, help="Remote pages JSONL URL.")
-    parser.add_argument("--vectors-url", default=DEFAULT_VECTORS_URL, help="Remote vectors JSONL URL.")
+    parser.add_argument("--index-url", default=None, help="Explicit legacy remote pages JSONL URL.")
+    parser.add_argument("--vectors-url", default=None, help="Explicit legacy remote vectors JSONL URL.")
+    parser.add_argument("--site-url", default=None, help="Snapshot source and presentation site URL.")
+    parser.add_argument("--transport", choices=["stdio", "streamable-http"], default="streamable-http")
     parser.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE_DIR)
     parser.add_argument("--refresh-seconds", type=int, default=DEFAULT_REFRESH_SECONDS)
     parser.add_argument("--host", default="127.0.0.1")
@@ -732,6 +818,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Allowed Origin header for MCP transport security. Can be repeated.",
     )
     args = parser.parse_args(argv)
+    site = args.site_url if args.site_url is not None else os.environ.get("V8STD_MCP_SITE_URL")
+    legacy = any(value is not None for value in (args.pages, args.vectors, args.index_url, args.vectors_url))
+    if legacy and site is not None:
+        parser.error("explicit legacy sources cannot be combined with SITE_URL")
+    if args.refresh_seconds < 0:
+        parser.error("refresh-seconds must be nonnegative")
+    try:
+        args.site_url = None if legacy else normalize_site_url(site if site is not None else DEFAULT_SITE_URL)
+    except SnapshotError:
+        parser.error("invalid SITE_URL")
+    args.index_url = args.index_url if args.index_url is not None else DEFAULT_INDEX_URL
+    args.vectors_url = args.vectors_url if args.vectors_url is not None else DEFAULT_VECTORS_URL
     raw_limit = args.max_snippet_chars
     if raw_limit is None:
         raw_limit = os.environ.get("V8STD_MCP_MAX_SNIPPET_CHARS", str(MAX_SNIPPET_CHARS))
@@ -751,16 +849,21 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv if argv is not None else sys.argv[1:])
     configure_runtime_logging(args.log_level)
-    index = V8StdIndex(
-        pages_path=args.pages,
-        vectors_path=args.vectors,
-        index_url=args.index_url,
-        vectors_url=args.vectors_url,
-        cache_dir=args.cache_dir,
-        refresh_seconds=args.refresh_seconds,
-        max_snippet_chars=args.max_snippet_chars,
-    )
-    index.load()
+    if args.site_url is not None:
+        index = SnapshotIndex(site_url=args.site_url, cache_dir=args.cache_dir,
+                              refresh_seconds=args.refresh_seconds, max_snippet_chars=args.max_snippet_chars,
+                              runtime_sha=os.environ.get("V8STD_MCP_RUNTIME_SHA"))
+    else:
+        index = V8StdIndex(
+            pages_path=args.pages,
+            vectors_path=args.vectors,
+            index_url=args.index_url,
+            vectors_url=args.vectors_url,
+            cache_dir=args.cache_dir,
+            refresh_seconds=args.refresh_seconds,
+            max_snippet_chars=args.max_snippet_chars,
+        )
+        index.load()
 
     server = build_server(
         index,
@@ -772,7 +875,7 @@ def main(argv: list[str] | None = None) -> int:
         log_level=args.log_level,
         usage_logger=McpToolUsageLogger(args.usage_log),
     )
-    server.run(transport="streamable-http")
+    server.run(transport=args.transport)
     return 0
 
 
