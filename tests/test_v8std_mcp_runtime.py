@@ -10,6 +10,7 @@ from pathlib import Path
 import pickle
 import queue
 import signal
+import select
 import socket
 import subprocess
 import sys
@@ -234,6 +235,31 @@ class RuntimeTests(unittest.TestCase):
 
 
 class ConfigurationTests(unittest.TestCase):
+    def test_cache_cli_env_default_precedence_and_early_invalid_inputs(self):
+        from v8std_mcp_server import parse_args, main
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(parse_args([]).cache_dir, Path("/var/lib/v8std-mcp"))
+        with patch.dict(os.environ, {"V8STD_MCP_CACHE_DIR": "/tmp/env-cache"}, clear=True):
+            self.assertEqual(parse_args([]).cache_dir, Path("/tmp/env-cache"))
+            self.assertEqual(parse_args(["--cache-dir", "/tmp/cli-cache"]).cache_dir, Path("/tmp/cli-cache"))
+        with patch.dict(os.environ, {"V8STD_MCP_CACHE_DIR": ""}, clear=True):
+            self.assertEqual(parse_args(["--cache-dir", "/tmp/cli-cache"]).cache_dir, Path("/tmp/cli-cache"))
+        for argv, environment in (([], {"V8STD_MCP_CACHE_DIR": ""}),
+                                  ([], {"V8STD_MCP_CACHE_DIR": " \t"}),
+                                  (["--cache-dir", ""], {}),
+                                  (["--cache-dir", "  "], {}),
+                                  (["--port", "-1"], {}), (["--port", "65536"], {})):
+            with self.subTest(argv=argv, environment=environment), \
+                 patch.dict(os.environ, environment, clear=True), \
+                 contextlib.redirect_stderr(io.StringIO()), \
+                 patch("v8std_mcp_server.SnapshotIndex", side_effect=AssertionError("source construction")), \
+                 patch("v8std_mcp_server.V8StdIndex", side_effect=AssertionError("source construction")):
+                with self.assertRaises(SystemExit):
+                    main(argv)
+        with patch.dict(os.environ, {}, clear=True):
+            for port in (0, 1, 65535):
+                self.assertEqual(parse_args(["--port", str(port)]).port, port)
+
     def test_site_default_precedence_and_explicit_legacy_mode(self):
         from v8std_mcp_server import parse_args
         with patch.dict(os.environ, {}, clear=True):
@@ -320,6 +346,95 @@ class StdioProcess:
 
 
 class WireTests(unittest.TestCase):
+    def test_stdio_large_response_drained_and_backpressured_shutdown_cleans_workers(self):
+        from tests.test_v8std_mcp_snapshots import Source
+        from v8std_mcp_snapshots import SnapshotStore
+        source = Source()
+        payload = "x" * (2 * 1024 * 1024)
+        files = fixture.corpus_files()
+        files["llms-full.txt"] = payload.encode()
+        source.archive, source.manifest = fixture.snapshot_fixture(files=fixture.with_metadata(files))
+        try:
+            for shutdown in ("drained-eof", "eof", "sigterm"):
+                with self.subTest(shutdown=shutdown), tempfile.TemporaryDirectory() as directory:
+                    source.fault = None
+                    SnapshotStore(source.url, Path(directory)).refresh()
+                    source.requested.clear()
+                    source.release.clear()
+                    source.fault = "headers"
+                    process = subprocess.Popen([sys.executable, str(ROOT / "scripts/v8std_mcp_server.py"),
+                        "--transport", "stdio", "--site-url", source.url, "--cache-dir", directory,
+                        "--refresh-seconds", "0"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE, bufsize=0, start_new_session=True)
+                    number, buffer = 0, bytearray()
+
+                    def send(method, params):
+                        nonlocal number
+                        number += 1
+                        process.stdin.write((json.dumps({"jsonrpc": "2.0", "id": number,
+                            "method": method, "params": params}) + "\n").encode())
+
+                    def response():
+                        deadline = time.monotonic() + 8
+                        while b"\n" not in buffer:
+                            remaining = deadline - time.monotonic()
+                            self.assertGreater(remaining, 0, "protocol response timeout")
+                            self.assertTrue(select.select([process.stdout], [], [], remaining)[0])
+                            block = os.read(process.stdout.fileno(), 65536)
+                            self.assertTrue(block, "unexpected protocol EOF")
+                            buffer.extend(block)
+                        end = buffer.index(b"\n") + 1
+                        line = bytes(buffer[:end])
+                        del buffer[:end]
+                        result = json.loads(line)
+                        self.assertEqual(result["id"], number, "stdout must contain only SDK frames")
+                        return result
+
+                    try:
+                        send("initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
+                            "clientInfo": {"name": "backpressure", "version": "1"}})
+                        self.assertIn("serverInfo", response()["result"])
+                        self.assertTrue(source.requested.wait(5))
+                        # Warm-cache generation is ready before the blocked refresh.
+                        send("tools/call", {"name": "v8std_search", "arguments": {"query": "std437"}})
+                        self.assertFalse(response()["result"].get("isError", False))
+                        children = [int(row.split(None, 2)[0])
+                            for row in subprocess.check_output(["ps", "-axo", "pid=,ppid=,command="], text=True).splitlines()
+                            if row.split(None, 2)[1] == str(process.pid) and "spawn_main" in row]
+                        self.assertTrue(children, "exercise shutdown with an active spawn worker")
+                        send("resources/read", {"uri": "v8std://llms-full.txt"})
+                        if shutdown == "drained-eof":
+                            self.assertEqual(response()["result"]["contents"][0]["text"], payload)
+                        else:
+                            self.assertTrue(select.select([process.stdout], [], [], 5)[0])
+                            # At most 64 bytes consumed: a 2MB frame cannot fit in the pipe.
+                            self.assertTrue(os.read(process.stdout.fileno(), 64).startswith(b'{"jsonrpc"'))
+                            time.sleep(.1)
+                        started = time.monotonic()
+                        if shutdown == "sigterm":
+                            process.send_signal(signal.SIGTERM)
+                        else:
+                            process.stdin.close()
+                        try:
+                            process.wait(3)
+                        except subprocess.TimeoutExpired:
+                            self.fail("2MB stdio response prevented bounded " + shutdown + " shutdown")
+                        self.assertEqual(process.returncode, 0)
+                        self.assertLess(time.monotonic() - started, 3)
+                        for pid in children:
+                            with self.assertRaises(ProcessLookupError):
+                                os.kill(pid, 0)
+                    finally:
+                        source.release.set()
+                        if process.poll() is None:
+                            # Only this test's new session; no worker orphan on RED.
+                            os.killpg(process.pid, signal.SIGKILL)
+                            process.wait(3)
+                        for stream in (process.stdin, process.stdout, process.stderr):
+                            stream.close()
+        finally:
+            source.close()
+
     def test_stdio_initialize_not_ready_eof_and_sigterm_clean_workers(self):
         from tests.test_v8std_mcp_snapshots import Source
         source = Source()

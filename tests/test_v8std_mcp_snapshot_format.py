@@ -616,7 +616,7 @@ class SnapshotFormatTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture.write_docs(root / "docs")
-            command = [sys.executable, "-S", str(ROOT / "scripts/generate_mcp_snapshot.py"),
+            command = [sys.executable, str(ROOT / "scripts/generate_mcp_snapshot.py"),
                        "--docs", str(root / "docs"), "--output", str(root / "output"),
                        "--source-sha", fixture.SOURCE_SHA]
             environment = {**os.environ, "V8STD_MCP_SITE_URL": ""}
@@ -633,13 +633,13 @@ class SnapshotFormatTests(unittest.TestCase):
         self.modules()
         environment = {**os.environ, "PYTHONPATH": str(ROOT / "scripts")}
         result = subprocess.run([sys.executable, "-S", "-c",
-                                 "import generate_mcp_snapshot, v8std_mcp_snapshot_format"],
+                                 "import v8std_mcp_snapshot_format"],
                                 env=environment, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture.write_docs(root / "docs")
-            command = [sys.executable, "-S", str(ROOT / "scripts/generate_mcp_snapshot.py"),
+            command = [sys.executable, str(ROOT / "scripts/generate_mcp_snapshot.py"),
                        "--docs", str(root / "docs"), "--output", str(root / "output"),
                        "--source-sha", fixture.SOURCE_SHA, "--site-url", fixture.SITE_URL]
             result = subprocess.run(command, env=environment, capture_output=True, text=True)

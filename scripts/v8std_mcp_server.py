@@ -532,6 +532,7 @@ class _StdioLines:
         self.fd = fd
         self.buffer = bytearray()
         self.eof = False
+        self.closed = anyio.Event()
 
     def __aiter__(self):
         return self
@@ -541,6 +542,7 @@ class _StdioLines:
             newline = self.buffer.find(b"\n")
             if newline >= 0 or self.eof:
                 if not self.buffer:
+                    self.closed.set()
                     raise StopAsyncIteration
                 end = newline + 1 if newline >= 0 else len(self.buffer)
                 line = bytes(self.buffer[:end])
@@ -552,12 +554,44 @@ class _StdioLines:
             self.eof = not block
 
 
+class _StdioOutput:
+    """Cancellable byte writes, without the SDK AsyncFile's shielded thread.
+
+    A ready pipe may accept only part of a frame. Nonblocking writes and
+    readiness waits preserve backpressure while permitting process shutdown.
+    The SDK still owns JSON serialization, framing and protocol handling.
+    """
+    def __init__(self, fd):
+        self.fd = fd
+        self.blocking = os.get_blocking(fd)
+        os.set_blocking(fd, False)
+
+    async def write(self, text):
+        pending = memoryview(text.encode("utf-8"))
+        while pending:
+            await anyio.lowlevel.checkpoint()
+            try:
+                count = os.write(self.fd, pending)
+            except BlockingIOError:
+                await anyio.wait_writable(self.fd)
+            else:
+                pending = pending[count:]
+
+    async def flush(self):
+        await anyio.lowlevel.checkpoint()
+
+    def close(self):
+        os.set_blocking(self.fd, self.blocking)
+
+
 def install_stdio_lifecycle(server: FastMCP, index) -> None:
 
     async def run_stdio():
-        if isinstance(index, SnapshotIndex):
-            index.start()
+        output = _StdioOutput(sys.stdout.fileno())
+        lines = _StdioLines(sys.stdin.fileno())
         try:
+            if isinstance(index, SnapshotIndex):
+                index.start()
             async with anyio.create_task_group() as group:
                 async def terminate_on_signal():
                     with anyio.open_signal_receiver(signal.SIGTERM) as signals:
@@ -566,11 +600,21 @@ def install_stdio_lifecycle(server: FastMCP, index) -> None:
                             break
 
                 group.start_soon(terminate_on_signal)
-                async with stdio_server(stdin=_StdioLines(sys.stdin.fileno())) as (read_stream, write_stream):
+
+                async def terminate_on_eof():
+                    await lines.closed.wait()
+                    # Permit queued responses to drain, but never let a departed
+                    # client hold the process/refresh workers via a full pipe.
+                    await anyio.sleep(.25)
+                    group.cancel_scope.cancel()
+
+                group.start_soon(terminate_on_eof)
+                async with stdio_server(stdin=lines, stdout=output) as (read_stream, write_stream):
                     await server._mcp_server.run(read_stream, write_stream,
                                                 server._mcp_server.create_initialization_options())
                 group.cancel_scope.cancel()
         finally:
+            output.close()
             if isinstance(index, SnapshotIndex):
                 with anyio.CancelScope(shield=True):
                     await anyio.to_thread.run_sync(index.close)
@@ -778,7 +822,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--vectors-url", default=None, help="Explicit legacy remote vectors JSONL URL.")
     parser.add_argument("--site-url", default=None, help="Snapshot source and presentation site URL.")
     parser.add_argument("--transport", choices=["stdio", "streamable-http"], default="streamable-http")
-    parser.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE_DIR)
+    parser.add_argument("--cache-dir", default=None, help="Overrides V8STD_MCP_CACHE_DIR.")
     parser.add_argument("--refresh-seconds", type=int, default=DEFAULT_REFRESH_SECONDS)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
@@ -818,6 +862,13 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Allowed Origin header for MCP transport security. Can be repeated.",
     )
     args = parser.parse_args(argv)
+    cache = (args.cache_dir if args.cache_dir is not None
+             else os.environ.get("V8STD_MCP_CACHE_DIR", str(DEFAULT_CACHE_DIR)))
+    if not cache.strip():
+        parser.error("--cache-dir / V8STD_MCP_CACHE_DIR must not be empty")
+    args.cache_dir = Path(cache)
+    if not 0 <= args.port <= 65535:
+        parser.error("port must be from 0 to 65535")
     site = args.site_url if args.site_url is not None else os.environ.get("V8STD_MCP_SITE_URL")
     legacy = any(value is not None for value in (args.pages, args.vectors, args.index_url, args.vectors_url))
     if legacy and site is not None:

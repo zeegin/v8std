@@ -1,3 +1,4 @@
 Pillow
+markdown-it-py==4.0.0
 PyYAML
 pygments-bsl

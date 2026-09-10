@@ -6,6 +6,8 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from html.parser import HTMLParser
+from markdown_it import MarkdownIt
 
 from tests import mcp_snapshot_fixtures as fixture
 
@@ -18,7 +20,7 @@ PATHS = {"std437": {"site_path": "std/437/", "markdown_path": "std/437.md"},
                    "markdown_path": "THIRD_PARTY_DIAGNOSTIC_ARTICLES.md"}}
 
 
-class PresentationTests(unittest.TestCase):
+class PresentationHelpers:
     def module(self):
         self.assertIsNotNone(importlib.util.find_spec("v8std_mcp_presentation"))
         return importlib.import_module("v8std_mcp_presentation")
@@ -27,17 +29,19 @@ class PresentationTests(unittest.TestCase):
         return self.module().present_result(value, canonical_site_url=PUBLIC,
                                             site_url=LOCAL, page_paths=PATHS)
 
+
+class PresentationTests(PresentationHelpers, unittest.TestCase):
     def test_link_nodes_and_nested_urls_preserve_literals_and_provenance(self):
         body = ('`https://v8std.ru/std/437/`\n'
                 '[link](https://v8std.ru/std/437/?x=1#anchor "title")\n'
                 '![image](<https://v8std.ru/std/437.md>)\n'
-                '[reference][ref]\n[ref]: https://v8std.ru/std/437/ "title"\n'
+                '[reference][ref]\n\n[ref]: https://v8std.ru/std/437/ "title"\n'
                 '<https://v8std.ru/std/437/>\n'
                 '<a href="https://v8std.ru/std/437/?x=1&amp;y=2#z">a</a>\n'
-                '<img src=https://v8std.ru/std/437.md>\n'
+                '<img src=https://v8std.ru/std/437.md>\n\n'
                 '```bsl\nx = "https://v8std.ru/std/437/";\n'
-                '[code](https://v8std.ru/std/437/)\n```\n'
-                '    [indented](https://v8std.ru/std/437/)\n'
+                '[code](https://v8std.ru/std/437/)\n```\n\n'
+                '    [indented](https://v8std.ru/std/437/)\n\n'
                 '<code>[literal](https://v8std.ru/std/437/)</code>\n'
                 '<pre><a href="https://v8std.ru/std/437/">literal</a></pre>\n'
                 'ordinary https://v8std.ru/std/437/\n')
@@ -110,7 +114,7 @@ class PresentationTests(unittest.TestCase):
     def test_structured_url_suffixes_and_escaped_balanced_destinations(self):
         result = self.present({"id": "std437", "url": PUBLIC + "std/437/?view=full#section"})
         self.assertEqual(result["url"], LOCAL + "std/437/?view=full#section")
-        body = '[a `label`][ref]\n[ref]:\n  <https://v8std.ru/std/437/> "title"\n'
+        body = '[a `label`][ref]\n\n[ref]:\n  <https://v8std.ru/std/437/> "title"\n'
         self.assertIn('<' + LOCAL + 'std/437/>', self.present({"body_markdown": body})["body_markdown"])
 
     def test_local_lookup_does_not_escape_prefix(self):
@@ -119,6 +123,179 @@ class PresentationTests(unittest.TestCase):
         for value in ("http://localhost:8080/other/std/437/", LOCAL + "../std/437/",
                       LOCAL + "std%2f437/", "https://external.invalid/std/437/"):
             self.assertEqual(catalog.lookup(value), value)
+
+
+class SemanticPresentationTests(PresentationHelpers, unittest.TestCase):
+    def markdown(self, text):
+        return self.module().present_markdown(text, canonical_site_url=PUBLIC, site_url=LOCAL, page_paths=PATHS)
+
+    def validate(self, text):
+        self.module().validate_links(text, canonical_site_url=PUBLIC, page_paths=PATHS)
+
+    def test_pinned_parser_dependency_is_shared_but_pure_format_stays_independent(self):
+        from importlib.metadata import version
+        self.assertEqual(version("markdown-it-py"), "4.0.0")
+        self.assertEqual(version("mcp"), "1.27.0")
+        for name in ("requirements.txt", "requirements-mcp.txt"):
+            self.assertIn("markdown-it-py==4.0.0", (ROOT / name).read_text().splitlines())
+
+    def test_parser_source_maps_are_released_without_waiting_for_cyclic_gc(self):
+        import gc
+        import weakref
+        from unittest.mock import patch
+        references = []
+        def parser(*args, **kwargs):
+            instance = MarkdownIt(*args, **kwargs)
+            references.append(weakref.ref(instance))
+            return instance
+        enabled = gc.isenabled()
+        gc.disable()
+        try:
+            with patch.object(self.module(), "MarkdownIt", side_effect=parser):
+                self.markdown("> [x](https://v8std.ru/std/437/)\n")
+            self.assertTrue(references)
+            self.assertTrue(all(reference() is None for reference in references),
+                            "parser closure retains the document tree/source map")
+        finally:
+            if enabled:
+                gc.enable()
+            gc.collect()
+
+    def test_publisher_uses_semantics_for_nested_code_definitions_and_literal_fragments(self):
+        from generate_mcp_snapshot import build_snapshot
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture.write_docs(root)
+            for body, rejected in (
+                ('> [r]: https://v8std.ru/missing/\n>\n> [x][r]', True),
+                ('- [r]: https://v8std.ru/missing/\n\n  [x][r]', True),
+                ('> - ~~~bsl\n>   [x](https://v8std.ru/missing/)', False),
+                ('[x](https://v8std.ru/missing/ "unfinished)', False),
+                ('[r]: https://v8std.ru/missing/ "title" extra', False),
+            ):
+                with self.subTest(body=body):
+                    (root / "llms.txt").write_text(body)
+                    if rejected:
+                        with self.assertRaisesRegex(ValueError, "unresolved_internal_link"):
+                            build_snapshot(root, fixture.SOURCE_SHA, PUBLIC)
+                    else:
+                        build_snapshot(root, fixture.SOURCE_SHA, PUBLIC)
+
+    def test_valid_autolink_inside_incomplete_outer_link_and_literal_entity_suffix(self):
+        text = '[x](<https://v8std.ru/std/437/?a=&amp;> "unfinished)'
+        result = self.markdown(text)
+        self.assertEqual(result, text.replace(PUBLIC, LOCAL))
+        links = [child for token in MarkdownIt("commonmark").parse(result)
+                 for child in (token.children or []) if child.type == "link_open"]
+        self.assertEqual([token.attrGet("href") for token in links], [LOCAL + "std/437/?a=&amp;"])
+        with self.assertRaisesRegex(ValueError, "unresolved_internal_link"):
+            self.validate(text.replace("std/437/", "missing/"))
+
+    def test_multiline_titles_duplicate_references_headings_and_literal_source_bytes(self):
+        text = ('# Заголовок\x00 [link](https://v8std.ru/std/437/ "title")\r\n\r\n'
+                '[link](https://v8std.ru/std/437/ "a\r\nb")\r\n\r\n'
+                '> - [r]:\r\n>     <https://v8std.ru/std/437/> "title"\r\n>\r\n>   [x][r]\r\n\r\n'
+                '[r]: https://v8std.ru/std/437.md\r\n\r\n'
+                '[same `https://v8std.ru/std/437/`](https://v8std.ru/std/437/)\r\n')
+        expected = text.replace('https://v8std.ru/std/437/', LOCAL + 'std/437/')
+        expected = expected.replace('`' + LOCAL + 'std/437/`', '`https://v8std.ru/std/437/`')
+        expected = expected.replace('https://v8std.ru/std/437.md', LOCAL + 'std/437.md')
+        self.assertEqual(self.markdown(text), expected)
+        value = {"related": [{"url": PUBLIC + "std/437/?a=&amp;\\)"}]}
+        self.assertEqual(self.present(value)["related"][0]["url"], LOCAL + "std/437/?a=&amp;\\)")
+
+    def test_nested_containers_use_commonmark_code_and_reference_semantics(self):
+        for prefix, continuation in (("> ", "> "), ("- ", "  "), ("> - ", ">   "),
+                                     ("1. > ", "   > "), ("> > ", "> > ")):
+            for fence in ("~~~", "```"):
+                for closed in (False, True):
+                    text = prefix + fence + "bsl\n" + continuation + '[code](https://v8std.ru/missing/)\n'
+                    if closed:
+                        text += continuation + fence + "\n"
+                    with self.subTest(prefix=prefix, fence=fence, closed=closed):
+                        self.assertEqual(self.markdown(text), text)
+                        self.validate(text)
+            text = prefix + '[r]: https://v8std.ru/std/437/ "title"\n\n' + prefix + '[use][r]\n'
+            with self.subTest(reference=prefix):
+                result = self.markdown(text)
+                self.assertEqual(result, text.replace(PUBLIC, LOCAL))
+                self.assertIn('href="' + LOCAL + 'std/437/"', MarkdownIt("commonmark").render(result))
+                with self.assertRaisesRegex(ValueError, "unresolved_internal_link"):
+                    self.validate(text.replace("std/437/", "missing/"))
+
+    def test_only_complete_links_and_titles_are_rewritten_or_validated(self):
+        literals = ('[x]({url}', '[x]({url} "unfinished)', '[x]({url} "title" extra)',
+                    '![x]({url}', '[r]: {url} "bad" trailing\n')
+        for template in literals:
+            for path in ("std/437/", "missing/"):
+                text = template.format(url=PUBLIC + path)
+                with self.subTest(text=text):
+                    self.assertEqual(self.markdown(text), text)
+                    self.validate(text)
+        # Valid fallback reference: only its definition is a destination.
+        text = '[x](https://v8std.ru/missing/\n\n[x]: https://v8std.ru/std/437/\n'
+        result = self.markdown(text)
+        self.assertEqual(result, '[x](https://v8std.ru/missing/\n\n[x]: ' + LOCAL + 'std/437/\n')
+        self.validate(text)
+
+    def test_reparsed_markdown_preserves_interpreted_destinations_and_titles(self):
+        samples = (
+            ('[x](https://v8std.ru/std/437/?q=foo\\)#end "title")', LOCAL + 'std/437/?q=foo)#end'),
+            ('[x](https://v8std.ru/std/437/?q=a&amp;b=2)', LOCAL + 'std/437/?q=a&b=2'),
+            ('![x](<https://v8std.ru/std/437/?q=hello&#32;world>)', LOCAL + 'std/437/?q=hello%20world'),
+            ('> [r]: https://v8std.ru/std/437/?q=foo\\) "title"\n>\n> [x][r]', LOCAL + 'std/437/?q=foo)'),
+        )
+        for text, expected in samples:
+            with self.subTest(text=text):
+                rendered = MarkdownIt("commonmark").parse(self.markdown(text))
+                links = [child for block in rendered for child in (block.children or [])
+                         if child.type in {"link_open", "image"}]
+                self.assertEqual(len(links), 1)
+                self.assertEqual(links[0].attrGet("href") or links[0].attrGet("src"), expected)
+                if '"title"' in text:
+                    self.assertEqual(links[0].attrGet("title"), "title")
+
+    def test_html_escaping_uses_actual_attribute_context_and_does_not_decode_backslashes(self):
+        class Attributes(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.tags = []
+            def handle_starttag(self, tag, attrs):
+                self.tags.append((tag, dict(attrs)))
+        for quote in ('', '"', "'"):
+            for suffix, expected in (("?q=hello&#32;world", "?q=hello world"),
+                                     ("?q=foo\\)&amp;x=2", "?q=foo\\)&x=2"),
+                                     ("?q=&quot;hi&quot;&#39;", '?q="hi"\'')):
+                text = '<a href=' + quote + PUBLIC + 'std/437/' + suffix + quote + ' title="keep">x</a>'
+                with self.subTest(text=text):
+                    parser = Attributes()
+                    parser.feed(self.markdown(text))
+                    self.assertEqual(parser.tags, [("a", {"href": LOCAL + "std/437/" + expected, "title": "keep"})])
+
+    def test_source_offsets_survive_containers_crlf_tabs_and_repeated_literals(self):
+        text = ('> - `https://v8std.ru/std/437/`\r\n>\r\n'
+                '>\t[r]: <https://v8std.ru/std/437/?q=a&amp;b=2>\r\n>\r\n'
+                '> - [label `literal`][r]\r\n')
+        expected = text.replace('[r]: <' + PUBLIC, '[r]: <' + LOCAL)
+        self.assertEqual(self.markdown(text), expected)
+
+    def test_multiline_html_code_tags_inside_containers_protect_their_contents(self):
+        for tag in ("pre", "code", "script", "style"):
+            text = ('> <' + tag + '\r\n> class="sample">\r\n'
+                    '> <a href="https://v8std.ru/std/437/">literal</a>\r\n'
+                    '> </' + tag + '>\r\n')
+            with self.subTest(tag=tag):
+                self.assertEqual(self.markdown(text), text)
+                self.validate(text.replace("std/437/", "missing/"))
+
+    def test_multiline_html_destination_retains_container_and_line_endings(self):
+        text = '> <a href="https://v8std.ru/std/437/?q=hello\r\n> world">x</a>\r\n'
+        result = self.markdown(text)
+        self.assertEqual(result, text.replace(PUBLIC, LOCAL))
+        self.assertIn('href="' + LOCAL + 'std/437/?q=hello\nworld"',
+                      MarkdownIt("commonmark").render(result))
+        with self.assertRaisesRegex(ValueError, "unresolved_internal_link"):
+            self.validate(text.replace("std/437/", "missing/"))
 
 
 if __name__ == "__main__":
