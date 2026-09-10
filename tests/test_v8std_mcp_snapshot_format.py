@@ -8,6 +8,7 @@ import io
 import json
 import os
 from pathlib import Path
+import stat
 import struct
 import subprocess
 import sys
@@ -339,6 +340,53 @@ class SnapshotFormatTests(unittest.TestCase):
                     fixture.corpus_files(pages=[page], vectors=rows)))
                 fmt.verify_archive(archive, manifest)
 
+    def test_chunk_rule_is_shared_and_generator_exports_remain_available(self):
+        self.assertIsNotNone(importlib.util.find_spec("v8std_mcp_chunks"))
+        chunks = importlib.import_module("v8std_mcp_chunks")
+        generator = importlib.import_module("generate_search_vectors")
+        fmt, _ = self.modules()
+        self.assertIs(generator.page_chunks, chunks.page_chunks)
+        self.assertIs(fmt.page_chunks, chunks.page_chunks)
+        self.assertEqual(generator.MAX_CHUNK_CHARS, chunks.MAX_CHUNK_CHARS)
+        self.assertEqual((generator.DEFAULT_DIM, generator.DEFAULT_MODEL, generator.MAX_CHUNK_CHARS),
+                         (256, "v8std-hash-embeddings-v1", 2200))
+        self.assertIsInstance(generator.page_chunks(fixture.page_fixture()), list)
+
+    def test_chunk_rule_preserves_independent_boundary_examples(self):
+        generator = importlib.import_module("generate_search_vectors")
+        self.assertEqual(generator.page_chunks({}), [])
+        cases = [
+            (" \n\n \n", []),
+            (" a \n\n b ", [("body", 0, "a\n\nb")]),
+            (" a\n \nb ", [("body", 0, "a\n \nb")]),
+            ("x" * 2195 + "\n\nя", [("body", 0, "x" * 2195 + "\n\nя")]),
+            ("x" * 2196 + "\n\nя", [("body", 0, "x" * 2196), ("body", 1, "я")]),
+            ("x" * 4400, [("body", 0, "x" * 4400)]),
+        ]
+        for body, expected in cases:
+            with self.subTest(length=len(body)):
+                page = {**fixture.page_fixture(), "body_markdown": body}
+                self.assertEqual(generator.page_chunks(page),
+                                 [("metadata", 0, "std437 Запросы Параметры #std437"), *expected])
+
+    def test_vector_regeneration_preserves_exact_current_corpus_bytes(self):
+        generator = importlib.import_module("generate_search_vectors")
+        rows = generator.generate_rows(ROOT / "docs/ai/pages.jsonl")
+        regenerated = ("\n".join(rows) + "\n").encode("utf-8")
+        self.assertEqual(regenerated, (ROOT / "docs/ai/search-vectors.jsonl").read_bytes())
+
+    def test_shared_chunks_and_reader_load_without_generator_or_external_packages(self):
+        result = subprocess.run(
+            [sys.executable, "-S", "-c",
+             "import sys; import v8std_mcp_chunks as chunks; "
+             "import v8std_mcp_snapshot_format as fmt; "
+             "assert fmt.page_chunks is chunks.page_chunks; "
+             "assert chunks.page_chunks({}) == []; "
+             "assert not {'yaml', 'PIL', 'generate_search_vectors', 'generate_ai_artifacts'} & sys.modules.keys()"],
+            env={**os.environ, "PYTHONPATH": str(ROOT / "scripts")}, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_contract_budget_constants_and_boundary_enforcement(self):
         fmt, _ = self.modules()
         self.assertEqual(fmt.MAX_MANIFEST_BYTES, 64 * 1024)
@@ -425,7 +473,7 @@ class SnapshotFormatTests(unittest.TestCase):
                 producer.publish_snapshot(root / "docs", root / "output", fixture.SOURCE_SHA, fixture.SITE_URL)
             self.assertEqual(observed, [True])
 
-    def test_publish_failure_retains_previous_manifest_and_removes_temporary_files(self):
+    def test_link_or_rename_failure_retains_previous_manifest_and_removes_temporary_files(self):
         fmt, producer = self.modules()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -433,7 +481,7 @@ class SnapshotFormatTests(unittest.TestCase):
             manifest_path = producer.publish_snapshot(root / "docs", root / "output",
                                                      fixture.SOURCE_SHA, fixture.SITE_URL)
             before = manifest_path.read_bytes()
-            for target in ("link", "replace", "fsync"):
+            for target in ("link", "replace"):
                 with self.subTest(target=target), patch.object(producer.os, target, side_effect=OSError("secret")):
                     with self.assertRaisesRegex(fmt.SnapshotError, "publish_io") as caught:
                         producer.publish_snapshot(root / "docs", root / "output", "2" * 40, fixture.SITE_URL)
@@ -442,6 +490,89 @@ class SnapshotFormatTests(unittest.TestCase):
                 self.assertEqual(list((root / "output").rglob(".snapshot-*")), [])
             old = fmt.validate_manifest(before)
             fmt.verify_archive((root / "output" / old["archive"]["path"]).read_bytes(), old)
+
+    def test_fsync_failures_at_each_publication_stage(self):
+        fmt, producer = self.modules()
+        stages = ["output_parent", "archive_file", "archive_install_directory",
+                  "archive_before_manifest", "output_before_manifest", "manifest_file",
+                  "output_after_manifest_rename"]
+        original_fsync = os.fsync
+        original_directory = producer._fsync_directory
+        original_replace = os.replace
+        for failed_stage in stages:
+            with self.subTest(stage=failed_stage), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                docs, output = root / "docs", root / "output"
+                fixture.write_docs(docs)
+                manifest_path = producer.publish_snapshot(docs, output, fixture.SOURCE_SHA, fixture.SITE_URL)
+                before = manifest_path.read_bytes()
+                new_archive, new_manifest = producer.build_snapshot(docs, "2" * 40, fixture.SITE_URL)
+                archive_dir = output / new_manifest["archive"]["sha256"]
+                archive_path = archive_dir / "snapshot.tar.gz"
+                observed = []
+                directory_stage = None
+                archive_directory_syncs = 0
+                renamed = False
+
+                def sync_directory(path):
+                    nonlocal directory_stage, archive_directory_syncs
+                    if path == output.parent:
+                        directory_stage = "output_parent"
+                    elif path == archive_dir:
+                        archive_directory_syncs += 1
+                        directory_stage = ("archive_install_directory" if archive_directory_syncs == 1
+                                           else "archive_before_manifest")
+                    else:
+                        self.assertEqual(path, output)
+                        directory_stage = ("output_after_manifest_rename" if renamed
+                                           else "output_before_manifest")
+                    try:
+                        original_directory(path)
+                    finally:
+                        directory_stage = None
+
+                def sync_file_descriptor(fd):
+                    if directory_stage is not None:
+                        self.assertTrue(stat.S_ISDIR(os.fstat(fd).st_mode))
+                        stage = directory_stage
+                    else:
+                        self.assertTrue(stat.S_ISREG(os.fstat(fd).st_mode))
+                        stage = "manifest_file" if archive_path.exists() else "archive_file"
+                    observed.append(stage)
+                    if stage == failed_stage:
+                        raise OSError("secret")
+                    return original_fsync(fd)
+
+                def replace_manifest(source, target):
+                    nonlocal renamed
+                    self.assertEqual(Path(target), manifest_path)
+                    result = original_replace(source, target)
+                    renamed = True
+                    return result
+
+                with (patch.object(producer, "_fsync_directory", side_effect=sync_directory),
+                      patch.object(producer.os, "fsync", side_effect=sync_file_descriptor),
+                      patch.object(producer.os, "replace", side_effect=replace_manifest) as replace_mock):
+                    with self.assertRaisesRegex(fmt.SnapshotError, "^publish_io$"):
+                        producer.publish_snapshot(docs, output, "2" * 40, fixture.SITE_URL)
+                self.assertEqual(observed, stages[:stages.index(failed_stage) + 1])
+                after_rename = failed_stage == "output_after_manifest_rename"
+                self.assertEqual(replace_mock.call_count, int(after_rename))
+                self.assertEqual(renamed, after_rename)
+                visible = manifest_path.read_bytes()
+                active = fmt.validate_manifest(visible)
+                verified = fmt.verify_archive((output / active["archive"]["path"]).read_bytes(), active)
+                if after_rename:
+                    self.assertNotEqual(visible, before)
+                    self.assertEqual(active, new_manifest)
+                    self.assertEqual(archive_path.read_bytes(), new_archive)
+                    self.assertEqual(verified.metadata["source_sha"], "2" * 40)
+                else:
+                    self.assertEqual(visible, before)
+                    self.assertEqual(verified.metadata["source_sha"], fixture.SOURCE_SHA)
+                old = fmt.validate_manifest(before)
+                fmt.verify_archive((output / old["archive"]["path"]).read_bytes(), old)
+                self.assertEqual(list(output.rglob(".snapshot-*")), [])
 
     def test_existing_immutable_symlinks_are_rejected(self):
         fmt, producer = self.modules()

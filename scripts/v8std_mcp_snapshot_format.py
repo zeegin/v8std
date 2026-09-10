@@ -20,6 +20,8 @@ import tarfile
 from urllib.parse import quote, unquote, urlsplit
 import zlib
 
+from v8std_mcp_chunks import page_chunks
+
 
 DEFAULT_SITE_URL = "https://v8std.ru/"
 PUBLIC_DELIVERY_URL = "https://ai.v8std.ru/indexes/v1/"
@@ -372,32 +374,6 @@ def portable_page(page: dict, canonical_site_url: str) -> dict:
     return {**page, **paths}
 
 
-def _page_chunks(page: dict):
-    # Kept byte-for-byte equivalent in behavior to generate_search_vectors.page_chunks
-    # (MAX_CHUNK_CHARS=2200). Importing that module also imports PyYAML. This tiny
-    # pure rule stays here until it can be extracted within shared-file ownership.
-    # Tests verify both boundary cases and all current generator chunk hashes.
-    metadata = " ".join([
-        page.get("id", ""), page.get("title", ""), page.get("description", ""),
-        " ".join(page.get("aliases", [])),
-    ]).strip()
-    if metadata:
-        yield "metadata", 0, metadata
-    body = page.get("body_markdown") or ""
-    paragraphs = [item.strip() for item in re.split(r"\n{2,}", body) if item.strip()]
-    current, current_len, chunk_index = [], 0, 0
-    for paragraph in paragraphs:
-        next_len = current_len + len(paragraph) + 2
-        if current and next_len > 2200:
-            yield "body", chunk_index, "\n\n".join(current)
-            chunk_index += 1
-            current, current_len = [], 0
-        current.append(paragraph)
-        current_len += len(paragraph) + 2
-    if current:
-        yield "body", chunk_index, "\n\n".join(current)
-
-
 def _semantics(files: dict[str, bytes], site_url: str) -> dict[str, int]:
     ids = set()
     expected = {}
@@ -407,7 +383,7 @@ def _semantics(files: dict[str, bytes], site_url: str) -> dict[str, int]:
                      for key in ("site_path", "markdown_path")), "page_path")
         _require(page["id"] not in ids, "page_id")
         ids.add(page["id"])
-        for field, index, text in _page_chunks(page):
+        for field, index, text in page_chunks(page):
             expected[page["id"], field, index] = sha256(text.encode("utf-8"))
             _require(len(expected) <= MAX_JSONL_ROWS, "jsonl_rows")
     _require(bool(ids), "corpus_empty")
