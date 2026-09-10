@@ -18,6 +18,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 import fcntl
 import http.client
+import io
 import multiprocessing
 import os
 from pathlib import Path
@@ -30,6 +31,7 @@ import socket
 import ssl
 import stat
 import struct
+import tarfile
 import tempfile
 import threading
 import time
@@ -334,15 +336,36 @@ class SnapshotStore:
             raise LoaderError("cache_budget")
 
     def _write(self, path, payload, deadline):
+        self._write_stream(path, io.BytesIO(payload), len(payload), deadline)
+
+    def _write_stream(self, path, source, size, deadline):
         _remaining(deadline)
-        self._space(len(payload))
+        self._space(size)
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
         with os.fdopen(fd, "wb") as stream:
-            for offset in range(0, len(payload), _CHUNK):
+            remaining = size
+            while remaining:
                 _remaining(deadline)
-                stream.write(payload[offset:offset + _CHUNK])
+                chunk = source.read(min(remaining, _CHUNK))
+                if not chunk or len(chunk) > remaining:
+                    raise LoaderError("cache_io")
+                stream.write(chunk)
+                remaining -= len(chunk)
             stream.flush()
             os.fsync(stream.fileno())
+
+    def _extract_verified(self, source, snapshot, stage, deadline):
+        """Stream the already-verified immutable archive into private staging.
+
+        Task1 alone owns format/semantic rules. It verifies bytes before this
+        filesystem step; its buffers are not a substitute for streaming disk
+        extraction. Destinations and sizes come only from that verified result,
+        never from unverified tar paths. No extract/extractall filesystem API.
+        """
+        with tarfile.open(fileobj=source, mode="r|gz") as reader:
+            for name, payload in snapshot.files.items():
+                with reader.extractfile(reader.next()) as member:
+                    self._write_stream(stage / name, member, len(payload), deadline)
 
     def _atomic_file(self, path, payload, deadline):
         temporary = self.namespace / (".pointer-" + os.urandom(12).hex())
@@ -474,8 +497,7 @@ class SnapshotStore:
                         raise LoaderError("http_status")
                     self._write(stage / "snapshot.tar.gz", archive, deadline)
                     snapshot = verify_archive(archive, manifest)
-                    for name, payload in snapshot.files.items():
-                        self._write(stage / name, payload, deadline)
+                    self._extract_verified(io.BytesIO(archive), snapshot, stage, deadline)
                     result = _prepare(snapshot, prepare)
                     _remaining(deadline)
                     _fsync_directory(stage)

@@ -5,11 +5,13 @@ from functools import partial
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import importlib
 import importlib.util
+import io
 import errno
 import fcntl
 import json
 import multiprocessing
 import os
+import random
 from pathlib import Path
 import socket
 import signal
@@ -266,6 +268,35 @@ class SnapshotTestCase(unittest.TestCase):
 
 
 class SnapshotStoreTests(SnapshotTestCase):
+    def test_verified_archive_is_streamed_into_staging_before_compressed_input_ends(self):
+        extract = getattr(self.store, "_extract_verified", None)
+        self.assertIsNotNone(extract, "Task2 must stream extraction into private staging")
+        files = fixture.corpus_files()
+        files["llms-full.txt"] = random.Random(37).randbytes(256 * 1024).hex().encode()
+        archive, manifest = fixture.snapshot_fixture(files=fixture.with_metadata(files))
+        fmt = importlib.import_module("v8std_mcp_snapshot_format")
+        verified = fmt.verify_archive(archive, manifest)
+        self.store.namespace.mkdir(parents=True)
+        with tempfile.TemporaryDirectory(prefix=".stage-", dir=self.store.namespace) as directory:
+            stage = Path(directory)
+
+            class ObservedStream(io.BytesIO):
+                output_before_eof = False
+
+                def read(self, size=-1):
+                    if not 0 < size <= 64 * 1024:
+                        raise AssertionError("compressed input must be read in bounded chunks")
+                    output = stage / "llms-full.txt"
+                    if output.exists() and output.stat().st_size > 0 and self.tell() < len(archive):
+                        self.output_before_eof = True
+                    return super().read(size)
+
+            source = ObservedStream(archive)
+            extract(source, verified, stage, time.monotonic() + 60)
+            self.assertTrue(source.output_before_eof,
+                            "expanded bytes must reach staging before all compressed input is consumed")
+            self.assertEqual({p.name: p.read_bytes() for p in stage.iterdir()}, verified.files)
+
     def test_prefix_real_archive_and_spawn_builder_survive_offline_restart(self):
         result = self.store.refresh(prepare=build)
         self.assertEqual(result.corpus_id, self.source.manifest["corpus_id"])
