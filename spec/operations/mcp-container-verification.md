@@ -73,9 +73,14 @@ peak RSS while retaining original, serialized and reconstructed state. Encoding
 took 0.102 s and decoding 0.0772 s on this Mac. This excludes new runtime
 resources, spawn/staging and host overlap; it is not the final RAM budget.
 
-### Frozen runtime — implementation evidence, review pending
+### Frozen runtime — reviewed task evidence
 
 Implementation: `b8656c1c238969d996e24f323333a925df9c5b87`.
+Reviewed correction: `49e8b525c370a7f69f9681b3e1d695ee3e3b150f`.
+Initial findings covered stdout backpressure, Markdown classification/escaping
+and cache/port configuration. Scoped re-review confirmed all five addressed.
+One pre-existing image-alt HTML protection edge case remains assigned to final
+integration review; task acceptance is not final release acceptance.
 
 ```sh
 .venv/bin/python -m unittest tests.test_v8std_mcp_snapshot_format tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_presentation tests.test_v8std_mcp_runtime tests.test_v8std_mcp_index tests.test_v8std_mcp_snippet tests.test_v8std_mcp_server tests.test_v8std_mcp_combined tests.test_v8std_mcp_capacity tests.test_v8std_mcp_monitoring
@@ -148,6 +153,29 @@ ranks/IDs and sampled score dictionaries remained equal, MRR 0.9939759036.
 New generations still require full preparation; measured new-generation wall
 time was 3.566641 s with sampled tree RSS 555,876,352 bytes. These are sampled
 desktop observations, not memory ceilings, target-host acceptance or 100k evidence.
+
+### Runtime correction and semantic-parser cost
+
+The same combined MCP command at `49e8b52` passed **217 tests in 82.938 seconds**.
+Regressions include drained 2 MiB frames, undrained stdout at EOF/SIGTERM,
+worker cleanup, CLI/environment/default precedence, nested containers/fences,
+incomplete links and titles, destination escaping, CRLF and source-map lifetime.
+Runtime/build requirements pin `markdown-it-py==4.0.0`; pure format verification
+remains independent of docs tooling. Canonical data/ranks were not rewritten.
+
+The real-corpus benchmark retained all 256 ranks/IDs and sampled score
+dictionaries, MRR 0.9939759036. Full-generation preparation now includes the
+semantic parser/source maps: cold 5.432 s, warm-with-old 5.594 s, new-with-old
+6.071 s. Corresponding sampled tree RSS was 653,115,392 / 636,731,392 /
+699,695,104 bytes. Unchanged refresh remained 0.731 s with 256-byte metadata IPC;
+it does not rebuild or parse Resources. New-generation concurrent query p95
+was 62.55 ms across 106 samples. These desktop samples do not establish a
+target-host memory ceiling or production capacity.
+
+Final review must resolve the known case where `<code>` in image alt text can
+incorrectly protect subsequent visible links from rebasing/validation. It was
+reproduced in both the old scanner and the semantic-parser fix, so scoped
+re-review did not extend its loop to it. This is explicitly not waived for release.
 
 ### Local build environment
 

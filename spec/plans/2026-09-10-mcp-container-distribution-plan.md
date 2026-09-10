@@ -257,7 +257,7 @@ Facade captures coordinator.current() once per top-level call, invokes that
 generation including nested snippet/search/related operations, then transforms
 only presentation links on the returned copy.
 
-- [ ] **RED:** Wire tests initialize/list tools before source readiness; valid
+- [x] **RED:** Wire tests initialize/list tools before source readiness; valid
   call before ready is error `INDEX_NOT_READY`; `/healthz` is 503 and `/livez`
   200. Add full snippet compatibility and generation-swap tests; public source
   fetch is forbidden in callbacks. A local-prefix fixture must retain literal
@@ -269,7 +269,7 @@ self.assertEqual(result["page"]["url"], "http://localhost:8080/kb/std/437/")
 self.assertEqual(result["page"]["source_urls"], ["https://its.1c.ru/db/v8std/content/437/hdoc"])
 ```
 
-- [ ] **GREEN presentation:** Parse Markdown link/image/reference/autolink and
+- [x] **GREEN presentation:** Parse Markdown link/image/reference/autolink and
   HTML attributes outside code; rewrite only known internal paths, preserve
   external provenance/query/fragment. Local URLs accepted as page lookup inputs
   resolve to canonical keys without affecting ranking. All nested result URLs
@@ -277,13 +277,13 @@ self.assertEqual(result["page"]["source_urls"], ["https://its.1c.ru/db/v8std/con
   Validate publisher links against the same catalog. Preserve generated bare
   internal `URL:`/`HTML:` fields and resolve relative links in their page context;
   ordinary code literals and external source records are not link nodes.
-- [ ] **GREEN runtime:** Startup chooses snapshot mode from SITE_URL/default,
+- [x] **GREEN runtime:** Startup chooses snapshot mode from SITE_URL/default,
   supports stdio and HTTP from same build_server. Legacy explicit files remain
   usable; ambiguous legacy URLs plus site setting fail before network. Default
   direct Python transport stays compatible; container supplies stdio explicitly.
   Initialize/schema immediate, background bootstrap, bounded EOF/SIGTERM cleanup,
   clean stdout, health/version compact additive metadata, no raw errors/data.
-- [ ] **Verify:** Task 1–3 tests plus all MCP server/index/snippet/combined tests;
+- [x] **Verify:** Task 1–3 tests plus all MCP server/index/snippet/combined tests;
   real stdio subprocess and loopback HTTP smoke; before/after search benchmark
   on same corpus, slow-source requests and CPU/RAM refresh measurements. Commit
   only reviewed implementation; no changed scores or widened snippet/query limits.
