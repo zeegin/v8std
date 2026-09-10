@@ -180,8 +180,8 @@ re-review did not extend its loop to it. This is explicitly not waived for relea
 ### Container implementation — partial acceptance, review pending
 
 Scoped signed implementation: `9a3f483416484a0fe85ba55cc554df5b25e6f6c2`.
-Independent task review is pending; this is not a completed multi-platform or
-Catalog acceptance gate. Prototype images used base SHA `f5c45d2` labels while
+Independent task review requires fixes; this is not a completed multi-platform
+or Catalog acceptance gate. Prototype images used base SHA `f5c45d2` labels while
 packaging files were uncommitted, so they are test artifacts, not proof of exact
 release provenance. Rebuild the final verified SHA before any release.
 
@@ -231,6 +231,22 @@ Owned test containers/networks/volumes and temporary Gateway/browser configs
 were removed; test images and temporary build evidence remain. Unrelated
 containers, listeners, active Docker configuration and host DNS were preserved. No registry, GitHub settings or target-host mutation occurred.
 
+Review identified an implementation defect: Compose ignores an operator-set
+`V8STD_MCP_SITE_URL`; the resumed fix must prove the same override controls
+source and returned links. It also confirmed that the exercised Gateway launch
+does not satisfy the accepted hardening profile. Upstream Gateway0.43.3
+[`baseArgs`/`argsAndEnv`](https://github.com/docker/mcp-gateway/blob/v0.43.3/pkg/gateway/clientpool.go#L304)
+adds init/no-new-privileges and configurable resource/user/network arguments,
+but not read-only root, cap-drop or tmpfs. Catalog approval alone cannot correct
+that mismatch. No daemon changes or privileged retry were authorized.
+
+Implementation is paused at the architecture failure-recovery gate for revised
+written design/scope approval. Task4 remains incomplete; release controller and
+CI Tasks5/6 have not started. Keeping full direct/Compose/production hardening
+and making Gateway a separately accepted channel is a proposal, not an approved
+contract change. The60s runtime bound remains unchanged, and amd64 acceptance
+is not claimed. Do not merge, publish or close PR33 from this partial result.
+
 ### Local build environment
 
 Observed 2026-09-10: Docker Desktop, Engine 29.7.2, linux/arm64; Gateway v0.43.3;
@@ -259,7 +275,7 @@ and query set on the implemented snapshot runtime.
 | --- | --- |
 | Bounded refresh/cache, crashes, shared volume, offline recovery | Task review accepted locally; Linux/runtime integration remains. |
 | Frozen generations, URL presentation, stdio/HTTP lifecycle | Task review accepted; known image-alt edge remains final release gate. |
-| Runtime/static-site images, local request graph, Gateway sessions | Arm64/local profile and warm host Gateway pass; task review, native amd64 and Gateway cold routing/hardening remain open. |
+| Runtime/static-site images, local request graph, Gateway sessions | Arm64/local profile and warm host Gateway pass; review requires Compose fix and explicit Gateway/gate design resolution; amd64 acceptance remains open. |
 | Restricted host controller, rollback and independent index delivery | Pending. |
 | Fail-closed publication, process v2 synchronization | Pending. |
 | Final semantic impact, merge-ready, fitness, strict build and full suite | Pending after all changes; strict build precedes the suite. |
