@@ -153,7 +153,7 @@ with self.assertRaisesRegex(SnapshotError, "archive_member"):
 class SnapshotStore:
     def __init__(self, site_url: str, cache_dir: Path): ...
     def cached(self) -> VerifiedSnapshot | None: ...
-    def refresh(self) -> VerifiedSnapshot: ...
+    def refresh(self, *, prepare=None): ...
 
 class SnapshotCoordinator:
     def __init__(self, store: SnapshotStore, build, *, refresh_seconds: int = 3600): ...
@@ -164,6 +164,9 @@ class SnapshotCoordinator:
 ```
 
 `build: Callable[[VerifiedSnapshot], Any]` constructs an immutable generation.
+`SnapshotStore.refresh(prepare=build)` invokes build before the durable cache
+commit and returns its result; without prepare it returns VerifiedSnapshot.
+Preparation failure preserves the former disk pointer as well as process state.
 The coordinator owns the active reference and stores network/parse work outside
 the request path. Prepare in a bounded worker with a lifecycle that is stopped
 on close; no network/CPU build on the ASGI event loop. Test/store internals may
