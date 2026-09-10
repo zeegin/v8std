@@ -114,9 +114,10 @@ duplicate archive verification. These baseline numbers must not be reported as
 the optimized release. Resource presentation was moved into background build;
 wire encoding of bulk responses still has a cost.
 
-### Unchanged-refresh correction — implementation evidence, review pending
+### Unchanged-refresh correction — reviewed local evidence
 
-Implementation: `68902446bbb69df8e50eadb7be74b5c5d07521c4`. The ready coordinator
+Implementation: `68902446bbb69df8e50eadb7be74b5c5d07521c4`; independent scoped
+spec/quality review approved without findings. The ready coordinator
 supplies its accepted archive identity. The worker still validates same-source
 cached bytes and manifest consistency, but an unchanged result carries only
 verified metadata. Cold/warm bootstrap, a different or repaired corrupt archive
