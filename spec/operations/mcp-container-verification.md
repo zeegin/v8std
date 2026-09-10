@@ -45,6 +45,34 @@ is unconfirmed; it does not prove the previous manifest remains selected.
 The old immutable archive remains intact. These tests are fault injection,
 not a real machine power-loss experiment.
 
+### Bounded source, cache and background coordinator
+
+Implementation: `ecc946c`, streaming staging correction: `005ba5d`, reviewed
+pointer/lifetime fixes: `427aaf7cde5f288f980b335442c368dd1a28f081`.
+Independent task review and scoped re-review completed without open findings.
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_snapshots -v
+```
+
+Final result: **48 tests passed in 35.869 seconds**. The unchanged 35 format
+tests passed during the combined pre-fix run. Coverage includes real local HTTP
+sources, redirects, 304, corrupt data, slow DNS/headers/body, partial IPC,
+process termination, private streaming staging, shared-volume locks/budget,
+pins, fsync/crash recovery and responsive current-generation access.
+
+Review corrections reject pointer records that cannot later be canonically
+committed, and release unused same-hash generation results before idle waits.
+Parent-side production-index reconstruction, real refresh memory/latency and
+the host release hold remain integration gates. Cache pins retain disk archives;
+they do not freeze the running generation or prove release rollback behavior.
+
+An isolated pre-runtime-change probe of the real index, excluding only its
+process-local lock, measured 21,714,441 serialized bytes and 318,029,824 bytes
+peak RSS while retaining original, serialized and reconstructed state. Encoding
+took 0.102 s and decoding 0.0772 s on this Mac. This excludes new runtime
+resources, spawn/staging and host overlap; it is not the final RAM budget.
+
 ### Local build environment
 
 Observed 2026-09-10: Docker Desktop, Engine 29.7.2, linux/arm64; Gateway v0.43.3;
@@ -71,7 +99,7 @@ and query set on the implemented snapshot runtime.
 
 | Area | Current evidence |
 | --- | --- |
-| Bounded refresh/cache, crashes, shared volume, offline recovery | In progress; not yet accepted. |
+| Bounded refresh/cache, crashes, shared volume, offline recovery | Task review accepted locally; Linux/runtime integration remains. |
 | Frozen generations, URL presentation, stdio/HTTP lifecycle | Pending. |
 | Runtime/static-site images, local request graph, Gateway sessions | Pending. |
 | Restricted host controller, rollback and independent index delivery | Pending. |

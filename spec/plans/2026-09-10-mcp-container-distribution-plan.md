@@ -181,7 +181,7 @@ No network/CPU build runs on the ASGI event loop. Test/store internals may
 inject monotonic clock/transport at their actual dependency boundary, never
 test-only methods on production classes.
 
-- [ ] **RED:** ThreadingHTTPServer fixtures count GETs, return delayed chunks,
+- [x] **RED:** ThreadingHTTPServer fixtures count GETs, return delayed chunks,
   corrupt archives, foreign redirects and 304. Cold failure must produce explicit
   not-ready; warm store must keep its previous corpus ID. Example contract test:
 
@@ -195,12 +195,12 @@ self.assertEqual(coordinator.current().corpus_id, "fixture-generation-a")
 
   Fixture generations in this test are small builder results independent of the
   format hash; real-format tests use actual corpus IDs. Run focused tests to RED.
-- [ ] **GREEN URL/network:** Resolve manifest below selected base prefix;
+- [x] **GREEN URL/network:** Resolve manifest below selected base prefix;
   permit fixed ai archive origin only for default public site; validate every
   redirect, no downgrade, no credentials and three redirects maximum. Stream
   reads enforce byte caps plus 60s whole attempt/20s read timeout. Validate
   Content-Encoding and length; reuse ETag/Last-Modified only with a valid cache.
-- [ ] **GREEN cache/lifecycle:** Namespace by normalized source/schema; verify
+- [x] **GREEN cache/lifecycle:** Namespace by normalized source/schema; verify
   cache before use; retain active+previous and pins. File lock serializes
   download/commit between processes, query never takes it. Atomic durable pointer
   update precedes in-process swap; crash, disk-full, corrupt current fall back to
@@ -208,7 +208,7 @@ self.assertEqual(coordinator.current().corpus_id, "fixture-generation-a")
   at 256 MiB. One background updater, 3600s refresh ±20%, 30…3600s error backoff,
   zero disables periodic refresh after bootstrap. Close interrupts workers with
   a bounded deadline, without orphan processes/threads holding interpreter exit.
-- [ ] **Verify:** Test same/different sources, prefix, zero interval, 304 without
+- [x] **Verify:** Test same/different sources, prefix, zero interval, 304 without
   cache, delayed read, repeated faults, crash stages, two processes/shared volume,
   cache budget and no query blocking. Run Task 1+2 tests, record RED/GREEN and
   commit task files; request spec+quality review before integration.
