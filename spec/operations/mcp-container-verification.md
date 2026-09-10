@@ -73,6 +73,48 @@ peak RSS while retaining original, serialized and reconstructed state. Encoding
 took 0.102 s and decoding 0.0772 s on this Mac. This excludes new runtime
 resources, spawn/staging and host overlap; it is not the final RAM budget.
 
+### Frozen runtime — implementation evidence, review pending
+
+Implementation: `b8656c1c238969d996e24f323333a925df9c5b87`.
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_snapshot_format tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_presentation tests.test_v8std_mcp_runtime tests.test_v8std_mcp_index tests.test_v8std_mcp_snippet tests.test_v8std_mcp_server tests.test_v8std_mcp_combined tests.test_v8std_mcp_capacity tests.test_v8std_mcp_monitoring
+.venv/bin/python -m tests.mcp_runtime_benchmark
+```
+
+Combined result: **189 tests passed in 63.620 seconds**. Actual subprocess tests
+exercise clean stdio, discovery before readiness, EOF/SIGTERM worker cleanup,
+and loopback HTTP with two agents and the existing Resources. The existing
+Starlette/httpx deprecation warning remains recorded, not suppressed.
+
+The 256-case comparison kept all ranks/IDs identical and MRR 0.9939759036;
+sampled score dictionaries were also identical. Desktop p95 was 46.570 ms before
+and 49.018 ms after. These timings are not a stable production latency estimate.
+
+The first implementation's real-corpus benchmark included spawn/import, source
+download and verification, streaming staging, Resource presentation, trusted
+IPC and parent reconstruction. A 40 ms sampler included the fixture server,
+old generation, worker, transfer/reconstruction buffers and allocator retention:
+
+| Operation | Wall time | Sampled process-tree peak RSS | Query p95 during operation |
+| --- | --- | --- | --- |
+| Cold download/build | 2.903 s | 487,636,992 bytes | Not measured |
+| Warm build while old data serves | 3.084 s | 567,066,624 bytes | 56.05 ms |
+| Unchanged refresh, before optimization | 3.537 s | 665,911,296 bytes | 65.21 ms |
+| New generation while old data serves | 3.606 s | 610,746,368 bytes | 71.05 ms |
+| Source headers delayed two seconds | 4.919 s | 647,069,696 bytes | 64.21 ms |
+
+Observed parent reconstruction was 93–179 ms; transferred prepared state was
+32,663,778 bytes. Peaks are samples, not upper bounds or cgroup limits. Warm
+build here deliberately retained a serving generation, not an empty-process
+offline startup. Runtime overlap on the target host has not been measured.
+
+This exposed unnecessary reconstruction of an unchanged generation, including
+duplicate archive verification. A scoped loader correction and refreshed
+measurements are pending; these baseline numbers must not be reported as the
+final optimized release. Resource presentation was moved into background build;
+wire encoding of bulk responses still has a cost.
+
 ### Local build environment
 
 Observed 2026-09-10: Docker Desktop, Engine 29.7.2, linux/arm64; Gateway v0.43.3;
