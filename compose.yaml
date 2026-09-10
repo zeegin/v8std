@@ -1,0 +1,57 @@
+# Release distribution. Source-bind development lives in docker-compose/.
+# Both overrides must identify an actually published release or a local test image.
+services:
+  site:
+    image: ${V8STD_SITE_IMAGE:?Set the verified ghcr.io/zeegin/v8std-site tag or digest}
+    user: "10001:10001"
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=32m,uid=10001,gid=10001"]
+    mem_limit: 128m
+    cpus: 0.5
+    # The image listens on 8000 by default; changing the common port needs
+    # only a temporary nginx config, leaving the image/root read-only.
+    entrypoint: [/bin/sh, -ec]
+    command:
+      - 'sed "s/listen 8000;/listen ${V8STD_SITE_PORT:-18765};/" /etc/nginx/nginx.conf > /tmp/site.conf; exec nginx -c /tmp/site.conf -g "daemon off;"'
+    ports:
+      - "127.0.0.1:${V8STD_SITE_PORT:-18765}:${V8STD_SITE_PORT:-18765}"
+      - "127.0.0.1:${V8STD_MCP_PORT:-18766}:8001"
+    networks:
+      corpus:
+        aliases: [v8std.localhost]
+      publish: {}
+  mcp:
+    image: ${V8STD_MCP_IMAGE:?Set the verified ghcr.io/zeegin/v8std-mcp tag or digest}
+    profiles: [mcp]
+    user: "10001:10001"
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001"]
+    mem_limit: 1536m
+    cpus: 2
+    pids_limit: 128
+    volumes: [mcp-cache:/var/lib/v8std-mcp]
+    environment:
+      V8STD_MCP_SITE_URL: "http://v8std.localhost:${V8STD_SITE_PORT:-18765}${V8STD_SITE_PREFIX:-/}"
+      V8STD_MCP_MAX_SNIPPET_CHARS: "${V8STD_MCP_MAX_SNIPPET_CHARS:-4000}"
+    command: [--transport, streamable-http, --host, 0.0.0.0, --port, "8000"]
+    # Host HTTP goes through the site's loopback proxy; MCP has no egress route.
+    networks: [corpus]
+    depends_on: [site]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 90s
+      retries: 3
+volumes:
+  mcp-cache:
+networks:
+  corpus:
+    internal: true
+  publish: {}

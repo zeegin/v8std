@@ -115,6 +115,9 @@ Resources являются additive-профилем для клиентов, к
 Не отправляйте в публичный сервис закрытый код. Для такого сценария
 используйте локальный запуск MCP.
 
+Подготовка локального сайта, stdio/HTTP, persistent cache и ограничения Gateway
+описаны в [инструкции установки в контейнерах](container-installation.md).
+
 ### `v8std_explain_diagnostics`
 
 Объясняет список диагностик АПК, BSL Language Server и EDT.

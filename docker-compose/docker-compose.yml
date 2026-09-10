@@ -1,3 +1,5 @@
+# DEVELOPMENT ONLY: source bind mounts and build-on-start; use ../compose.yaml
+# for the release images and verified snapshot cache.
 services:
   zensical:
     container_name: zensical

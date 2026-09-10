@@ -91,7 +91,11 @@ hide:
 публичный сервис, работаете без доступа к интернету или проверяете изменения
 сайта до публикации.
 
-Самый простой запуск — через Docker:
+Поставка с готовыми runtime/static images описана в
+[инструкции установки в контейнерах](container-installation.md).
+Её первый выпуск и external Catalog acceptance требуют отдельных проверок.
+
+Для **разработки из исходников** сохранён Docker Compose с bind mount:
 
 ```bash
 git clone https://github.com/zeegin/v8std.git
