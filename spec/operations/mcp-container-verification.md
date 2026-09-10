@@ -177,6 +177,60 @@ incorrectly protect subsequent visible links from rebasing/validation. It was
 reproduced in both the old scanner and the semantic-parser fix, so scoped
 re-review did not extend its loop to it. This is explicitly not waived for release.
 
+### Container implementation — partial acceptance, review pending
+
+Scoped signed implementation: `9a3f483416484a0fe85ba55cc554df5b25e6f6c2`.
+Independent task review is pending; this is not a completed multi-platform or
+Catalog acceptance gate. Prototype images used base SHA `f5c45d2` labels while
+packaging files were uncommitted, so they are test artifacts, not proof of exact
+release provenance. Rebuild the final verified SHA before any release.
+
+```sh
+V8STD_TEST_LOCAL_BUILD=1 .venv/bin/python -m unittest tests.test_v8std_mcp_distribution tests.test_published_license_links -v
+.venv/bin/python scripts/check_mcp_container.py --mcp-image v8std-task4-mcp:arm64 --site-image v8std-task4-site:arm64 --platform linux/arm64 --prefix /kb/ --chrome '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --node /opt/homebrew/bin/node --host-gateway
+```
+
+Eight focused tests passed in 38.667 seconds, including isolated strict build.
+Actual arm64 harness passed cold-online stdio, warm network-disabled restart,
+HTTP readiness/tools, cold-offline 503, clean EOF and bounded SIGTERM. Direct
+and Compose MCP used UID/GID10001, read-only root, cap-drop ALL, init,
+no-new-privileges, persistent cache, 2 CPU and1536MiB memory limits. These are
+test settings, not a throughput claim. Known modal-window snippet rules and
+4000/32000-character configurations passed; five tools/three Resources retained.
+
+Local profile preserved canonical archive bytes and source inputs. A fresh
+Chrome151 profile observed18 unique requests over five representative pages,
+including search/worker/fonts/licenses, all within the local `/kb/` origin and
+prefix; no blocked public requests or bad responses. This sampled browser
+request graph is not exhaustive coverage of every site page. Chrome emitted
+Keychain/encryption warnings even with the isolated basic-password profile.
+Manifest freshness, immutable successful archives, uncached404s and licenses
+passed. Native Linux routing remains separate from Docker Desktop testing.
+
+Two host Gateway0.43.3 sessions passed repeated warm-offline calls with separate
+long-lived MCP containers and one cache. The actual Gateway-created containers
+were **not read-only and did not drop capabilities**. Its Catalog configuration
+does not expose the full direct/Compose hardening profile. The containerized
+Gateway local-network test stopped at Docker socket permission denial under
+UID/GID501:20; no root/group/permission retry was made. Cold local Gateway
+routing and full hardening are not accepted. No socket was mounted into MCP.
+Source Catalog schema decoding passed against mcp-registry8c773729; external
+Catalog review/publication did not occur.
+
+Both architecture images built, and amd64 static delivery passed under QEMU.
+However, supervised amd64 full-corpus startup failed with `deadline`, no OOM,
+and continued503 readiness. A separate direct phase diagnostic measured
+3.390s imports,0.167s download,7.465s verification and **86.912s generation**,
+97.935s total. Generation alone exceeds the60s loader attempt limit. That
+unsupervised diagnostic is not successful runtime acceptance. Preserve the
+production cancellation bound; require native amd64 full-corpus proof before
+publication, and fix preparation if the native run also fails. Warm amd64 and
+full lifecycle acceptance remain incomplete.
+
+Owned test containers/networks/volumes and temporary Gateway/browser configs
+were removed; test images and temporary build evidence remain. Unrelated
+containers, listeners, active Docker configuration and host DNS were preserved. No registry, GitHub settings or target-host mutation occurred.
+
 ### Local build environment
 
 Observed 2026-09-10: Docker Desktop, Engine 29.7.2, linux/arm64; Gateway v0.43.3;
@@ -204,8 +258,8 @@ and query set on the implemented snapshot runtime.
 | Area | Current evidence |
 | --- | --- |
 | Bounded refresh/cache, crashes, shared volume, offline recovery | Task review accepted locally; Linux/runtime integration remains. |
-| Frozen generations, URL presentation, stdio/HTTP lifecycle | Pending. |
-| Runtime/static-site images, local request graph, Gateway sessions | Pending. |
+| Frozen generations, URL presentation, stdio/HTTP lifecycle | Task review accepted; known image-alt edge remains final release gate. |
+| Runtime/static-site images, local request graph, Gateway sessions | Arm64/local profile and warm host Gateway pass; task review, native amd64 and Gateway cold routing/hardening remain open. |
 | Restricted host controller, rollback and independent index delivery | Pending. |
 | Fail-closed publication, process v2 synchronization | Pending. |
 | Final semantic impact, merge-ready, fitness, strict build and full suite | Pending after all changes; strict build precedes the suite. |
