@@ -110,10 +110,43 @@ build here deliberately retained a serving generation, not an empty-process
 offline startup. Runtime overlap on the target host has not been measured.
 
 This exposed unnecessary reconstruction of an unchanged generation, including
-duplicate archive verification. A scoped loader correction and refreshed
-measurements are pending; these baseline numbers must not be reported as the
-final optimized release. Resource presentation was moved into background build;
+duplicate archive verification. These baseline numbers must not be reported as
+the optimized release. Resource presentation was moved into background build;
 wire encoding of bulk responses still has a cost.
+
+### Unchanged-refresh correction — implementation evidence, review pending
+
+Implementation: `68902446bbb69df8e50eadb7be74b5c5d07521c4`. The ready coordinator
+supplies its accepted archive identity. The worker still validates same-source
+cached bytes and manifest consistency, but an unchanged result carries only
+verified metadata. Cold/warm bootstrap, a different or repaired corrupt archive
+retain full construction. Pointer/validator durability precedes success.
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_runtime.RuntimeTests tests.test_v8std_mcp_runtime.WireTests
+.venv/bin/python -m tests.mcp_runtime_benchmark
+```
+
+Result: **72 tests passed in 51.553 seconds**. This does not close the separate
+Task3 review findings about stdout backpressure and Markdown syntax handling.
+
+Fresh paired unchanged-refresh measurements on the same desktop/corpus:
+
+| Observation | Before correction | After correction |
+| --- | --- | --- |
+| Whole attempt | 3.704876 s | 0.742084 s |
+| Received IPC payload | 32,663,778 bytes | 256 bytes |
+| Parent decode | 0.157151 s | 0.002127 s |
+| Sampled tree peak RSS | 627,490,816 bytes | 403,554,304 bytes |
+| Query p95 during attempt | 76.368 ms (62 samples) | 48.613 ms (14 samples) |
+
+Generation construction/encoding are skipped; strict cache verification runs
+once rather than twice. Query sample counts differ because the attempt is
+shorter, so no statistical significance claim is made. All 256 same-corpus
+ranks/IDs and sampled score dictionaries remained equal, MRR 0.9939759036.
+New generations still require full preparation; measured new-generation wall
+time was 3.566641 s with sampled tree RSS 555,876,352 bytes. These are sampled
+desktop observations, not memory ceilings, target-host acceptance or 100k evidence.
 
 ### Local build environment
 
