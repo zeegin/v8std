@@ -543,7 +543,9 @@ Catalog release metadata/harness under `deploy/docker-catalog/`,
 `scripts/check_mcp_container.py`, `tests/test_v8std_mcp_distribution.py`;
 existing monitoring integration in `scripts/v8std_mcp_monitoring.py`,
 `scripts/v8std_mcp_usage.logrotate`, `tests/test_v8std_mcp_monitoring.py`,
-release launch/host templates and their focused integration tests.
+release launch/host templates and their focused integration tests;
+the retained final parser regression in `scripts/v8std_mcp_presentation.py`
+and `tests/test_v8std_mcp_presentation.py`.
 
 **Consumes:** producer, image harness and typed release controller CLIs.
 Publisher first places and externally verifies immutable corpus, then emits
@@ -586,6 +588,12 @@ Pages manifest. Every runtime deployment references published exact digest.
   This implements the approved preservation of monitoring, not the separately
   deferred dashboard/events-schema/OpenMetrics redesign. Any necessary public
   schema or trust-boundary change must return to design before implementation.
+- [ ] **VERIFY retained parser finding:** Add RED/GREEN for `![<code>](...)`
+  followed by a visible internal link. HTML-looking image-alt text must not
+  suppress rebasing or unknown-target validation of subsequent visible links.
+  Preserve actual code/literal content, source offsets and canonical hashes.
+  This is the concrete deferred Task3 review finding, not a new Markdown
+  interpretation contract or permission to waive a pre-existing release defect.
 - [ ] **Final gates:** Run semantic impact on actual paths, CLI `impact`,
   `validate --merge-ready`, all applicable fitness; strict build, then full suite;
   container smoke and shared-host mixed load on disposable local stack, review
