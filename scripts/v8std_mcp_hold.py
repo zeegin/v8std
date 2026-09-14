@@ -52,9 +52,20 @@ class ReleaseControl:
         seen = None
         next_refresh = 0
         failures = 0
+
+        def read_request():
+            nonlocal seen
+            try:
+                return self.read()
+            except (LoaderError, SnapshotError, OSError):
+                # Recovery of the command file starts a fresh validation, even
+                # for the same token. Do not bypass build-failure backoff.
+                seen = None
+                raise
+
         while not owner._stop.is_set():
             try:
-                request = self.read()
+                request = read_request()
                 changed = request != seen
                 if changed:
                     next_refresh = 0
@@ -65,7 +76,7 @@ class ReleaseControl:
                         if manifest is not None:
                             result, metadata = owner.store._run("refresh", owner.build,
                                 CommandStop(self, request), selected_manifest=manifest)
-                            if self.read() != request or owner._stop.is_set():
+                            if read_request() != request or owner._stop.is_set():
                                 continue
                             owner._accept(result, metadata, checked=False)
                             del result
@@ -85,7 +96,7 @@ class ReleaseControl:
                     last = request
                     if initial:
                         result, metadata = owner.store._run("cached", owner.build, CommandStop(self, request))
-                        if self.read() != request or owner._stop.is_set():
+                        if read_request() != request or owner._stop.is_set():
                             continue
                         if metadata:
                             owner._accept(result, metadata, checked=False)
@@ -94,7 +105,7 @@ class ReleaseControl:
                     if time.monotonic() >= next_refresh:
                         result, metadata = owner.store._run("refresh", owner.build,
                             CommandStop(self, request), current_archive=owner._archive_sha256)
-                        if self.read() != request or owner._stop.is_set():
+                        if read_request() != request or owner._stop.is_set():
                             continue
                         owner._accept(result, metadata, checked=True)
                         del result
@@ -103,6 +114,7 @@ class ReleaseControl:
                                         if owner.refresh_seconds else float("inf"))
             except (LoaderError, SnapshotError, OSError) as error:
                 failures += 1
+                last = None  # Revoked acknowledgement must be earned again.
                 with owner._lock:
                     owner._state["refresh_error_code"] = getattr(error, "code", "configuration")
                     # A stale acknowledgment is never proof of a new hold.

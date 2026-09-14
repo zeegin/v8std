@@ -45,6 +45,7 @@ class DockerReleaseTests(unittest.TestCase):
         self.calls = []
         name = "v8std-task5-" + uuid.uuid4().hex[:12]
         network, nginx, runtime, volume = (name + "-" + suffix for suffix in ("net", "edge", "runtime", "cache"))
+        control_volume, writer = name + "-control", name + "-writer"
         endpoint_port = port()
         source_url = f"http://v8std-task5.localhost:{endpoint_port}/"
         archive, manifest = fixture.snapshot_fixture()
@@ -55,8 +56,8 @@ class DockerReleaseTests(unittest.TestCase):
                                "runtime_memory": "512m", "nginx_memory": "128m", "cpus_each": 1}}
         with tempfile.TemporaryDirectory(prefix="v8std-task5-docker-") as directory:
             directory = Path(directory)
-            config, control, static, source = [directory / x for x in ("nginx", "control", "static", "source")]
-            for path in (config, control, static, source):
+            config, static, source = [directory / x for x in ("nginx", "static", "source")]
+            for path in (config, static, source):
                 path.mkdir(mode=0o755)
             for filename in ("edge-http.conf", "edge-locations.conf"):
                 shutil.copyfile(ROOT / "deploy/container" / filename, config / filename)
@@ -77,8 +78,28 @@ class DockerReleaseTests(unittest.TestCase):
             (static / archive_hash).mkdir()
             (static / archive_hash / "snapshot.tar.gz").write_bytes(archive)
             (source / "manifest.json").write_bytes(release.canonical_json(manifest))
-            control_file = control / "control.json"
-            control_file.write_text(json.dumps({"schema_version": 1, "token": token, "mode": "hold", "manifest": manifest}))
+
+            def publish_control(*, unreadable=False):
+                # Native Linux root writer with the recovery service's umask.
+                # Only this disposable named volume is writable; no Docker socket.
+                code = ("import os,sys,json; from pathlib import Path; "
+                        "sys.path.insert(0,'/opt/v8std/scripts'); import v8std_mcp_release as r; "
+                        "os.umask(0o077); p=Path('/state/slots/runtime/control'); ")
+                if unreadable:
+                    code += "os.chmod(p/'control.json',0); print('{}')"
+                else:
+                    code += (f"r.HostAdapter(Path('/state'),{{}}).control({{'release_id':'runtime'}},'hold',{token!r},{manifest!r}); "
+                             "print(json.dumps({'directory_mode':oct(p.stat().st_mode & 0o777),"
+                             "'file_mode':oct((p/'control.json').stat().st_mode & 0o777),"
+                             "'directory_uid':p.stat().st_uid,'file_uid':(p/'control.json').stat().st_uid}))")
+                result = self.docker("run", "--rm", "--name", writer, "--pull=never", "--network=none",
+                    "--user=0:0", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--init",
+                    "--memory=128m", "--memory-swap=128m", "--cpus=1", "--pids-limit=128",
+                    "--label=pro.v8std.test=task5", "--tmpfs=/tmp:rw,noexec,nosuid,size=64m",
+                    "--mount", f"type=volume,source={control_volume},target=/state",
+                    "--mount", f"type=bind,source={ROOT / 'scripts/v8std_mcp_release.py'},target=/opt/v8std/scripts/v8std_mcp_release.py,readonly",
+                    "--entrypoint=python", RUNTIME, "-I", "-c", code)
+                return json.loads(result.stdout)
 
             def request(path, method="GET", body=None):
                 client = http.client.HTTPConnection("127.0.0.1", endpoint_port, timeout=10)
@@ -106,7 +127,12 @@ class DockerReleaseTests(unittest.TestCase):
 
             self.docker("network", "create", "--label", "pro.v8std.test=task5", network)
             self.docker("volume", "create", "--label", "pro.v8std.test=task5", volume)
+            self.docker("volume", "create", "--label", "pro.v8std.test=task5", control_volume)
             try:
+                permissions = publish_control()
+                self.assertEqual(permissions, {"directory_mode": "0o755", "file_mode": "0o644",
+                                               "directory_uid": 0, "file_uid": 0})
+                evidence["root_control_umask_0077"] = permissions
                 common = ["--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges",
                           "--init", "--user=10001:10001", "--cpus=1", "--pids-limit=128",
                           "--network", network, "--label=pro.v8std.test=task5", "--tmpfs=/tmp:rw,noexec,nosuid,size=64m"]
@@ -122,7 +148,7 @@ class DockerReleaseTests(unittest.TestCase):
                     modules.extend(["--mount", f"type=bind,source={ROOT / 'scripts' / module},target=/opt/v8std/scripts/{module},readonly"])
                 self.docker("run", "-d", "--name", runtime, *common, "--memory=512m", "--memory-swap=512m",
                     "--mount", f"type=volume,source={volume},target=/var/lib/v8std-mcp",
-                    "--mount", f"type=bind,source={control},target=/run/v8std-release,readonly", *modules,
+                    "--mount", f"type=volume,source={control_volume},target=/run/v8std-release,volume-subpath=slots/runtime/control,readonly", *modules,
                     RUNTIME, "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000",
                     "--site-url", source_url, "--refresh-seconds", "1", "--allowed-host", "127.0.0.1")
                 upstream.write_text(f"server {runtime}:8000 max_conns=8;\n")
@@ -130,6 +156,19 @@ class DockerReleaseTests(unittest.TestCase):
                 self.docker("exec", nginx, "nginx", "-s", "reload")
                 health = ready()
                 evidence["health"] = health
+                publish_control(unreadable=True)
+                until = time.monotonic() + 5
+                while True:
+                    state = json.loads(request("/healthz")[2])
+                    if state.get("hold_token") is None:
+                        break
+                    self.assertLess(time.monotonic(), until)
+                    time.sleep(.05)
+                self.assertTrue(state["ready"])
+                self.assertEqual(state["archive_sha256"], archive_hash)
+                self.assertEqual(publish_control(), permissions)  # Same exact token/manifest.
+                self.assertEqual(ready()["release_control_token"], token)
+                evidence["same_token_read_failure_recovery"] = "ready; ack revoked; same command reacknowledged"
                 record = {"runtime_source_sha": health["runtime_sha"], "corpus_id": manifest["corpus_id"],
                           "archive_sha256": archive_hash, "hold_token": token}
                 release.smoke(f"http://127.0.0.1:{endpoint_port}", record, time.monotonic() + 30)
@@ -217,12 +256,13 @@ class DockerReleaseTests(unittest.TestCase):
                 evidence["commands"] = self.calls
                 print("TASK5_DOCKER_EVIDENCE=" + json.dumps(evidence, sort_keys=True))
             finally:
-                for container in (runtime, nginx):
+                for container in (runtime, nginx, writer):
                     info = self.docker("inspect", container, check=False)
                     if info.returncode == 0:
                         self.assertEqual(json.loads(info.stdout)[0]["Config"]["Labels"]["pro.v8std.test"], "task5")
                         self.docker("rm", "-f", container)
                 self.docker("volume", "rm", volume)
+                self.docker("volume", "rm", control_volume)
                 self.docker("network", "rm", network)
 
 

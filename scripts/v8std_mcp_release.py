@@ -140,13 +140,14 @@ def ensure_directory(path, mode=0o700):
     require(stat.S_ISDIR(path.lstat().st_mode), "directory_shape")
 
 
-def atomic(path, raw):
+def atomic(path, raw, *, mode=0o600):
     ensure_directory(path.parent)
     fd, name = tempfile.mkstemp(prefix=".write-", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as stream:
             stream.write(raw)
             stream.flush()
+            os.fchmod(stream.fileno(), mode)
             os.fsync(stream.fileno())
         os.replace(name, path)
         sync_dir(path.parent)
@@ -154,11 +155,11 @@ def atomic(path, raw):
         Path(name).unlink(missing_ok=True)
 
 
-def write_json(path, value):
+def write_json(path, value, *, mode=0o600):
     # Operational timestamps/health contain finite floats; snapshot descriptors
     # and envelope hashes keep the separate float-free canonical encoding.
     atomic(path, json.dumps(value, ensure_ascii=False, sort_keys=True,
-                           separators=(",", ":"), allow_nan=False).encode())
+                           separators=(",", ":"), allow_nan=False).encode(), mode=mode)
 
 
 def read_record(path):
@@ -477,9 +478,12 @@ class HostAdapter:
     def control(self, record, mode, token, manifest=None):
         control_directory = self.root / "slots" / record["release_id"] / "control"
         ensure_directory(control_directory, 0o755)
+        # mkdir's mode is filtered by the recovery service's UMask=0077.
+        # Publish final traversal/read permissions before making a command visible.
+        os.chmod(control_directory, 0o755)
+        sync_dir(control_directory)
         write_json(control_directory / "control.json", {"schema_version": 1, "token": token,
-                                               "mode": mode, "manifest": manifest})
-        os.chmod(control_directory / "control.json", 0o644)
+                                               "mode": mode, "manifest": manifest}, mode=0o644)
 
     def hold(self, record, token, deadline, manifest=None):
         self.control(record, "hold", token, manifest)
@@ -568,8 +572,11 @@ class Controller:
 
     @staticmethod
     def result(journal):
+        if journal["state"] == "REJECTED":
+            return dict(journal)  # Durable queued rejection is already a public outcome.
         return {**journal["envelope"], "state": journal["state"], "intent": journal["intent"],
-                "error_code": journal.get("error_code"), "cleanup_complete": journal.get("cleanup_complete", False)}
+                "error_code": journal.get("error_code"), "cleanup_complete": bool(
+                    journal.get("cleanup_complete", False) and not journal.get("active_recovery"))}
 
     def save(self, journal, state=None, intent=None):
         if state:
@@ -580,13 +587,18 @@ class Controller:
         write_json(self.root / "releases" / (journal["envelope"]["release_id"] + ".json"), journal)
 
     def existing(self, envelope):
+        rejected_path = self.root / "rejected" / (envelope["release_id"] + ".json")
+        if rejected_path.exists():
+            rejected = read_record(rejected_path)
+            require({key: rejected.get(key) for key in envelope} == envelope, "mutated_duplicate")
+            return rejected
         records = self.journals()
         for item in records:
             if item["envelope"]["release_id"] == envelope["release_id"]:
                 require(item["envelope"] == envelope, "mutated_duplicate")
                 return item
         require(not records or envelope["sequence"] > max(x["envelope"]["sequence"] for x in records), "stale_sequence")
-        require(not any(x["state"] not in TERMINAL or x["state"] == "RECOVERY_REQUIRED"
+        require(not any(x.get("active_recovery") or x["state"] not in TERMINAL or x["state"] == "RECOVERY_REQUIRED"
                         or x["state"] == "COMMITTED" and not x.get("cleanup_complete") for x in records), "recovery_pending")
         return None
 
@@ -719,14 +731,28 @@ class Controller:
                     deadline = time.monotonic() + TRANSACTION
                     try:
                         info = self.adapter.inspect(active, deadline)
-                        if info is None or not info["State"]["Running"]:
+                        if journal.get("active_recovery") or info is None or not info["State"]["Running"]:
+                            # This is a new recovery transaction, not the old
+                            # release's completed drain. Persist before start;
+                            # Running alone never discharges switch/smoke/resume.
+                            active = journal.get("active_recovery", {}).get("record", active)
+                            journal["active_recovery"] = {"record": active}
+                            self.save(journal, intent="recover_active_hold")
                             token = digest((active["release_id"] + ":restart").encode())[:32]
-                            active = self.adapter.hold(active, token, deadline - STOP - SMOKE,
+                            active = self.adapter.hold(active, token,
+                                                       min(deadline - STOP - SMOKE, time.monotonic() + READINESS),
                                                        self.adapter.manifest(active))
-                            self.adapter.switch(active, deadline - SMOKE)
-                            self.adapter.check(active, min(deadline, time.monotonic() + SMOKE), public=True)
+                            journal["active_recovery"]["record"] = active
+                            self.save(journal, intent="recover_active_switch")
+                            self.adapter.switch(active, deadline - 2 * SMOKE)
+                            self.save(journal, intent="recover_active_smoke")
+                            self.adapter.check(active, min(deadline - SMOKE, time.monotonic() + SMOKE), public=True)
+                            self.save(journal, intent="recover_active_pointer")
                             write_json(active_path, active)
-                            self.adapter.resume(active, deadline)
+                            self.save(journal, intent="recover_active_resume")
+                            self.adapter.resume(active, min(deadline, time.monotonic() + SMOKE))
+                            journal.pop("active_recovery")
+                            journal["intent"] = "complete"
                         journal.pop("error_code", None)
                         self.save(journal)
                     except Exception:
@@ -820,7 +846,8 @@ def publication_result(record):
     return {"publication_id": header["publication_id"], "sequence": header["sequence"],
             "action": header["action"], "state": record["state"], "trigger_sha": header["trigger_sha"],
             "corpus_source_sha": manifest["source_sha"], "corpus_id": manifest["corpus_id"],
-            "archive_sha256": manifest["archive"]["sha256"], "error_code": record.get("error_code")}
+            "archive_sha256": manifest["archive"]["sha256"], "error_code": record.get("error_code"),
+            "cleanup_complete": record["state"] == "COMMITTED" and not record.get("cleanup_pending", False)}
 
 
 def restore_index_inbox(root):
@@ -830,7 +857,7 @@ def restore_index_inbox(root):
         return
     directory = root / "publications"
     records = [read_record(path) for path in directory.glob("*.json")]
-    unfinished = [r for r in records if r["state"] not in {"COMMITTED", "FAILED"}]
+    unfinished = [r for r in records if r["state"] not in {"COMMITTED", "FAILED"} or r.get("cleanup_pending")]
     if unfinished:
         record = min(unfinished, key=lambda r: (r["header"]["sequence"], r["header"]["publication_id"]))
         write_json(pending, record["header"])
@@ -948,8 +975,7 @@ class Publisher:
             record = read_record(record_path)
             require(record["header"] == header, "mutated_duplicate")
             if record["state"] == "COMMITTED":
-                self.clear_pending(header)
-                return record
+                return self.finish_cleanup(record_path, record)
             verified = record["state"] in {"VERIFIED", "RECOVERY_REQUIRED"}
             require(record["state"] != "FAILED", "publication_terminal")
             deadline = time.monotonic() + (TRANSACTION if verified else min(TRANSACTION, header["deadline"] - time.time()))
@@ -994,10 +1020,18 @@ class Publisher:
                 write_json(self.root / "references" / (archive_hash + ".json"), {"last_reference": time.time()})
                 write_json(current_path, header)
             record["state"] = "COMMITTED"
+            record["cleanup_pending"] = True
             record.pop("error_code", None)
             write_json(record_path, record)
-            self.clear_pending(header)
-            return record
+            return self.finish_cleanup(record_path, record)
+
+    def finish_cleanup(self, record_path, record):
+        self.clear_pending(record["header"])
+        if record.get("cleanup_pending") or record.get("error_code"):
+            record["cleanup_pending"] = False
+            record.pop("error_code", None)
+            write_json(record_path, record)
+        return record
 
     def clear_pending(self, header):
         pending = self.root / "pending-index.json"
@@ -1023,6 +1057,12 @@ class Publisher:
             with locked(self.root):
                 record_path = self.root / "publications" / (header["publication_id"] + ".json")
                 record = read_record(record_path)
+                if record["state"] == "COMMITTED":
+                    # Visibility/reference already accepted. Even unlink+fsync
+                    # failure must only retry cleanup, never rewrite acceptance.
+                    record.update(cleanup_pending=True, error_code="publication_cleanup_failed")
+                    write_json(record_path, record)
+                    return record
                 # Visibility may precede COMMITTED after a crash: VERIFIED receipts
                 # are reconciled on restart, never described as a committed job.
                 verified = record["state"] in {"VERIFIED", "RECOVERY_REQUIRED"}
@@ -1116,7 +1156,8 @@ def main():
         return submit(ROOT, adapter, canonical_json(envelope))
     if command == "publish-index":
         result = ingest(ROOT, policy["static_root"], sys.stdin.fileno())
-        if result["state"] not in {"COMMITTED", "FAILED"}:
+        if result["state"] not in {"COMMITTED", "FAILED"} or (
+                result["state"] == "COMMITTED" and not result.get("cleanup_complete", True)):
             schedule("index")
         return result
     if command == "recover":
@@ -1129,6 +1170,13 @@ def main():
             envelope = parse(read_file(pending))
             try:
                 result = controller.deploy(canonical_json(envelope))
+                if result["state"] == "REJECTED":
+                    # Reconcile a crash after the durable rejection but before
+                    # inbox deletion, without reconsidering its immutable ID.
+                    with locked(ROOT):
+                        if pending.exists() and parse(read_file(pending)) == envelope:
+                            pending.unlink()
+                            sync_dir(ROOT)
             except ReleaseError as error:
                 if error.code not in {"deadline", "insufficient_transaction_budget", "runtime_not_activated", "predecessor_required", "stale_sequence"}:
                     raise

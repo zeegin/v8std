@@ -78,6 +78,8 @@ class ProcessAdapter(release.HostAdapter):
                            {"pid": process.pid, "record": record})
         if self.fault == "crash_after_start" and record["release_id"] != "predecessor":
             os._exit(93)
+        if self.fault == "kill_active_after_start":
+            os.kill(os.getpid(), signal.SIGKILL)
 
     def hold(self, record, token, deadline, manifest=None):
         return super().hold(record, token, min(deadline, time.monotonic() + 5), manifest)
@@ -95,7 +97,15 @@ class ProcessAdapter(release.HostAdapter):
         # fail a real HTTP request before rollback can be claimed.
         if "public_dead" in self.fault.split(",") and public and record["release_id"] != "predecessor":
             self.stop(record, deadline)
-        return super().check(record, min(deadline, time.monotonic() + 5), public=public)
+        result = super().check(record, min(deadline, time.monotonic() + 5), public=public)
+        if self.fault == "kill_active_after_smoke" and public:
+            os.kill(os.getpid(), signal.SIGKILL)
+        return result
+
+    def resume(self, record, deadline):
+        if self.fault == "kill_active_before_resume":
+            os.kill(os.getpid(), signal.SIGKILL)
+        return super().resume(record, deadline)
 
     def stop(self, record, deadline):
         self.record("stop", record)
@@ -182,5 +192,15 @@ if __name__ == "__main__":
     else:
         adapter = ProcessAdapter(directory, json.loads((directory / "policy.json").read_text()), args[0] if args else "")
         controller = CrashController(directory, adapter)
-        result = controller.deploy((directory / "envelope.json").read_bytes()) if mode == "deploy" else controller.recover()
+        if mode == "queued_expired":
+            # Execute the actual internal CLI worker against owned local state;
+            # replace only host authorization/adapters and wall clock, not logic.
+            from unittest.mock import patch
+            now = time.time()
+            with patch.object(release, "ROOT", directory), patch.object(release, "trusted_policy", return_value=adapter.policy), \
+                 patch.object(release, "HostAdapter", return_value=adapter), patch.object(os, "geteuid", return_value=0), \
+                 patch.object(sys, "argv", ["fixture", "_deploy"]), patch.object(time, "time", return_value=now + 130):
+                result = release.main()
+        else:
+            result = controller.deploy((directory / "envelope.json").read_bytes()) if mode == "deploy" else controller.recover()
         print(json.dumps(result))

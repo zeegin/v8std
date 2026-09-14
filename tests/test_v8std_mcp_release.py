@@ -34,6 +34,36 @@ def envelope(**changes):
 
 
 class EnvelopeTests(unittest.TestCase):
+    def test_control_directory_is_readable_under_recovery_umask(self):
+        with tempfile.TemporaryDirectory() as temp:
+            adapter = release.HostAdapter(Path(temp), {})
+            old_umask = os.umask(0o077)
+            try:
+                adapter.control({"release_id": "held"}, "hold", "a" * 32)
+                directory = Path(temp) / "slots/held/control"
+                self.assertEqual(directory.stat().st_mode & 0o777, 0o755)
+                directory.chmod(0o700)  # Repair a directory left by old recovery.
+                adapter.control({"release_id": "held"}, "hold", "a" * 32)
+                self.assertEqual(directory.stat().st_mode & 0o777, 0o755)
+            finally:
+                os.umask(old_umask)
+
+    def test_control_file_has_final_permissions_at_atomic_publication(self):
+        with tempfile.TemporaryDirectory() as temp:
+            original = os.replace
+            published = []
+            def replace(source, target):
+                published.append(Path(source).stat().st_mode & 0o777)
+                original(source, target)
+                self.assertEqual(Path(target).stat().st_mode & 0o777, 0o644)
+            old_umask = os.umask(0o077)
+            try:
+                with patch.object(release.os, "replace", replace):
+                    release.HostAdapter(Path(temp), {}).control({"release_id": "held"}, "hold", "a" * 32)
+                self.assertEqual(published, [0o644])
+            finally:
+                os.umask(old_umask)
+
     def test_new_journal_parents_are_fsynced_and_symlink_file_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -196,6 +226,41 @@ class EnvelopeTests(unittest.TestCase):
 
 
 class IngressTests(unittest.TestCase):
+    def test_committed_publication_survives_inbox_cleanup_exception(self):
+        self.ingest()
+        publisher = release.Publisher(self.root, self.root / "static", lambda *args: None)
+        original = publisher.clear_pending
+        for action in ("publish", "reference"):
+            for after_unlink in (False, True):
+                with self.subTest(action=action, after_unlink=after_unlink):
+                    header = self.header | {"publication_id": f"{action}-{int(after_unlink)}",
+                        "action": action, "sequence": 10 + int(after_unlink)}
+                    if action == "publish" and not after_unlink:
+                        header = self.header
+                    else:
+                        self.ingest(header, self.archive if action == "publish" else b"")
+                    def fail_cleanup(value):
+                        if after_unlink:
+                            original(value)
+                        raise OSError("injected inbox cleanup error")
+                    with patch.object(publisher, "clear_pending", fail_cleanup):
+                        result = publisher.recover()
+                    self.assertEqual(result["state"], "COMMITTED")
+                    self.assertEqual(result["error_code"], "publication_cleanup_failed")
+                    query = {"schema_version": 1, "kind": "publication", "id": header["publication_id"]}
+                    self.assertEqual(release.query_status(self.root, None, query)["state"], "COMMITTED")
+                    archive_hash = header["manifest"]["archive"]["sha256"]
+                    target = self.root / "static" / archive_hash / "snapshot.tar.gz"
+                    self.assertEqual(target.read_bytes(), self.archive)
+                    reference = (self.root / "references" / (archive_hash + ".json")).read_bytes()
+                    if action == "reference":
+                        self.assertEqual(release.read_record(self.root / "current-index.json"), header)
+                    recovered = publisher.recover()
+                    self.assertEqual(recovered["state"], "COMMITTED")
+                    self.assertNotIn("error_code", recovered)
+                    self.assertFalse((self.root / "pending-index.json").exists())
+                    self.assertEqual((self.root / "references" / (archive_hash + ".json")).read_bytes(), reference)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
@@ -484,7 +549,9 @@ class TransactionTests(unittest.TestCase):
     def invoke(self, fault="", mode="deploy"):
         result = subprocess.run([sys.executable, "-m", "tests.mcp_release_fixture", mode, str(self.root), fault],
             cwd=ROOT, capture_output=True, timeout=25)
-        if fault.startswith(("crash_", "intent_")):
+        if fault.startswith("kill_active_"):
+            self.assertEqual(result.returncode, -signal.SIGKILL, result.stderr.decode())
+        elif fault.startswith(("crash_", "intent_")):
             self.assertIn(result.returncode, {91, 92, 93}, result.stderr.decode())
         else:
             self.assertEqual(result.returncode, 0, result.stderr.decode())
@@ -504,6 +571,44 @@ class TransactionTests(unittest.TestCase):
         self.adapter.stop(active, time.monotonic() + 5)
         self.assertEqual(self.invoke(mode="recover")["state"], "COMMITTED")
         self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
+
+    def test_accepted_recovery_readiness_is_capped_at_90_seconds(self):
+        self.assertEqual(self.invoke()["state"], "COMMITTED")
+        active = release.read_record(self.root / "active.json")
+        self.adapter.stop(active, time.monotonic() + 5)
+        allowances = []
+        def blocked_hold(record, token, deadline, manifest=None):
+            allowances.append(deadline - time.monotonic())
+            raise release.ReleaseError("deadline")
+        with patch.object(self.adapter, "hold", blocked_hold):
+            result = release.Controller(self.root, self.adapter).recover()
+        self.assertEqual(result["error_code"], "active_recovery_failed")
+        self.assertEqual(len(allowances), 1)
+        self.assertLessEqual(allowances[0], release.READINESS)
+        self.assertFalse(result["cleanup_complete"])
+
+    def test_rejected_queued_release_id_is_immutable_and_exactly_idempotent(self):
+        with patch.object(release, "schedule"):
+            self.assertEqual(release.submit(self.root, self.adapter, release.canonical_json(self.env))["state"], "QUEUED")
+        self.invoke(mode="queued_expired")  # Actual worker, clock advanced past work allowance.
+        query = {"schema_version": 1, "kind": "release", "id": self.env["release_id"]}
+        rejected = release.query_status(self.root, self.adapter, query)
+        self.assertEqual(rejected["state"], "REJECTED")
+        self.assertEqual(rejected["error_code"], "insufficient_transaction_budget")
+        self.assertFalse((self.root / "pending-deploy.json").exists())
+        with patch.object(release, "schedule") as schedule:
+            self.assertEqual(release.submit(self.root, self.adapter, release.canonical_json(self.env)), rejected)
+            self.assertEqual(release.Controller(self.root, self.adapter).deploy(release.canonical_json(self.env)), rejected)
+            for change in ({"deadline": self.env["deadline"] + 1}, {"runtime_source_sha": "f" * 40}):
+                with self.assertRaisesRegex(release.ReleaseError, "mutated_duplicate"):
+                    release.submit(self.root, self.adapter, release.canonical_json(self.env | change))
+            schedule.assert_not_called()
+        self.assertFalse((self.root / "pending-deploy.json").exists())
+        # Crash after writing REJECTED but before deleting the durable inbox.
+        release.write_json(self.root / "pending-deploy.json", self.env)
+        self.invoke(mode="queued_expired")
+        self.assertFalse((self.root / "pending-deploy.json").exists())
+        self.assertEqual(release.query_status(self.root, self.adapter, query), rejected)
 
     def test_ordinary_submit_rejects_missing_predecessor_before_scheduling(self):
         (self.root / "active.json").unlink()
@@ -608,6 +713,37 @@ def crash_case(fault):
         self.invoke(mode="recover")
         self.assertEqual(count, len((self.root / "calls.jsonl").read_text().splitlines()))
     return test
+
+
+def active_recovery_crash_case(fault):
+    def test(self):
+        self.assertEqual(self.invoke()["state"], "COMMITTED")
+        active = release.read_record(self.root / "active.json")
+        self.adapter.stop(active, time.monotonic() + 5)
+        # A restarted process is not proof the public upstream/smoke/resume ran.
+        release.write_json(self.root / "edge.json", {"port": self.previous["port"]})
+        self.invoke(fault, mode="recover")
+        process = self.adapter.inspect(active, time.monotonic() + 2)
+        self.assertTrue(process["State"]["Running"])
+        self.assertFalse(release.Controller(self.root, self.adapter).status()["cleanup_complete"])
+        with self.assertRaisesRegex(release.ReleaseError, "recovery_pending"):
+            release.Controller(self.root, self.adapter).existing(self.env | {"release_id": "next", "sequence": 2})
+        result = self.invoke(mode="recover")
+        self.assertEqual(result["state"], "COMMITTED")
+        self.assertTrue(result["cleanup_complete"])
+        self.assertIsNone(result["error_code"])
+        state = self.health()
+        self.assertEqual(state["runtime_sha"], active["runtime_source_sha"])
+        self.assertEqual(state["archive_sha256"], active["archive_sha256"])
+        self.assertIsNone(state["hold_token"])
+        self.source.next_generation()
+        eventually(lambda: (self.health() or {}).get("corpus_id") == self.source.manifest["corpus_id"])
+        self.assertFalse(self.adapter.inspect(self.previous, time.monotonic() + 1)["State"]["Running"])
+    return test
+
+
+for _fault in ("kill_active_after_start", "kill_active_after_smoke", "kill_active_before_resume"):
+    setattr(TransactionTests, "test_" + _fault, active_recovery_crash_case(_fault))
 
 
 for _fault in ("crash_RECEIVED", "crash_VERIFIED", "crash_PREPARED", "crash_READY", "crash_SWITCHED",

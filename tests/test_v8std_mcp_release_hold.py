@@ -23,6 +23,35 @@ def eventually(check, timeout=8):
 
 
 class HoldTests(unittest.TestCase):
+    def test_same_hold_reacknowledges_after_transient_control_read_failure(self):
+        for selected in (False, True):
+            with self.subTest(selected=selected), tempfile.TemporaryDirectory() as directory:
+                source = Source()
+                store = SnapshotStore(source.url, Path(directory) / "cache")
+                control = Path(directory) / "control.json"
+                command = {"schema_version": 1, "token": "a" * 32, "mode": "hold", "manifest": source.manifest}
+                control.write_text(json.dumps(command))
+                coordinator = SnapshotCoordinator(store, build, release_control=control)
+                coordinator._delay = lambda failures: .15  # Production backoff is not changed.
+                coordinator.start()
+                try:
+                    eventually(lambda: coordinator.status()["hold_token"] == command["token"])
+                    if not selected:
+                        command.update(token="b" * 32, manifest=None)
+                        control.write_text(json.dumps(command))
+                        eventually(lambda: coordinator.status()["hold_token"] == command["token"])
+                    old = coordinator.current()
+                    control.unlink()  # Actual transient unreadable command, not a forged ack.
+                    eventually(lambda: coordinator.status()["hold_token"] is None)
+                    self.assertTrue(coordinator.status()["ready"])
+                    control.write_text(json.dumps(command))
+                    eventually(lambda: coordinator.status()["hold_token"] == command["token"], timeout=2)
+                    self.assertEqual(coordinator.status()["release_control_token"], command["token"])
+                    self.assertEqual(coordinator.current().corpus_id, old.corpus_id)
+                finally:
+                    coordinator.close()
+                    source.close()
+
     def test_hold_selects_delivery_identity_even_when_corpus_is_equal(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Source()
