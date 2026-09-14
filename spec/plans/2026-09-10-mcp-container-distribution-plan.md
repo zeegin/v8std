@@ -540,7 +540,10 @@ review; do not mark the live migration complete from these fixtures:
 `spec/README.md`, repo skill references, architecture loader/policy tests,
 `spec/operations/mcp-container-verification.md`, public installation docs and
 Catalog release metadata/harness under `deploy/docker-catalog/`,
-`scripts/check_mcp_container.py`, `tests/test_v8std_mcp_distribution.py`.
+`scripts/check_mcp_container.py`, `tests/test_v8std_mcp_distribution.py`;
+existing monitoring integration in `scripts/v8std_mcp_monitoring.py`,
+`scripts/v8std_mcp_usage.logrotate`, `tests/test_v8std_mcp_monitoring.py`,
+release launch/host templates and their focused integration tests.
 
 **Consumes:** producer, image harness and typed release controller CLIs.
 Publisher first places and externally verifies immutable corpus, then emits
@@ -571,6 +574,18 @@ Pages manifest. Every runtime deployment references published exact digest.
   image-only scope without claiming Docker Catalog acceptance. Preserve the
   `longLived` source declaration and distinguish local test-catalog diagnostics
   from the actual Docker-published catalog; no upstream PR is a release prerequisite.
+- [ ] **VERIFY preserved monitoring:** First demonstrate the migration regression:
+  the existing timer reads the legacy unit and flat usage log, while the new
+  container emits no usage file. Preserve the existing public projection and
+  historical log readers, feed it actual accepted-runtime state and new tool
+  events, and verify rollback/restart/rotation without stale status or lost
+  history. Keep logs private, the existing unprivileged monitor and non-root
+  runtime; grant neither Docker-group membership nor a Docker socket to them.
+  Exercise the real launcher/logger/aggregator path, including failed or missing
+  status, rather than accepting a running controller as a healthy MCP runtime.
+  This implements the approved preservation of monitoring, not the separately
+  deferred dashboard/events-schema/OpenMetrics redesign. Any necessary public
+  schema or trust-boundary change must return to design before implementation.
 - [ ] **Final gates:** Run semantic impact on actual paths, CLI `impact`,
   `validate --merge-ready`, all applicable fitness; strict build, then full suite;
   container smoke and shared-host mixed load on disposable local stack, review
