@@ -16,7 +16,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from unittest.mock import patch
 from tests.test_v8std_mcp_snapshots import Source
 from tests.test_v8std_mcp_release_hold import eventually
-from tests.mcp_release_fixture import ProcessAdapter
+from tests.mcp_release_fixture import ProcessAdapter, BootstrapAdapter, bootstrap_environment, prepare_legacy, LEGACY_SHA
 from tests import mcp_snapshot_fixtures as fixture
 import v8std_mcp_release as release
 
@@ -487,6 +487,80 @@ def port():
         return sock.getsockname()[1]
 
 
+def bootstrap_window(request):
+    now = int(time.time())
+    return {"schema_version": 1, "start_utc": now - 60, "end_utc": now + 7000,
+            "return_reserve_seconds": 1800, "envelope_sha256": release.digest(release.canonical_json(request)),
+            "mode": "stop-start", "legacy_unit": "v8std-mcp.service",
+            "legacy_source_sha": "b7bef11e145a188b30e7a7b17df2be4cb1acbd0c",
+            "backup_manifest_sha256": "d" * 64,
+            "capacity": {"disk_bytes": 1, "available_memory_bytes": 671088640,
+                         "file_descriptors": 4096, "network_evidence": "e" * 64}}
+
+
+class BootstrapBoundaryTests(unittest.TestCase):
+    def test_guard_refuses_stale_manager_configuration(self):
+        with tempfile.TemporaryDirectory() as temp:
+            adapter = release.HostAdapter(Path(temp), {})
+            def run(argv, deadline):
+                if argv[1] == "is-enabled":
+                    return b"enabled\n"
+                if argv[1] == "is-active":
+                    return b"active\n"
+                return b"NeedDaemonReload=yes\nDropInPaths=\nLoadState=loaded\n"
+            def read(path):
+                return {"10-release-guard.conf": release.LEGACY_GUARD,
+                        "v8std-bootstrap-recover.service": release.BOOTSTRAP_SERVICE,
+                        "v8std-bootstrap-recover.timer": release.BOOTSTRAP_TIMER}[path.name].encode()
+            with patch.object(release, "trusted_path"), patch.object(release, "read_file", read), patch.object(release, "run", run):
+                with self.assertRaisesRegex(release.ReleaseError, "bootstrap_guard_loaded"):
+                    adapter.arm_bootstrap_guard(time.monotonic() + 2)
+
+    def test_installed_boot_guard_templates_and_ci_exclusion(self):
+        for name, expected in (("legacy-release-guard.conf", release.LEGACY_GUARD),
+                               ("v8std-bootstrap-recover.service", release.BOOTSTRAP_SERVICE),
+                               ("v8std-bootstrap-recover.timer", release.BOOTSTRAP_TIMER)):
+            self.assertEqual((ROOT / "deploy/container" / name).read_text(), expected)
+        self.assertNotIn("Before=v8std-mcp.service", release.BOOTSTRAP_SERVICE)
+        self.assertNotIn("ExecStart=", release.LEGACY_GUARD)  # Original legacy command preserved.
+        for command in ("bootstrap", "bootstrap-status", "bootstrap-recover", "_bootstrap", "_legacy-allowed"):
+            result = subprocess.run([sys.executable, "-I", str(ROOT / "deploy/container/release-entry.py")],
+                env={"SSH_ORIGINAL_COMMAND": command}, capture_output=True, timeout=2)
+            self.assertNotEqual(result.returncode, 0)
+
+    def test_window_exact_identity_time_and_fixed_targets(self):
+        request = envelope()
+        window = bootstrap_window(request)
+        self.assertEqual(release.validate_bootstrap_window(window, request), window)
+        for change in ({"start_utc": int(time.time()) + 1}, {"end_utc": int(time.time()) + 1800},
+                       {"end_utc": window["start_utc"] + 7201}, {"return_reserve_seconds": 1799},
+                       {"envelope_sha256": "f" * 64}, {"legacy_unit": "sshd.service"},
+                       {"backup_path": "/etc"}, {"mode": "automatic"}, {"start_utc": True}):
+            with self.subTest(change=change), self.assertRaises(release.ReleaseError):
+                release.validate_bootstrap_window(window | change, request)
+        # Recovery is an owed duty, not new window authority.
+        expired = window | {"start_utc": 1, "end_utc": 7201}
+        self.assertEqual(release.validate_bootstrap_window(expired, request, recovery=True), expired)
+
+    def test_boot_guard_denies_pending_and_accepted_legacy_start(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.assertTrue(release.legacy_start_allowed(root))
+            journal = {"kind": "bootstrap", "envelope": envelope(), "state": "VERIFIED",
+                       "intent": "stop_legacy", "legacy_start_allowed": False}
+            release.write_json(root / "releases/release-1.json", journal)
+            self.assertFalse(release.legacy_start_allowed(root))
+            journal["legacy_start_allowed"] = True
+            release.write_json(root / "releases/release-1.json", journal)
+            self.assertTrue(release.legacy_start_allowed(root))
+            journal["state"] = "COMMITTED"
+            release.write_json(root / "releases/release-1.json", journal)
+            self.assertFalse(release.legacy_start_allowed(root))
+            (root / "releases/release-1.json").write_bytes(b"broken")
+            with self.assertRaises(release.ReleaseError):
+                release.legacy_start_allowed(root)
+
+
 class TransactionTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -749,6 +823,382 @@ for _fault in ("kill_active_after_start", "kill_active_after_smoke", "kill_activ
 for _fault in ("crash_RECEIVED", "crash_VERIFIED", "crash_PREPARED", "crash_READY", "crash_SWITCHED",
                "crash_after_start", "intent_pin_predecessor", "intent_pull_candidate", "intent_start_candidate"):
     setattr(TransactionTests, "test_recovery_" + _fault, crash_case(_fault))
+
+
+class BootstrapProcessTests(unittest.TestCase):
+    install_snapshot = TransactionTests.install_snapshot
+
+    def health(self):
+        # This independent observer includes spawning an HTTP worker. The former
+        # 300ms harness allowance is not a product readiness requirement and is
+        # below process startup jitter on the one-CPU Linux fixture. Stay below
+        # the controller's existing3s read cap; transaction/ready budgets do not
+        # change. Real identity/smoke gates are still executed by the controller.
+        try:
+            return json.loads(release.http(self.policy["public_url"] + "/healthz", time.monotonic() + 2))
+        except release.ReleaseError as error:
+            self.last_probe_error = error.code
+            return None
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="v8std-bootstrap-")
+        self.root = Path(self.temp.name)
+        self.addCleanup(self.temp.cleanup)
+        self.source = Source()
+        self.addCleanup(self.source.close)
+        self.environment = bootstrap_environment(self.root)
+        self.addCleanup(self.environment.close)
+        self.addCleanup(self.stop_owned)
+        config = {"site_url": self.source.url, "refresh_seconds": 1, "max_snippet_chars": 4000,
+                  "memory_bytes": 536870912, "cpus": 1}
+        key = release.digest(release.canonical_json(config))
+        self.policy = {"runtime_enabled": False, "configs": {key: config}, "ports": [port(), port()],
+                       "public_url": f"http://127.0.0.1:{port()}"}
+        self.env = envelope() | {"configuration_digest": key, "corpus_id": self.source.manifest["corpus_id"],
+                                 "archive_sha256": self.source.manifest["archive"]["sha256"]}
+        self.window = bootstrap_window(self.env)
+        release.write_json(self.root / "legacy-port.json", {"port": port()})
+        self.files = fixture.corpus_files()
+        self.window["backup_manifest_sha256"] = prepare_legacy(self.root, self.files)
+        for filename, value in (("policy.json", self.policy), ("envelope.json", self.env), ("window.json", self.window)):
+            release.write_json(self.root / filename, value)
+        self.install_snapshot()
+        self.adapter = BootstrapAdapter(self.root, self.policy)
+        self.adapter.legacy_restore(self.window, time.monotonic() + 5)
+        self.adapter.legacy_start(time.monotonic() + 5)
+        (self.root / "guard-paused").touch()
+        with (self.root / "edge.log").open("wb") as log:
+            self.edge = subprocess.Popen([sys.executable, "-m", "tests.mcp_release_fixture", "edge",
+                str(self.root), self.policy["public_url"].rsplit(":", 1)[1]], cwd=ROOT, stdin=subprocess.DEVNULL,
+                stdout=log, stderr=log)
+        try:
+            eventually(self.health)
+        except AssertionError:
+            self.fail((self.root / "legacy.log").read_text())
+        self.static_errors = []
+        self.static_samples = 0
+        self.static_stop = threading.Event()
+        def sample():
+            while not self.static_stop.is_set():
+                try:
+                    self.assert_static()
+                    self.static_samples += 1
+                except Exception as error:
+                    self.static_errors.append(str(error))
+                self.static_stop.wait(.1)
+        self.static_thread = threading.Thread(target=sample)
+        self.static_thread.start()
+
+    def stop_owned(self):
+        if hasattr(self, "static_thread"):
+            self.static_stop.set()
+            self.static_thread.join(3)
+        guard = self.root / "guard.json"
+        if guard.exists():
+            pid = release.read_record(guard)["pid"]
+            try:
+                os.kill(pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            try:
+                os.waitpid(pid, 0)
+            except ChildProcessError:
+                pass
+        for path in (self.root / "processes").glob("*.json"):
+            record = release.read_record(path)["record"]
+            self.adapter.stop(record, time.monotonic() + 5)
+        for child in getattr(self, "adapter", ProcessAdapter(self.root, {})).children:
+            child.poll()
+        if hasattr(self, "edge"):
+            self.edge.terminate()
+            self.edge.wait(5)
+
+    def invoke(self, fault="", mode="bootstrap"):
+        # Crash survivors (including multiprocessing's resource tracker) must
+        # not keep a PIPE's EOF open after the controller itself has exited.
+        with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as error:
+            result = subprocess.run([sys.executable, "-m", "tests.mcp_release_fixture", mode, str(self.root), fault],
+                cwd=ROOT, stdout=output, stderr=error, timeout=25)
+            output.seek(0)
+            error.seek(0)
+            result.stdout, result.stderr = output.read(), error.read()
+        if fault.startswith("kill_"):
+            self.assertEqual(result.returncode, -signal.SIGKILL, result.stderr.decode())
+            outcome = release.Controller(self.root, self.adapter).status()
+        else:
+            self.assertEqual(result.returncode, 0, result.stderr.decode())
+            outcome = json.loads(result.stdout)
+        self.assertEqual(self.static_errors, [])
+        self.assertGreater(self.static_samples, 0)
+        if self.window["mode"] == "stop-start":
+            observations = [json.loads(line) for line in (self.root / "observations.jsonl").read_text().splitlines()]
+            self.assertTrue(observations)
+            self.assertLessEqual(max(len(x["live_runtimes"]) for x in observations), 1)
+        return outcome
+
+    def assert_legacy(self):
+        self.adapter.legacy_check(self.window, time.monotonic() + 8, public=True)
+        health = self.health()
+        self.assertEqual(health["sha256"], release.digest(self.files["pages.jsonl"]))
+        self.assertEqual(health["vectors"]["sha256"], release.digest(self.files["search-vectors.jsonl"]))
+        observed = release.read_record(self.root / "legacy-observed.json")
+        self.assertEqual(observed["source_sha"], LEGACY_SHA)
+        self.assertEqual(observed["server_sha256"], "be1e73a27ad2c2aea08a516ffeede6286feb92a70752e964a13bd8567139d713")
+        self.assertEqual(observed["refresh_seconds"], 3600)
+        self.assertEqual(observed["index_url"], "https://v8std.ru/ai/pages.jsonl")
+        self.assertFalse((self.root / "legacy-network.jsonl").exists())
+        live_candidates = [p for p in (self.root / "processes").glob("*.json") if p.stem != "legacy"
+            and self.adapter.inspect(release.read_record(p)["record"], time.monotonic() + 1)["State"]["Running"]]
+        self.assertEqual(live_candidates, [])
+        self.assert_static()
+
+    def assert_static(self):
+        import http.client
+        client = http.client.HTTPConnection("127.0.0.1", int(self.policy["public_url"].rsplit(":", 1)[1]), timeout=2)
+        try:
+            path = "/indexes/v1/" + self.env["archive_sha256"] + "/snapshot.tar.gz"
+            for method in ("GET", "HEAD"):
+                client.request(method, path)
+                response = client.getresponse()
+                data = response.read()
+                self.assertEqual(response.status, 200)
+                self.assertEqual(int(response.getheader("Content-Length")), len(self.source.archive))
+                if method == "GET":
+                    self.assertEqual(release.digest(data), self.env["archive_sha256"])
+        finally:
+            client.close()
+
+    def test_success_only_after_smoke_without_autoactivation(self):
+        result = self.invoke()
+        self.assertEqual(result["state"], "COMMITTED", result)
+        self.assertTrue(result["cleanup_complete"], result)
+        self.assertFalse(self.policy["runtime_enabled"])
+        self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
+        self.assertFalse(release.legacy_start_allowed(self.root))
+        self.assertFalse(self.adapter.inspect(self.adapter.legacy_record(), time.monotonic() + 1)["State"]["Running"])
+        self.assert_static()
+
+    def test_boundary_rejections_preserve_original_endpoint(self):
+        for change in ({"end_utc": int(time.time()) - 1}, {"envelope_sha256": "f" * 64}):
+            release.write_json(self.root / "window.json", self.window | change)
+            self.assertEqual(self.invoke()["state"], "REJECTED")
+            self.assertFalse((self.root / "releases/release-1.json").exists())
+            self.assert_legacy()
+        (self.root / "window.json").unlink()
+        self.assertEqual(self.invoke()["state"], "REJECTED")
+        release.write_json(self.root / "window.json", self.window)
+        release.write_json(self.root / "active.json", {"existing": True})
+        self.assertEqual(self.invoke()["error_code"], "bootstrap_already_accepted")
+        self.assert_legacy()
+
+    def test_capacity_rejection_no_stop(self):
+        result = self.invoke("capacity")
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertFalse((self.root / "guard.json").exists())
+        self.assert_legacy()
+
+    def test_complete_backup_paths_and_directory_permissions(self):
+        self.assertEqual((self.root / "restored-app/scripts").stat().st_mode & 0o777, 0o755)
+        release.atomic(self.root / "restored-app/scripts/unlisted.py", b"untrusted code")
+        result = self.invoke()
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertEqual(result["error_code"], "legacy_unlisted")
+        self.assertFalse((self.root / "guard.json").exists())
+
+    def test_accept_persistence_failure_rolls_back(self):
+        result = self.invoke("accept_persist_failure")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assertFalse((self.root / "active.json").exists())
+        self.assert_legacy()
+
+    def test_active_persistence_failure_preserves_committed(self):
+        result = self.invoke("active_persist_failure")
+        self.assertEqual(result["state"], "COMMITTED", result)
+        self.assertFalse(result["cleanup_complete"])
+        self.assertFalse((self.root / "active.json").exists())
+        self.assertFalse(release.legacy_start_allowed(self.root))
+        result = self.invoke(mode="bootstrap-recover")
+        self.assertTrue(result["cleanup_complete"], result)
+        self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
+
+    def test_reboot_fence_prevents_enabled_legacy_racing_accepted_recovery(self):
+        self.assertEqual(self.invoke()["state"], "COMMITTED")
+        active = release.read_record(self.root / "active.json")
+        self.adapter.stop(active, time.monotonic() + 5)
+        self.assertEqual(self.invoke(mode="bootstrap-legacy-start")["error_code"], "legacy_fenced")
+        result = self.invoke(mode="bootstrap-recover")
+        self.assertTrue(result["cleanup_complete"], result)
+        self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
+        self.assertFalse(self.adapter.inspect(self.adapter.legacy_record(), time.monotonic() + 1)["State"]["Running"])
+
+    def test_rollback_failure_retains_owed_recovery_and_usage_logs(self):
+        usage = self.root / "restored-cache/tool-usage.jsonl"
+        usage.write_bytes(b"test-private-usage-before\n")
+        result = self.invoke("public_dead,legacy_restore")
+        self.assertEqual(result["state"], "RECOVERY_REQUIRED", result)
+        self.assertFalse(result["cleanup_complete"])
+        self.assert_static()
+        with usage.open("ab") as stream:
+            stream.write(b"test-private-usage-after\n")
+        result = self.invoke(mode="bootstrap-recover")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assertEqual(usage.read_bytes(), b"test-private-usage-before\ntest-private-usage-after\n")
+        self.assertNotIn("test-private", json.dumps(result))
+        self.assert_legacy()
+
+    def test_retry_rollback_closes_boot_fence_before_rewriting_files(self):
+        self.assertEqual(self.invoke("public_dead,legacy_public")["state"], "RECOVERY_REQUIRED")
+        self.assertTrue(release.legacy_start_allowed(self.root))
+        self.invoke("kill_restore_legacy", mode="bootstrap-recover")
+        self.assertFalse(release.legacy_start_allowed(self.root))
+        self.assertEqual(self.invoke(mode="bootstrap-recover")["state"], "ROLLED_BACK")
+        self.assert_legacy()
+
+    def test_kill_during_file_restore_retries_without_unlisted_temp_blocker(self):
+        self.invoke("kill_during_restore,public_dead")
+        self.assertFalse(release.legacy_start_allowed(self.root))
+        self.assertEqual(self.invoke(mode="bootstrap-recover")["state"], "ROLLED_BACK")
+        self.assert_legacy()
+
+    def test_queued_caller_loss_and_expiry_have_no_stop_authority(self):
+        with patch.object(release, "schedule", side_effect=release.ReleaseError("command_failed")):
+            with self.assertRaises(release.ReleaseError):
+                release.BootstrapController(self.root, self.adapter).submit(release.canonical_json(self.env))
+        self.assertEqual(release.Controller(self.root, self.adapter).status()["state"], "RECEIVED")
+        release.write_json(self.root / "window.json", self.window | {"start_utc": 1, "end_utc": 7201})
+        self.assertEqual(self.invoke(mode="bootstrap-recover")["state"], "FAILED")
+        self.assertFalse((self.root / "guard.json").exists())
+        self.assert_legacy()
+
+    def test_backup_hash_failure_has_no_stop(self):
+        (self.root / "legacy/cache/pages.jsonl").write_bytes(b"changed backup")
+        result = self.invoke()
+        self.assertEqual(result["error_code"], "backup_hash", result)
+        self.assertEqual(result["state"], "FAILED")
+        self.assertFalse((self.root / "guard.json").exists())
+        self.assertEqual(self.health()["sha256"], release.digest(self.files["pages.jsonl"]))
+
+    def test_backup_rejects_traversal_and_external_link_before_restore(self):
+        path = self.root / "legacy/manifest.json"
+        original = release.read_record(path)
+        for attack in ("path", "link"):
+            bad = json.loads(json.dumps(original))
+            if attack == "path":
+                bad["app"]["../outside"] = original["app"]["scripts/v8std_mcp_server.py"]
+                bad["directories"]["app"][".."] = original["directories"]["app"]["."]
+            else:
+                bad["app"]["venv/bin/python"] = {"link": "/etc/shadow"}
+            release.write_json(path, bad)
+            window = self.window | {"backup_manifest_sha256": release.digest(path.read_bytes())}
+            with self.assertRaisesRegex(release.ReleaseError, "backup_path|backup_link"):
+                self.adapter.bootstrap_backup(window, time.monotonic() + 3)
+        self.assertFalse((self.root / "outside").exists())
+
+    def test_readiness_cancels_actual_worker_and_restores_legacy(self):
+        result = self.invoke("ready")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assert_legacy()
+
+    def test_post_stop_capacity_failure_restores_legacy(self):
+        result = self.invoke("capacity_after_stop")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assert_legacy()
+
+    def test_recovery_readiness_is_capped_and_durable(self):
+        self.assertEqual(self.invoke()["state"], "COMMITTED")
+        active = release.read_record(self.root / "active.json")
+        self.adapter.stop(active, time.monotonic() + 5)
+        allowances = []
+        def blocked(record, token, deadline, manifest=None):
+            allowances.append(deadline - time.monotonic())
+            raise release.ReleaseError("deadline")
+        with patch.object(self.adapter, "hold", blocked):
+            result = release.Controller(self.root, self.adapter).recover()
+        self.assertLessEqual(allowances[0], 90)
+        self.assertEqual(result["state"], "COMMITTED")
+        self.assertFalse(result["cleanup_complete"])
+        self.assertFalse(release.legacy_start_allowed(self.root))
+        self.assertTrue(self.invoke(mode="bootstrap-recover")["cleanup_complete"])
+
+    def test_overlap_keeps_old_until_public_smoke(self):
+        self.window["mode"] = "overlap"
+        release.write_json(self.root / "window.json", self.window)
+        self.assertEqual(self.invoke()["state"], "COMMITTED")
+        operations = [json.loads(line)["operation"] for line in (self.root / "calls.jsonl").read_text().splitlines()]
+        self.assertGreater(operations.index("legacy_stop"), operations.index("public"))
+
+    def test_recovery_is_durable_after_accepted_restart_then_kill(self):
+        self.assertEqual(self.invoke()["state"], "COMMITTED")
+        active = release.read_record(self.root / "active.json")
+        self.adapter.stop(active, time.monotonic() + 5)
+        self.invoke("kill_after_candidate_start", mode="bootstrap-recover")
+        self.assertFalse(release.Controller(self.root, self.adapter).status()["cleanup_complete"])
+        result = self.invoke(mode="bootstrap-recover")
+        self.assertTrue(result["cleanup_complete"], result)
+        self.assertEqual(self.health()["runtime_sha"], active["runtime_source_sha"])
+        self.assertIsNone(self.health()["hold_token"])
+
+    def test_caller_loss_guard_recovers_after_window_expiry(self):
+        self.invoke("kill_after_legacy_stop")
+        self.assertFalse(self.health())
+        self.assert_static()
+        release.write_json(self.root / "window.json", self.window | {"start_utc": 1, "end_utc": 7201})
+        # The durable attempt, not newly revoked window input, drives recovery.
+        (self.root / "guard-paused").unlink()
+        eventually(lambda: release.Controller(self.root, self.adapter).status().get("state") == "ROLLED_BACK", timeout=12)
+        self.assert_legacy()
+
+    def test_actual_old_full_cache_restart_default_urls_without_network(self):
+        import shutil
+        self.adapter.legacy_stop(time.monotonic() + 5)
+        # Generated cache is not tracked in Git. Its bytes become the protected
+        # fixture's hash-checked input; only executable legacy code uses history.
+        paths = {name: ROOT / "docs" / ("ai" if name.endswith(".jsonl") else "") / name for name in release.LEGACY_CACHE}
+        if not all(path.is_file() for path in paths.values()):
+            self.skipTest("generated full cache unavailable; tiny-cache regression remains mandatory")
+        self.files = {name: path.read_bytes() for name, path in paths.items()}
+        self.window["backup_manifest_sha256"] = prepare_legacy(self.root, self.files)
+        release.write_json(self.root / "window.json", self.window)
+        # Keep the negative control permanently: a preserved stale timestamp
+        # attempts remote HTTP even though fallback eventually serves the cache.
+        for name in release.LEGACY_CACHE:
+            shutil.copy2(self.root / "legacy/cache" / name, self.root / "restored-cache" / name)
+        self.adapter.legacy_start(time.monotonic() + 5)
+        eventually(lambda: (self.health() or {}).get("row_count") == len(self.files["pages.jsonl"].splitlines()), timeout=15)
+        self.assertTrue((self.root / "legacy-network.jsonl").exists())
+        self.adapter.legacy_stop(time.monotonic() + 5)
+        (self.root / "legacy-network.jsonl").unlink()
+        self.adapter.legacy_restore(self.window, time.monotonic() + 10)
+        self.adapter.legacy_start(time.monotonic() + 5)
+        eventually(lambda: (self.health() or {}).get("row_count") == len(self.files["pages.jsonl"].splitlines()), timeout=15)
+        self.assert_legacy()
+
+
+def bootstrap_crash_case(fault, accepted=False):
+    def test(self):
+        self.invoke(fault)
+        self.assert_static()
+        result = self.invoke(mode="bootstrap-recover")
+        self.assertEqual(result["state"], "COMMITTED" if accepted else "ROLLED_BACK", result)
+        self.assertTrue(result["cleanup_complete"], result)
+        if accepted:
+            self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
+            self.assertFalse(release.legacy_start_allowed(self.root))
+        else:
+            self.assert_legacy()
+        before = (self.root / "calls.jsonl").read_bytes()
+        self.assertEqual(self.invoke(), result)
+        self.assertEqual((self.root / "calls.jsonl").read_bytes(), before)
+        release.write_json(self.root / "envelope.json", self.env | {"trigger_sha": "f" * 40})
+        self.assertEqual(self.invoke()["error_code"], "mutated_duplicate")
+    return test
+
+
+for _fault in ("kill_guard_armed", "kill_stop_legacy", "kill_after_legacy_stop", "kill_start_candidate",
+               "kill_after_candidate_start", "kill_PREPARED", "kill_READY", "kill_after_switch", "kill_SWITCHED"):
+    setattr(BootstrapProcessTests, "test_" + _fault, bootstrap_crash_case(_fault))
+for _fault in ("kill_COMMITTED", "kill_after_active", "kill_resume_candidate"):
+    setattr(BootstrapProcessTests, "test_" + _fault, bootstrap_crash_case(_fault, accepted=True))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,10 @@
+[Unit]
+Description=Independent first-migration recovery guard
+
+[Timer]
+OnBootSec=5s
+OnUnitInactiveSec=15s
+Unit=v8std-bootstrap-recover.service
+
+[Install]
+WantedBy=timers.target

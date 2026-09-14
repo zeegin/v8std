@@ -1,7 +1,8 @@
 # Controlled initial activation of container delivery
 
-**Status (2026-09-15):** ordinary controller implemented for scoped review;
-first-bootstrap implementation and native rehearsal are still pending.
+**Status (2026-09-15):** ordinary controller independently approved;
+operator first-bootstrap implementation is awaiting its separate scoped review.
+Native systemd/complete-backup rehearsal and live activation remain pending.
 Local disposable evidence is not a live installation, CI activation, published
 image proof, or target-host capacity guarantee. This runbook authorizes none of
 those operations. The current external scope remains image-only.
@@ -89,8 +90,8 @@ immutable artifacts and independent recovery guard before the window. Mint the
 preparation. Stop new attempts at least 30 minutes before the window ends;
 reserve more time if the measured legacy restoration needs it. Already-started
 recovery remains necessary after the window expires. `bootstrap`,
-`bootstrap-recover` and `bootstrap-status` are **not implemented in this slice**;
-the restricted SSH entry rejects them. Do not manufacture `active.json`.
+`bootstrap-recover` and `bootstrap-status` are operator-only; the restricted SSH
+entry rejects them. Do not manufacture `active.json`.
 
 Exercise initialized idle agents, normal POST tool calls, reconnects, shared NAT,
 snapshot refresh and concurrent archive downloads. Record the actual mix,
@@ -135,9 +136,121 @@ host. Full private evidence is in the Task5 handoff's
 Before migration, inventory and hash the entire saved code, dependency lock and
 installed venv/interpreter, unit/configuration and coherent data set; protect
 the backup off-host, restore it in disposable Linux, and measure return time.
-The ordinary controller does not restore this legacy Python deployment; that
-is the pending bootstrap slice. Do not stop the still-enabled legacy unit until
-that slice proves preaccept restoration and postaccept reboot ownership.
+The ordinary rollout never substitutes a legacy stop/start fallback. The separate
+bootstrap path restores the saved legacy deployment before acceptance. Do not
+stop the still-enabled legacy unit until scoped review and native rehearsal prove
+preaccept restoration and postaccept reboot ownership.
+
+## Operator first-bootstrap interface (future authorized window only)
+
+These are implementation interfaces, not authorization to install or run them on
+the current host. No window, host backup or target capacity has been approved by
+these local tests. Keep `enabled:true,runtime_enabled:false` after separately
+approved static installation; add only the reviewed configuration digest. The
+operator window has its own measured capacity record. Ordinary CI runtime deploy
+remains independently disabled after first success.
+
+The installed root-owned `/etc/v8std-release/bootstrap.json` is at most8192bytes,
+has no caller paths, and has exactly these fields:
+
+```json
+{"schema_version":1,"start_utc":0,"end_utc":0,"return_reserve_seconds":1800,"envelope_sha256":"<64 lowercase hex>","mode":"stop-start","legacy_unit":"v8std-mcp.service","legacy_source_sha":"<verified 40 hex>","backup_manifest_sha256":"<64 lowercase hex>","capacity":{"disk_bytes":1,"available_memory_bytes":1,"file_descriptors":4096,"network_evidence":"<64 lowercase hex>"}}
+```
+
+The placeholder values above deliberately do not authorize an attempt. UTC times
+are integer epoch seconds; duration must be <=7200s. Reserve >=1800s at the end,
+increased before the window if measured restoration needs more. `overlap` is
+preferred when measured to fit; `stop-start` is the first-migration-only exception.
+Memory threshold is at least candidate limit+128MiB, with real disk/FD/evidence
+checks. Stop/start precheck may count the legacy cgroup's MemoryCurrent as
+reclaimable; after stop it rechecks actual MemAvailable without that allowance.
+An inability to fit even one candidate restores legacy; it never changes limits.
+
+Before the window, verify/pull the exact published image and publish/verify the
+immutable corpus. Bootstrap rechecks authority/descriptors, requires the image
+already local and verifies the existing static archive; it does not pull/build.
+Mint the standard release envelope immediately before each bounded attempt and
+bind SHA256 of its **canonical JSON** (UTF-8, sorted keys, compact separators) in
+the root window record. Deadline stays <=300s, not the two-hour window; it must
+also precede the window's reserved return interval. A new attempt needs a new ID
+and sequence after the prior attempt has fully restored. Exact retries return
+the durable outcome, mutated retries reject. Root policy/window changes are
+separate operator actions; the command cannot install or update them.
+
+Protected backup layout is fixed at `/var/lib/v8std-release/legacy/`:
+
+- `manifest.json` (<=16MiB, <=20000 app entries), hash bound by the window;
+  exact keys `schema_version:1`, `app`, `cache`, `directories`, `unit`,
+  `upstream`, `interpreter_sha256`.
+- `app/<relative path>`: complete saved `/opt/v8std-mcp` source, rules, locks,
+  venv and configuration. Every regular entry has `sha256`, numeric `uid`, `gid`,
+  `mode` (no special permission bits). Symlink entries contain only `link`;
+  links stay within the fixed app root or point to `/usr/bin/python3.12`.
+  Backup symlinks themselves are not followed/stored; their descriptors are data.
+  Unknown live app files block restore, not broad deletion. Derived
+  `__pycache__` is excluded from live identity checks, not from backup hashing.
+- `cache/{pages.jsonl,search-vectors.jsonl,llms.txt,llms-full.txt}` and corresponding
+  hash/uid/gid/mode entries. `directories.app` and `directories.cache` enumerate
+  every parent (including `.`) with numeric uid/gid/mode; directory traversal
+  permissions are explicitly restored under UMask0077.
+- `unit` is the exact original `/etc/systemd/system/v8std-mcp.service` bytes;
+  `upstream` is the exact inventoried managed upstream include. Both descriptors
+  require root ownership and mode0600 or0644. Other nginx/TLS/monitoring units
+  are not rewritten. `interpreter_sha256` binds `/usr/bin/python3.12`; a changed
+  system interpreter fails closed and requires operator repair, not an automatic
+  write into `/usr/bin`.
+
+All backup files/parents must be root-owned, non-symlink and not group/world
+writable. Establish this from the complete native backup, not the three matching
+historical source hashes. Rehearse restore before granting the window. The
+controller streams/hash-checks/fsyncs temporary copies and restores original
+file owner/mode. A fixed private `.v8std-release-restore-v1` directory in each
+destination parent holds one deterministic temporary slot per target. It stays
+owned by the controller with mode0700; interrupted copies are retried there,
+not mistaken for unknown app code. Successful copies leave empty private
+directories; no broad cleanup is performed. Cache destination mtimes must be **fresh**: never `copy2` stale
+timestamps. This lets the unchanged legacy unit/default remote URLs and3600s
+refresh serve its four verified files without startup network fallback. It is
+an immediate bounded rollback guarantee, not an indefinite old-runtime hold.
+Changing `tool-usage.jsonl` and monitoring inputs are never copied or overwritten;
+monitoring-output preservation after container cutover is a separate Task6 gate.
+
+Install the reviewed `legacy-release-guard.conf` only as
+`/etc/systemd/system/v8std-mcp.service.d/10-release-guard.conf`, plus the exact
+`v8std-bootstrap-recover.service` and `.timer`. The drop-in preserves original
+ExecStart and existing Before=monitoring/multi-user ordering. Its privileged
+ExecCondition fails closed while a bootstrap is in flight or any container is
+accepted, even if active.json is missing. Recovery marks legacy start allowed
+only after the candidate is stopped and config/data/upstream are restored.
+The timer is required by legacy startup, runs at boot+5s and every15s after its
+service completes, independently of SSH. Recovery is not ordered Before=legacy:
+that would deadlock when it starts the original service. Validate this topology
+with native systemd, including enabled-legacy reboot and monitoring ordering.
+The guard checks exact root-owned unit/drop-in bytes, active/enabled timer and
+loaded non-stale manager state before legacy stop. No automatic installation,
+enablement, daemon reload of an unreviewed unit set, or fallback guard is supplied.
+
+After all external gates and explicit window authorization, the operator invokes
+the fixed installed module (never the restricted CI credential):
+
+```sh
+sudo -n /usr/bin/python3 -I /opt/v8std-release/scripts/v8std_mcp_release.py bootstrap < release-envelope.json
+sudo -n /usr/bin/python3 -I /opt/v8std-release/scripts/v8std_mcp_release.py bootstrap-status < /dev/null
+sudo -n /usr/bin/python3 -I /opt/v8std-release/scripts/v8std_mcp_release.py bootstrap-recover
+```
+
+The first command requires one compact JSON line + EOF, durably queues the
+attempt, then schedules the same detached Type=exec bounded host job. It does
+not wait on SSH stdin. Status also supports the exact release-ID query described
+below. Require expected identity, COMMITTED, cleanup_complete and live readiness;
+RECEIVED is not acceptance. A killed queued attempt fails without runtime effects.
+Before durable COMMITTED, recovery stops only the owned candidate, restores the
+exact legacy files/unit/upstream and verifies public old health hashes, search
+and all three Resource byte hashes. A failed restoration is RECOVERY_REQUIRED,
+never ROLLED_BACK. After public smoke and durable COMMITTED, active-pointer
+failure/reboot finishes acceptance and resume; it must not undo the accepted
+release. Keep the legacy boot fence and recovery installed thereafter. No command
+automatically enables ordinary runtime deployment or removes legacy artifacts.
 
 ## Reviewed host installation boundary (future operator action)
 
@@ -152,7 +265,7 @@ operator authorization. No release input can replace them.
 | `/etc/v8std-release/policy.json` | root0600, parent root0755, installed from the disabled example and explicitly configured; no symlinks/writable parents |
 | `/var/lib/v8std-release` | root0700; journals, durable inbox, receipts, trusted manifests, references, pins, slots and verifier configuration; never writable by CI |
 | `/srv/v8std-indexes` and `/srv/v8std-indexes/v1` | precreate root0755 for nginx traversal; publisher alone writes, nginx only reads; objects directories0755/files0644; staging0700 |
-| `/etc/nginx/v8std-release/upstream.conf` | root-owned managed include, initially created only by the approved bootstrap; not an arbitrary caller path |
+| `/etc/nginx/v8std-release/upstream.conf` | root-owned managed include, installed pointing at the verified legacy endpoint during separately approved host setup, then hash-bound in the backup before bootstrap; not an arbitrary caller path |
 | systemd recovery units / sudoers | exact reviewed files from `deploy/container/`; validate locally on native Linux before enabling |
 
 The installed controller runs `/usr/bin/python3 -I`; it adds only its own

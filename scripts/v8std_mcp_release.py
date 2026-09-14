@@ -41,6 +41,24 @@ REF = "refs/heads/main"
 ROOT = Path("/var/lib/v8std-release")
 POLICY = Path("/etc/v8std-release/policy.json")
 INSTALL = Path("/opt/v8std-release/scripts/v8std_mcp_release.py")
+LEGACY_UNIT = "v8std-mcp.service"
+LEGACY_APP = Path("/opt/v8std-mcp")
+LEGACY_DATA = Path("/var/lib/v8std-mcp")
+LEGACY_CONFIG = Path("/etc/systemd/system/v8std-mcp.service")
+LEGACY_PYTHON = Path("/usr/bin/python3.12")
+LEGACY_CACHE = {"pages.jsonl", "search-vectors.jsonl", "llms.txt", "llms-full.txt"}
+RESTORE_STAGE = ".v8std-release-restore-v1"
+BOOTSTRAP_WINDOW = Path("/etc/v8std-release/bootstrap.json")
+LEGACY_GUARD = ("[Unit]\nRequires=v8std-bootstrap-recover.timer\nAfter=v8std-bootstrap-recover.timer\n"
+    "\n[Service]\nExecCondition=+/usr/bin/python3 -I /opt/v8std-release/scripts/v8std_mcp_release.py _legacy-allowed\n")
+BOOTSTRAP_SERVICE = ("[Unit]\nDescription=Recover operator v8std first migration independently of SSH\n"
+    "After=docker.service nginx.service network-online.target\nWants=network-online.target\n\n"
+    "[Service]\nType=exec\nExecStart=/usr/bin/python3 -I /opt/v8std-release/scripts/v8std_mcp_release.py bootstrap-recover\n"
+    "RuntimeMaxSec=300s\nTimeoutStopSec=5s\nKillMode=control-group\nUMask=0077\nLimitNOFILE=4096\n"
+    "PrivateTmp=yes\nNoNewPrivileges=yes\nProtectHome=yes\n")
+BOOTSTRAP_TIMER = ("[Unit]\nDescription=Independent first-migration recovery guard\n\n[Timer]\n"
+    "OnBootSec=5s\nOnUnitInactiveSec=15s\nUnit=v8std-bootstrap-recover.service\n\n"
+    "[Install]\nWantedBy=timers.target\n")
 TRANSACTION = 300
 READINESS = 90
 SMOKE = DRAIN = 30
@@ -211,12 +229,157 @@ def run(argv, deadline, *, limit=2 * 1024 * 1024):
 
 def trusted_policy(path=POLICY):
     # Reject symlinked/writable policy and all parents before interpreting paths.
+    trusted_path(path)
+    policy = parse(read_file(path), 65536)
+    return validate_policy(policy)
+
+
+def trusted_path(path):
     for entry in (path, *path.parents):
         info = entry.lstat()
         require(not stat.S_ISLNK(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022,
                 "policy_permissions")
-    policy = parse(read_file(path), 65536)
-    return validate_policy(policy)
+
+
+def validate_bootstrap_window(window, envelope, *, recovery=False):
+    require(set(window) == {"schema_version", "start_utc", "end_utc", "return_reserve_seconds",
+            "envelope_sha256", "mode", "legacy_unit", "legacy_source_sha", "backup_manifest_sha256",
+            "capacity"}, "bootstrap_fields")
+    require(type(window["schema_version"]) is int and window["schema_version"] == 1, "schema")
+    for key in ("start_utc", "end_utc", "return_reserve_seconds"):
+        require(type(window[key]) is int, "bootstrap_window")
+    duration = window["end_utc"] - window["start_utc"]
+    require(0 < duration <= 7200 and 1800 <= window["return_reserve_seconds"] < duration, "bootstrap_window")
+    require(window["envelope_sha256"] == digest(canonical_json(envelope)), "bootstrap_envelope")
+    require(window["legacy_unit"] == LEGACY_UNIT and window["mode"] in {"overlap", "stop-start"}, "bootstrap_target")
+    require(matches(SHA, window["legacy_source_sha"]) and matches(HEX, window["backup_manifest_sha256"]), "bootstrap_identity")
+    capacity = window["capacity"]
+    require(isinstance(capacity, dict) and set(capacity) == {
+        "disk_bytes", "available_memory_bytes", "file_descriptors", "network_evidence"}, "capacity")
+    require(all(type(capacity[k]) is int and capacity[k] > 0 for k in (
+        "disk_bytes", "available_memory_bytes", "file_descriptors"))
+        and matches(HEX, capacity["network_evidence"]), "capacity")
+    if not recovery:
+        now = time.time()
+        require(window["start_utc"] <= now < window["end_utc"] - window["return_reserve_seconds"], "bootstrap_window")
+        require(envelope["deadline"] <= window["end_utc"] - window["return_reserve_seconds"], "bootstrap_window")
+    return window
+
+
+def legacy_start_allowed(root):
+    # ExecCondition is fail-closed even with corrupt journal or missing active.json.
+    # An enabled legacy unit must never race accepted Docker recovery at boot.
+    if (Path(root) / "active.json").exists():
+        return False
+    records = Controller(root, None).journals()
+    if any(item["state"] == "COMMITTED" for item in records):
+        return False
+    if not records:
+        return True
+    latest = max(records, key=lambda item: item["envelope"]["sequence"])
+    return latest.get("kind") != "bootstrap" or latest.get("legacy_start_allowed") is True
+
+
+def file_hash(path, deadline):
+    hashed = hashlib.sha256()
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, "rb") as stream:
+        require(stat.S_ISREG(os.fstat(stream.fileno()).st_mode), "backup_file")
+        while chunk := stream.read(65536):
+            remaining(deadline)
+            hashed.update(chunk)
+    return hashed.hexdigest()
+
+
+def restore_file(source, target, entry, deadline):
+    """Fresh destination mtime is essential for the original legacy cache TTL.
+
+    Stream, hash, fchown/fchmod and fsync before rename. No copy2/stale timestamps.
+    Usage logs are never enumerated, copied, logged or replaced here.
+    """
+    require(file_hash(source, deadline) == entry["sha256"], "backup_hash")
+    ensure_directory(target.parent)
+    # Same-filesystem private staging survives SIGKILL without being confused
+    # with unlisted application code. One deterministic owned slot per target;
+    # retry truncates only that protected regular file, never a link or path
+    # received from a caller. No wildcard removal or cleanup of legacy files.
+    staging = target.parent / RESTORE_STAGE
+    ensure_directory(staging)
+    info = staging.lstat()
+    require(info.st_uid == os.geteuid() and info.st_mode & 0o777 == 0o700, "restore_staging")
+    name = staging / digest(str(target).encode())
+    fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    try:
+        with os.fdopen(fd, "wb") as output, source.open("rb") as input_file:
+            info = os.fstat(output.fileno())
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, "restore_staging")
+            output.truncate(0)
+            while chunk := input_file.read(65536):
+                remaining(deadline)
+                output.write(chunk)
+            output.flush()
+            os.fchown(output.fileno(), entry["uid"], entry["gid"])
+            os.fchmod(output.fileno(), entry["mode"])
+            os.fsync(output.fileno())
+        require(file_hash(Path(name), deadline) == entry["sha256"], "restore_hash")
+        os.replace(name, target)
+        sync_dir(target.parent)
+        sync_dir(staging)
+    finally:
+        Path(name).unlink(missing_ok=True)
+
+
+def backup_inventory(root, window, deadline):
+    """Root-owned, bounded full app manifest; roots are compiled, never supplied."""
+    backup = root / "legacy"
+    path = backup / "manifest.json"
+    trusted_path(path)
+    raw = read_file(path, 16 * 1024 * 1024)
+    require(digest(raw) == window["backup_manifest_sha256"], "backup_manifest")
+    value = parse(raw, 16 * 1024 * 1024)
+    require(set(value) == {"schema_version", "app", "cache", "directories", "unit", "upstream", "interpreter_sha256"}
+            and type(value["schema_version"]) is int and value["schema_version"] == 1, "backup_fields")
+    require(matches(HEX, value["interpreter_sha256"]), "backup_interpreter")
+    require(set(value["cache"]) == LEGACY_CACHE and isinstance(value["app"], dict)
+            and 1 <= len(value["app"]) <= 20000, "backup_files")
+    require({"scripts/v8std_mcp_server.py", "scripts/v8std_mcp_index.py", "scripts/v8std_retrieval_rules.py",
+             "venv/pyvenv.cfg", "venv/bin/python"} <= set(value["app"]), "backup_incomplete")
+    for component in ("app", "cache"):
+        require(set(value["directories"]) == {"app", "cache"}, "backup_directories")
+        directories = value["directories"][component]
+        expected = {str(parent) for name in value[component] for parent in Path(name).parents}
+        require(set(directories) == expected, "backup_directories")
+        for entry in directories.values():
+            require(set(entry) == {"mode", "uid", "gid"} and type(entry["mode"]) is int
+                    and 0 <= entry["mode"] <= 0o777 and all(type(entry[k]) is int and
+                    0 <= entry[k] <= 2**31-1 for k in ("uid", "gid")), "backup_metadata")
+        for relative, entry in value[component].items():
+            parts = relative.split("/")
+            require(len(relative) <= 512 and all(matches(re.compile(r"[A-Za-z0-9_.+@-]+\Z"), p)
+                    and p not in {".", ".."} for p in parts), "backup_path")
+            require(isinstance(entry, dict), "backup_entry")
+            if "link" in entry:
+                require(component == "app" and set(entry) == {"link"}, "backup_link")
+                link = entry["link"]
+                require(isinstance(link, str) and len(link) <= 512, "backup_link")
+                destination = Path(os.path.normpath(str(LEGACY_APP / relative / ".." / link)))
+                require(destination == LEGACY_PYTHON or destination.is_relative_to(LEGACY_APP), "backup_link")
+                # Manifest links are data; protected backup contains no symlinks.
+                continue
+            require(set(entry) == {"sha256", "mode", "uid", "gid"}, "backup_entry")
+            require(matches(HEX, entry["sha256"]) and type(entry["mode"]) is int
+                    and 0 <= entry["mode"] <= 0o777 and all(type(entry[k]) is int and
+                    0 <= entry[k] <= 2**31-1 for k in ("uid", "gid")), "backup_metadata")
+            source = backup / component / relative
+            trusted_path(source)
+            require(file_hash(source, deadline) == entry["sha256"], "backup_hash")
+    for name in ("unit", "upstream"):
+        require(set(value[name]) == {"sha256", "mode", "uid", "gid"}
+                and matches(HEX, value[name]["sha256"]) and value[name]["uid"] == 0
+                and value[name]["gid"] == 0 and value[name]["mode"] in {0o600, 0o644}, "backup_config")
+        trusted_path(backup / name)
+        require(file_hash(backup / name, deadline) == value[name]["sha256"], "backup_hash")
+    return value
 
 
 def validate_policy(policy):
@@ -338,14 +501,14 @@ def http(url, deadline, *, body=None, limit=1024 * 1024):
         process.close()
 
 
-def rpc(url, method, params, deadline, number):
+def rpc(url, method, params, deadline, number, *, limit=1024 * 1024):
     raw = http(url + "/mcp", deadline, body=canonical_json({"jsonrpc": "2.0", "id": number,
-                                               "method": method, "params": params}))
+                                               "method": method, "params": params}), limit=limit)
     if raw.startswith(b"event:") or raw.startswith(b"data:"):
         messages = [line[6:] for line in raw.splitlines() if line.startswith(b"data: ")]
         require(len(messages) == 1, "rpc_stream")
         raw = messages[0]
-    reply = parse(raw, 1024 * 1024)
+    reply = parse(raw, limit)
     require(reply.get("id") == number and "error" not in reply and isinstance(reply.get("result"), dict), "rpc")
     result = reply["result"]
     require(not result.get("isError"), "rpc_tool")
@@ -414,11 +577,11 @@ class HostAdapter:
         child = run(["docker", "buildx", "imagetools", "inspect", "--raw", IMAGE + "@" + envelope["platform_digest"]], deadline)
         return verify_descriptors(index, child, envelope, self.policy["platform"])
 
-    def capacity(self, deadline):
+    def capacity(self, deadline, *, reclaim_bytes=0):
         limits = self.policy["capacity"]
         require(shutil.disk_usage(self.root).free >= limits["disk_bytes"], "disk_capacity")
         values = dict(re.findall(r"^(\w+):\s+(\d+)", read_file(Path("/proc/meminfo")).decode(), re.M))
-        require(int(values.get("MemAvailable", 0)) * 1024 >= limits["available_memory_bytes"], "memory_capacity")
+        require(int(values.get("MemAvailable", 0)) * 1024 + reclaim_bytes >= limits["available_memory_bytes"], "memory_capacity")
         import resource
         require(resource.getrlimit(resource.RLIMIT_NOFILE)[0] >= limits["file_descriptors"], "fd_capacity")
         evidence = read_file(self.root / "capacity" / (limits["network_evidence"] + ".json"))
@@ -553,6 +716,166 @@ class HostAdapter:
         require(manifest["corpus_id"] == record["corpus_id"]
                 and manifest["archive"]["sha256"] == record["archive_sha256"], "manifest_identity")
         return manifest
+
+    def bootstrap_window(self, envelope):
+        require(BOOTSTRAP_WINDOW.exists(), "bootstrap_window_required")
+        trusted_path(BOOTSTRAP_WINDOW)
+        return validate_bootstrap_window(parse(read_file(BOOTSTRAP_WINDOW)), envelope)
+
+    def bootstrap_backup(self, window, deadline, *, current=False):
+        saved = backup_inventory(self.root, window, deadline)
+        require(file_hash(LEGACY_PYTHON, deadline) == saved["interpreter_sha256"], "legacy_interpreter_changed")
+        if current:
+            self.legacy_files(saved, deadline, restore=False)
+            require(file_hash(LEGACY_CONFIG, deadline) == saved["unit"]["sha256"]
+                    and file_hash(Path(self.policy["nginx_include"]), deadline) == saved["upstream"]["sha256"], "legacy_config_changed")
+            # The only installed drop-in is our separately reviewed boot fence.
+            unit = dict(line.split("=", 1) for line in run(["systemctl", "show", LEGACY_UNIT,
+                "--property=MainPID", "--property=ActiveState", "--property=DropInPaths",
+                "--property=EnvironmentFiles"], deadline).decode().splitlines())
+            require(unit.get("ActiveState") == "active" and unit.get("MainPID", "0").isdigit()
+                    and int(unit["MainPID"]) > 0 and not unit.get("EnvironmentFiles")
+                    and unit.get("DropInPaths") == "/etc/systemd/system/v8std-mcp.service.d/10-release-guard.conf", "legacy_unit_changed")
+        return saved
+
+    def bootstrap_capacity(self, window, envelope, deadline, *, after_stop=False):
+        limits = window["capacity"]
+        require(limits["available_memory_bytes"] >= self.config(envelope)["memory_bytes"] + 128 * 1024 * 1024,
+                "capacity_reserve")
+        reclaim = 0
+        if window["mode"] == "stop-start" and not after_stop:
+            value = run(["systemctl", "show", LEGACY_UNIT, "--property=MemoryCurrent", "--value"], deadline).strip()
+            require(value.isdigit(), "legacy_memory")
+            reclaim = int(value)
+        HostAdapter(self.root, self.policy | {"capacity": limits}).capacity(deadline, reclaim_bytes=reclaim)
+
+    def bootstrap_prepared(self, candidate, deadline):
+        # Artifacts must already exist. No pull/build during the migration window.
+        info = json.loads(run(["docker", "image", "inspect", IMAGE + "@" + candidate["platform_digest"]], deadline))[0]
+        require(info["Id"] in candidate["descriptors"] and info["Os"] + "/" + info["Architecture"] == self.policy["platform"]
+                and info["Config"].get("Labels", {}).get("org.opencontainers.image.revision") == candidate["runtime_source_sha"],
+                "prepared_image")
+        manifest = self.manifest(candidate)
+        verify_archive(read_file(Path(self.policy["static_root"]) / candidate["archive_sha256"] / "snapshot.tar.gz",
+                                 MAX_ARCHIVE_BYTES), manifest)
+
+    def arm_bootstrap_guard(self, deadline):
+        for path, expected in (
+            ("/etc/systemd/system/v8std-mcp.service.d/10-release-guard.conf", LEGACY_GUARD),
+            ("/etc/systemd/system/v8std-bootstrap-recover.service", BOOTSTRAP_SERVICE),
+            ("/etc/systemd/system/v8std-bootstrap-recover.timer", BOOTSTRAP_TIMER)):
+            trusted_path(Path(path))
+            require(read_file(Path(path)) == expected.encode(), "bootstrap_guard_config")
+        require(run(["systemctl", "is-enabled", "v8std-bootstrap-recover.timer"], deadline).strip() == b"enabled", "bootstrap_guard")
+        require(run(["systemctl", "is-active", "v8std-bootstrap-recover.timer"], deadline).strip() == b"active", "bootstrap_guard")
+        for unit in (LEGACY_UNIT, "v8std-bootstrap-recover.service", "v8std-bootstrap-recover.timer"):
+            properties = dict(line.split("=", 1) for line in run(["systemctl", "show", unit,
+                "--property=NeedDaemonReload", "--property=LoadState", "--property=DropInPaths"], deadline).decode().splitlines())
+            require(properties.get("NeedDaemonReload") == "no" and properties.get("LoadState") == "loaded"
+                    and properties.get("DropInPaths") == (
+                        "/etc/systemd/system/v8std-mcp.service.d/10-release-guard.conf" if unit == LEGACY_UNIT else ""),
+                    "bootstrap_guard_loaded")
+
+    def legacy_stop(self, deadline):
+        run(["systemctl", "stop", LEGACY_UNIT], deadline)
+        require(run(["systemctl", "show", LEGACY_UNIT, "--property=MainPID", "--value"], deadline).strip() == b"0", "legacy_stop")
+
+    def legacy_files(self, saved, deadline, *, restore):
+        for component, target_root in (("app", LEGACY_APP), ("cache", LEGACY_DATA)):
+            require(not target_root.is_symlink(), "legacy_path")
+            if component == "app" and target_root.exists():
+                actual = set()
+                for directory, dirs, files in os.walk(target_root, followlinks=False):
+                    if RESTORE_STAGE in dirs:
+                        info = (Path(directory) / RESTORE_STAGE).lstat()
+                        require(stat.S_ISDIR(info.st_mode) and info.st_uid == os.geteuid()
+                                and info.st_mode & 0o777 == 0o700, "restore_staging")
+                        dirs.remove(RESTORE_STAGE)
+                    dirs[:] = [d for d in dirs if d != "__pycache__"]
+                    actual.update(str((Path(directory) / name).relative_to(target_root)) for name in
+                                  files + [d for d in dirs if (Path(directory) / d).is_symlink()])
+                require(actual <= set(saved["app"]), "legacy_unlisted")
+            for relative, metadata in sorted(saved["directories"][component].items(), key=lambda item: len(item[0])):
+                directory = target_root / relative
+                if restore:
+                    ensure_directory(directory)
+                    os.chown(directory, metadata["uid"], metadata["gid"])
+                    os.chmod(directory, metadata["mode"])
+                    sync_dir(directory)
+                else:
+                    info = directory.lstat()
+                    require(stat.S_ISDIR(info.st_mode) and (info.st_mode & 0o777) == metadata["mode"]
+                            and info.st_uid == metadata["uid"] and info.st_gid == metadata["gid"], "legacy_directory_changed")
+            for relative, entry in sorted(saved[component].items()):
+                target = target_root / relative
+                # Reject symlink ancestors before any destination write.
+                for parent in target.parents:
+                    require(not parent.is_symlink(), "legacy_path")
+                    if parent == target_root:
+                        break
+                if "link" in entry:
+                    if restore and not target.exists() and not target.is_symlink():
+                        ensure_directory(target.parent)
+                        target.symlink_to(entry["link"])
+                        sync_dir(target.parent)
+                    require(target.is_symlink() and os.readlink(target) == entry["link"], "legacy_link_changed")
+                elif restore:
+                    restore_file(self.root / "legacy" / component / relative, target, entry, deadline)
+                else:
+                    if "__pycache__" in target.parts:
+                        continue  # Derived bytecode changes on an exact-source restart.
+                    require(file_hash(target, deadline) == entry["sha256"], "legacy_files_changed")
+
+    def legacy_restore(self, window, deadline):
+        saved = self.bootstrap_backup(window, deadline)
+        self.legacy_files(saved, deadline, restore=True)
+        restore_file(self.root / "legacy/unit", LEGACY_CONFIG, saved["unit"], deadline)
+        restore_file(self.root / "legacy/upstream", Path(self.policy["nginx_include"]), saved["upstream"], deadline)
+        run(["systemctl", "daemon-reload"], deadline)
+        run(["nginx", "-t"], deadline)
+        run(["nginx", "-s", "reload"], deadline)
+
+    def legacy_start(self, deadline):
+        run(["systemctl", "start", LEGACY_UNIT], deadline)
+
+    def legacy_identity(self, deadline):
+        pid = run(["systemctl", "show", LEGACY_UNIT, "--property=MainPID", "--value"], deadline).strip()
+        require(pid.isdigit() and int(pid) > 0, "legacy_process")
+        arguments = read_file(Path("/proc") / pid.decode() / "cmdline").split(b"\0")[:-1]
+        expected = [str(LEGACY_APP / "venv/bin/python"), str(LEGACY_APP / "scripts/v8std_mcp_server.py"),
+            "--index-url", "https://v8std.ru/ai/pages.jsonl", "--vectors-url", "https://v8std.ru/ai/search-vectors.jsonl",
+            "--cache-dir", str(LEGACY_DATA), "--host", "127.0.0.1", "--port", "8765", "--mcp-path", "/mcp",
+            "--max-snippet-chars", "4000", "--usage-log", str(LEGACY_DATA / "tool-usage.jsonl")]
+        require(arguments == [arg.encode() for arg in expected]
+                and Path(os.readlink(Path("/proc") / pid.decode() / "exe")) == LEGACY_PYTHON, "legacy_process")
+
+    def legacy_check(self, window, deadline, *, public=False):
+        saved = self.bootstrap_backup(window, deadline)
+        self.legacy_files(saved, deadline, restore=False)
+        url = self.policy["public_url"] if public else "http://127.0.0.1:8765"
+        while True:
+            try:
+                self.legacy_identity(deadline)
+                health = parse(http(url + "/healthz", deadline))
+                require(health.get("ok") is True and health.get("sha256") == saved["cache"]["pages.jsonl"]["sha256"]
+                        and health.get("vectors", {}).get("sha256") == saved["cache"]["search-vectors.jsonl"]["sha256"], "legacy_health_identity")
+                rpc(url, "initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
+                    "clientInfo": {"name": "v8std-release", "version": "1"}}, deadline, 1)
+                result = rpc(url, "tools/call", {"name": "v8std_search", "arguments": {"query": "std437", "limit": 1}}, deadline, 2)
+                require(bool(result.get("content") or result.get("structuredContent")), "legacy_search")
+                for number, (uri, name) in enumerate((("v8std://llms.txt", "llms.txt"),
+                        ("v8std://llms-full.txt", "llms-full.txt"), ("v8std://ai/pages.jsonl", "pages.jsonl")), 3):
+                    contents = rpc(url, "resources/read", {"uri": uri}, deadline, number, limit=32 * 1024 * 1024).get("contents", [])
+                    require(len(contents) == 1 and isinstance(contents[0].get("text"), str)
+                            and digest(contents[0]["text"].encode()) == saved["cache"][name]["sha256"], "legacy_resource")
+                after = parse(http(url + "/healthz", deadline))
+                require(after.get("sha256") == health["sha256"] and after.get("vectors", {}).get("sha256")
+                        == health["vectors"]["sha256"], "legacy_generation_changed")
+                return health
+            except ReleaseError as error:
+                if error.code not in {"http_failed", "legacy_process"}:
+                    raise
+                time.sleep(min(.1, remaining(deadline)))
 
 
 class Controller:
@@ -724,6 +1047,8 @@ class Controller:
             if not records:
                 return self.status()
             journal = max(records, key=lambda item: item["envelope"]["sequence"])
+            if journal.get("kind") == "bootstrap":
+                return BootstrapController(self.root, self.adapter).reconcile(journal)
             if journal.get("cleanup_complete"):
                 active_path = self.root / "active.json"
                 if active_path.exists():
@@ -776,6 +1101,157 @@ class Controller:
             else:
                 self.rollback(journal, deadline)
             return self.status()
+
+
+class BootstrapController(Controller):
+    """Initial acceptance only. It never activates policy or invents a predecessor."""
+
+    def submit(self, raw):
+        envelope = validate_envelope(raw, expired=True)
+        with locked(self.root):
+            existing = self.existing(envelope)
+            if existing:
+                return self.result(existing)
+            require(not (self.root / "active.json").exists(), "bootstrap_already_accepted")
+            require(not any(x["state"] == "COMMITTED" for x in self.journals()), "bootstrap_already_accepted")
+            validate_envelope(raw)
+            require(envelope["deadline"] - time.time() > RECOVERY_RESERVE, "insufficient_transaction_budget")
+            self.adapter.config(envelope)
+            window = self.adapter.bootstrap_window(envelope)
+            validate_bootstrap_window(window, envelope)
+            journal = {"kind": "bootstrap", "envelope": envelope, "window": window, "state": "RECEIVED",
+                "intent": "queued", "candidate": None, "cleanup_complete": False, "legacy_start_allowed": True}
+            self.save(journal)
+        schedule("bootstrap")
+        return self.result(journal)
+
+    def execute(self):
+        with locked(self.root):
+            records = self.journals()
+            require(bool(records), "bootstrap_missing")
+            journal = max(records, key=lambda item: item["envelope"]["sequence"])
+            require(journal.get("kind") == "bootstrap", "bootstrap_missing")
+            if journal["state"] != "RECEIVED":
+                return self.result(journal)
+            envelope, window = journal["envelope"], journal["window"]
+            deadline = time.monotonic() + min(TRANSACTION, envelope["deadline"] - time.time())
+            work = deadline - RECOVERY_RESERVE
+            try:
+                validate_bootstrap_window(window, envelope)
+                validate_envelope(canonical_json(envelope))
+                remaining(work)
+                require(not (self.root / "active.json").exists(), "bootstrap_already_accepted")
+                descriptors = self.adapter.verify(envelope, work)
+                self.adapter.bootstrap_backup(window, work, current=True)
+                self.adapter.bootstrap_capacity(window, envelope, work)
+                token = digest(canonical_json(envelope))[:32]
+                candidate = {**envelope, "name": "v8std-release-" + envelope["release_id"],
+                    "envelope_hash": digest(canonical_json(envelope)), "descriptors": descriptors,
+                    "port": self.adapter.policy["ports"][0], "hold_token": token}
+                self.adapter.bootstrap_prepared(candidate, work)
+                self.adapter.legacy_check(window, min(work, time.monotonic() + SMOKE))
+                self.adapter.arm_bootstrap_guard(work)
+                validate_bootstrap_window(window, envelope)
+                journal.update(candidate=candidate, legacy_start_allowed=False)
+                self.save(journal, "VERIFIED", "guard_armed")
+                write_json(self.root / "pins.json", {"archives": [envelope["archive_sha256"]]})
+                if window["mode"] == "stop-start":
+                    self.save(journal, intent="stop_legacy")
+                    self.adapter.legacy_stop(min(work, time.monotonic() + STOP))
+                    self.adapter.bootstrap_capacity(window, envelope, work, after_stop=True)
+                self.save(journal, intent="start_candidate")
+                candidate = self.adapter.hold(candidate, token, min(work, time.monotonic() + READINESS),
+                                               self.adapter.manifest(candidate))
+                journal["candidate"] = candidate
+                self.save(journal, "PREPARED", "candidate_smoke")
+                self.adapter.check(candidate, min(work, time.monotonic() + SMOKE))
+                self.save(journal, "READY", "switch")
+                self.adapter.switch(candidate, work)
+                self.save(journal, "SWITCHED", "public_smoke")
+                self.adapter.check(candidate, min(work, time.monotonic() + SMOKE), public=True)
+                remaining(work)
+                # Durable COMMITTED is the acceptance point, never active.json.
+                self.save(journal, "COMMITTED", "accept_pointer")
+                self.finish(journal, deadline)
+            except Exception as error:
+                # A failed fsync/rename has an uncertain result: re-read the
+                # durable journal instead of trusting a mutated in-memory state.
+                journal = read_record(self.root / "releases" / (envelope["release_id"] + ".json"))
+                journal["error_code"] = getattr(error, "code", "host_failure")
+                if journal["state"] == "COMMITTED":
+                    self.save(journal, intent="cleanup_pending")
+                elif journal["state"] == "RECEIVED":
+                    journal["cleanup_complete"] = True
+                    self.save(journal, "FAILED", "complete")
+                else:
+                    self.rollback(journal, deadline)
+            return self.result(journal)
+
+    def finish(self, journal, deadline):
+        # Also used after accepted crash/reboot. Fence before any candidate start.
+        journal["cleanup_complete"] = False
+        journal["legacy_start_allowed"] = False
+        self.save(journal, intent="ensure_accepted_candidate")
+        self.adapter.legacy_stop(min(deadline - READINESS - 2 * SMOKE, time.monotonic() + STOP))
+        candidate = journal["candidate"]
+        candidate = self.adapter.hold(candidate, candidate["hold_token"],
+            min(deadline - 2 * SMOKE, time.monotonic() + READINESS), self.adapter.manifest(candidate))
+        journal["candidate"] = candidate
+        self.save(journal, intent="accepted_switch")
+        self.adapter.switch(candidate, deadline - 2 * SMOKE)
+        self.save(journal, intent="accepted_smoke")
+        self.adapter.check(candidate, min(deadline - SMOKE, time.monotonic() + SMOKE), public=True)
+        self.save(journal, intent="accept_pointer")
+        write_json(self.root / "active.json", candidate)
+        write_json(self.root / "pins.json", {"archives": [candidate["archive_sha256"]]})
+        self.save(journal, intent="resume_candidate")
+        self.adapter.resume(candidate, min(deadline, time.monotonic() + SMOKE))
+        journal["cleanup_complete"] = True
+        journal.pop("error_code", None)
+        self.save(journal, intent="complete")
+
+    def rollback(self, journal, deadline):
+        try:
+            journal["legacy_start_allowed"] = False
+            self.save(journal, intent="stop_candidate")
+            if journal["candidate"]:
+                self.adapter.stop(journal["candidate"], min(deadline - READINESS - SMOKE - 5, time.monotonic() + STOP))
+            # Stop legacy too if overlap was chosen; restore coherent bytes only
+            # while the original process is stopped, then restart its exact unit.
+            self.save(journal, intent="restore_legacy")
+            self.adapter.legacy_stop(min(deadline - READINESS - SMOKE, time.monotonic() + STOP))
+            self.adapter.legacy_restore(journal["window"], deadline - READINESS - SMOKE)
+            journal["legacy_start_allowed"] = True
+            self.save(journal, intent="start_legacy")
+            self.adapter.legacy_start(min(deadline - SMOKE, time.monotonic() + READINESS))
+            self.save(journal, intent="legacy_smoke")
+            self.adapter.legacy_check(journal["window"], min(deadline, time.monotonic() + SMOKE), public=True)
+            journal["cleanup_complete"] = True
+            self.save(journal, "ROLLED_BACK", "complete")
+        except Exception:
+            journal["cleanup_complete"] = False
+            journal["error_code"] = "legacy_recovery_failed"
+            self.save(journal, "RECOVERY_REQUIRED", "restore_legacy")
+
+    def reconcile(self, journal):
+        # Caller holds the same global release/publication lock. No window gate:
+        # restoring owed work remains required after expiry or policy disablement.
+        if journal["state"] == "RECEIVED":
+            journal["cleanup_complete"] = True
+            self.save(journal, "FAILED", "interrupted_preparation")
+        elif journal["state"] == "COMMITTED":
+            candidate = journal["candidate"]
+            deadline = time.monotonic() + TRANSACTION
+            info = self.adapter.inspect(candidate, deadline)
+            if not journal.get("cleanup_complete") or info is None or not info["State"]["Running"]:
+                try:
+                    self.finish(journal, deadline)
+                except Exception:
+                    journal.update(cleanup_complete=False, error_code="bootstrap_cleanup_failed")
+                    self.save(journal, intent="cleanup_pending")
+        elif not journal.get("cleanup_complete"):
+            self.rollback(journal, time.monotonic() + TRANSACTION)
+        return self.result(journal)
 
 
 def validate_upload(header):
@@ -1104,7 +1580,7 @@ class Publisher:
 
 
 def schedule(kind):
-    require(kind in {"deploy", "index", "recover"}, "job_kind")
+    require(kind in {"deploy", "index", "recover", "bootstrap"}, "job_kind")
     # Shared unit name and controller lock serialize all host effects. No --pipe,
     # --wait or inherited SSH stdin; timer recovers a crash before enqueue.
     return run(["systemd-run", "--unit=v8std-release-job", "--collect", "--no-block",
@@ -1139,21 +1615,33 @@ def main():
     require(len(sys.argv) == 2, "command")
     command = sys.argv[1]
     require(command in {"validate-envelope", "deploy", "recover", "status", "publish-index",
-                        "_deploy", "_index", "_recover"}, "command")
+                        "_deploy", "_index", "_recover", "bootstrap", "bootstrap-recover", "bootstrap-status",
+                        "_bootstrap", "_legacy-allowed"}, "command")
     if command == "validate-envelope":
         header = read_header(sys.stdin.fileno(), time.monotonic() + 20, 8192)
         eof(sys.stdin.fileno(), time.monotonic() + 20)
         return validate_envelope(canonical_json(header))
     require(os.geteuid() == 0, "host_privilege")
+    if command == "_legacy-allowed":
+        require(legacy_start_allowed(ROOT), "legacy_fenced")
+        return {"state": "LEGACY_ALLOWED"}
     policy = trusted_policy()
     adapter = HostAdapter(ROOT, policy)
     controller = Controller(ROOT, adapter)
-    if command == "status":
+    if command in {"status", "bootstrap-status"}:
         return query_status(ROOT, adapter, read_status_query(sys.stdin.fileno()))
     if command == "deploy":
         envelope = read_header(sys.stdin.fileno(), time.monotonic() + 20, 8192)
         eof(sys.stdin.fileno(), time.monotonic() + 20)
         return submit(ROOT, adapter, canonical_json(envelope))
+    if command == "bootstrap":
+        envelope = read_header(sys.stdin.fileno(), time.monotonic() + 20, 8192)
+        eof(sys.stdin.fileno(), time.monotonic() + 20)
+        return BootstrapController(ROOT, adapter).submit(canonical_json(envelope))
+    if command == "_bootstrap":
+        return BootstrapController(ROOT, adapter).execute()
+    if command == "bootstrap-recover":
+        return controller.recover()
     if command == "publish-index":
         result = ingest(ROOT, policy["static_root"], sys.stdin.fileno())
         if result["state"] not in {"COMMITTED", "FAILED"} or (

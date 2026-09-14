@@ -31,15 +31,57 @@ RUNTIME = "sha256:bec25fa5b9f240225db206c5e21d35a8c28e2d4ae30b1b878d272eacd9df10
 
 @unittest.skipUnless(os.environ.get("V8STD_TASK5_DOCKER") == "1", "explicit disposable Docker evidence")
 class DockerReleaseTests(unittest.TestCase):
-    def docker(self, *args, check=True):
+    def docker(self, *args, check=True, timeout=60):
         self.calls.append(["docker", *map(str, args)])
-        result = subprocess.run(["docker", *map(str, args)], capture_output=True, timeout=60)
+        try:
+            result = subprocess.run(["docker", *map(str, args)], capture_output=True, timeout=timeout)
+        except subprocess.TimeoutExpired as error:
+            print((error.stderr or b"")[-128 * 1024:].decode(errors="replace"), flush=True)
+            raise
         if check:
             details = result.stderr.decode()
             if result.returncode and args[0] == "exec":
                 details += subprocess.run(["docker", "logs", str(args[1])], capture_output=True).stderr.decode()
             self.assertEqual(result.returncode, 0, details)
         return result
+
+    def test_bootstrap_process_fault_matrix_in_restricted_linux(self):
+        from tests.mcp_release_fixture import LEGACY_SHA
+        from tests.test_v8std_mcp_release import BootstrapBoundaryTests, BootstrapProcessTests
+        self.calls = []
+        prefix = "v8std-task5-bootstrap-" + uuid.uuid4().hex[:12]
+        cases = ["tests.test_v8std_mcp_release." + cls.__name__ + "." + method
+                 for cls in (BootstrapBoundaryTests, BootstrapProcessTests)
+                 for method in unittest.defaultTestLoader.getTestCaseNames(cls)]
+        with tempfile.TemporaryDirectory(prefix="v8std-task5-legacy-source-") as temp:
+            source = Path(temp)
+            for path in ("scripts/v8std_mcp_server.py", "scripts/v8std_mcp_index.py",
+                         "scripts/v8std_retrieval_rules.py", "retrieval-rules.yml"):
+                target = source / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(subprocess.check_output(["git", "show", LEGACY_SHA + ":" + path], cwd=ROOT))
+            # Keep the outer watchdog at240s; bounded batches distinguish total
+            # matrix duration from one stuck child/transaction on the one-CPU rig.
+            for start in range(0, len(cases), 8):
+                name = prefix + "-" + str(start // 8)
+                began = time.monotonic()
+                try:
+                    result = self.docker("run", "--rm", "--name", name, "--pull=never", "--network=none",
+                        "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--init",
+                        "--user=10001:10001", "--memory=768m", "--memory-swap=768m", "--cpus=1", "--pids-limit=128",
+                        "--label=pro.v8std.test=task5", "--tmpfs=/tmp:rw,nosuid,size=256m,mode=1777",
+                        "--mount", f"type=bind,source={ROOT},target=/work,readonly",
+                        "--mount", f"type=bind,source={source},target=/legacy-source,readonly",
+                        "--workdir=/work", "--entrypoint=python", RUNTIME, "-m", "unittest",
+                        *cases[start:start + 8], "-v", timeout=240)
+                    print(result.stderr.decode(), flush=True)
+                    print(json.dumps({"batch": start // 8, "tests": min(8, len(cases) - start),
+                        "elapsed_seconds": round(time.monotonic() - began, 3)}), flush=True)
+                finally:
+                    self.docker("rm", "-f", name, check=False)
+                print(json.dumps({"bootstrap_linux": "PASS", "runtime_image": RUNTIME,
+                    "legacy_source": LEGACY_SHA, "memory_bytes": 768 * 1024 * 1024,
+                    "cpus": 1, "network": "none", "read_only": True, "user": 10001}, sort_keys=True))
 
     def test_native_nginx_static_independence_hold_and_admission(self):
         self.calls = []
