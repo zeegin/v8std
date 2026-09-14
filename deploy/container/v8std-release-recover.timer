@@ -1,0 +1,10 @@
+[Unit]
+Description=Recover interrupted v8std releases independently of SSH/CI
+
+[Timer]
+OnBootSec=15s
+OnUnitInactiveSec=30s
+Unit=v8std-release-recover.service
+
+[Install]
+WantedBy=timers.target

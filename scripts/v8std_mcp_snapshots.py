@@ -429,6 +429,15 @@ class SnapshotStore:
         if not isinstance(archives, list) or not all(self._digest(d) for d in archives):
             raise LoaderError("cache_io")
         protected.update(archives)
+        # A release-managed process may lag the durable pointer after worker IPC
+        # failure. Its last accepted bytes must survive subsequent refresh GC.
+        try:
+            runtime = strict_json(_read_file(self.namespace / "runtime-pin.json", MAX_MANIFEST_BYTES))
+            if not self._digest(runtime.get("archive")):
+                raise LoaderError("cache_io")
+            protected.add(runtime["archive"])
+        except FileNotFoundError:
+            pass
         for entry in self.namespace.iterdir():
             if _TEMP.fullmatch(entry.name):
                 self._remove_owned(entry)
@@ -454,14 +463,14 @@ class SnapshotStore:
             self._commit_state(entry[2], entry[2], deadline)
         return result
 
-    def _refresh(self, prepare, deadline, *, current_archive=None):
+    def _refresh(self, prepare, deadline, *, current_archive=None, selected_manifest=None):
         _directory(self.cache_dir, create=True)
         _directory(self.namespace, create=True)
         _directory(self.namespace / "generations", create=True)
         with _file_lock(self.namespace / ".lock", deadline) as waited:
             with _file_lock(self.cache_dir / ".volume.lock", deadline):
                 entry = self._cached_entry()
-                if waited and entry:
+                if waited and entry and selected_manifest is None:
                     return self._reuse_checked_entry(entry, prepare, deadline, current_archive)
                 self._gc((entry[0].archive_sha256,) if entry else ())
                 headers = {}
@@ -470,9 +479,12 @@ class SnapshotStore:
                         if value := entry[2]["validators"].get(field):
                             headers[header] = value
                 bootstrap = self.site_url + "ai/mcp/v1/manifest.json"
-                status, raw, validators, final_url = self._transport(
-                    bootstrap, self.site_url, headers, MAX_MANIFEST_BYTES,
-                    deadline, self._read_seconds)
+                if selected_manifest is None:
+                    status, raw, validators, final_url = self._transport(
+                        bootstrap, self.site_url, headers, MAX_MANIFEST_BYTES,
+                        deadline, self._read_seconds)
+                else:
+                    status, raw, validators, final_url = 200, canonical_json(selected_manifest), {}, bootstrap
                 if status == 304 and entry is None:
                     status, raw, validators, final_url = self._transport(
                         bootstrap, self.site_url, {}, MAX_MANIFEST_BYTES, deadline, self._read_seconds)
@@ -550,12 +562,12 @@ class SnapshotStore:
                     if stage.exists():
                         self._remove_owned(stage)
 
-    def _run(self, mode, prepare, stop=None, *, current_archive=None):
+    def _run(self, mode, prepare, stop=None, *, current_archive=None, selected_manifest=None):
         deadline = time.monotonic() + self._attempt_seconds
         stop = stop if stop is not None else threading.Event()
         parent, child = socket.socketpair()
         process = multiprocessing.get_context("spawn").Process(
-            target=_worker, args=(self, mode, prepare, deadline, child, current_archive),
+            target=_worker, args=(self, mode, prepare, deadline, child, current_archive, selected_manifest),
             name="v8std-snapshot-worker", daemon=True)
         started = False
         try:
@@ -611,13 +623,14 @@ def _cache_walk_error():
     raise LoaderError("cache_io")
 
 
-def _worker(store, mode, prepare, deadline, channel, current_archive):
+def _worker(store, mode, prepare, deadline, channel, current_archive, selected_manifest=None):
     try:
         if mode == "cached":
             snapshot = store.cached()
             payload = _prepare(snapshot, prepare) if snapshot else pickle.dumps(("ok", None, None))
         else:
-            payload = store._refresh(prepare, deadline, current_archive=current_archive)
+            payload = store._refresh(prepare, deadline, current_archive=current_archive,
+                                     selected_manifest=selected_manifest)
         _remaining(deadline)
     except SnapshotError as error:
         payload = pickle.dumps(("format_error", error.code, None))
@@ -638,7 +651,8 @@ def _worker(store, mode, prepare, deadline, channel, current_archive):
 
 
 class SnapshotCoordinator:
-    def __init__(self, store: SnapshotStore, build, *, refresh_seconds: int = 3600):
+    def __init__(self, store: SnapshotStore, build, *, refresh_seconds: int = 3600,
+                 release_control: Path | None = None):
         if type(refresh_seconds) is not int or refresh_seconds < 0:
             raise LoaderError("configuration")
         self.store = store
@@ -649,7 +663,13 @@ class SnapshotCoordinator:
         self._thread = None
         self._current = None
         self._archive_sha256 = None
+        self._release_control = None
+        if release_control is not None:
+            from v8std_mcp_hold import ReleaseControl
+            self._release_control = ReleaseControl(self, Path(release_control))
         self._state = {"ready": False, "corpus_id": None, "loaded_at": None,
+                       "archive_sha256": None, "corpus_source_sha": None, "hold_token": None,
+                       "release_control_token": None,
                        "last_checked_at": None, "last_success_at": None,
                        "refresh_error_code": None}
 
@@ -674,6 +694,8 @@ class SnapshotCoordinator:
     def _accept(self, result, metadata, *, checked):
         now = time.time()
         retired = None
+        if self._release_control is not None:
+            self._release_control.pin(metadata["archive_sha256"])
         with self._lock:
             if metadata.get("unchanged") and (not self._state["ready"]
                     or metadata["archive_sha256"] != self._archive_sha256
@@ -683,7 +705,9 @@ class SnapshotCoordinator:
                 retired = self._current
                 self._current = result
                 self._archive_sha256 = metadata["archive_sha256"]
-                self._state.update(ready=True, corpus_id=metadata["corpus_id"], loaded_at=now)
+                self._state.update(ready=True, corpus_id=metadata["corpus_id"], loaded_at=now,
+                                   archive_sha256=metadata["archive_sha256"],
+                                   corpus_source_sha=metadata.get("source_sha"))
             if checked:
                 self._state.update(last_checked_at=now, last_success_at=now, refresh_error_code=None)
         # Dropping a large generation's final reference can release thousands of
@@ -697,6 +721,9 @@ class SnapshotCoordinator:
         return self.refresh_seconds * random.uniform(.8, 1.2)
 
     def _loop(self):
+        if self._release_control is not None:
+            self._release_control.run()
+            return
         try:
             result, metadata = self.store._run("cached", self.build, self._stop)
             if metadata:

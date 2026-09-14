@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:v8std:release:1",
+  "title": "Restricted v8std runtime release envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "release_id", "sequence", "runtime_source_sha", "trigger_sha", "image", "image_digest", "platform_digest", "configuration_digest", "corpus_id", "archive_sha256", "deadline"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "release_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"},
+    "sequence": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "runtime_source_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "trigger_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "image": {"const": "ghcr.io/zeegin/v8std-mcp"},
+    "image_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "platform_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "configuration_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "corpus_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "archive_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "deadline": {"type": "integer", "description": "UTC epoch seconds, future and at most 300 seconds from validation. Host additionally reserves recovery time."}
+  }
+}

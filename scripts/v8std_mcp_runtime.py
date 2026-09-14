@@ -14,6 +14,7 @@ from v8std_mcp_index import (
 from v8std_mcp_presentation import LinkCatalog, present_markdown, present_result
 from v8std_mcp_snapshot_format import DEFAULT_SITE_URL, VerifiedSnapshot, normalize_site_url
 from v8std_mcp_snapshots import LoaderError, SnapshotCoordinator, SnapshotStore
+from v8std_mcp_hold import CONTROL_PATH
 
 
 @dataclass(frozen=True)
@@ -47,14 +48,15 @@ def build_generation(snapshot: VerifiedSnapshot, *, max_snippet_chars: int,
 class SnapshotIndex:
     def __init__(self, *, site_url: str = DEFAULT_SITE_URL, cache_dir: Path = DEFAULT_CACHE_DIR,
                  refresh_seconds: int = 3600, max_snippet_chars: int = MAX_SNIPPET_CHARS,
-                 runtime_sha: str | None = None):
+                 runtime_sha: str | None = None, release_control: Path | None = None):
         self.site_url = normalize_site_url(site_url)
         self._max_snippet_chars = validate_max_snippet_chars(max_snippet_chars)
         self.runtime_sha = runtime_sha if runtime_sha and len(runtime_sha) == 40 and all(
             char in "0123456789abcdef" for char in runtime_sha) else None
         self.coordinator = SnapshotCoordinator(SnapshotStore(self.site_url, cache_dir),
             partial(build_generation, max_snippet_chars=max_snippet_chars, site_url=self.site_url),
-            refresh_seconds=refresh_seconds)
+            refresh_seconds=refresh_seconds, release_control=(release_control if release_control is not None
+                                                            else CONTROL_PATH if CONTROL_PATH.parent.exists() else None))
 
     @property
     def max_snippet_chars(self):

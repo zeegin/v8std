@@ -14,7 +14,7 @@ RUN python -c 'import os,re; assert re.fullmatch("[0-9a-f]{40}",os.environ["V8ST
     && mkdir -p /var/lib/v8std-mcp \
     && chown 10001:10001 /var/lib/v8std-mcp
 COPY scripts/v8std_mcp_server.py scripts/v8std_mcp_runtime.py scripts/v8std_mcp_index.py \
-     scripts/v8std_mcp_snapshots.py scripts/v8std_mcp_snapshot_format.py \
+     scripts/v8std_mcp_snapshots.py scripts/v8std_mcp_snapshot_format.py scripts/v8std_mcp_hold.py \
      scripts/v8std_mcp_presentation.py scripts/v8std_mcp_chunks.py \
      scripts/v8std_retrieval_rules.py scripts/v8std_search_features.py ./scripts/
 COPY retrieval-rules.yml LICENSE ./
