@@ -417,14 +417,15 @@ state/store roots. Release controller effects go through a narrow adapter to
 Docker/nginx/systemd; tests use disposable processes/filesystems and record exact
 calls at this external boundary, not pretend mocked return values prove health.
 
-**Resume boundary:** Task5 has uncommitted implementation from `3165cc7` and
-is paused for the current planning turn. Resume the same owner; preserve the
-existing files. The last29 release tests passed, but three failures in the
-89-test snapshot/runtime run were only claimed repaired and need a fresh run.
-Hold regressions, ingress/security review, Docker/nginx evidence, activation
-runbook and independent task review remain. This is not a completed task.
+**Execution boundary:** The ordinary slice is implemented in signed `1d04817`
+and `5ae7588` and independently reviewed. Final148 release/hold/snapshot/runtime
+tests and the real Docker/nginx check passed; five review findings were repaired
+with RED/GREEN and approved in scoped re-review. This supersedes the earlier
+paused29-test evidence. The first-migration slice below is still pending, so
+expanded Task5 and the complete plan are not yet complete. Native host setup,
+published-artifact evidence and production capacity remain external gates.
 
-- [ ] **RED:** Test unknown schema, invalid digest/namespace/config path, stale or
+- [x] **RED:** Test unknown schema, invalid digest/namespace/config path, stale or
   mutated duplicate ID, concurrent releases, failed pull/ready/switch/smoke,
   rollback failure and restart reconciliation. Example visible invariant:
 
@@ -434,7 +435,7 @@ self.assertEqual(edge.serving_digest(), predecessor_digest)
 self.assertTrue(predecessor_snapshot_path.is_file())
 ```
 
-- [ ] **GREEN controller:** Verify envelope/attestation/trusted config before
+- [x] **GREEN controller:** Verify envelope/attestation/trusted config before
   effects, durable journal+lock, exact image digest, capacity preflight and
   predecessor pins. Prepare candidate side port, real readiness and MCP smoke,
   nginx test then atomic switch/reload, public smoke then commit/drain. Enforce
@@ -450,13 +451,13 @@ self.assertTrue(predecessor_snapshot_path.is_file())
   archive nor a disk pointer alone proves the endpoint serves the required
   corpus ID. Preserve ordinary local stdio/HTTP behavior and the single public
   SITE_URL setting; release control must not be exposed as an MCP tool.
-- [ ] **GREEN static store/operations:** Independent read-only nginx alias for
+- [x] **GREEN static store/operations:** Independent read-only nginx alias for
   `/indexes/v1/` with GET/HEAD, hash cache headers and bounded download admission;
   publisher stages/verifies/renames objects and tracks references/pins before GC.
   Activation runbook names exact backup/cleanup/TLS/default-vhost, secrets,
   protection, native capacity and initial Python rollback prerequisites. No live
   host changes occur from tests or writing the runbook.
-- [ ] **Verify:** Fault matrix for each state transition with real subprocess
+- [x] **Verify:** Fault matrix for each state transition with real subprocess
   cancellation/crash recovery where possible; nginx syntax and static download
   while runtime stopped in disposable containers; unprivileged controller input
   rejects shell injection. Record capacity test settings and results without

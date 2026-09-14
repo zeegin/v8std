@@ -492,3 +492,65 @@ unfinished slice, now explicit in the plan. No successful release is inferred.
 See [the remaining-work roadmap](mcp-first-container-release-roadmap.md) for
 local gates, external source/image publication, initial window, rollback reserve
 and conditional activation of subsequent automated runtime updates.
+
+### Ordinary release controller: reviewed local evidence, 2026-09-15
+
+The user resumed the saved plan. Signed commits `1d04817a94eb087aacff2c46e43a14a93386946a`
+and `5ae7588f5417deddc7af1ffc9f273d0b1dcba5af` implement the ordinary controller,
+private generation hold and bounded independent index publication. A separate
+review found five defects in control permissions, same-token acknowledgement,
+interrupted accepted recovery, publication finalization and rejected-ID identity.
+All five have RED/GREEN regressions and passed scoped re-review; no new blocking
+finding remained. First-bootstrap is not yet implemented at this checkpoint.
+
+Final commands/results:
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_release tests.test_v8std_mcp_release_hold tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_runtime -v
+V8STD_TASK5_DOCKER=1 .venv/bin/python -m unittest tests.test_v8std_mcp_release_docker -v
+```
+
+148 focused tests/154.042s and one Docker/nginx integration test/9.992s passed.
+The latter uses actual root-owned control under umask0077, read-only access by
+UID10001 runtime, revocation/reacknowledgement, nginx syntax/invalid-switch,
+static GET/HEAD/hash/cache headers while runtime is stopped, and download admission.
+Eight same-NAT transfers through two nginx workers produced two200 and six429
+with retry guidance. This small fixture is not a full mixed-load capacity proof.
+
+The Docker test reuses local runtime index
+`sha256:bec25fa5b9f240225db206c5e21d35a8c28e2d4ae30b1b878d272eacd9df1031`
+with three current modules overlaid read-only, and pinned nginx
+`sha256:dc5069ad14f19660b141b21236140b91656bf89bbc3e2417c70ae650cd66104c`.
+It does not claim a newly built or published release. Native local Linuxarm64
+host has14CPUs/8318976000bytesRAM; runtime limit512MiB and nginx128MiB,1CPU each.
+The temporary root writer has networknone/read-only/cap-drop/no-new-privileges,
+no socket and access only to its test-owned volume. All task-owned diagnostic
+processes/containers/volumes/networks were removed; existing images and unrelated
+containers were preserved.
+
+Publication status now acknowledges the exact publication/reference ID, sequence,
+action and identities. Archive HTTP200 alone is insufficient. Static publication
+and runtime activation have separate host flags; disabling runtime updates does
+not cancel owed recovery. The activation runbook records exact bounded CLI forms.
+Normal recovery retains300s total/90s readiness/30s smoke/45s stop; the loader's
+360s/20s budgets are unchanged. Native SSH/sudo/systemd installation, positive
+published-artifact provenance, external TLS/index delivery and target capacity
+still require their separately authorized acceptance.
+
+The existing Starlette warning was traced without suppression: unchanged
+`tests/test_v8std_mcp_snippet.py:23` imports `starlette.testclient`, whose
+`httpx2` import falls back to `httpx` and warns. Runtime lock pins httpx0.28.1
+and starlette1.3.1; those files did not change in this controller slice. This
+is test-dependency debt for final integration, not pristine-output evidence.
+
+Fresh read-only production preflight: legacy health and actual `/mcp` initialize
+succeed; public snapshot manifest still404. Target-host prerequisites and
+capacity remain unverified. No server operation or backup occurred. Local
+actual legacy code from `b7bef11` proved that stale cache tries HTTP, whereas
+restoring the same four verified cache files with fresh mtimes permits original-
+configuration startup/search/three-resource reads without network. This informs
+bootstrap tests; it is not an installed backup/restart or indefinite hold proof.
+
+Ordinary architecture validation/impact and whitespace checks passed. No whole
+repository suite, strict build, merge-ready, main merge/push, registry publish,
+Catalog submission, server setup or production migration is claimed here.
