@@ -310,15 +310,25 @@ class SmokeBoundaryTests(unittest.TestCase):
         self.assert_rejected("resources/read", {"jsonrpc": "2.0", "id": 8, "result": {
             "contents": [{"uri": "v8std://llms-full.txt", "text": "corpus"}]}}, "resource_disabled")
 
-    def test_resource_denial_requires_exact_error_without_content_or_result(self):
+    def test_resource_denial_accepts_safe_alternate_message(self):
+        reply = self.denied | {"error": {"code": -32601, "message": "Method not found: resources/read"}}
+        self.assertEqual(self.run_smoke({"resources/read": reply}), self.health)
+        self.assertEqual(self.seen[-1], "health_after")
+
+    def test_resource_denial_requires_error_without_content_or_result(self):
         bad = [self.denied | {"result": None}, self.denied | {"content": "corpus"},
                self.denied | {"contents": [{"text": "corpus"}]}, self.denied | {"error": None}]
         for error in ({"code": -32602, "message": "Invalid params"}, {"code": -32601},
-                      {"code": -32601, "message": "corpus"},
                       {"code": -32601, "message": "Method not found", "data": {"text": "corpus"}}):
             bad.append(self.denied | {"error": error})
         for reply in bad:
             with self.subTest(reply=reply):
+                self.assert_rejected("resources/read", reply, "resource_disabled")
+
+    def test_resource_denial_requires_compact_nonempty_message(self):
+        for message in (None, 42, {}, [], "", " ", "x" * 257, "corpus text\n" * 100):
+            with self.subTest(message=message):
+                reply = self.denied | {"error": {"code": -32601, "message": message}}
                 self.assert_rejected("resources/read", reply, "resource_disabled")
 
     def test_resource_denial_must_match_request_id_and_jsonrpc_version(self):

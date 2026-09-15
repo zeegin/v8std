@@ -617,10 +617,13 @@ def smoke(url, record, deadline):
     structured(rpc(url, "tools/call", {"name": "v8std_explain_diagnostics", "arguments":
                       {"codes": ["missing"]}}, deadline, 7))
     denied = _rpc_reply(url, "resources/read", {"uri": "v8std://llms-full.txt"}, deadline, 8)
-    # Exact envelope excludes result, error data and any corpus payload, rather
-    # than mistaking an arbitrary transport/protocol failure for retirement.
-    require(denied == {"jsonrpc": "2.0", "id": 8,
-                      "error": {"code": -32601, "message": "Method not found"}}, "resource_disabled")
+    # Only a compact error is allowed: no result or additional payload fields.
+    # The code carries the refusal semantics; message wording is not a contract.
+    error = denied.get("error")
+    require(set(denied) == {"jsonrpc", "id", "error"} and isinstance(error, dict)
+            and set(error) == {"code", "message"} and error["code"] == -32601, "resource_disabled")
+    message = error["message"]
+    require(isinstance(message, str) and bool(message.strip()) and len(message) <= 256, "resource_disabled")
     # Bracket tool calls with the held identity so a health-only mismatch cannot
     # pass while the actual endpoint refreshes or nginx reload serves old workers.
     after = parse(http(url + "/healthz", deadline))
