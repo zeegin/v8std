@@ -814,3 +814,10 @@ passed. Last fixture `v8std-task6-logging-eb971cce81a64287`; all owned container
 volume, network and helper tags were removed and absence checked. Unrelated
 containers remain running; no global Docker cleanup. No full suite,
 CI, process/plan, runtime/logger or rotation-policy changes were made in FIX1.
+
+Independent logging re-review approved FIX1 at ea786b2: exact inventories and
+mutation evidence address the sole Minor finding; no new breakage. The bounded
+private-operations gate is complete. Separate production410/no-store evidence
+is in `2026-09-15-public-monitoring-retirement.md`; it is not a claim that this
+new logger has been installed there. Full controller/systemd/nginx acceptance,
+final exact-source artifact/load checks and external activation remain distinct.

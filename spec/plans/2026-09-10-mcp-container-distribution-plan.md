@@ -605,7 +605,7 @@ Pages manifest. Every runtime deployment references published exact digest.
   image-only scope without claiming Docker Catalog acceptance. Preserve the
   `longLived` source declaration and distinguish local test-catalog diagnostics
   from the actual Docker-published catalog; no upstream PR is a release prerequisite.
-- [ ] **VERIFY private operations and retired public monitoring:** The approved
+- [x] **VERIFY private operations and retired public monitoring:** The approved
   `design:mcp-public-monitoring-retirement` supersedes the earlier preservation
   task. Consume its410/no-store conformance and production retirement evidence;
   never recreate dashboard, timer, aggregator or private monitor-state bridge.
@@ -614,8 +614,9 @@ Pages manifest. Every runtime deployment references published exact digest.
   existing history and new events without restoring logs from a release backup.
   Preserve the non-root runtime and existing rotation policy; grant no Docker
   socket/group. Test actual MCP health/readiness, not controller liveness.
-  This checkbox remains incomplete until container logger integration is
-  implemented and verified. Dashboard retirement alone does not complete it.
+  Container logger integration and scoped review are complete in ee4a5aa and
+  ea786b2; retirement evidence is recorded separately. Native fixture proves
+  bounded logging lifecycle, not target-host activation or full release recovery.
   Local OpenMetrics remains a separate deferred design.
 
   Execution slice (approved continuation2026-09-15): retain the existing
