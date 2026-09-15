@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 from collections import Counter
+import hashlib
 import json
 import math
 import os
@@ -22,6 +23,7 @@ import uuid
 import httpx
 
 from publish_mcp_artifacts import bounded_command, require, save
+from v8std_mcp_presentation import present_result
 from v8std_mcp_snapshot_format import MAX_ARCHIVE_BYTES, canonical_json, validate_manifest, verify_archive
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -210,14 +212,19 @@ def stage_snapshot(directory, destination):
     name = manifest["archive"]["sha256"] + "/snapshot.tar.gz"
     archive = (directory / name).read_bytes()
     require(len(archive) <= MAX_ARCHIVE_BYTES, "fixture_archive_size")
-    verify_archive(archive, manifest)
+    verified = verify_archive(archive, manifest)
     path = destination / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.parent.chmod(0o755)
     path.write_bytes(archive)
     path.chmod(0o644)
     manifest["archive"]["path"] = name
-    return manifest
+    rows = [json.loads(line) for line in verified.files["pages.jsonl"].splitlines() if line.strip()]
+    paths = {row["id"]: {key: row[key] for key in ("site_path", "markdown_path")} for row in rows}
+    presented = present_result(rows, canonical_site_url=verified.metadata["canonical_site_url"],
+                               site_url="http://v8std.localhost:18765/", page_paths=paths)
+    text = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in presented)
+    return manifest, hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def pointer(path, manifest):
@@ -233,7 +240,55 @@ def write_report(path, report):
     path.write_text(payload, encoding="utf-8")
 
 
-async def profile(stack, args, directory, names, manifests, endpoint, static_url):
+async def open_idle(port):
+    reader, writer = await asyncio.wait_for(asyncio.open_connection("127.0.0.1", port), 3)
+    try:
+        writer.write(b"GET /healthz HTTP/1.1\r\nHost: ai.v8std.ru\r\nConnection: keep-alive\r\n\r\n")
+        await writer.drain()
+        header = await asyncio.wait_for(reader.readuntil(b"\r\n\r\n"), 5)
+        size = re.search(rb"(?im)^content-length:\s*([0-9]+)", header)
+        require(b" 200 " in header and size is not None and int(size[1]) <= 65536, "idle_probe")
+        await asyncio.wait_for(reader.readexactly(int(size[1])), 5)
+        return reader, writer
+    except BaseException:
+        writer.close()
+        await writer.wait_closed()
+        raise
+
+
+async def maintain_idle(idle, port, stop, stats, *, interval=.25):
+    while not stop.is_set():
+        for index, (reader, writer) in enumerate(idle):
+            if reader.at_eof():
+                writer.close()
+                await writer.wait_closed()
+                idle[index] = await open_idle(port)
+                stats["reconnections"] += 1
+        try:
+            await asyncio.wait_for(stop.wait(), interval)
+        except TimeoutError:
+            pass
+
+
+async def resource_hash(client, endpoint):
+    _, message = request(19)  # The actual retained bulk pages Resource.
+    async with client.stream("POST", endpoint + "/mcp", json=message) as response:
+        require(response.status_code == 200, "resource_hash_http")
+        chunks, size = [], 0
+        async for chunk in response.aiter_bytes():
+            size += len(chunk)
+            require(size <= 64 * 1024 * 1024, "resource_hash_bound")
+            chunks.append(chunk)
+    body = b"".join(chunks)
+    require(valid_reply("resource:ai/pages.jsonl", body), "resource_hash_reply")
+    if body.startswith((b"event:", b"data:")):
+        body = next(line[6:] for line in body.splitlines() if line.startswith(b"data: "))
+    text = next(item["text"] for item in json.loads(body)["result"]["contents"]
+                if item["uri"] == "v8std://ai/pages.jsonl")
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+async def profile(stack, args, directory, names, manifests, resource_hashes, endpoint, static_url):
     rows, samples, events = [], [], []
     headers = {"Host": "ai.v8std.ru", "Accept": "application/json, text/event-stream"}
     limits = httpx.Limits(max_connections=64, max_keepalive_connections=64)
@@ -253,6 +308,8 @@ async def profile(stack, args, directory, names, manifests, endpoint, static_url
                 and health.get("corpus_id") == manifests[0]["corpus_id"], "load_initial_readiness")
         initial = await measure(client, endpoint + "/mcp", "initialize", INIT)
         require(initial["outcome"] == "ok", "load_initialize")
+        before_hash = await resource_hash(client, endpoint)
+        require(before_hash == resource_hashes[0], "initial_resource_content")
         # Burst is discovery traffic, deliberately separate from data-call mix.
         burst_start = time.monotonic()
         semaphore = asyncio.Semaphore(64)
@@ -263,17 +320,14 @@ async def profile(stack, args, directory, names, manifests, endpoint, static_url
         burst_seconds = time.monotonic() - burst_start
         await asyncio.sleep(5)  # Existing Retry-After/admission budget, not suppressed errors.
         idle = []
+        idle_stop, idle_stats = asyncio.Event(), {"reconnections": 0}
+        idle_keeper = None
+        primary = None
         port = int(endpoint.rsplit(":", 1)[1])
         try:
             for _ in range(args.idle):
-                reader, writer = await asyncio.wait_for(asyncio.open_connection("127.0.0.1", port), 3)
-                idle.append((reader, writer))
-                writer.write(b"GET /healthz HTTP/1.1\r\nHost: ai.v8std.ru\r\nConnection: keep-alive\r\n\r\n")
-                await writer.drain()
-                header = await asyncio.wait_for(reader.readuntil(b"\r\n\r\n"), 5)
-                size = re.search(rb"(?im)^content-length:\s*([0-9]+)", header)
-                require(b" 200 " in header and size is not None, "idle_probe")
-                await asyncio.wait_for(reader.readexactly(int(size[1])), 5)
+                idle.append(await open_idle(port))
+            idle_keeper = asyncio.create_task(maintain_idle(idle, port, idle_stop, idle_stats))
             started = time.monotonic()
             reconnects = 0
             maximum_inflight = inflight = 0
@@ -323,18 +377,33 @@ async def profile(stack, args, directory, names, manifests, endpoint, static_url
             final = (await client.get(endpoint + "/healthz")).json()
             require(final.get("ok") is True and final.get("runtime_sha") == args.source_sha
                     and final.get("corpus_id") == manifests[1]["corpus_id"], "refresh_and_switch_readiness")
+            after_hash = await resource_hash(client, endpoint)
+            require(after_hash == resource_hashes[1], "refreshed_resource_content")
             data = [row for row in rows if row["kind"] != "archive"]
             return {"scope": "local HTTP (no TLS), one edge worker, two processes of the same exact image; not host-controller deployment",
                     "duration_seconds": elapsed, "configured_clients": args.clients, "maximum_inflight_data_calls": maximum_inflight,
                     "idle_connections_opened": len(idle), "idle_connections_still_open": sum(not reader.at_eof() for reader, _ in idle),
+                    "idle_reconnections": idle_stats["reconnections"], "idle_maintenance_interval_seconds": .25,
+                    "resource_content_hashes": {"before": before_hash, "after": after_hash},
                     "connection_close_requests": reconnects, "shared_nat": "all clients share one host address at edge",
                     "data": summarize(data, elapsed), "static": summarize([row for row in rows if row["kind"] == "archive"], elapsed),
                     "discovery_burst": summarize(burst, max(.001, burst_seconds)), "events": events,
                     "samples": samples, "initial_health": health, "final_health": final}
+        except BaseException as error:
+            primary = error
+            raise
         finally:
+            idle_stop.set()
+            if idle_keeper is not None:
+                # A failed reconnect must fail the profile, but not skip socket cleanup.
+                await asyncio.gather(idle_keeper, return_exceptions=True)
             for _, writer in idle:
                 writer.close()
             await asyncio.gather(*(writer.wait_closed() for _, writer in idle), return_exceptions=True)
+            if idle_keeper is not None and not idle_keeper.cancelled() and idle_keeper.exception() is not None:
+                if primary is None:
+                    raise idle_keeper.exception()
+                primary.add_note("idle maintenance failed: " + str(idle_keeper.exception()))
 
 
 def main(argv=None):
@@ -359,7 +428,8 @@ def main(argv=None):
         directory = Path(temporary)
         for name in ("source", "edge"):
             (directory / name).mkdir(mode=0o755)
-        manifests = [stage_snapshot(path, directory / "source") for path in (args.snapshot, args.refresh_snapshot)]
+        staged = [stage_snapshot(path, directory / "source") for path in (args.snapshot, args.refresh_snapshot)]
+        manifests, resource_hashes = [item[0] for item in staged], [item[1] for item in staged]
         require(manifests[0]["corpus_id"] != manifests[1]["corpus_id"], "distinct_refresh_fixture_required")
         pointer(directory / "source/manifest.json", manifests[0])
         (directory / "edge/nginx.conf").write_text(edge_config("mcp-a"))
@@ -401,7 +471,7 @@ def main(argv=None):
             networks=((corpus, "edge"),))
         port = stack.inspect(names["edge"])["NetworkSettings"]["Ports"]["8000/tcp"][0]["HostPort"]
         print("owned mixed-load fixtures starting: " + stack.prefix, flush=True)
-        report = asyncio.run(profile(stack, args, directory, names, manifests,
+        report = asyncio.run(profile(stack, args, directory, names, manifests, resource_hashes,
                                      "http://127.0.0.1:" + port, "http://127.0.0.1:18765"))
         report.update(source_sha=args.source_sha, image_ids=[info["Id"] for info in image_info],
                       fixture_prefix=stack.prefix, source_manifests=manifests, refresh_seconds=5,

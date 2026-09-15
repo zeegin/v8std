@@ -76,6 +76,65 @@ class LoadProfileTests(unittest.TestCase):
         with self.assertRaises(SnapshotError):
             canonical_json(report)
 
+    def test_idle_connections_are_replenished_after_server_closes_them(self):
+        import asyncio
+        async def check():
+            accepted = []
+            async def serve(reader, writer):
+                accepted.append(writer)
+                try:
+                    await reader.readuntil(b"\r\n\r\n")
+                    writer.write(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}")
+                    await writer.drain()
+                    await reader.read()
+                finally:
+                    writer.close()
+                    await writer.wait_closed()
+            server = await asyncio.start_server(serve, "127.0.0.1", 0)
+            stop, idle = asyncio.Event(), []
+            stats = {"reconnections": 0}
+            keeper = None
+            try:
+                port = server.sockets[0].getsockname()[1]
+                idle.extend([await self.load.open_idle(port) for _ in range(2)])
+                keeper = asyncio.create_task(self.load.maintain_idle(idle, port, stop, stats, interval=.01))
+                for writer in accepted[:2]:
+                    writer.close()
+                async with asyncio.timeout(2):
+                    while stats["reconnections"] < 2:
+                        await asyncio.sleep(.01)
+                self.assertEqual(len(idle), 2)
+                self.assertTrue(all(not reader.at_eof() for reader, _ in idle))
+            finally:
+                stop.set()
+                if keeper is not None:
+                    await keeper
+                for _, writer in idle:
+                    writer.close()
+                    await writer.wait_closed()
+                server.close()
+                await server.wait_closed()
+        asyncio.run(check())
+
+    def test_staged_hash_matches_presented_resource_not_canonical_archive_bytes(self):
+        import hashlib
+        from tests import mcp_snapshot_fixtures as fixture
+        from v8std_mcp_snapshot_format import verify_archive
+        from v8std_mcp_runtime import build_generation
+        archive, manifest = fixture.snapshot_fixture()
+        with tempfile.TemporaryDirectory(prefix="v8std-load-content-") as temporary:
+            directory = Path(temporary)
+            source = directory / "input"
+            source.mkdir()
+            (source / "manifest.json").write_text(json.dumps(manifest))
+            target = source / manifest["archive"]["sha256"] / "snapshot.tar.gz"
+            target.parent.mkdir()
+            target.write_bytes(archive)
+            _, actual = self.load.stage_snapshot(source, directory / "staged")
+            expected = build_generation(verify_archive(archive, manifest), max_snippet_chars=4000,
+                site_url="http://v8std.localhost:18765/").resources["pages.jsonl"]
+            self.assertEqual(actual, hashlib.sha256(expected.encode()).hexdigest())
+
     def test_cleanup_attempts_each_exact_owned_resource_and_preserves_primary_error(self):
         stack = self.load.Stack()
         stack.owned = [("container", stack.prefix + "-a"), ("container", stack.prefix + "-b"),
