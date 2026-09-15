@@ -218,7 +218,8 @@ timestamps. This lets the unchanged legacy unit/default remote URLs and3600s
 refresh serve its four verified files without startup network fallback. It is
 an immediate bounded rollback guarantee, not an indefinite old-runtime hold.
 Changing `tool-usage.jsonl` and private logs are never copied or overwritten;
-persistent private logging after container cutover is a separate Task6 gate.
+container logging uses the independent fixed file described below, never a
+release backup or a slot cache. Target-host verification remains a separate gate.
 Public monitoring remains retired, including on rollback; construct the legacy
 backup from the post-retirement inventory, without its removed generator/job.
 
@@ -273,6 +274,7 @@ operator authorization. No release input can replace them.
 | `/opt/v8std-release/release-entry.py` | root0755, installed from `deploy/container/release-entry.py`; parent chain root-owned |
 | `/etc/v8std-release/policy.json` | root0600, parent root0755, installed from the disabled example and explicitly configured; no symlinks/writable parents |
 | `/var/lib/v8std-release` | root0700; journals, durable inbox, receipts, trusted manifests, references, pins, slots and verifier configuration; never writable by CI |
+| `/var/log/v8std-mcp/tool-usage.jsonl` | parent root:root0700; regular single-link file10001:root0640; launcher provisions before container creation, separately from release state/cache |
 | `/srv/v8std-indexes` and `/srv/v8std-indexes/v1` | precreate root0755 for nginx traversal; publisher alone writes, nginx only reads; objects directories0755/files0644; staging0700 |
 | `/etc/nginx/v8std-release/upstream.conf` | root-owned managed include, installed pointing at the verified legacy endpoint during separately approved host setup, then hash-bound in the backup before bootstrap; not an arbitrary caller path |
 | systemd recovery units / sudoers | exact reviewed files from `deploy/container/`; validate locally on native Linux before enabling |
@@ -346,6 +348,43 @@ RuntimeMaxSec does not bound its execution. The timer runs on boot+15s and
 30s after completion; SSH scheduling uses fixed detached `v8std-release-job`,
 not `--pipe`/live stdin. A queued receipt survives scheduling failure, SSH loss
 and CI cancellation and is picked up by recovery.
+
+### Persistent private usage log
+
+The reviewed launcher creates the fixed log file exclusively, without following
+links or truncating existing bytes, and sets its final permissions explicitly
+even under the recovery service's UMask0077. UID10001 is numeric; a host passwd
+entry is unnecessary. Existing parent/file type, links, owner or permissions
+that differ from the fixed profile cause start to fail closed. Do not resolve
+that failure by blindly chowning, replacing or clearing an existing history:
+stop the release attempt and investigate the exact object under separate
+operator authority.
+
+Only the current file is bound read-write at
+`/var/log/v8std-mcp-usage.jsonl`, with the existing `--usage-log` argument.
+No log directory, archive or controller state is exposed. Container predecessors
+and candidates append to this same inode across restart and rollback, independent
+of slots and cache restoration. Start/reuse verifies the binding and argument;
+a malformed logging profile does not prevent ownership-checked stop/recovery.
+If a reused container's source file is missing, start refuses to manufacture a
+replacement inode. Direct/local image logging remains opt-in; this host profile
+does not change the image's defaults.
+
+During separately authorized host setup, install the reviewed
+`scripts/v8std_mcp_usage.logrotate` into the host's root-managed logrotate
+configuration and verify its native daily scheduler. Keep the legacy
+`/var/lib/v8std-mcp/tool-usage.jsonl` and its `su v8std-mcp v8std-mcp` stanza
+unchanged. The separate new stanza uses `su root root`, daily rotation,
+365 archives, compression and `copytruncate`, retaining the mounted inode.
+Never restore either usage log from a release backup or publish its raw events.
+
+Before activation, verify native file permissions, both actual rotations,
+private archive access, non-root MCP writes, restart/predecessor recovery and
+real `/healthz` readiness plus MCP responses. The logger is best effort:
+`copytruncate` has a copy/truncate loss window; this is not an exactly-once or
+lossless audit. Disposable local evidence does not prove installation, scheduler
+operation, full systemd/nginx recovery or target-host capacity. No monitor,
+sampler or public projection is installed by this slice.
 
 ## Task6 restricted wire interface and exact acknowledgements
 

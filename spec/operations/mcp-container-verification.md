@@ -725,3 +725,64 @@ Independent scoped review approved specification and quality with no findings.
 Only this parser gate is complete; CI/process, private logging, final image/load
 and whole-branch gates are not inferred from these focused tests. No publication,
 push, main merge, production mutation or100000-agent capacity claim was made.
+
+### Private runtime logging slice, 2026-09-15 (awaiting scoped review)
+
+Implemented after signed `04a8e5c3ffe96eb34b5379c18919e26bf0b70f56`; code and
+this evidence are committed together. Actual `HostAdapter.start` now provisions
+the separate fixed host log (parent root:root0700, single-link regular
+file10001:root0640), binds only that file RW, and supplies existing `--usage-log`.
+Unsafe existing objects are rejected without rewriting history; start/reuse
+profile checks do not change ownership-checked stop/recovery. Legacy history,
+backup exclusions and its rotation stanza are unchanged. Direct image logging
+defaults, logger/schema, CI, parser and retired monitoring were not changed.
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_logging tests.test_v8std_mcp_release tests.test_v8std_mcp_server tests.test_v8std_mcp_logging_docker.LoggingFixtureCleanupTests -v
+V8STD_TASK6_LOGGING_DOCKER=1 .venv/bin/python -m unittest tests.test_v8std_mcp_logging_docker -v
+```
+
+TDD: actual-launcher RED15 assertion failures; native preparation/refusal
+RED13; real rotation RED (four new MCP events remained unrotated); scoped
+cleanup-failure RED1. All went GREEN after their corresponding fixes. Focused
+regression run118 tests207.715s:114 passed,4 Linux-only skips on macOS. Final
+opt-in run3 tests17.520s passed, including a nested native4/4 in0.003s with no
+skips. Also checked ordinary architecture validation and slice impact; final
+merge gates/review are not inferred from these checks.
+
+Docker29.7.2, Linux7.0.12-linuxkit arm64; actual logrotate3.22.0 and gzip
+exercised both unchanged legacy and separate new root/copytruncate stanzas.
+Native UMask0077 creation/reuse and hostile file/parent cases use real launcher
+code and real uid/file permissions, without a passwd entry for10001. Actual
+launcher argv was executed with fixture-only image/path translation and
+read-only runtime script overlays. Two non-root read-only/cap-drop containers
+each used512MiB,1CPU,128pids,64MiB tmpfs,refresh0; no Docker socket or privileged
+runtime. Five actual health/initialize/search/successful-page checkpoints span
+old/candidate start, rotation, candidate restart and return to old. Four events
+remain in the gzip archive, six subsequent events in the current log, and the
+legacy event remains separately archived; inode/owner/mode are preserved.
+
+Final fixture `v8std-task6-logging-eeb6033e246f4ca5` used the retained regression
+image `sha256:bec25fa5b9f240225db206c5e21d35a8c28e2d4ae30b1b878d272eacd9df1031`,
+whose observed runtime SHA remains `f5c45d23fc31285e96920719285b0a9253e4a6fe`.
+This is not a new release artifact or exact-source candidate build. Corpus is
+the independent synthetic one-page fixture, not a mixed-load capacity corpus.
+No p95/memory/admission/100000-agent claim is made.
+
+Earlier fixture health failures were not product RED: an internal Docker
+network did not publish the loopback port despite ready native health. A helper
+DNS-name attempt also failed MCP's existing host profile. The final fixture
+uses its own ordinary bridge and the unmodified launcher loopback port, with
+no new client/security exception. All named containers, volume, network and
+helper image tags were removed and absence checked; unrelated
+containers were preserved. Cleanup failures are reported without hiding the
+primary test error and do not skip other owned cleanup attempts. Normal build
+cache and pre-existing regression images were not pruned.
+
+This proves bounded logging lifecycle and actual forced rotation, not complete
+controller attestation, native systemd/nginx rollback, host installation/daily
+scheduling or public-default image provenance. Best-effort JSONL and the known
+copytruncate loss window remain explicit. Existing Starlette/pip warning history
+was not suppressed or fixed; no such warning was emitted by the final focused
+run. Scoped review, CI/process, final integrated build/full suite/image/load and
+external activation gates remain separate. No Task6/review checkbox is closed.

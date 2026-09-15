@@ -44,6 +44,8 @@ INSTALL = Path("/opt/v8std-release/scripts/v8std_mcp_release.py")
 LEGACY_UNIT = "v8std-mcp.service"
 LEGACY_APP = Path("/opt/v8std-mcp")
 LEGACY_DATA = Path("/var/lib/v8std-mcp")
+USAGE_LOG = Path("/var/log/v8std-mcp/tool-usage.jsonl")
+USAGE_LOG_TARGET = "/var/log/v8std-mcp-usage.jsonl"
 LEGACY_CONFIG = Path("/etc/systemd/system/v8std-mcp.service")
 LEGACY_PYTHON = Path("/usr/bin/python3.12")
 LEGACY_CACHE = {"pages.jsonl", "search-vectors.jsonl", "llms.txt", "llms-full.txt"}
@@ -239,6 +241,64 @@ def trusted_path(path):
         info = entry.lstat()
         require(not stat.S_ISLNK(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022,
                 "policy_permissions")
+
+
+def prepare_usage_log(*, create=True):
+    """Provision only the fixed private inode; never repair/truncate history."""
+    parent = USAGE_LOG.parent
+    trusted_path(parent.parent)
+    try:
+        try:
+            parent.mkdir(mode=0o700)
+            os.chown(parent, 0, 0)
+            sync_dir(parent.parent)
+        except FileExistsError:
+            pass
+        directory = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            info = os.fstat(directory)
+            require((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == (0, 0, 0o700), "usage_log_directory")
+            flags = os.O_NOFOLLOW | os.O_NONBLOCK
+            try:
+                fd = os.open(USAGE_LOG.name, os.O_RDONLY | flags, dir_fd=directory)
+            except FileNotFoundError:
+                require(create, "usage_log_missing")
+                fd = os.open(USAGE_LOG.name, os.O_RDWR | os.O_CREAT | os.O_EXCL | flags, 0o600, dir_fd=directory)
+                try:
+                    os.fchown(fd, 10001, 0)
+                    os.fchmod(fd, 0o640)  # Explicit final mode despite UMask0077.
+                    os.fsync(fd)
+                    os.fsync(directory)
+                except BaseException:
+                    os.close(fd)
+                    raise
+            try:
+                info = os.fstat(fd)
+                require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1
+                        and (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == (10001, 0, 0o640), "usage_log_file")
+            finally:
+                os.close(fd)
+        finally:
+            os.close(directory)
+    except OSError:
+        raise ReleaseError("usage_log_file") from None
+
+
+def check_usage_binding(info):
+    """Start-only guard: a malformed logging profile cannot forbid owned stop."""
+    mounts = info.get("Mounts") or []
+    selected = [mount for mount in mounts if mount.get("Destination") == USAGE_LOG_TARGET]
+    require(len(selected) == 1 and selected[0].get("Type") == "bind"
+            and selected[0].get("Source") == str(USAGE_LOG) and selected[0].get("RW") is True, "usage_log_binding")
+    for mount in mounts:
+        if mount is selected[0]:
+            continue
+        source = Path(mount.get("Source", ""))
+        require(source not in USAGE_LOG.parents and not source.is_relative_to(USAGE_LOG.parent)
+                and Path(mount.get("Destination", "")) not in Path(USAGE_LOG_TARGET).parents, "usage_log_exposure")
+    command = info.get("Config", {}).get("Cmd") or []
+    flags = [i for i, arg in enumerate(command) if arg == "--usage-log" or arg.startswith("--usage-log=")]
+    require(len(flags) == 1 and command[flags[0]:flags[0] + 2] == ["--usage-log", USAGE_LOG_TARGET], "usage_log_argument")
 
 
 def validate_bootstrap_window(window, envelope, *, recovery=False):
@@ -613,6 +673,9 @@ class HostAdapter:
     def start(self, record, deadline):
         info = self.inspect(record, deadline)
         if info:
+            check_usage_binding(info)
+        prepare_usage_log(create=info is None)
+        if info:
             if not info["State"]["Running"]:
                 run(["docker", "start", record["name"]], deadline)
             return
@@ -632,10 +695,12 @@ class HostAdapter:
              "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m,mode=1777",
              "--mount", f"type=bind,source={cache},target=/var/lib/v8std-mcp",
              "--mount", f"type=bind,source={directory / 'control'},target=/run/v8std-release,readonly",
+             "--mount", f"type=bind,source={USAGE_LOG},target={USAGE_LOG_TARGET}",
              "-p", f"127.0.0.1:{record['port']}:8000", IMAGE + "@" + record["platform_digest"],
              "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000",
              "--site-url", config["site_url"], "--refresh-seconds", str(config["refresh_seconds"]),
-             "--max-snippet-chars", str(config["max_snippet_chars"])], deadline)
+             "--max-snippet-chars", str(config["max_snippet_chars"]),
+             "--usage-log", USAGE_LOG_TARGET], deadline)
         self.inspect(record, deadline)
 
     def control(self, record, mode, token, manifest=None):
