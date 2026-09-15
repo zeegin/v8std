@@ -1,4 +1,5 @@
 """Opt-in native logging evidence; exact owned fixtures, never host deployment."""
+from collections import Counter
 import json
 import os
 from pathlib import Path
@@ -217,6 +218,9 @@ class LoggingDockerTests(unittest.TestCase):
         before = native("f.native_observe()")
         self.assertEqual((before["logs"]["uid"], before["logs"]["gid"], before["logs"]["mode"], before["logs"]["parent_mode"]),
                          (10001, 0, 0o640, 0o700))
+        # Exact controlled inventory, not an exactly-once concurrent-rotation promise.
+        self.assertEqual(Counter(e["tool"] for e in before["logs"]["events"]),
+                         {"v8std_search": 2, "v8std_get_page": 2})
         self.assertEqual({e.get("query") for e in before["logs"]["events"] if e["tool"] == "v8std_search"},
                          {"before-rotation-old", "before-rotation-candidate"})
         rotated = native("f.native_rotate()")
@@ -237,6 +241,8 @@ class LoggingDockerTests(unittest.TestCase):
         after = native("f.native_observe()")
         for field in ("inode", "uid", "gid", "mode", "parent_mode"):
             self.assertEqual(after["logs"][field], before["logs"][field])
+        self.assertEqual(Counter(e["tool"] for e in after["logs"]["events"]),
+                         {"v8std_search": 3, "v8std_get_page": 3})
         self.assertEqual({e.get("query") for e in after["logs"]["events"] if e["tool"] == "v8std_search"},
                          {"after-rotation-candidate", "after-restart-candidate", "after-rollback-old"})
         self.assertEqual(after["legacy"], rotated["files"]["legacy"])

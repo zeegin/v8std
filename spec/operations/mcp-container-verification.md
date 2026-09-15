@@ -786,3 +786,31 @@ copytruncate loss window remain explicit. Existing Starlette/pip warning history
 was not suppressed or fixed; no such warning was emitted by the final focused
 run. Scoped review, CI/process, final integrated build/full suite/image/load and
 external activation gates remain separate. No Task6/review checkbox is closed.
+
+### Logging review FIX1 — controlled event inventory, 2026-09-15
+
+The scoped logging review approved ee4a5aa with no Critical/Important findings;
+this resolves its Minor test-evidence gap. Only the lifecycle test assertions
+change: exact tool histograms require2 search +2 page events before rotation
+(the existing archive equality preserves those four), and3 search +3 page
+events in the final current file. Existing marker/inode/archive checks remain.
+This does not promise exactly-once logging under concurrent rotation.
+
+Native mutation evidence: the old assertions passed17.501s with page events
+removed before rotation (only2 archived events) and a duplicate search appended
+afterward (7 current events). New assertions reject missing pages in10.852s
+and the final duplicate independently in16.139s. Mutations touched only the
+synthetic file in the exact owned helper; no production code/helper was changed.
+An initial stdin-launched probe failed34.860s before assertions because spawn
+could not load `<stdin>`; corrected to `python -c`, not counted as product RED.
+
+```sh
+V8STD_TASK6_LOGGING_DOCKER=1 .venv/bin/python -m unittest tests.test_v8std_mcp_logging_docker.LoggingDockerTests.test_native_mcp_restart_rollback_and_both_logrotate_stanzas -v
+```
+
+Unmodified native lifecycle:1 test16.853s **OK**, no skips/warnings. Exact4/6
+event inventories, MCP responses, actual logrotate and prior lifecycle checks
+passed. Last fixture `v8std-task6-logging-eb971cce81a64287`; all owned containers,
+volume, network and helper tags were removed and absence checked. Unrelated
+containers remain running; no global Docker cleanup. No full suite,
+CI, process/plan, runtime/logger or rotation-policy changes were made in FIX1.
