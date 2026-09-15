@@ -595,12 +595,48 @@ Pages manifest. Every runtime deployment references published exact digest.
   This checkbox remains incomplete until container logger integration is
   implemented and verified. Dashboard retirement alone does not complete it.
   Local OpenMetrics remains a separate deferred design.
+
+  Execution slice (approved continuation2026-09-15): retain the existing
+  `/var/lib/v8std-mcp/tool-usage.jsonl` history and rotation stanza unchanged.
+  The root-owned host launcher prepares a separate fixed regular file
+  `/var/log/v8std-mcp/tool-usage.jsonl`, outside controller state, slots and
+  caches. Parent is root:root0700; file is10001:root0640. Creation is exclusive,
+  no-follow and non-truncating; existing wrong type, links, ownership or public
+  permissions fail closed without rewriting history. Only this file is mounted
+  read-write at `/var/log/v8std-mcp-usage.jsonl`, passed by `--usage-log`.
+  Do not expose the log directory, archives, release state or Docker socket.
+  Existing-container reuse must verify this logging binding before start;
+  ownership-checked stop/recovery must remain possible on a malformed candidate.
+
+  Add RED behavior tests for the actual `HostAdapter.start` command boundary,
+  non-destructive preparation/reuse, hostile file shapes/permissions and
+  persistence across restart/rollback. Then implement the minimal launcher
+  integration and a separate root-run daily365/compress/copytruncate stanza
+  (`su root root`, no inode replacement). Native Linux evidence must exercise
+  non-root writes and actual logrotate, preserving pre-rotation events in the
+  archive and later events in the current file. Cover the existing legacy log
+  and actual MCP responses; no live host mutation or broad Docker cleanup.
+  Use focused release/server tests and opt-in disposable Docker integration;
+  record commands/results and exact limitations before independent review.
+  Existing best-effort JSONL schema stays unchanged: copytruncate has a known
+  copy/truncate race, so this does not promise lossless audit or exactly-once.
+  See [upstream logrotate manual](https://github.com/logrotate/logrotate/blob/main/logrotate.8.in).
 - [ ] **VERIFY retained parser finding:** Add RED/GREEN for `![<code>](...)`
   followed by a visible internal link. HTML-looking image-alt text must not
   suppress rebasing or unknown-target validation of subsequent visible links.
   Preserve actual code/literal content, source offsets and canonical hashes.
   This is the concrete deferred Task3 review finding, not a new Markdown
   interpretation contract or permission to waive a pre-existing release defect.
+
+  Execution slice (approved continuation2026-09-15): first add a fixture with
+  an HTML-looking image alt and a following known internal link, and a separate
+  fixture with a following unknown target. Assert literal rebased destinations
+  and `unresolved_internal_link`, respectively; include real HTML code/literal
+  controls and unchanged source/hash. Run
+  `.venv/bin/python -m unittest tests.test_v8std_mcp_presentation -v` for RED,
+  isolate image-alt parser side effects without changing rendered Markdown
+  semantics, then rerun presentation and snapshot-format suites for GREEN.
+  Commit the bounded fix for independent review before final CI integration.
 - [ ] **Final gates:** Run semantic impact on actual paths, CLI `impact`,
   `validate --merge-ready`, all applicable fitness; strict build, then full suite;
   container smoke and shared-host mixed load on disposable local stack, review
