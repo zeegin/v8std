@@ -421,9 +421,12 @@ calls at this external boundary, not pretend mocked return values prove health.
 and `5ae7588` and independently reviewed. Final148 release/hold/snapshot/runtime
 tests and the real Docker/nginx check passed; five review findings were repaired
 with RED/GREEN and approved in scoped re-review. This supersedes the earlier
-paused29-test evidence. The first-migration slice below is still pending, so
-expanded Task5 and the complete plan are not yet complete. Native host setup,
-published-artifact evidence and production capacity remain external gates.
+paused29-test evidence. First migration is implemented in signed `fdb1d82` and
+passed separate spec/quality review. The182-test focused run, amended36 bootstrap
+tests and all36 restricted Linux cases passed; the verification record retains
+the exact sequence and earlier failed diagnostics. Task5 is locally complete.
+Native host setup/rehearsal, published-artifact evidence and production capacity
+remain external gates. Task6 and final branch gates are still required.
 
 - [x] **RED:** Test unknown schema, invalid digest/namespace/config path, stale or
   mutated duplicate ID, concurrent releases, failed pull/ready/switch/smoke,
@@ -487,13 +490,13 @@ execution envelope just before each bounded attempt so its300second deadline
 has not expired during preparation. Recovery of an already-started attempt
 must remain allowed after window expiry; only new attempts are refused.
 
-- [ ] **RED initial boundary:** Execute CLI against a disposable fixture and
+- [x] **RED initial boundary:** Execute CLI against a disposable fixture and
   show rejection outside/missing window, wrong envelope hash, existing active
   container, CI entry invocation and insufficient single-runtime capacity.
   Add subprocess fault cases after legacy stop, after candidate start, after
   switch and during initial active-record persistence. Assert the endpoint,
   exact served data and owned process count, not just a successful exit.
-- [ ] **GREEN initial transition:** Add a serialized initial journal and
+- [x] **GREEN initial transition:** Add a serialized initial journal and
   independently scheduled host recovery before stopping legacy. Stop/start is
   allowed only inside the operator window. Commit the first container record
   after local/public smoke, or restore verified Python config/data/upstream.
@@ -502,12 +505,16 @@ must remain allowed after window expiry; only new attempts are refused.
   not blindly roll back an already accepted container. Before acceptance,
   startup/reboot recovery restores the saved legacy service; after acceptance
   it starts the exact accepted digest, without racing the still-enabled legacy unit.
-- [ ] **VERIFY initial transition:** Run the real disposable process fixture
+- [x] **VERIFY initial transition:** Run the real disposable process fixture
   under restricted memory, including no-overlap, SIGKILL/lost SSH, crash at each
   persistence boundary, duplicate request and rollback failure. Record absence
   of any simultaneous legacy/candidate process in stop/start mode. Keep static
   archive GET/HEAD available throughout. Before the host window, replay the
   tested runbook on native Linux and measure return-to-legacy time.
+
+The completed checkbox records local fixture verification. Native host rehearsal
+remains a prerequisite for the later operational window; it has not been
+performed or inferred from Docker tests.
 
 Required observable outcomes (the fixture's CLI returns JSON with these fields):
 

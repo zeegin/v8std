@@ -554,3 +554,66 @@ bootstrap tests; it is not an installed backup/restart or indefinite hold proof.
 Ordinary architecture validation/impact and whitespace checks passed. No whole
 repository suite, strict build, merge-ready, main merge/push, registry publish,
 Catalog submission, server setup or production migration is claimed here.
+
+### First migration: reviewed local implementation, 2026-09-15
+
+Signed `fdb1d829ca9b9958ea2f3c716bafe68b7f33c58f` implements operator-only
+bootstrap, a bounded hash-bound window, protected legacy restoration and an
+independent recovery/boot guard. Separate review approved spec compliance and
+scoped quality without Critical, Important or new Minor findings. Task5 is
+complete locally, not the first live migration or whole-branch acceptance.
+
+Verification sequence (overlapping suites are not independent coverage):
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_release tests.test_v8std_mcp_release_hold tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_runtime -v
+.venv/bin/python -m unittest tests.test_v8std_mcp_release.BootstrapBoundaryTests tests.test_v8std_mcp_release.BootstrapProcessTests -v
+V8STD_TASK5_DOCKER=1 .venv/bin/python -m unittest tests.test_v8std_mcp_release_docker.DockerReleaseTests.test_bootstrap_process_fault_matrix_in_restricted_linux -v
+```
+
+The first run passed182 tests in253.933s. Two subsequent bootstrap self-review
+fixes close the legacy boot fence before restoration retry and make mid-copy
+SIGKILL staging retryable. The amended bootstrap run passed36 tests in108.894s.
+All36 cases then passed in restricted Linux containers: wrapper365.299s total,
+five batches of8/8/8/8/4 cases, unittest times42.853/65.154/101.238/95.499/58.021s.
+Each batch retained a240s test watchdog. Production300s transaction,90s readiness,
+30s smoke,45s stop and loader360s/read20s are unchanged.
+
+The existing local runtime image above was used with a read-only source mount
+and historical code pinned to `b7bef11`; this is not a new release image build.
+Each Linux batch had1CPU,768MiB memory/no extra swap,128PIDs,256MiB tmpfs,
+networknone, UID10001, read-only/cap-dropALL/init/no-new-privileges. Real old/new
+MCP processes, HTTP proxy, served identities and static requests were tested;
+Docker/systemd/GitHub adapter effects were substituted where necessary.
+
+Earlier failures are not erased: crash-surviving descendants held captured
+stdout pipes open, so fixture capture now uses temporary files and controller
+PID wait. Two unpartitioned Linux runs timed out at240s. The first batched run
+then failed because a separate post-recovery health observer allowed only300ms
+including Python startup; only that observer changed to2s, below production's
+existing HTTP3s cap. The complete36-case Linux run covers the correction.
+No production timeout was increased. The earlier combined two-test Docker run
+remains failed; its nginx/hold/static test separately passed, repeating umask0077
+control, same-token reack, invalid-switch restoration, static GET/HEAD after
+runtime stop and two200/six429 downloads. Exact owned test resources were cleaned;
+existing images and unrelated containers/services were preserved.
+
+Acceptance is durable COMMITTED only after real local/public MCP smoke. Missing
+active-pointer persistence then reconciles the accepted image; preacceptance
+failure restores exact legacy source/config/cache. Tests cover SIGKILL around
+side effects, caller loss, expired-window recovery, failed rollback/retry,
+duplicates, capacity rejection and boot fencing. Full historical1423-page/
+3281-vector startup/search/three-Resource reads retain the stale-mtime negative
+control and zero-network fresh-cache restoration. Usage logs are not overwritten
+or treated as corpus identity. Existing Starlette warning remains unsuppressed.
+
+Task6 still must preserve monitoring: the current timer reads the old unit and
+flat usage log, while container launch does not yet supply new usage events.
+This is an integration defect, not the deferred dashboard/OpenMetrics redesign.
+The retained image-alt parser defect and warning triage remain final obligations.
+
+Native protected backup/venv/interpreter restoration, boot ordering/return time,
+single-runtime/overlap capacity, installed SSH/sudo policy, published-image
+provenance and external TLS/index delivery remain prerequisites for the later
+window. No window is scheduled; no host setup, main merge/push, registry publish,
+CI activation,100k capacity or live migration is claimed.
