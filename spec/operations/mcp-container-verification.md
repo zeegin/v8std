@@ -821,3 +821,192 @@ private-operations gate is complete. Separate production410/no-store evidence
 is in `2026-09-15-public-monitoring-retirement.md`; it is not a claim that this
 new logger has been installed there. Full controller/systemd/nginx acceptance,
 final exact-source artifact/load checks and external activation remain distinct.
+
+## Task6 CI/process and final local integration, 2026-09-15
+
+Implementation source commits: `18d19f10292c27e632bfc7d0d4aa2db6aa910dfe`
+(CI/publication helper, process-v2 pointers/current instructions, pinned
+test/build environment, installation guidance and bounded load harness),
+`601ee3ac486478d46a58085a82ef9a6379832b71` (actual snippet CLI baseline),
+`a2e38a9d1d97badb8fa4db459194d040d526cb7d` (two native load-fixture corrections).
+All signed G, same feature branch/checkout. No frozen structured document,
+runtime API/budget, snapshot schema, monitoring or previously accepted slice
+was modified. Parent owns independent review, plan acceptance and merge gates.
+
+The CI DAG uses pinned actions/Buildx/BuildKit/emulation/SBOM inputs, an actual
+actionlint gate and a separate hash-locked host test environment. Process-v2
+schema is unchanged; loader/instructions/consistency tests switch together.
+Publication compares committed input identities against independent successful
+runtime/corpus milestones (including earlier success within a failed run),
+not HEAD^ or archive hashes salted with the trigger SHA. Immutable image reuse
+retains its original source SHA. Bounded recovery uses existing manifest/image
+references and trusted attestations, not a new public metadata contract.
+
+Actual helper sequencing is covered through CLI/file/host-ingress boundaries:
+verify archive → exact COMMITTED publish receipt and public bytes → staged
+Pages manifest → separate reference acknowledgement → real anonymous/default
+digest smoke → stable promotion. Wrong IDs, QUEUED-only results, stale main,
+PR/fork/tag/failed/malformed gates fail closed. Disabling publication preserves
+an existing verified manifest. Image/corpus publication and runtime activation
+are independent; no bootstrap invocation or automatic activation is implied.
+
+Focused RED/GREEN included real standalone process-v2 CLI loading, disposable
+Git histories/failed publication successors, restricted ingress/publisher
+receipts, anonymous environment/timeout cleanup and actionlint. The anonymous
+test diagnostic was narrowed to a synthetic cleared environment and key-only
+messages; inherited environment values were not re-inspected or reprinted.
+Initial integrated publication/load covering command:
+`python -m unittest tests.test_v8std_mcp_load tests.test_mcp_publication -q`
+passed49 tests in4.189s. Process/architecture focused suite passed59 tests.
+
+Actual pinned builder strict build ran BEFORE full suite, never concurrently:
+3282 vectors,1430 article checks/0violations,3 canonical license files,
+Zensical `No issues found` (15.22s Zensical stage). Then hash-locked host Python:
+`python -m unittest discover -v` passed **697 tests in332.846s,17 opt-in skips**.
+Ordinary architecture validate/impact, generated diagnostic checks and actual
+actionlint passed. Later isolated workflow/harness fixes used covering tests,
+not repeated fullsuite/strict. This does not claim a post-fix full run.
+Original-env Starlette TestClient warning was reproduced with `-W error`;
+the separate test-only httpx2/httpcore2 lock resolves it without changing runtime
+SDK versions or suppressing warnings. Runtime image build still emits the
+known pip root-install warning; actual runtime remains UID10001.
+
+The real snippet CLI initially failed exit2 because --baseline-ref was omitted.
+Workflow now passes the previously accepted
+`3df5b40e773d0e7bc146ac2d9214934bb4145f73`; actual CLI regression RED→GREEN5
+covering tests plus actionlint. Real benchmark:231 identical search cases,
+20warmups/200samples/3series, all4 latency gates true. Median p95 ms:
+short47.734→47.035, procedure4k45.241→32k57.377,
+word48.978→56.169, quotes48.498→58.999.
+Search quality MRR0.994/p95 42.3ms; thresholds unchanged.
+
+### Truthful local candidate identity
+
+Built clean committed601ee3a before claiming the artifact; no old image overlay
+or SOURCE_SHA relabelling. The later harness-only commit has identical runtime
+AND corpus input identities according to the actual publication helper.
+Both linux/amd64 and linux/arm64 are present:
+
+| Image | OCI index digest |
+|---|---|
+| `v8std-task6-mcp:601ee3a` | `sha256:1e53cf13cd69c65de4be9b29390795250cfdbb7c636edb27c545a658da5d4ad8` |
+| `v8std-task6-site:601ee3a` | `sha256:1ac9d4d876fd6c5b471558a3f34f5f884af3e26081f9e2acf6fdfbd60bb8b4a0` |
+
+Actual exported index/platform/config hashes and source labels were checked,
+along with all16 explicit MCP COPY files' hashes/imports/nonroot UID on BOTH
+platforms. Actual per-platform SPDX SBOM and SLSA provenance/v1 JSON blobs were
+verified against their OCI descriptors. These local build records are NOT a
+trusted GitHub attestation or anonymously published registry artifact.
+Local Buildx0.36.1-desktop.1/BuildKit0.32.2 differ from CI-pinned0.37.1/0.33.0;
+both used the locked Python/build dependencies and exact SBOM generator digest.
+Public/local corpus archive bytes and manifest metadata were identical.
+
+Current corpus `bb1e02dc0b8c3d98e478aba6b2eaed83a96f82f55a94cbc186e6eec56c735bb1`,
+archive SHA256 `b7b28a96faaf461cb59e01628f5c40378acd2872df8f82ea6b4f1615209f0dd8`,
+2,868,482bytes, source601ee3a,1423page rows/3282vectors. Native final arm64
+container acceptance passed: stdio cold/warm-network-none7.93/6.85s,
+HTTP7.39/8.57s, correct EOF/SIGTERM/cache UID and stable bytes/mtime.
+Chrome18 local URLs, blocked[]/badResponses[], no external font/analytics.
+Earlier exact-source18d19f1 pair also passed both platform profiles; it is
+separate evidence, not relabelled601ee3a.
+
+### Bounded real-data load with private logging
+
+Command: `python scripts/check_mcp_load.py --mcp-image v8std-task6-mcp:601ee3a --site-image v8std-task6-site:601ee3a --source-sha 601ee3ac486478d46a58085a82ef9a6379832b71 --snapshot BASELINE_SNAPSHOT --refresh-snapshot CURRENT_SNAPSHOT --seconds 60 --clients 8 --idle 64 --burst 600 --output NEW_REPORT.json`.
+Absolute fixture paths, full commands, native failures and raw aggregates are
+recorded in the private Task6 CI report/evidence. First run failed before load:
+nginx FastCGI temp directory on read-only rootfs. Native nginx-t and focused
+RED→GREEN fixed all temp paths within the existing owned tmpfs. Second reached
+cleanup but rejected float metrics through the integer-only snapshot writer;
+fixed only the local evidence writer, preserving snapshot rejection tests.
+Neither failed run is used as saved numerical evidence. Third run exit0:
+
+| Controlled profile | Actual result |
+|---|---|
+| Data mix |817search/576page/345snippet/232diagnostics/346retained Resource reads |
+| Data aggregate |2316valid200,37.091RPS,p95 243.672ms,p99 290.420ms,0errors |
+| Bulk response p95 |llms.txt211.562ms/full287.777ms/pages.jsonl311.903ms |
+| Separate discovery burst |600 at concurrency64;545success/55retryable429/0unexpected errors |
+| Static archive downloads |526success,p95 22.646ms,1,508,823,899bytes,0errors |
+| Actual active-phase duration |62.441s including final in-flight/sample completion |
+| Transition |refresh20.007s; upstream switch to second same-image process40.105s |
+| Runtime cgroup memory peaks |A598,183,936B/B584,146,944B; oom/oom_kill/max0 |
+| Sampled runtime CPU/FD maxima |A196.93%/40FD;B132.76%/38FD;probe process included |
+| Private log |267,168B;UID10001:GID0,0640 under0700parent;tool counts817/576/345/232 |
+
+Each runtime1536MiB/2CPU/cache256MiB/pids128, read-only/cap-drop; edge128MiB/1CPU,
+site128MiB/.5CPU, isolated log preparer64MiB/.25CPU. Only that disposable preparer
+uses root+CHOWN on its own empty volume; MCP receives one file, no directory,
+Docker socket/group/global privilege. Real history is untouched; raw synthetic
+log volume removed. No public reader or default logger enablement added.
+All existing API/admission budgets/Resources retained. 19 stats/cgroup samples,
+1,312,127,787data-response bytes;211 Connection:close requests, one shared NAT.
+
+Explicitly PARTIAL dimensions:64idle sockets were opened but0remained at end
+(reload included, no idle-reconnect maintenance); refresh is a real committed
+provenance-only revision with identical four content hashes, not changed article
+content; switch is two processes of one image, not root-controller deployment.
+Short snippet in mixed load is separate from4k/32k benchmark. No TLS, long-duration
+capacity,100000-agent, target-host overlap or tariff claim.
+Hardware: Mac15,11/14CPU/38,654,705,664B RAM; Linux/aarch64 Docker VM14CPU/
+8,318,976,000B. Successful load stack's5containers/2networks/1logvolume and
+temporary source were removed with exact ownership verification; failed/probe
+stacks likewise cleaned. Unrelated existing containers preserved.
+
+External gates remain UNPERFORMED: real main protection,
+required checks/controlled bypass, explicit branch-only main
+environment restrictions, credentials/host install, trusted CI publication,
+anonymous public-default digest proof, production activation and parent review.
+Environment name or protected-branches-only selection alone is insufficient.
+No registry publication, GitHub settings/secret changes, push/merge/deploy,
+Catalog submission or upstream claim was made by this implementation slice.
+
+### Covering content-delta and maintained-idle check
+
+At main's request, the two explicitly partial dimensions above were exercised
+with a bounded follow-up, without rebuilding or relabelling601ee3a images.
+Signed `3f5499a87eef16d589d20dad84502e7bcacc0984` changes only the load harness
+and tests: real TCP EOF/reconnection regression, .25s bounded idle maintenance,
+and before/after actual bulk-Resource text hashes checked against the expected
+presented snapshot. RED missing idle helper; a second RED caught canonical
+archive hash versus presented Resource hash. GREEN51 focused tests in6.069s,
+actual actionlint/diff-check. Input identities601ee3a==3f5499a for both runtime
+and corpus; no image/source label change is warranted for these harness edits.
+
+Controlled fixture is the complete real601ee3a corpus plus an explicit local
+synthetic marker on std437/both llms texts; real vectors were regenerated and
+all archive semantics verified. All four content hashes changed. Fixture
+source ID is forty1digits and is explicitly NOT committed/release provenance.
+It is not publishable evidence or a new public snapshot contract. The candidate
+image remains truthful601ee3a; no real article/source file was modified.
+
+Same60s/8clients/64idle/600burst/limits and mix, with current601ee3a snapshot
+initially and the synthetic delta at20.004s, second same-image process at40.104s.
+Actual62.403s, max8inflight:2226valid data calls,35.671RPS,p95 279.207ms/
+p99 326.386ms,0unexpected errors. Counts search774/page556/snippet336/
+diagnostics226/Resource llms.txt112/full112/pages110. Bulk p95 respectively
+244.494/341.439/394.647ms. Static518success,p95 29.074ms/0errors.
+Separate discovery564success/36retryable429/0unexpected errors.
+64idle sockets reconnected after EOF;64/64 open at end;204 data requests used
+Connection:close. This proves the bounded maintenance behavior, not gap-free
+or long-duration idle capacity.
+
+Actual presented pages Resource SHA256 changed
+`3b9628faabe0f3e80c2b09aab72077c86e1817ac230951ca1669dc47ee5ac64f` →
+`085c471e00e8b9afd8d91f0ac0211a6e9d430d289264b87e31982c07f29b3f91`,
+both exactly matching their expected content. Two validation Resource reads
+are outside measured request aggregates. Cgroup peaks633,217,024/586,391,552B,
+oom/oom_kill/max0, sampled CPU199.61%/159.58%, FD40/32. Private log255,788B,
+0640/UID10001:GID0, exact tool histogram774/556/336/226; no real history touched.
+The follow-up5containers/2networks/logvolume/source fixture were verified removed.
+
+Final601ee3a amd64 acceptance also passed: stdio cold/warm117.61/109.37s,
+HTTP117.71/137.21s, proper readiness/cache/EOF/SIGTERM. This is emulation,
+not native amd64 performance. All own native acceptance containers cleaned.
+Old18d19f1 candidate tags and temporary CI builder were removed; exact exported
+OCI/evidence files and the final601ee3a pair are retained for scoped review.
+Temporary test environment, baseline source export and synthetic source copy
+were moved to the user's Trash (recoverable). No global Docker cleanup/login/
+config change. Original `.venv` and unrelated containers remain
+untouched. Parent's review/external gates above remain open; implementation
+evidence is not acceptance or deployment authority.
