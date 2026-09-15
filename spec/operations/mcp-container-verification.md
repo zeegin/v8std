@@ -4,14 +4,22 @@ This is implementation evidence, not authorization to publish or activate a host
 The accepted design and contracts remain authoritative. Unfinished or external
 checks below must not be reported as passed.
 
+**2026-09-15 direction update:** public monitoring preservation and the proposed
+private monitor-state bridge are superseded by the approved retirement design.
+Production410, masked units and closed archive are recorded separately in
+[retirement evidence](2026-09-15-public-monitoring-retirement.md). Earlier dated
+measurements and design-pause text below describe history, not current tasks.
+Private container logging, CI and the other Task6 gates remain incomplete.
+
 ## Scope and baseline
 
 - Main baseline: `b7bef11e145a188b30e7a7b17df2be4cb1acbd0c`.
 - Approved design package: `537fe79`; implementation plan: `a3b2474`, with later
   recorded interface refinements on the same feature branch.
 - Working branch: `codex/mcp-container-distribution-design`, primary checkout.
-- No live host changes, image publication, Catalog submission, PR closure or
-  production activation are established by this record.
+- No container host installation, image publication, Catalog submission, PR
+  closure or container activation are established by this record. The separately
+  authorized public-monitoring retirement is the only later live change here.
 - Capacity of 100,000 coding agents is a target, **not a measured result**.
 
 ## Completed local evidence
@@ -82,8 +90,12 @@ and cache/port configuration. Scoped re-review confirmed all five addressed.
 One pre-existing image-alt HTML protection edge case remains assigned to final
 integration review; task acceptance is not final release acceptance.
 
+Current equivalent regression command (the historical189-test run included the
+now-retired dashboard tests):
+
 ```sh
-.venv/bin/python -m unittest tests.test_v8std_mcp_snapshot_format tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_presentation tests.test_v8std_mcp_runtime tests.test_v8std_mcp_index tests.test_v8std_mcp_snippet tests.test_v8std_mcp_server tests.test_v8std_mcp_combined tests.test_v8std_mcp_capacity tests.test_v8std_mcp_monitoring
+.venv/bin/python -m unittest tests.test_v8std_mcp_snapshot_format tests.test_v8std_mcp_snapshots tests.test_v8std_mcp_presentation tests.test_v8std_mcp_runtime tests.test_v8std_mcp_index tests.test_v8std_mcp_snippet tests.test_v8std_mcp_server tests.test_v8std_mcp_combined tests.test_v8std_mcp_capacity
+V8STD_MONITORING_RETIREMENT_DOCKER=1 .venv/bin/python -m unittest tests.test_v8std_mcp_monitoring_retirement -v
 .venv/bin/python -m tests.mcp_runtime_benchmark
 ```
 
@@ -607,7 +619,8 @@ duplicates, capacity rejection and boot fencing. Full historical1423-page/
 control and zero-network fresh-cache restoration. Usage logs are not overwritten
 or treated as corpus identity. Existing Starlette warning remains unsuppressed.
 
-Task6 still must preserve monitoring: the current timer reads the old unit and
+Historical requirement, superseded by the2026-09-15 retirement: Task6 was to
+preserve monitoring because the then-current timer read the old unit and
 flat usage log, while container launch does not yet supply new usage events.
 This is an integration defect, not the deferred dashboard/OpenMetrics redesign.
 The retained image-alt parser defect and warning triage remain final obligations.
@@ -663,8 +676,8 @@ new Critical, Important or Minor findings. The reviewer checked the scenarios
 and evidence against the fix diff without duplicating the test runs. This
 completes only the context/harness repair slice, not Task6 or release acceptance.
 
-The earlier monitoring classification above is refined: preserving the existing
-dashboard is required, but the approved package does not define how its
+Historical classification before retirement: preserving the existing
+dashboard was required, but the approved package did not define how its
 unprivileged reader obtains fresh live state from the root-owned container
 controller. A durable COMMITTED receipt is not runtime liveness; the controller
 unit being active is not MCP uptime; snapshot `loaded_at` is not process start.
@@ -672,7 +685,7 @@ The real monitor reader and controller-status probes reproduce these semantic
 counterexamples even while the existing monitoring tests pass.
 
 Under `v8std-architecture` failure recovery, implementation of this integration
-and remaining Task6 work is paused for brainstorming and revised design/plan
+and remaining Task6 work was paused for brainstorming and revised design/plan
 approval. A bounded private atomic state file is a proposed approach, not an
 implemented or accepted interface. Its producer/reader authority, identity,
 freshness, error behavior and compatibility must be specified before code.

@@ -6,6 +6,12 @@
 structured plan: их нельзя требовать до merge-ready и одновременно выполнять
 только после проверенного main.
 
+Уточнение15сентября: публичный мониторинг отдельно отключён по явному
+согласованию, см. [проверки и архив](2026-09-15-public-monitoring-retirement.md).
+Сохранение dashboard и private sampler больше не входят в выпуск. Закрытые
+логи/rotation и health/readiness остаются; подключение persistent usage log
+нового контейнера всё ещё требует реализации и проверки в Task6.
+
 **Goal:** опубликовать рабочий `ghcr.io/zeegin/v8std-mcp`, обеспечить публичный
 источник индексов и перевести `ai.v8std.ru/mcp` на тот же опубликованный образ.
 
@@ -141,7 +147,9 @@ VIRTUAL_ENV="$PWD/.venv" ./scripts/zensical_docs.sh build --strict
 inventory и точный список targets. Этот документ сам по себе не выдаёт полномочия.
 
 1. Сохранить вне сервера backup legacy code/config/data, nginx/TLS/renewal и
-   мониторинга. Проверить чтение backup и путь запуска старого сервиса без сети.
+   закрытых операционных данных. Использовать post-retirement inventory, не
+   возвращать generator/job/public files из старых backup. Проверить чтение
+   backup и путь запуска старого сервиса без сети.
 2. Подготовить статическое хранилище `/indexes/v1/` и restricted upload identity.
    nginx обслуживает его независимо от Docker/runtime. В первой фазе current
    upstream MCP не менять.

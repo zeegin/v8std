@@ -79,6 +79,11 @@ V8STD_MONITORING_RETIREMENT_DOCKER=1 .venv/bin/python -m unittest tests.test_v8s
 
 **Files:** Modify candidate-only `spec/plans/2026-09-10-mcp-container-distribution-plan.md`, `spec/designs/2026-09-10-mcp-container-distribution-design.md`, `spec/operations/mcp-container-activation.md`, `spec/operations/mcp-container-verification.md`, `spec/operations/mcp-first-container-release-roadmap.md`; create `spec/operations/2026-09-15-public-monitoring-retirement.md`.
 
+Existing architecture tests also require the five canonical explanatory sections
+in candidate ADRs `spec/adr/2026-09-15-retire-public-mcp-monitoring.md` and
+`spec/adr/2026-09-15-mcp-private-container-monitor-input.md`. Add missing sections
+without changing their front matter, meaning or historical decision lifecycle.
+
 **Interfaces:** Consume Task1 tests and controller's actual production evidence. Produce unambiguous current runbooks, retaining dated historical observations as history.
 
 - [ ] Replace the container plan's public-monitor preservation step with retirement evidence plus persistent private logging/rotation checks for the new runtime (remaining incomplete until actually verified). Remove generator/tests from active test commands; replace with retirement conformance. Do not claim new container telemetry has been implemented.

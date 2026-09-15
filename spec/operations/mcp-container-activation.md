@@ -7,6 +7,11 @@ Local disposable evidence is not a live installation, CI activation, published
 image proof, or target-host capacity guarantee. This runbook authorizes none of
 those operations. The current external scope remains image-only.
 
+Public monitoring was separately retired on2026-09-15 with explicit production
+approval; see [retirement evidence](2026-09-15-public-monitoring-retirement.md).
+Do not restore its files/timer from an older backup. Below, preserved operational
+checks mean private logs and MCP health/readiness, not a public dashboard.
+
 ## Authority and stop conditions
 
 Initial activation requires an explicit operational request for the exact
@@ -27,7 +32,7 @@ reconcile a crash. A healthy systemd wrapper is not application readiness.
 - Identify the precise nginx virtual hosts, includes, default server, certificate
   paths and renewal hooks. Ensure the ai.v8std.ru TLS endpoint and renewal no
   longer depend on an old site's configuration before any cleanup.
-- Preserve SSH access, monitoring, fail2ban and certificate renewal. Removing an
+- Preserve SSH access, private logs, health/readiness, fail2ban and certificate renewal. Removing an
   old website is not permission to remove unrelated operating services.
 - Back up the existing Python runtime, environment/dependencies, unit/drop-ins,
   nginx configuration, working corpus/cache and certificate configuration to
@@ -100,7 +105,7 @@ proves support for 100,000 coding agents.
 
 Record the initial release journal, exact SHA/digests/corpus/configuration,
 public MCP/TLS and static delivery results, failure/rollback rehearsal and
-monitoring checks in the verification record. External Catalog acceptance and
+private operational checks and monitoring410 checks in the verification record. External Catalog acceptance and
 closure of the alternative PR remain separate delivery outcomes.
 
 ## Read-only legacy observations, not restoration proof
@@ -131,7 +136,7 @@ host. Full private evidence is in the Task5 handoff's
 - Check the MCP certificate and any dependencies on other virtual hosts
   before changing TLS. No unrelated service deletion is authorized.
   Preserve SSH, HTTP/HTTPS, loopback8765 until cutover, renewal and
-  monitoring. Record the remaining private inventory outside Git.
+  private logs/health checks. Record the remaining private inventory outside Git.
 
 Before migration, inventory and hash the entire saved code, dependency lock and
 installed venv/interpreter, unit/configuration and coherent data set; protect
@@ -195,7 +200,7 @@ Protected backup layout is fixed at `/var/lib/v8std-release/legacy/`:
   permissions are explicitly restored under UMask0077.
 - `unit` is the exact original `/etc/systemd/system/v8std-mcp.service` bytes;
   `upstream` is the exact inventoried managed upstream include. Both descriptors
-  require root ownership and mode0600 or0644. Other nginx/TLS/monitoring units
+  require root ownership and mode0600 or0644. Other nginx/TLS/operational units
   are not rewritten. `interpreter_sha256` binds `/usr/bin/python3.12`; a changed
   system interpreter fails closed and requires operator repair, not an automatic
   write into `/usr/bin`.
@@ -212,20 +217,24 @@ directories; no broad cleanup is performed. Cache destination mtimes must be **f
 timestamps. This lets the unchanged legacy unit/default remote URLs and3600s
 refresh serve its four verified files without startup network fallback. It is
 an immediate bounded rollback guarantee, not an indefinite old-runtime hold.
-Changing `tool-usage.jsonl` and monitoring inputs are never copied or overwritten;
-monitoring-output preservation after container cutover is a separate Task6 gate.
+Changing `tool-usage.jsonl` and private logs are never copied or overwritten;
+persistent private logging after container cutover is a separate Task6 gate.
+Public monitoring remains retired, including on rollback; construct the legacy
+backup from the post-retirement inventory, without its removed generator/job.
 
 Install the reviewed `legacy-release-guard.conf` only as
 `/etc/systemd/system/v8std-mcp.service.d/10-release-guard.conf`, plus the exact
 `v8std-bootstrap-recover.service` and `.timer`. The drop-in preserves original
-ExecStart and existing Before=monitoring/multi-user ordering. Its privileged
+ExecStart and existing legacy unit ordering. A dangling ordering reference to
+the retired monitor does not authorize unmasking or restoring it. Its privileged
 ExecCondition fails closed while a bootstrap is in flight or any container is
 accepted, even if active.json is missing. Recovery marks legacy start allowed
 only after the candidate is stopped and config/data/upstream are restored.
 The timer is required by legacy startup, runs at boot+5s and every15s after its
 service completes, independently of SSH. Recovery is not ordered Before=legacy:
 that would deadlock when it starts the original service. Validate this topology
-with native systemd, including enabled-legacy reboot and monitoring ordering.
+with native systemd, including enabled-legacy reboot while the retired monitor
+remains masked.
 The guard checks exact root-owned unit/drop-in bytes, active/enabled timer and
 loaded non-stale manager state before legacy stop. No automatic installation,
 enablement, daemon reload of an unreviewed unit set, or fallback guard is supplied.

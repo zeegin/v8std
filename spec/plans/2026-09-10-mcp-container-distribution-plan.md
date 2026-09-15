@@ -548,9 +548,9 @@ review; do not mark the live migration complete from these fixtures:
 `spec/operations/mcp-container-verification.md`, public installation docs and
 Catalog release metadata/harness under `deploy/docker-catalog/`,
 `scripts/check_mcp_container.py`, `tests/test_v8std_mcp_distribution.py`;
-existing monitoring integration in `scripts/v8std_mcp_monitoring.py`,
-`scripts/v8std_mcp_usage.logrotate`, `tests/test_v8std_mcp_monitoring.py`,
-release launch/host templates and their focused integration tests;
+private usage logging in `scripts/v8std_mcp_usage.logrotate`, release launch/host
+templates and their focused integration tests; public retirement conformance in
+`tests/test_v8std_mcp_monitoring_retirement.py` and its separate approved plan;
 the retained final parser regression in `scripts/v8std_mcp_presentation.py`
 and `tests/test_v8std_mcp_presentation.py`.
 
@@ -583,18 +583,18 @@ Pages manifest. Every runtime deployment references published exact digest.
   image-only scope without claiming Docker Catalog acceptance. Preserve the
   `longLived` source declaration and distinguish local test-catalog diagnostics
   from the actual Docker-published catalog; no upstream PR is a release prerequisite.
-- [ ] **VERIFY preserved monitoring:** First demonstrate the migration regression:
-  the existing timer reads the legacy unit and flat usage log, while the new
-  container emits no usage file. Preserve the existing public projection and
-  historical log readers, feed it actual accepted-runtime state and new tool
-  events, and verify rollback/restart/rotation without stale status or lost
-  history. Keep logs private, the existing unprivileged monitor and non-root
-  runtime; grant neither Docker-group membership nor a Docker socket to them.
-  Exercise the real launcher/logger/aggregator path, including failed or missing
-  status, rather than accepting a running controller as a healthy MCP runtime.
-  This implements the approved preservation of monitoring, not the separately
-  deferred dashboard/events-schema/OpenMetrics redesign. Any necessary public
-  schema or trust-boundary change must return to design before implementation.
+- [ ] **VERIFY private operations and retired public monitoring:** The approved
+  `design:mcp-public-monitoring-retirement` supersedes the earlier preservation
+  task. Consume its410/no-store conformance and production retirement evidence;
+  never recreate dashboard, timer, aggregator or private monitor-state bridge.
+  Independently wire and verify persistent private usage logging for the new
+  runtime through its real launcher: rollback/restart/rotation must preserve
+  existing history and new events without restoring logs from a release backup.
+  Preserve the non-root runtime and existing rotation policy; grant no Docker
+  socket/group. Test actual MCP health/readiness, not controller liveness.
+  This checkbox remains incomplete until container logger integration is
+  implemented and verified. Dashboard retirement alone does not complete it.
+  Local OpenMetrics remains a separate deferred design.
 - [ ] **VERIFY retained parser finding:** Add RED/GREEN for `![<code>](...)`
   followed by a visible internal link. HTML-looking image-alt text must not
   suppress rebasing or unknown-target validation of subsequent visible links.

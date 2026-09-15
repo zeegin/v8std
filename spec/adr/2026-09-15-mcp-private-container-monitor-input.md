@@ -33,19 +33,32 @@ contracts:
 
 # Закрытый вход непривилегированного мониторинга
 
+## Входные требования
+
+Основание исходного решения — свежесть наблюдения serving runtime,
+непривилегированный reader и сохранение usage history при container release.
+
+## Решение
+
 Root-owned sampler перед существующим batch job собирает действительное
 состояние serving runtime и атомарно пишет маленький private JSON. Агрегатор
 может только читать его; не получает полномочий Docker или release-controller.
 История usage отдельно остаётся persistent private data, а не частью cache.
 
+## Влияние на инварианты
+
 Свежесть, boot identity и проверка serving identity ограничивают доверие к
 сводке. Ошибка или переход означает unknown. Квитанция COMMITTED, active
 controller и загрузка нового corpus не заменяют процессные наблюдения.
+
+## Влияние на контракты
 
 Решение сохраняет старые readers и public fields. `restarts:null` для container
 честно обозначает отсутствие сопоставимого общего счётчика. Private details не
 расширяют публичную схему; общий редизайн/privacy-remediation сюда не включены.
 Это дополнение к release ADR, не его замена и не изменение release budgets.
+
+## Отклонённые альтернативы
 
 Socket/group у reader отвергнуты из-за избыточной власти; фиксированный sudo RPC
 избыточен для чтения batch-сводки; отдельный daemon не требуется. Цена файла —
