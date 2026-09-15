@@ -68,7 +68,7 @@ container/load acceptance и пишет новый отчёт проверки. 
 - Produces: unchanged five tool call signatures; `IndexGeneration` retains `corpus_id`, `index`, `canonical_site_url`, `page_paths` but no `resources` field; no `read_resource_text` method or independent Resource download/cache path.
 - Exposes no new public API. `build_server` may use one private `_disable_resource_handlers(server: FastMCP) -> None` helper in the same file; no new runtime dependency or Docker COPY path is needed.
 
-- [ ] **Step 1: Add failing wire and generation tests.**
+- [x] **Step 1: Add failing wire and generation tests.**
 
 Use the real SDK with existing in-memory/local snapshot fixtures. Add literal
 expected tool names and canonical lifecycle (initialize, initialized, tools).
@@ -104,7 +104,7 @@ Check a pickle roundtrip and real local-prefix page presentation. Retain the
 same archive/namespace and exercise warm/offline reuse. Do not replace
 same-generation assertions with source-text or `hasattr` checks alone.
 
-- [ ] **Step 2: Observe and record RED.**
+- [x] **Step 2: Observe and record RED.**
 
 Run the new module with the pinned interpreter:
 
@@ -116,7 +116,7 @@ Expected failures: Resources capability is present, resource requests succeed,
 or generation construction invokes the unwanted bulk formatter. An import
 error or invalid fixture is not the expected RED; repair that test setup first.
 
-- [ ] **Step 3: Implement the common runtime boundary.**
+- [x] **Step 3: Implement the common runtime boundary.**
 
 Remove the three `@server.resource` functions and change `MCP_API_PROFILES`
 to `["legacy-tools"]`. Add a private adapter after FastMCP construction:
@@ -149,7 +149,7 @@ legacy index Resource fetch method and its Resource-only limits/cache fields.
 Keep shared `_fetch_url`, parser, body limits, snapshot validators and site
 archive files required by actual index or loader paths. No corpus format change.
 
-- [ ] **Step 4: Migrate affected lifecycle tests and docs without losing coverage.**
+- [x] **Step 4: Migrate affected lifecycle tests and docs without losing coverage.**
 
 Replace resource positive assertions with tools and negative resource probes.
 Preserve real backpressure shutdown coverage: build a valid page fixture with
@@ -165,7 +165,7 @@ Document five tools with no MCP Resources; preserve all public website and
 installation URLs. Explain resource clients must use tools and that public
 web files remain downloadable. Do not rewrite historical spec/operation reports.
 
-- [ ] **Step 5: Run focused GREEN and self-review.**
+- [x] **Step 5: Run focused GREEN and self-review.**
 
 ```bash
 /tmp/v8std-final-gates.e7aqas/venv/bin/python -m unittest tests.test_v8std_mcp_tools_only tests.test_v8std_mcp_server tests.test_v8std_mcp_index tests.test_v8std_mcp_runtime tests.test_v8std_mcp_snippet tests.test_v8std_mcp_combined tests.test_v8std_mcp_snapshots -v
