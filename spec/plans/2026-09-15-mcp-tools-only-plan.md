@@ -257,7 +257,7 @@ task-scoped spec/quality review before Task 3.
   `v8std_get_page("std437")` output; report uses `page_content_hashes` and separate
   rejected-resource probe accounting, never successful resource throughput.
 
-- [ ] **Step 1: Add acceptance-helper RED tests.**
+- [x] **Step 1: Add acceptance-helper RED tests.**
 
 Exercise actual helper behavior with complete hand-derived envelopes:
 
@@ -276,7 +276,7 @@ content. The page-content expectation must come from the staged fixture's
 explicit body, not by invoking the response-hash function on both sides.
 Record existing helper failures before changing their implementation.
 
-- [ ] **Step 2: Update real container and mixed-load paths.**
+- [x] **Step 2: Update real container and mixed-load paths.**
 
 Container RPC helpers need a complete-envelope path for expected `-32601`
 errors; keep ordinary successful calls strict. Verify capability absence and
@@ -301,7 +301,7 @@ Fetch that page before and after refresh and compare its returned body hash
 with the two distinct fixture expectations. Identity-only changes do not pass.
 Do not relax snapshot limits or derive expected hashes from runtime presentation.
 
-- [ ] **Step 3: Observe GREEN and build a source-identified local image.**
+- [x] **Step 3: Observe GREEN and build a source-identified local image.**
 
 ```bash
 /tmp/v8std-final-gates.e7aqas/venv/bin/python -m unittest tests.test_v8std_mcp_distribution tests.test_v8std_mcp_load tests.test_v8std_mcp_tools_only -v
@@ -324,7 +324,7 @@ Consult current `--help` for concrete argument names rather than invent flags.
 No production traffic, registry push, privileged container or socket mount.
 Remove only the containers/networks/volumes created by these checks.
 
-- [ ] **Step 4: Record candidate evidence and finish focused verification.**
+- [x] **Step 4: Record candidate evidence and finish focused verification.**
 
 Write the operation report with exact source SHA/image ID, platform, cache
 origin, commands, successful tools and rejected Resources, changed content
@@ -341,7 +341,7 @@ required local candidate evidence are available.
 
 ## End-of-plan verification and integration boundary
 
-- [ ] Recheck actual diff against the approved five-file design package and preserve frozen main documents.
+- [x] Recheck actual diff against the approved five-file design package and preserve frozen main documents.
 - [ ] Run strict build first and then the full unittest suite with the existing pinned dependency environment.
 - [ ] Run architecture validate/impact, declared conformance modules and diff checks; record merge-ready outcome separately.
 - [ ] Preserve review/evidence for this plan and resolve its findings before marking its tasks complete.
