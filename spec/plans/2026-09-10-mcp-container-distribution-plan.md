@@ -553,6 +553,12 @@ templates and their focused integration tests; public retirement conformance in
 `tests/test_v8std_mcp_monitoring_retirement.py` and its separate approved plan;
 the retained final parser regression in `scripts/v8std_mcp_presentation.py`
 and `tests/test_v8std_mcp_presentation.py`.
+Final CI reproducibility inputs: create `requirements-test.lock`, `Dockerfile.ci`
+and narrowly scoped builder inputs under `deploy/ci/` if needed; use the existing
+build/runtime locks without upgrading runtime dependencies to fix test tooling.
+Create `scripts/check_mcp_load.py` and `tests/test_v8std_mcp_load.py` for the
+already required disposable mixed-load acceptance. No additional telemetry
+service, public endpoint or production workload is introduced by this harness.
 
 **Consumes:** producer, image harness and typed release controller CLIs.
 Publisher first places and externally verifies immutable corpus, then emits
@@ -571,6 +577,22 @@ Pages manifest. Every runtime deployment references published exact digest.
   Before activation retain working Pages delivery without publishing an ai
   manifest that points to an unavailable object. Build candidate artifacts locally;
   enabled publication either verifies the object or fails closed.
+
+  Execution refinement2026-09-15: lock the optional TestClient dependencies
+  separately, with hashes and compatibility tests; do not suppress its missing
+  dependency warning or change runtime HTTP clients. Pin the artifact builder's
+  complete dependency/font/compression inputs and action/tool image identities.
+  Run host-side tests with Docker CLI available; never mount its socket into a
+  docs/test container. Preserve the public profile's visual inputs.
+
+  Compare independent runtime/corpus input fingerprints to their last successful
+  publication, not only the preceding commit. Reuse the original corpus SHA when
+  its inputs are unchanged. Cover failed publication followed by unrelated edits,
+  reruns and stale runs. Poll exact typed COMMITTED receipts, verify public archive
+  bytes before Pages, then acknowledge a separate post-Pages reference. Preserve
+  the last verified manifest when publication is disabled; distinguish initial
+  absence from a later fetch failure. Smoke the anonymous exact digest and ready
+  default source before stable-tag promotion; external switches remain off here.
 - [ ] **GREEN process:** Write separate process plan, synchronize process v2
   pointer/instructions/tests. Preserve initial manual activation and explicit
   permission for push. Align all current policy references; historic v1 and old
@@ -643,6 +665,15 @@ Pages manifest. Every runtime deployment references published exact digest.
   whole branch and repair concrete findings. Record exact SHA/results and
   unperformed external operations. No push, merge of incomplete plan, PR closure
   or production deployment inferred from these green tests.
+
+  Build the final local candidate from committed source with truthful SOURCE_SHA;
+  an older image with module overlays is only a fixture. Run bounded mixed load
+  with usage logging enabled, actual search/page/snippet/diagnostics and retained
+  bulk reads, idle/reconnect/shared-NAT clients, refresh and static transfers plus
+  bounded switching. Record hardware, connection and active-work counts, RPS,
+  p95/p99, CPU/RAM/FD/network and log growth. Separate retryable429/503 from
+  unexpected500/timeouts. Local evidence cannot establish100000-agent capacity
+  or target-host overlap readiness; daily365 rotation is not a disk quota.
 
 ### Deferred external Docker Catalog gate
 
