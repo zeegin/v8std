@@ -601,20 +601,20 @@ Pages manifest. Every runtime deployment references published exact digest.
   plan and the subordinate process plan. This is restoration of that approved
   rule, not a new trusted-state endpoint, bootstrap flag or deployment authority.
 
-  - [ ] **RED polling:** Add scripted exact-ID receipts to
+  - [x] **RED polling:** Add scripted exact-ID receipts to
     `tests/test_mcp_publication.py`: runtime QUEUED → RECEIVED → COMMITTED with
     `cleanup_complete:false` → COMMITTED with `cleanup_complete:true`; publication
     COMMITTED with pending cleanup → complete for both publish and reference.
     Require eventual success, no early public archive fetch/live smoke/Pages
     write, and a bounded timeout when queue/cleanup never completes. Mismatched
     identity, terminal failure or non-null error must still fail immediately.
-  - [ ] **RED history:** Exercise absent/deleted and expired CI artifacts with
+  - [x] **RED history:** Exercise absent/deleted and expired CI artifacts with
     public404. Source planning may select a build candidate but its missing
     published state means UNKNOWN. Disabled publication must raise before any
     Pages-file mutation or accepted-state write. A valid public manifest plus
     independently verified archive recovers the prior source identity. Cover
     the actual prepare/finish CLI boundary as well as helper calls.
-  - [ ] **GREEN:** In `scripts/publish_mcp_artifacts.py`, admit QUEUED as a
+  - [x] **GREEN:** In `scripts/publish_mcp_artifacts.py`, admit QUEUED as a
     pending runtime receipt; accept publication COMMITTED only after cleanup.
     Keep exact identities, terminal-error checks and the existing300s budget.
     Treat absent/expired artifact history identically after verified recovery
@@ -635,7 +635,7 @@ Pages manifest. Every runtime deployment references published exact digest.
     First publication and recovery may use that enabled path while runtime
     deployment stays disabled. No initial-absence assumption or new permission
     is needed; failed verification leaves the existing site untouched.
-  - [ ] **VERIFY:** Run the focused publication module to prove RED/GREEN, then
+  - [x] **VERIFY:** Run the focused publication module to prove RED/GREEN, then
     publication/release/architecture tests. Update
     `spec/operations/mcp-container-activation.md` and record precise evidence in
     `spec/operations/mcp-container-verification.md`. Independent scoped review
