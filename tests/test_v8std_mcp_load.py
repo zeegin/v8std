@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -58,6 +59,22 @@ class LoadProfileTests(unittest.TestCase):
         self.assertNotIn("ssl_certificate", config)
         self.assertIn("listen 8000;", config)
         self.assertNotIn("listen 443", config)
+
+    def test_readonly_edge_places_all_nginx_temporary_directories_on_owned_tmpfs(self):
+        config = self.load.edge_config("mcp-a")
+        for directive, directory in (("client_body", "client"), ("proxy", "proxy"),
+                                     ("fastcgi", "fastcgi"), ("uwsgi", "uwsgi"), ("scgi", "scgi")):
+            self.assertIn(f"{directive}_temp_path /tmp/{directory};", config)
+
+    def test_local_evidence_preserves_finite_latency_numbers_without_relaxing_snapshot_json(self):
+        from v8std_mcp_snapshot_format import canonical_json, SnapshotError
+        report = {"duration_seconds": 60.125, "data": {"success_p95_seconds": .234}}
+        with tempfile.TemporaryDirectory(prefix="v8std-load-report-") as directory:
+            output = Path(directory) / "evidence/report.json"
+            self.load.write_report(output, report)
+            self.assertEqual(json.loads(output.read_text()), report)
+        with self.assertRaises(SnapshotError):
+            canonical_json(report)
 
     def test_cleanup_attempts_each_exact_owned_resource_and_preserves_primary_error(self):
         stack = self.load.Stack()

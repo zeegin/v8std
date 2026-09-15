@@ -111,7 +111,9 @@ def edge_config(upstream):
     server = server.replace("listen 443 ssl http2;", "listen 8000;")
     return ("worker_processes 1; worker_rlimit_nofile 131072; pid /tmp/nginx.pid;\n"
             "error_log /dev/stderr warn; events { worker_connections 65536; }\nhttp {\n"
-            "access_log off; client_body_temp_path /tmp/client; proxy_temp_path /tmp/proxy;\n" + http + server + "\n}\n")
+            "access_log off; client_body_temp_path /tmp/client; proxy_temp_path /tmp/proxy;\n"
+            "fastcgi_temp_path /tmp/fastcgi; uwsgi_temp_path /tmp/uwsgi; scgi_temp_path /tmp/scgi;\n"
+            + http + server + "\n}\n")
 
 
 class Stack:
@@ -221,6 +223,14 @@ def stage_snapshot(directory, destination):
 def pointer(path, manifest):
     save(path, manifest)
     path.chmod(0o644)
+
+
+def write_report(path, report):
+    # Local measurements contain finite fractional seconds; they are not the
+    # integer-only canonical snapshot/publication contract.
+    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(payload, encoding="utf-8")
 
 
 async def profile(stack, args, directory, names, manifests, endpoint, static_url):
@@ -408,7 +418,7 @@ def main(argv=None):
         for slot in ("a", "b"):
             require(not stack.inspect(names[slot])["State"]["OOMKilled"], "load_oom")
     report["cleanup"] = "verified removal of every exact labelled container, network and log volume; temporary source removed"
-    save(args.output, report)
+    write_report(args.output, report)
     compact = {key: report[key] for key in ("data", "static", "discovery_burst", "usage_log", "cleanup")}
     print(json.dumps(compact, ensure_ascii=False, indent=2))
     require(all(report[key]["unexpected_errors"] == 0 for key in ("data", "static", "discovery_burst")), "load_unexpected_errors")
