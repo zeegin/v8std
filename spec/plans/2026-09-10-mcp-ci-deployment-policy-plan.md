@@ -79,8 +79,12 @@ self.assertTrue(previous_manifest_path.is_file())
 ```
 
 - [ ] Implement/pin workflows, bounded typed publication helper and disabled-by-default
-  activation. Preserve Pages-only publishing before activation; do not publish
-  a public manifest for a missing ai object or promote a public-default MCP
+  activation. Preserve the existing published site before activation; a new
+  Pages publication requires a verified prior manifest/archive or a newly
+  committed and externally verified corpus publication. Missing history plus404
+  is UNKNOWN, not initial absence (the approved boundary in
+  `design:mcp-tools-only`, implemented by the2026-09-16 Task6 refinement).
+  Do not publish a public manifest for a missing ai object or promote a public-default MCP
   release without a ready source. Describe required main protection/environment
   settings as explicit external prerequisites, not already configured facts.
 - [ ] Run publication and architecture tests, then strict build before full suite.

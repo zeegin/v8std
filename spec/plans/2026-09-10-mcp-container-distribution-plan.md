@@ -590,9 +590,57 @@ Pages manifest. Every runtime deployment references published exact digest.
   its inputs are unchanged. Cover failed publication followed by unrelated edits,
   reruns and stale runs. Poll exact typed COMMITTED receipts, verify public archive
   bytes before Pages, then acknowledge a separate post-Pages reference. Preserve
-  the last verified manifest when publication is disabled; distinguish initial
-  absence from a later fetch failure. Smoke the anonymous exact digest and ready
+  the last verified manifest when publication is disabled. Missing publication
+  history is UNKNOWN, never proof of initial absence; a404 cannot authorize
+  Pages without a verified manifest. Smoke the anonymous exact digest and ready
   default source before stable-tag promotion; external switches remain off here.
+
+  Execution refinement2026-09-16 (three retained CI review findings): the
+  separately approved fail-closed choice is recorded in the boundary section of
+  `design:mcp-tools-only`; it overrides the earlier initial404 exception in this
+  plan and the subordinate process plan. This is restoration of that approved
+  rule, not a new trusted-state endpoint, bootstrap flag or deployment authority.
+
+  - [ ] **RED polling:** Add scripted exact-ID receipts to
+    `tests/test_mcp_publication.py`: runtime QUEUED → RECEIVED → COMMITTED with
+    `cleanup_complete:false` → COMMITTED with `cleanup_complete:true`; publication
+    COMMITTED with pending cleanup → complete for both publish and reference.
+    Require eventual success, no early public archive fetch/live smoke/Pages
+    write, and a bounded timeout when queue/cleanup never completes. Mismatched
+    identity, terminal failure or non-null error must still fail immediately.
+  - [ ] **RED history:** Exercise absent/deleted and expired CI artifacts with
+    public404. Source planning may select a build candidate but its missing
+    published state means UNKNOWN. Disabled publication must raise before any
+    Pages-file mutation or accepted-state write. A valid public manifest plus
+    independently verified archive recovers the prior source identity. Cover
+    the actual prepare/finish CLI boundary as well as helper calls.
+  - [ ] **GREEN:** In `scripts/publish_mcp_artifacts.py`, admit QUEUED as a
+    pending runtime receipt; accept publication COMMITTED only after cleanup.
+    Keep exact identities, terminal-error checks and the existing300s budget.
+    Treat absent/expired artifact history identically after verified recovery
+    fails with404: no trusted previous state. Do not confuse this read-only
+    build selection with permission to publish. Remove `previously_published`
+    as an absence authority and remove successful manifest-less prepare/finish:
+
+    ```python
+    # Publication.acknowledge
+    if receipt["state"] == "COMMITTED" and receipt.get("cleanup_complete") is True:
+        committed(receipt, header)
+        return receipt
+    # Disabled Publication.prepare:404 always raises, before touching pages_path.
+    # Enabled prepare establishes new positive evidence through the existing
+    # exact committed receipt AND verified externally downloaded archive.
+    ```
+
+    First publication and recovery may use that enabled path while runtime
+    deployment stays disabled. No initial-absence assumption or new permission
+    is needed; failed verification leaves the existing site untouched.
+  - [ ] **VERIFY:** Run the focused publication module to prove RED/GREEN, then
+    publication/release/architecture tests. Update
+    `spec/operations/mcp-container-activation.md` and record precise evidence in
+    `spec/operations/mcp-container-verification.md`. Independent scoped review
+    must cover the three fixes and absence of a Pages bootstrap deadlock. Do not
+    mark the larger Task6 or process plan complete from this slice alone.
 - [ ] **GREEN process:** Write separate process plan, synchronize process v2
   pointer/instructions/tests. Preserve initial manual activation and explicit
   permission for push. Align all current policy references; historic v1 and old
