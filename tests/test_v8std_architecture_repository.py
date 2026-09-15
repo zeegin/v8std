@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import subprocess
 import unittest
@@ -136,7 +137,7 @@ class ArchitectureRepositoryTest(unittest.TestCase):
         self.assertTrue(skill_path.is_file(), skill_path)
         skill = skill_path.read_text(encoding="utf-8")
 
-        self.assertIn("spec/process/architecture-artifacts-v1.md", skill)
+        self.assertIn("spec/process/architecture-artifacts-v2.md", skill)
         self.assertNotIn("semantic_id_pattern", skill)
         for name in (
             "impact-check.md",
@@ -183,11 +184,12 @@ class ArchitectureRepositoryTest(unittest.TestCase):
 
     def test_ci_validates_complete_architecture_before_build(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-        validation = "python3 scripts/v8std_architecture.py validate"
+        validation = ".venv/bin/python scripts/v8std_architecture.py validate"
 
-        self.assertIn("fetch-depth: 2", workflow)
-        self.assertIn("--base-ref HEAD^ --merge-ready", workflow)
-        self.assertLess(workflow.index(validation), workflow.index("docker build"))
+        self.assertIn("fetch-depth: 0", workflow)
+        self.assertIn('--base-ref "$BASE_REF" --merge-ready', workflow)
+        self.assertNotIn("HEAD^", workflow)
+        self.assertLess(workflow.index(validation), workflow.index("docker buildx build"))
 
     def test_site_deployment_is_triggered_by_main_after_all_gates(self) -> None:
         workflow = yaml.load(
@@ -196,37 +198,38 @@ class ArchitectureRepositoryTest(unittest.TestCase):
         )
 
         self.assertEqual(workflow["on"]["push"]["branches"], ["main"])
-        steps = workflow["jobs"]["deploy"]["steps"]
-        deploy_index = next(
-            index
-            for index, step in enumerate(steps)
-            if step.get("uses") == "actions/deploy-pages@v5"
-        )
+        self.assertIn("pull_request", workflow["on"])
+        jobs = workflow["jobs"]
+        self.assertEqual(jobs["publish"]["needs"], "validate")
+        self.assertIn("needs.validate.result == 'success'", jobs["publish"]["if"])
+        steps = jobs["validate"]["steps"]
         for required_name in (
             "Validate architecture graph",
             "Build",
             "Test MCP retrieval",
+            "Behavioral and generated-artifact gates",
         ):
-            required_index = next(
-                index
-                for index, step in enumerate(steps)
-                if step.get("name") == required_name
-            )
-            self.assertLess(required_index, deploy_index)
+            self.assertTrue(any(step.get("name") == required_name for step in steps), required_name)
+        publication = jobs["publish"]["steps"]
+        prepared = next(i for i, step in enumerate(publication) if "prepare-pages" in step.get("run", ""))
+        deployed = next(i for i, step in enumerate(publication) if step.get("uses", "").startswith("actions/deploy-pages@"))
+        finished = next(i for i, step in enumerate(publication) if "publish_mcp_artifacts.py finish" in step.get("run", ""))
+        self.assertLess(prepared, deployed)
+        self.assertLess(deployed, finished)
 
     def test_ci_runs_build_and_tests_as_checkout_owner(self) -> None:
         workflow = yaml.load(
             (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"),
             Loader=yaml.BaseLoader,
         )
-        steps = workflow["jobs"]["deploy"]["steps"]
-        for name in ("Build", "Test MCP retrieval"):
-            step = next(step for step in steps if step.get("name") == name)
-            commands = re.split(r"(?m)^\s*docker run\b", step["run"])[1:]
-            self.assertTrue(commands, name)
-            for command in commands:
-                with self.subTest(step=name, command=command):
-                    self.assertIn('--user "$(id -u):$(id -g)"', command)
+        steps = workflow["jobs"]["validate"]["steps"]
+        build = next(step for step in steps if step.get("name") == "Build")
+        self.assertIn('--user "$(id -u):$(id -g)"', build["run"])
+        tests = next(step for step in steps if step.get("name") == "Test MCP retrieval")
+        self.assertIn(".venv/bin/python -m unittest discover -v", tests["run"])
+        self.assertNotIn("docker run", tests["run"])
+        self.assertLess(steps.index(build), steps.index(tests))
+        self.assertNotIn("docker.sock", json.dumps(workflow))
 
 
 if __name__ == "__main__":

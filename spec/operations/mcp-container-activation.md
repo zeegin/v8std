@@ -1,7 +1,7 @@
 # Controlled initial activation of container delivery
 
-**Status (2026-09-15):** ordinary controller independently approved;
-operator first-bootstrap implementation is awaiting its separate scoped review.
+**Status (2026-09-15):** ordinary controller and operator first-bootstrap
+implementation independently approved; this does not activate either path.
 Native systemd/complete-backup rehearsal and live activation remain pending.
 Local disposable evidence is not a live installation, CI activation, published
 image proof, or target-host capacity guarantee. This runbook authorizes none of
@@ -56,6 +56,72 @@ reconcile a crash. A healthy systemd wrapper is not application readiness.
 - Keep automatic runtime switching disabled until the initial published-image
   cutover and predecessor recovery are demonstrated. Test the kill switch: it
   blocks new releases without interrupting an in-flight rollback.
+
+### Implemented CI switches and unperformed external prerequisites
+
+The `ci.yml` validation job runs for PRs without host credentials. Only a fresh
+`zeegin/v8std` main push or main workflow dispatch can enter publication after
+architecture, strict build, tests and benchmarks succeed. Runtime deployment
+is a separate job; a successful bootstrap never changes its switches.
+
+All three repository/environment variables default to disabled (unset or exact
+`false`); only exact `true` enables the corresponding action:
+
+| Variable | Action; not implied authority |
+| --- | --- |
+| `MCP_IMAGE_PUBLICATION_ENABLED` | Multi-platform runtime/site digest candidates, attestation, anonymous local-source smoke, immutable source tags; stable promotion additionally needs the real public default source |
+| `MCP_CORPUS_PUBLICATION_ENABLED` | Restricted archive publication and separate post-Pages reference acknowledgement; host static policy `enabled` must already be installed/approved |
+| `MCP_RUNTIME_DEPLOY_ENABLED` | Published-digest ordinary release only, requiring accepted predecessor and host `runtime_enabled`; never bootstrap or host installation |
+
+Before enabling any publication switch, establish real main protection with
+the actual required successful checks and controlled bypass. Record the
+account-specific audit privately. No protection was configured by this
+implementation. Configure `github-pages` and, separately,
+`mcp-production` with a custom deployment branch policy containing only the
+**branch** `main`, no tag or wildcard rules. An environment name or the
+`protected-branches-only` selector is insufficient. The helper checks both
+branch protection and the exact branch-only environment policy; required-check
+and bypass adequacy still needs an operator audit before activation.
+
+`MCP_RELEASE_HOST` is the restricted `user@host`; secret
+`MCP_RELEASE_SSH_KEY` is that identity only, and `MCP_RELEASE_KNOWN_HOSTS` pins
+the independently verified SSH host key. Temporary key files are owner-private;
+no global SSH or Docker configuration is changed. Runtime additionally needs
+`MCP_CONFIGURATION_DIGEST` from the installed root allowlist and `MCP_PLATFORM`
+(`linux/amd64` or `linux/arm64`). Issuing these settings/secrets, making both
+GHCR packages anonymously readable, host installation and actual activation are
+separate external operations, not steps performed during Task6.
+
+Classification uses independently verified runtime/corpus milestone artifacts
+from the exact successful attempt, even if a later job failed. Content hashes
+cover committed inputs before source-SHA archive salting; unchanged inputs keep
+their original source SHA/digest. The trigger SHA is not a replacement runtime
+revision. State artifacts use unique attempt names and90-day retention. Missing
+or expired history can only be recovered from existing verified identities:
+the public corpus pointer plus verified archive, or immutable runtime source
+tags on main with equivalent committed inputs and trusted attestation. Registry
+enumeration is bounded (fewer than1000 tags, at most64 candidate ancestors);
+ambiguous/truncated history, authentication failures and malformed state fail
+closed. An expired corpus receipt followed by404 is not initial absence. Do not
+delete this history; loss beyond the verified recovery window requires an
+operator investigation. No new trusted host metadata endpoint is introduced.
+
+The helper verifies archive bytes locally, sends the exact typed header plus
+archive and EOF, polls that publication ID to `COMMITTED` with completed cleanup,
+then verifies external HEAD/GET bytes before staging the Pages manifest. After
+Pages, it verifies the public pointer and acknowledges a different reference ID
+without archive bytes. `QUEUED` is never acceptance. Disabled corpus publication
+preserves the existing verified pointer; only an initial404 permits no pointer.
+The final digest cold-start proof uses anonymous credentials and the actual
+default source for both platforms before stable promotion. Initial default HEAD
+was still404 in Task6's read-only check; no public-default candidate proof or
+registry publication has therefore been claimed locally.
+
+The unchanged accepted runtime is checked through the real public MCP endpoint,
+not merely a `COMMITTED` journal or an active systemd wrapper. A docs-only
+publication does not restart it. Capacity rejection/recovery remains the host
+controller's independent authority; CI never rebuilds on the host or overrides
+its installed configuration/trust policy.
 
 ## Artifact and bootstrap ordering gate
 

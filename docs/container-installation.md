@@ -23,6 +23,12 @@ references вида `ghcr.io/zeegin/v8std-site@sha256:…` и
 `ghcr.io/zeegin/v8std-mcp@sha256:…`. Значение digest относится к опубликованному
 multi-platform index; локальный Docker image ID не заменяет этот digest.
 
+У MCP и сайта разные digests. Для неизменяемой версии используйте подтверждённый
+`sha-<git-sha>` или digest; `stable` служит для обнаружения версии, а не для
+фиксации установки. Обновление статей может сохранить прежний runtime SHA:
+это повторное использование того же образа, не новая метка исходников.
+Публикация образов и корпуса не включает автоматически развёртывание сервера.
+
 ```bash
 export V8STD_SITE_IMAGE='ghcr.io/zeegin/v8std-site@sha256:RELEASE_INDEX_DIGEST'
 export V8STD_MCP_IMAGE='ghcr.io/zeegin/v8std-mcp@sha256:RELEASE_INDEX_DIGEST'
@@ -118,6 +124,13 @@ Cold-offline запуск без cache остаётся неготовым; эт
 поколения индекса в памяти. Указанные memory/CPU limits — параметры проверок,
 не обещание пропускной способности.
 
+Локальный образ не включает запись private usage-лога по умолчанию. Отдельный
+операторский профиль может передать `--usage-log` и заранее подготовленный
+файл, доступный UID10001. Не открывайте ему каталог служебных данных или Docker
+socket. Bulk Resources возвращают полный текст в память процесса; наличие
+cache не устраняет эту стоимость. Локальная нагрузочная проверка не доказывает
+поддержку100000агентов или ёмкость другого сервера.
+
 `--site-url`, `--cache-dir` и `--max-snippet-chars` имеют приоритет над
 `V8STD_MCP_SITE_URL`, `V8STD_MCP_CACHE_DIR` и `V8STD_MCP_MAX_SNIPPET_CHARS`.
 Snippet default — 4000, максимум — 32000 символов. `--refresh-seconds 0`
@@ -169,6 +182,13 @@ volume; неожиданный bind mount отклоняется независ�
 `Dockerfile.mcp`, `Dockerfile.site` и два hash-lock файла. `local-builder` в
 `Dockerfile.site` содержит pinned Python/Zensical и зависимости без apt install.
 Он потребляет подготовленные canonical `docs/ai/*` и `docs/llms*.txt`.
+
+Для CI отдельно закреплены `requirements-test.lock` и `Dockerfile.ci`:
+test-only HTTP-клиент не меняет runtime dependencies. Strict public build
+выполняется до полного suite; Docker-проверки работают на host, без socket в
+docs/test container. Новый release candidate собирают после source commit,
+с его действительным `SOURCE_SHA`; старый образ с bind-mounted модулями годится
+только как regression fixture.
 
 `scripts/build_local_site.py --output NEW_DIRECTORY --site-url URL --source-sha SHA`
 работает во временной копии входов. Он не вызывает public wrapper и не меняет

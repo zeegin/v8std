@@ -1,0 +1,14 @@
+# Test-only union. Runtime/build versions and hashes remain in their own locks.
+# Optional Starlette TestClient backend; no runtime HTTP-client replacement.
+# PyPI release metadata verified 2026-09-15; install with --require-hashes.
+-r requirements-build.lock
+-r requirements-mcp.lock
+httpx2==2.13.0 \
+    --hash=sha256:fc12720cedf72faa26cca6b4ca394e05c894e7d7933fc45cafe767960804e49a \
+    --hash=sha256:81bd07dc67a3701729ef1f777a3c00c915d4539604fdb5afd327f8682f6b7b44
+httpcore2==2.13.0 \
+    --hash=sha256:35ae5be347aa40467b4a5dc032ac67ebb6d27189fc97e8cebcf99616f6a1bb9e \
+    --hash=sha256:2adc8be4fb285fbcd6d894298db3b52c177e74b6674eda3a76bd36be3292a3db
+truststore==0.10.4 \
+    --hash=sha256:adaeaecf1cbb5f4de3b1959b42d41f6fab57b2b1666adb59e89cb0b53361d981 \
+    --hash=sha256:9d91bd436463ad5e4ee4aba766628dd6cd7010cf3e2461756b3303710eebc301

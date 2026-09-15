@@ -11,7 +11,7 @@ from typing import Any, Iterable, Iterator
 import yaml
 
 
-PROCESS_SCHEMA_PATH = Path("spec/process/architecture-artifacts-v1.md")
+PROCESS_SCHEMA_PATH = Path("spec/process/architecture-artifacts-v2.md")
 REFERENCE_RE = re.compile(
     r"^(?P<kind>design|adr|invariant|contract|plan|process):"
     r"(?P<identity>[A-Za-z][A-Za-z0-9_-]*)"

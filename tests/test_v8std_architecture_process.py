@@ -9,7 +9,7 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROCESS = ROOT / "spec/process/architecture-artifacts-v1.md"
+PROCESS = ROOT / "spec/process/architecture-artifacts-v2.md"
 
 
 def load_front_matter(path: Path) -> dict[str, Any]:
@@ -42,7 +42,9 @@ class ArchitectureProcessTest(unittest.TestCase):
         self.assertEqual(payload["kind"], "process")
         self.assertEqual(payload["id"], "architecture-artifacts")
         self.assertEqual(payload["schema_version"], 1)
-        self.assertEqual(payload["version"], 1)
+        self.assertEqual(payload["version"], 2)
+        self.assertEqual(payload["schema"], load_front_matter(
+            ROOT / "spec/process/architecture-artifacts-v1.md")["schema"])
         self.assertNotIn("status", payload)
         self.assertEqual(
             payload["schema"]["semantic_id_pattern"], r"^[A-Z][A-Z_]*$"

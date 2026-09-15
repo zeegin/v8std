@@ -1,92 +1,317 @@
-# Simple workflow for deploying static content to GitHub Pages
 name: gh-pages
 
 on:
   push:
-    branches:
-    - main
-  
-  # Allows you to run this workflow manually from the Actions tab
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Never interrupt a publication or its independently bounded host recovery.
 concurrency:
-  group: "pages"
+  group: v8std-ci-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+    outputs:
+      artifact_id: ${{ steps.validated.outputs.artifact-id }}
+      architecture: ${{ steps.architecture.outcome }}
+      build: ${{ steps.build.outcome }}
+      tests: ${{ steps.tests.outcome }}
+      benchmark: ${{ steps.benchmark.outcome }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MCP_IMAGE_PUBLICATION_ENABLED: ${{ vars.MCP_IMAGE_PUBLICATION_ENABLED }}
+      MCP_RUNTIME_DEPLOY_ENABLED: ${{ vars.MCP_RUNTIME_DEPLOY_ENABLED }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12.14'
+      - name: Locked host test environment and workflow linter
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --require-hashes --only-binary=:all: -r requirements-test.lock
+          .venv/bin/python -m pip check
+          curl --fail --location --proto '=https' --max-time 60 -o "$RUNNER_TEMP/actionlint.tar.gz" https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/v8std-tools"
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP/v8std-tools" actionlint
+          echo "$RUNNER_TEMP/v8std-tools" >> "$GITHUB_PATH"
+      - name: Classify committed inputs against independent published states
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py plan --directory .ci
+      - name: Validate architecture graph
+        id: architecture
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+        run: |
+          [[ "$BASE_REF" =~ ^[0-9a-f]{40}$ ]] && [[ "$BASE_REF" != 0000000000000000000000000000000000000000 ]]
+          .venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref "$BASE_REF"
+          .venv/bin/python scripts/v8std_architecture.py validate --root . --base-ref "$BASE_REF" --merge-ready
+          actionlint .github/workflows/ci.yml
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+        with:
+          version: v0.37.1
+          driver-opts: image=moby/buildkit@sha256:6c2fa84a6b61ccd72899dde4239f8d5717f05f9a8ca6f3cad185fb1a95a94de3
+      - name: Build
+        id: build
+        run: |
+          docker buildx build --load -f Dockerfile.ci -t v8std-ci:builder .
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/docs" v8std-ci:builder build --strict
+      - name: Test MCP retrieval
+        id: tests
+        run: |
+          # Host-side tests have Docker CLI; no socket is mounted into any test/docs image.
+          .venv/bin/python -W error -m unittest tests.test_v8std_mcp_snippet.SnippetWireTests tests.test_v8std_mcp_runtime.RuntimeTests.test_official_http_discovery_before_ready_and_session_end_does_not_close_index -v
+          .venv/bin/python -m unittest discover -v
+      - name: Behavioral and generated-artifact gates
+        id: benchmark
+        run: |
+          .venv/bin/python scripts/acc_diagnostics.py generate --check
+          .venv/bin/python scripts/generate_diagnostic_standard_links.py --check
+          .venv/bin/python scripts/check_diagnostic_articles.py
+          .venv/bin/python scripts/search_benchmark.py
+          .venv/bin/python scripts/snippet_benchmark.py
+      - name: Build identical public and local corpus with selected corpus SHA
+        run: |
+          CORPUS_SHA=$(.venv/bin/python scripts/publish_mcp_artifacts.py value --directory .ci --field corpus_sha)
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/docs" --entrypoint python v8std-ci:builder scripts/generate_mcp_snapshot.py --source-sha "$CORPUS_SHA" --output .ci/snapshot --public-delivery
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/docs" --entrypoint python v8std-ci:builder scripts/build_local_site.py --output .ci/local-site --site-url http://localhost:18765/ --source-sha "$CORPUS_SHA"
+          .venv/bin/python scripts/publish_mcp_artifacts.py verify-build --directory .ci
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        id: validated
+        with:
+          name: validated-artifacts-${{ github.run_attempt }}
+          path: |
+            site/
+            .ci/
+            docs/ai/
+            docs/llms.txt
+            docs/llms-full.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: validate
+    if: >-
+      github.repository == 'zeegin/v8std' && github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      needs.validate.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      artifact_id: ${{ steps.accepted.outputs.artifact-id }}
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+      url: ${{ steps.pages.outputs.page_url }}
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+      attestations: write
+      id-token: write
+      pages: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MCP_IMAGE_PUBLICATION_ENABLED: ${{ vars.MCP_IMAGE_PUBLICATION_ENABLED }}
+      MCP_CORPUS_PUBLICATION_ENABLED: ${{ vars.MCP_CORPUS_PUBLICATION_ENABLED }}
+      MCP_RUNTIME_DEPLOY_ENABLED: ${{ vars.MCP_RUNTIME_DEPLOY_ENABLED }}
+      MCP_GATES: >-
+        {"architecture":"${{ needs.validate.outputs.architecture }}","build":"${{ needs.validate.outputs.build }}","tests":"${{ needs.validate.outputs.tests }}","benchmark":"${{ needs.validate.outputs.benchmark }}"}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          fetch-depth: 2
-      - name: Validate architecture graph
-        run: |
-          python3 -m pip install --disable-pip-version-check PyYAML
-          python3 scripts/v8std_architecture.py validate --root . --base-ref HEAD^ --merge-ready
-      - name: Build docs image
-        run: |
-          docker build -f docker-compose/docker/Dockerfile -t v8std-docs .
-      - name: Build
-        run: |
-          # Keep generated artifacts owned by the checkout user for later gates.
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/docs" \
-            -w /docs \
-            v8std-docs build --strict
-      - name: Test MCP retrieval
-        run: |
-          # Git-backed tests must run as the owner of the mounted checkout.
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/docs" \
-            -w /docs \
-            --entrypoint python \
-            v8std-docs -m unittest discover -v
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/docs" \
-            -w /docs \
-            --entrypoint python \
-            v8std-docs scripts/acc_diagnostics.py generate --check
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/docs" \
-            -w /docs \
-            --entrypoint python \
-            v8std-docs scripts/generate_diagnostic_standard_links.py --check
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/docs" \
-            -w /docs \
-            --entrypoint python \
-            v8std-docs scripts/check_diagnostic_articles.py
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/docs" \
-            -w /docs \
-            --entrypoint python \
-            v8std-docs scripts/search_benchmark.py
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          path: 'site'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+          python-version: '3.12.14'
+      - run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --require-hashes --only-binary=:all: -r requirements-test.lock
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.validate.outputs.artifact_id }}
+          merge-multiple: true
+          digest-mismatch: error
+      - name: Fresh main and actual external protection prerequisites
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py guard --directory .ci --environment github-pages
+      - name: Isolate registry credentials on this ephemeral runner
+        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/v8std-registry"
+          echo "DOCKER_CONFIG=$RUNNER_TEMP/v8std-registry" >> "$GITHUB_ENV"
+      - name: Preserve selected corpus source identity
+        id: corpus
+        run: echo "changed=$(.venv/bin/python scripts/publish_mcp_artifacts.py value --directory .ci --field corpus_changed)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4.3.0
+        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
+        with:
+          image: tonistiigi/binfmt@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
+          platforms: arm64
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e
+        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
+        with:
+          version: v0.37.1
+          driver-opts: image=moby/buildkit@sha256:6c2fa84a6b61ccd72899dde4239f8d5717f05f9a8ca6f3cad185fb1a95a94de3
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Resolve immutable image identity before any build or tag write
+        id: image_plan
+        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py image-plan --directory .ci
+      - uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        id: image
+        if: steps.image_plan.outputs.build == 'true'
+        with:
+          context: .
+          file: Dockerfile.mcp
+          platforms: linux/amd64,linux/arm64
+          # Unverified candidates are addressable by digest, not immutable source tags.
+          outputs: type=image,name=ghcr.io/zeegin/v8std-mcp,push-by-digest=true,name-canonical=true,push=true
+          build-args: SOURCE_SHA=${{ github.sha }}
+          provenance: mode=max
+          attests: type=sbom,generator=docker/buildkit-syft-scanner@sha256:ae4f3b554449e7e25548e7d8ccc029d17357348e30c6e3df01b92bc93654d6a9
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        if: steps.image_plan.outputs.build == 'true'
+        with:
+          subject-name: ghcr.io/zeegin/v8std-mcp
+          subject-digest: ${{ steps.image.outputs.digest }}
+          push-to-registry: true
+      - uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a
+        id: site_image
+        if: steps.image_plan.outputs.site_build == 'true'
+        with:
+          context: .
+          file: Dockerfile.site
+          build-contexts: local-site=.ci/local-site
+          platforms: linux/amd64,linux/arm64
+          outputs: type=image,name=ghcr.io/zeegin/v8std-site,push-by-digest=true,name-canonical=true,push=true
+          build-args: SOURCE_SHA=${{ github.sha }}
+          provenance: mode=max
+          attests: type=sbom,generator=docker/buildkit-syft-scanner@sha256:ae4f3b554449e7e25548e7d8ccc029d17357348e30c6e3df01b92bc93654d6a9
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        if: steps.image_plan.outputs.site_build == 'true'
+        with:
+          subject-name: ghcr.io/zeegin/v8std-site
+          subject-digest: ${{ steps.site_image.outputs.digest }}
+          push-to-registry: true
+      - name: Exact published digest smoke with explicit local source
+        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
+        env:
+          MCP_BUILT_DIGEST: ${{ steps.image.outputs.digest }}
+          MCP_SITE_BUILT_DIGEST: ${{ steps.site_image.outputs.digest }}
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py record-image --directory .ci
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
+        with:
+          name: mcp-runtime-state-v1-${{ github.run_attempt }}
+          path: .ci/runtime-state/state.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        if: vars.MCP_CORPUS_PUBLICATION_ENABLED == 'true' && steps.corpus.outputs.changed == 'true'
+        with:
+          subject-path: .ci/snapshot/*/snapshot.tar.gz
+      - name: Verify archive, exact publish acknowledgement, then stage Pages
+        env:
+          MCP_RELEASE_HOST: ${{ vars.MCP_RELEASE_HOST }}
+          MCP_RELEASE_SSH_KEY: ${{ vars.MCP_CORPUS_PUBLICATION_ENABLED == 'true' && secrets.MCP_RELEASE_SSH_KEY || '' }}
+          MCP_RELEASE_KNOWN_HOSTS: ${{ vars.MCP_CORPUS_PUBLICATION_ENABLED == 'true' && secrets.MCP_RELEASE_KNOWN_HOSTS || '' }}
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py prepare-pages --directory .ci
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: vars.MCP_CORPUS_PUBLICATION_ENABLED == 'true'
+        with:
+          name: mcp-corpus-state-v1-${{ github.run_attempt }}
+          path: .ci/corpus-state/state.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+          name: github-pages-${{ github.run_attempt }}
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        id: pages
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
+      - name: Separate reference acknowledgement, real default/anonymous digest proof, stable promotion
+        env:
+          MCP_RELEASE_HOST: ${{ vars.MCP_RELEASE_HOST }}
+          MCP_RELEASE_SSH_KEY: ${{ vars.MCP_CORPUS_PUBLICATION_ENABLED == 'true' && secrets.MCP_RELEASE_SSH_KEY || '' }}
+          MCP_RELEASE_KNOWN_HOSTS: ${{ vars.MCP_CORPUS_PUBLICATION_ENABLED == 'true' && secrets.MCP_RELEASE_KNOWN_HOSTS || '' }}
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py finish --directory .ci
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        id: accepted
+        with:
+          name: accepted-publication-${{ github.run_attempt }}
+          path: .ci/accepted.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  runtime:
+    needs: [validate, publish]
+    if: >-
+      github.repository == 'zeegin/v8std' && github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      needs.validate.result == 'success' && needs.publish.result == 'success' &&
+      vars.MCP_RUNTIME_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: mcp-production
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MCP_RUNTIME_DEPLOY_ENABLED: ${{ vars.MCP_RUNTIME_DEPLOY_ENABLED }}
+      MCP_GATES: >-
+        {"architecture":"${{ needs.validate.outputs.architecture }}","build":"${{ needs.validate.outputs.build }}","tests":"${{ needs.validate.outputs.tests }}","benchmark":"${{ needs.validate.outputs.benchmark }}"}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12.14'
+      - run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --require-hashes --only-binary=:all: -r requirements-test.lock
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.publish.outputs.artifact_id }}
+          merge-multiple: true
+          path: .ci
+          digest-mismatch: error
+      - name: Fresh protected main and branch-only production environment
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py guard --directory .ci --environment mcp-production
+      - name: Restricted published-digest release; never bootstrap or rebuild
+        env:
+          MCP_RELEASE_HOST: ${{ vars.MCP_RELEASE_HOST }}
+          MCP_RELEASE_SSH_KEY: ${{ secrets.MCP_RELEASE_SSH_KEY }}
+          MCP_RELEASE_KNOWN_HOSTS: ${{ secrets.MCP_RELEASE_KNOWN_HOSTS }}
+          MCP_CONFIGURATION_DIGEST: ${{ vars.MCP_CONFIGURATION_DIGEST }}
+          MCP_PLATFORM: ${{ vars.MCP_PLATFORM }}
+        run: .venv/bin/python scripts/publish_mcp_artifacts.py deploy --directory .ci

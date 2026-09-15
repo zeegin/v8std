@@ -343,6 +343,30 @@ class ContextHarnessLifecycleTests(unittest.TestCase):
             self.assertIn("foreign:image", state["images"])
 
 
+@unittest.skipUnless(os.environ.get("V8STD_TEST_CI_BUILD"), "explicit pinned builder acceptance")
+class PinnedCiBuilderTests(unittest.TestCase):
+    def test_builder_has_locked_dependencies_compression_and_real_dejavu_fonts(self):
+        with _ContextImage() as owned:
+            built = _context_command(["docker", "build", "--progress=plain", "-f", "Dockerfile.ci",
+                                      "-t", owned.tag, "."], timeout=300)
+            self.assertEqual(built.returncode, 0, built.stdout)
+            probe = (
+                "import importlib.metadata as m,json,sys,zlib; from PIL import ImageFont; "
+                "names=[ImageFont.truetype('/usr/share/fonts/truetype/dejavu/'+n,20).getname() "
+                "for n in ['DejaVuSans.ttf','DejaVuSans-Bold.ttf']]; "
+                "print(json.dumps({'python':sys.version.split()[0],'zlib':zlib.ZLIB_RUNTIME_VERSION,"
+                "'fonts':names,'zensical':m.version('zensical'),'pillow':m.version('pillow')}))")
+            result = owned.run(["-c", probe])
+            self.assertEqual(result.returncode, 0, result.stdout)
+            info = json.loads(result.stdout)
+            self.assertEqual(info["python"], "3.12.14")
+            self.assertEqual(info["zensical"], "0.0.47")
+            self.assertEqual(info["pillow"], "12.3.0")
+            self.assertEqual(info["fonts"], [["DejaVu Sans", "Book"], ["DejaVu Sans", "Bold"]])
+            self.assertTrue(info["zlib"])
+            print("pinned builder:", json.dumps(info, sort_keys=True))
+
+
 @unittest.skipUnless(os.environ.get("V8STD_TEST_IMAGE_BUILD"), "explicit fresh image build acceptance")
 class ImageContextClosureTests(unittest.TestCase):
     def test_retained_dev_copy_context_includes_requirements_and_entrypoint_dependencies(self):

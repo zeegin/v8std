@@ -4,6 +4,7 @@ import contextlib
 import io
 import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 import unittest
@@ -33,6 +34,8 @@ class RepositoryFixture(unittest.TestCase):
         process = self.root / "spec/process/architecture-artifacts-v1.md"
         process.parent.mkdir(parents=True)
         shutil.copyfile(ROOT / "spec/process/architecture-artifacts-v1.md", process)
+        shutil.copyfile(ROOT / "spec/process/architecture-artifacts-v2.md",
+                        process.with_name("architecture-artifacts-v2.md"))
 
     def tearDown(self) -> None:
         self.temporary_directory.cleanup()
@@ -170,6 +173,11 @@ class FrozenDocumentTest(RepositoryFixture):
                     self.root,
                     schema,
                 ),
+                load_document(
+                    self.root / "spec/process/architecture-artifacts-v2.md",
+                    self.root,
+                    schema,
+                ),
                 load_document(self.design_path, self.root, schema),
             ]
         )
@@ -233,6 +241,17 @@ class FrozenDocumentTest(RepositoryFixture):
 
 
 class ArchitectureCliTest(RepositoryFixture):
+    def test_cli_uses_current_v2_schema_without_accidental_v1_checkout_dependency(self) -> None:
+        # A standalone fixture declares v2 without a historical supersedes edge.
+        # Its machine schema is the approved unchanged v2 schema.
+        self.write("spec/process/architecture-artifacts-v2.md",
+            (ROOT / "spec/process/architecture-artifacts-v2.md").read_text().replace(
+                "supersedes:\n  - process:architecture-artifacts@1\n", ""))
+        (self.root / "spec/process/architecture-artifacts-v1.md").unlink()
+        result = subprocess.run([sys.executable, str(ROOT / "scripts/v8std_architecture.py"),
+            "validate", "--root", str(self.root)], capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def write_candidate(self) -> None:
         self.valid_design()
         self.write(
