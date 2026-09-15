@@ -702,6 +702,155 @@ class ArchitectureValidationTest(unittest.TestCase):
             codes(validate_merge_readiness(implemented_graph)),
         )
 
+    def test_terminal_contracts_do_not_require_fitness_evidence(self) -> None:
+        for relation, terminal_state in (
+            ("supersedes", "SUPERSEDED"),
+            ("cancels", "CANCELLED"),
+            ("deprecates", "DEPRECATED"),
+        ):
+            for required_when in ("accepted", "implemented"):
+                with self.subTest(relation=relation, required_when=required_when):
+                    feature = design("feature")
+                    fields = {
+                        "scope": "product",
+                        "version": 1,
+                        "revision": 0,
+                        "compatibility": "backward-compatible",
+                        "design": "design:feature",
+                        "producer": "producer",
+                        "consumers": ["consumer"],
+                        "requirements": [],
+                        "governs": ["scripts/feature.py"],
+                        "conformance": {"module": "tests.test_module_that_does_not_exist"},
+                        "required_when": required_when,
+                        "supersedes": [],
+                        "deprecates": [],
+                    }
+                    old_contract = document("contract", "OLD_API", **fields)
+                    active_contract = document("contract", "ACTIVE_API", **fields)
+                    successor = document(
+                        "contract",
+                        "SUCCESSOR_API",
+                        **{
+                            **fields,
+                            relation: ["contract:OLD_API@1.0"],
+                            "conformance": {"module": "tests.test_v8std_architecture_validation"},
+                        },
+                    )
+                    documents = [feature, old_contract, active_contract, successor]
+                    expected_state = {terminal_state}
+                    if required_when == "implemented":
+                        documents.append(
+                            document(
+                                "plan",
+                                "feature",
+                                design="design:feature",
+                                implements=["contract:OLD_API@1.0", "contract:ACTIVE_API@1.0"],
+                                checkbox_count=1,
+                                checked_count=1,
+                            )
+                        )
+                        expected_state.add("IMPLEMENTED")
+                    graph = build_graph(documents)
+                    self.assertEqual(validate_graph(graph), [])
+                    self.assertEqual(
+                        compute_states(graph, frozenset(graph.documents))["contract:OLD_API@1.0"],
+                        frozenset(expected_state),
+                    )
+
+                    issues = validate_merge_readiness(graph)
+
+                    self.assertEqual(
+                        [(item.code, item.path) for item in issues],
+                        [("MISSING_FITNESS_EVIDENCE", "spec/contract/active-api-v1-r0.md")],
+                    )
+                    # Terminal artifacts still participate in reference validation.
+                    unresolved_graph = build_graph(documents[1:])
+                    self.assertEqual(
+                        sorted(
+                            item.path for item in validate_graph(unresolved_graph)
+                            if item.code == "DANGLING_REFERENCE" and "spec/contract/" in item.path
+                        ),
+                        [
+                            "spec/contract/active-api-v1-r0.md",
+                            "spec/contract/old-api-v1-r0.md",
+                            "spec/contract/successor-api-v1-r0.md",
+                        ],
+                    )
+
+    def test_retired_invariant_does_not_require_fitness_evidence(self) -> None:
+        for required_when in ("accepted", "implemented"):
+            with self.subTest(required_when=required_when):
+                feature = design("feature", introduces=("OLD_REQUIREMENT", "ACTIVE_REQUIREMENT"))
+                old_decision = adr("OLD_DECISION", "design:feature", requirements=("OLD_REQUIREMENT",))
+                old_invariant = document(
+                    "invariant",
+                    "OLD_INVARIANT",
+                    scope="product",
+                    introduced_by="adr:OLD_DECISION",
+                    requirements=["OLD_REQUIREMENT"],
+                    check={"module": "tests.test_module_that_does_not_exist"},
+                    required_when=required_when,
+                )
+                active_invariant = document(
+                    "invariant",
+                    "ACTIVE_INVARIANT",
+                    scope="product",
+                    introduced_by="adr:SUCCESSOR",
+                    requirements=["ACTIVE_REQUIREMENT"],
+                    check={"module": "tests.test_module_that_does_not_exist"},
+                    required_when=required_when,
+                )
+                documents = [feature, old_decision, old_invariant, active_invariant]
+                if required_when == "implemented":
+                    documents.append(
+                        document(
+                            "plan",
+                            "feature",
+                            design="design:feature",
+                            implements=["invariant:OLD_INVARIANT", "invariant:ACTIVE_INVARIANT"],
+                            checkbox_count=1,
+                            checked_count=1,
+                        )
+                    )
+                    before_retirement = build_graph(documents)
+                    self.assertEqual(
+                        compute_states(before_retirement, frozenset(before_retirement.documents))[
+                            "invariant:OLD_INVARIANT"
+                        ],
+                        frozenset({"ACCEPTED", "IMPLEMENTED"}),
+                    )
+                retirement = design(
+                    "retirement",
+                    uses=("ACTIVE_REQUIREMENT",),
+                    requirement_cancels=("OLD_REQUIREMENT",),
+                )
+                successor = adr(
+                    "SUCCESSOR",
+                    "design:retirement",
+                    requirements=("ACTIVE_REQUIREMENT",),
+                    cancels=("adr:OLD_DECISION",),
+                    invariants={
+                        "introduces": ["invariant:ACTIVE_INVARIANT"],
+                        "preserves": [],
+                        "replaces": {},
+                        "cancels": ["invariant:OLD_INVARIANT"],
+                    },
+                )
+                graph = build_graph([*documents, retirement, successor])
+                self.assertEqual(validate_graph(graph), [])
+                self.assertEqual(
+                    compute_states(graph, frozenset(graph.documents))["invariant:OLD_INVARIANT"],
+                    frozenset({"RETIRED", "IMPLEMENTED"} if required_when == "implemented" else {"RETIRED"}),
+                )
+
+                issues = validate_merge_readiness(graph)
+
+                self.assertEqual(
+                    [(item.code, item.path) for item in issues],
+                    [("MISSING_FITNESS_EVIDENCE", "spec/invariant/active-invariant.md")],
+                )
+
     def test_rejects_unknown_fitness_timing(self) -> None:
         feature = design("feature")
         contract = document(

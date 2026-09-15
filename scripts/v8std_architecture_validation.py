@@ -684,6 +684,8 @@ def validate_merge_readiness(graph: ArchitectureGraph) -> list[ValidationIssue]:
     for document in graph.documents.values():
         if document.kind not in {"invariant", "contract"}:
             continue
+        if states[document.key].intersection({"SUPERSEDED", "CANCELLED", "DEPRECATED", "RETIRED"}):
+            continue
         required_when = document.front_matter.get("required_when", "accepted")
         must_exist = required_when == "accepted" or (
             required_when == "implemented" and "IMPLEMENTED" in states[document.key]
