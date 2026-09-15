@@ -85,6 +85,81 @@ class PublicationTests(unittest.TestCase):
         self.pipeline().prepare(self.pages, self.manifest, self.archive, enabled=True)
         self.assertEqual(json.loads(self.pages.read_bytes()), self.manifest)
 
+    def test_publish_and_reference_wait_for_cleanup_before_downstream_effects(self):
+        self.adapter.receipts = {action: [
+            {"state": "RECEIVED", "cleanup_complete": False},
+            {"state": "COMMITTED", "cleanup_complete": False},
+            {"state": "COMMITTED", "cleanup_complete": True},
+        ] for action in ("publish", "reference")}
+        command = self.adapter.command
+        def deliver(name, payload, **kwargs):
+            if name == "status":
+                action = self.adapter.uploads[-1][0]["action"]
+                if action == "publish":
+                    self.assertEqual(self.pages.read_bytes(), b"previous Pages tree")
+                    self.assertNotIn("archive", self.adapter.effects)
+                else:
+                    self.assertNotIn("anonymous-smoke", self.adapter.effects)
+                    self.assertNotIn("promote", self.adapter.effects)
+            return command(name, payload, **kwargs)
+        self.adapter.command = deliver
+        publication = self.pipeline()
+        prepared = publication.prepare(self.pages, self.manifest, self.archive, enabled=True)
+        self.assertEqual(self.adapter.now, 4)
+        self.assertEqual(self.adapter.effects, ["upload:publish", "status", "status", "status", "archive"])
+        self.assertIs(prepared["receipt"]["cleanup_complete"], True)
+        self.adapter.public_manifest = self.pages.read_bytes()
+        publication.finish(prepared, image=self.p.IMAGE + "@sha256:" + "a" * 64,
+                           runtime_sha=fixture.SOURCE_SHA, promote=True)
+        self.assertEqual(self.adapter.now, 8)
+        self.assertEqual(self.adapter.effects[5:], ["manifest", "archive", "upload:reference",
+                                                   "status", "status", "status", "anonymous-smoke", "promote"])
+
+    def test_pending_publication_or_cleanup_exhausts_original_deadline(self):
+        for action in ("publish", "reference"):
+            for state in ("QUEUED", "COMMITTED"):
+                with self.subTest(action=action, state=state):
+                    self.adapter = Transport(self.archive, self.manifest)
+                    publication = self.pipeline()
+                    prepared = publication.prepare(self.pages, self.manifest, self.archive, enabled=True)
+                    self.adapter.public_manifest = self.pages.read_bytes()
+                    before = self.pages.read_bytes()
+                    self.adapter.effects.clear()
+                    self.adapter.receipts[action] = [{"state": state, "cleanup_complete": False}]
+                    started = self.adapter.now
+                    with self.assertRaisesRegex(self.p.PublicationError, "publication_timeout"):
+                        if action == "publish":
+                            publication.prepare(self.pages, self.manifest, self.archive, enabled=True)
+                        else:
+                            publication.finish(prepared, image=self.p.IMAGE + "@sha256:" + "a" * 64,
+                                               runtime_sha=fixture.SOURCE_SHA, promote=True)
+                    self.assertEqual(self.adapter.now - started, 300)
+                    self.assertEqual(self.adapter.polls, 150)
+                    self.assertEqual(self.pages.read_bytes(), before)
+                    if action == "publish":
+                        self.assertNotIn("archive", self.adapter.effects)
+                    self.assertNotIn("anonymous-smoke", self.adapter.effects)
+                    self.assertNotIn("promote", self.adapter.effects)
+
+    def test_pending_cleanup_never_hides_mismatched_or_failed_publication_receipt(self):
+        for action in ("publish", "reference"):
+            for override in ({"publication_id": "wrong"}, {"sequence": 1}, {"trigger_sha": "2" * 40},
+                             {"corpus_source_sha": "3" * 40}, {"corpus_id": "a" * 64},
+                             {"archive_sha256": "b" * 64}, {"action": "wrong"},
+                             {"state": "FAILED"}, {"state": "RECOVERY_REQUIRED"},
+                             {"error_code": "cleanup_failed"}):
+                with self.subTest(action=action, override=override):
+                    self.adapter = Transport(self.archive, self.manifest)
+                    self.adapter.receipts[action] = [
+                        {"state": "COMMITTED", "cleanup_complete": False},
+                        {"state": "COMMITTED", "cleanup_complete": False, **override}]
+                    publication = self.pipeline()
+                    with self.assertRaisesRegex(self.p.PublicationError, "receipt_identity|publication_failed"):
+                        publication.acknowledge(publication.header(action, self.manifest),
+                                                self.archive if action == "publish" else b"")
+                    self.assertEqual(self.adapter.now, 2)
+                    self.assertEqual(self.adapter.polls, 2)
+
     def test_exact_receipt_mismatch_failure_or_timeout_never_changes_pages(self):
         for field, value in [("state", "FAILED"), ("state", "RECOVERY_REQUIRED"),
                              ("state", "QUEUED"), ("sequence", 1), ("action", "reference"),
@@ -119,18 +194,19 @@ class PublicationTests(unittest.TestCase):
         self.assertEqual(self.adapter.effects, ["manifest", "archive"])
         self.assertIsNone(prepared["header"])
 
-    def test_only_initial_404_means_no_manifest_not_network_failure_or_later_absence(self):
-        for failure, previously_published in [(OSError("network"), False),
-                                              (FileNotFoundError(), True)]:
-            with self.subTest(failure=failure, previous=previously_published):
+    def test_disabled_publication_never_treats_404_as_initial_absence(self):
+        for failure in (OSError("network"), FileNotFoundError()):
+            with self.subTest(failure=type(failure).__name__):
                 self.adapter.manifest_failure = failure
                 with self.assertRaises((OSError, self.p.PublicationError)):
-                    self.pipeline().prepare(self.pages, self.manifest, self.archive, enabled=False,
-                                            previously_published=previously_published)
+                    self.pipeline().prepare(self.pages, self.manifest, self.archive, enabled=False)
                 self.assertEqual(self.pages.read_bytes(), b"previous Pages tree")
-        self.adapter.manifest_failure = FileNotFoundError()
-        self.pipeline().prepare(self.pages, self.manifest, self.archive, enabled=False)
-        self.assertFalse(self.pages.exists())
+
+    def test_finish_rejects_manifestless_prepared_state_even_without_promotion(self):
+        for promote in (False, True):
+            with self.subTest(promote=promote), self.assertRaisesRegex(self.p.PublicationError, "default_source_absent"):
+                self.pipeline().finish({"manifest": None, "header": None, "receipt": None}, promote=promote)
+        self.assertEqual(self.adapter.effects, [])
 
     def test_reference_and_default_readiness_failure_prevent_stable_promotion(self):
         for failure in ("reference", "default"):
@@ -190,7 +266,7 @@ class PublicationTests(unittest.TestCase):
         self.assertEqual(len(receipts), 2)
         self.assertTrue(all(record["state"] == "COMMITTED" and not record["cleanup_pending"] for record in receipts))
 
-    def test_actual_cli_prepare_then_finish_uses_same_verified_plan_and_separate_reference(self):
+    def write_cli_fixture(self):
         directory = Path(self.temp.name) / ".ci"
         directory.mkdir()
         plan = {"trigger_sha": fixture.SOURCE_SHA, "corpus_sha": fixture.SOURCE_SHA,
@@ -208,8 +284,16 @@ class PublicationTests(unittest.TestCase):
         local_archive = directory / "local-site/ai/mcp/v1" / local["archive"]["path"]
         local_archive.parent.mkdir(parents=True)
         local_archive.write_bytes(self.archive)
-        environ = {"MCP_CORPUS_PUBLICATION_ENABLED": "true", "MCP_IMAGE_PUBLICATION_ENABLED": "false"}
-        with patch.dict(os.environ, environ), patch.object(self.p, "fresh_context", return_value=self.context), \
+        return directory
+
+    def test_actual_cli_prepare_then_finish_uses_same_verified_plan_and_separate_reference(self):
+        directory = self.write_cli_fixture()
+        # No existing public pointer: archive-first publication must not depend
+        # on runtime activation or on a manifest from a previous Pages deploy.
+        self.adapter.manifest_failure = FileNotFoundError()
+        environ = {"MCP_CORPUS_PUBLICATION_ENABLED": "true", "MCP_IMAGE_PUBLICATION_ENABLED": "false",
+                   "MCP_RUNTIME_DEPLOY_ENABLED": "false"}
+        with patch.dict(os.environ, environ, clear=True), patch.object(self.p, "fresh_context", return_value=self.context), \
                 patch.object(self.p, "CITransport", return_value=self.adapter):
             self.assertEqual(self.p.main(["prepare-pages", "--directory", str(directory),
                                          "--root", self.temp.name]), 0)
@@ -220,6 +304,7 @@ class PublicationTests(unittest.TestCase):
             self.assertEqual(state["source_sha"], fixture.SOURCE_SHA)
             self.assertEqual(state["manifest"], self.manifest)
             self.adapter.public_manifest = staged.read_bytes()
+            self.adapter.manifest_failure = None
             self.assertEqual(self.p.main(["finish", "--directory", str(directory),
                                          "--root", self.temp.name]), 0)
         self.assertEqual([header["action"] for header, _ in self.adapter.uploads], ["publish", "reference"])
@@ -228,6 +313,49 @@ class PublicationTests(unittest.TestCase):
         self.assertIsNone(accepted["runtime"])
         self.assertEqual(accepted["trigger_sha"], fixture.SOURCE_SHA)
         self.assertNotIn("promote", self.adapter.effects)
+
+    def test_actual_disabled_prepare_cli_rejects_404_before_any_pages_or_state_write(self):
+        directory = self.write_cli_fixture()
+        self.adapter.manifest_failure = FileNotFoundError()
+        for existing in (True, False):
+            with self.subTest(existing_pages_manifest=existing):
+                if not existing:
+                    self.pages.unlink(missing_ok=True)
+                before = {path.relative_to(self.temp.name): path.read_bytes()
+                          for path in Path(self.temp.name).rglob("*") if path.is_file()}
+                with patch.dict(os.environ, {}, clear=True), \
+                        patch.object(self.p, "fresh_context", return_value=self.context), \
+                        patch.object(self.p, "CITransport", return_value=self.adapter), \
+                        patch("sys.stderr", new_callable=io.StringIO) as stderr:
+                    with self.assertRaises(SystemExit) as failed:
+                        self.p.main(["prepare-pages", "--directory", str(directory), "--root", self.temp.name])
+                    self.assertEqual(failed.exception.code, 1)
+                    self.assertEqual(stderr.getvalue(), "published_manifest_missing\n")
+                after = {path.relative_to(self.temp.name): path.read_bytes()
+                         for path in Path(self.temp.name).rglob("*") if path.is_file()}
+                self.assertEqual(after, before)
+                self.assertEqual(self.adapter.effects, ["manifest"])
+                self.adapter.effects.clear()
+
+    def test_actual_finish_cli_cannot_write_accepted_state_without_manifest(self):
+        directory = self.write_cli_fixture()
+        self.p.save(directory / "prepared.json", {"manifest": None, "header": None, "receipt": None})
+        for existing in (False, True):
+            with self.subTest(existing_accepted_state=existing):
+                accepted = directory / "accepted.json"
+                if existing:
+                    accepted.write_bytes(b"previous accepted state")
+                with patch.dict(os.environ, {}, clear=True), \
+                        patch.object(self.p, "fresh_context", return_value=self.context), \
+                        patch.object(self.p, "CITransport", return_value=self.adapter), \
+                        patch("sys.stderr", new_callable=io.StringIO) as stderr:
+                    with self.assertRaises(SystemExit) as failed:
+                        self.p.main(["finish", "--directory", str(directory), "--root", self.temp.name])
+                    self.assertEqual(failed.exception.code, 1)
+                    self.assertEqual(stderr.getvalue(), "default_source_absent\n")
+                self.assertEqual(accepted.read_bytes() if existing else accepted.exists(),
+                                 b"previous accepted state" if existing else False)
+                self.assertEqual(self.adapter.effects, [])
 
     def test_actual_image_cli_connects_digest_outputs_to_verified_milestone(self):
         directory = Path(self.temp.name) / ".ci"
@@ -263,6 +391,7 @@ class Transport:
         self.public_manifest = None
         self.manifest_failure = None
         self.receipt_override = {}
+        self.receipts = {}
         self.effects, self.uploads = [], []
         self.now = 0
         self.smoke_error = None
@@ -290,12 +419,14 @@ class Transport:
         assert json.loads(payload) == {"schema_version": 1, "kind": "publication", "id": header["publication_id"]}
         self.polls += 1
         manifest = header["manifest"]
+        sequence = self.receipts.get(header["action"], [{}])
         return {"publication_id": header["publication_id"], "sequence": header["sequence"],
                 "action": header["action"], "trigger_sha": header["trigger_sha"],
                 "corpus_source_sha": manifest["source_sha"], "corpus_id": manifest["corpus_id"],
                 "archive_sha256": manifest["archive"]["sha256"],
                 "state": "COMMITTED" if self.polls > 1 else "RECEIVED", "error_code": None,
-                "cleanup_complete": self.polls > 1, **self.receipt_override}
+                "cleanup_complete": self.polls > 1,
+                **sequence[min(self.polls - 1, len(sequence) - 1)], **self.receipt_override}
 
     def get(self, url, limit):
         if url == "https://v8std.ru/ai/mcp/v1/manifest.json":
@@ -518,15 +649,68 @@ class InputIdentityTests(unittest.TestCase):
             self.assertIsNone(self.p.equivalent_runtime(self.root, current, "0" * 64))
             registry.assert_not_called()
 
-    def test_expired_corpus_history_never_turns_later_404_into_initial_absence(self):
-        environ = {"GITHUB_EVENT_NAME": "push", "GITHUB_SHA": self.base, "GITHUB_REPOSITORY": "zeegin/v8std",
+    def main_environment(self, sha):
+        return {"GITHUB_EVENT_NAME": "push", "GITHUB_SHA": sha, "GITHUB_REPOSITORY": "zeegin/v8std",
                    "GITHUB_REF": "refs/heads/main", "GITHUB_RUN_ID": "50", "GITHUB_RUN_NUMBER": "5",
                    "GITHUB_RUN_ATTEMPT": "1", "GITHUB_WORKFLOW_REF": "zeegin/v8std/.github/workflows/ci.yml@refs/heads/main"}
-        with patch.object(self.p, "api", return_value={"commit": {"sha": self.base}}), \
-                patch.object(self.p, "last_published", side_effect=self.p.PublicationError("published_state_expired")), \
-                patch.object(self.p.CITransport, "get", side_effect=FileNotFoundError):
-            with self.assertRaisesRegex(self.p.PublicationError, "published_manifest_missing"):
-                self.p.plan_sources(self.root, environ)
+
+    def history_api(self, current, *, expired):
+        """Actual artifact scanning sees either deleted history or an expired milestone."""
+        def api(path):
+            if path.endswith("/branches/main"):
+                return {"commit": {"sha": current}}
+            if path.endswith("/artifacts?per_page=100&page=1"):
+                artifacts = [{"id": 80, "name": "mcp-corpus-state-v1-1", "expired": True,
+                              "workflow_run": {"id": 70, "head_branch": "main", "head_sha": self.base,
+                                               "repository_id": 1, "head_repository_id": 1}}] if expired else []
+                return {"total_count": len(artifacts), "artifacts": artifacts}
+            if path.endswith("/runs/70/attempts/1"):
+                return {"path": ".github/workflows/ci.yml", "event": "push", "run_number": 4, "run_attempt": 1,
+                        "repository": {"full_name": "zeegin/v8std"}, "head_repository": {"full_name": "zeegin/v8std"},
+                        "status": "completed", "head_branch": "main", "head_sha": self.base}
+            raise AssertionError(path)
+        return api
+
+    def test_missing_or_expired_history_and_404_plan_only_unknown_candidate_sources(self):
+        for expired in (False, True):
+            with self.subTest(expired=expired), \
+                    patch.object(self.p, "api", side_effect=self.history_api(self.base, expired=expired)), \
+                    patch.object(self.p, "download_state", side_effect=AssertionError("no trusted artifact")), \
+                    patch.object(self.p.CITransport, "get", side_effect=FileNotFoundError):
+                plan = self.p.plan_sources(self.root, self.main_environment(self.base))
+                self.assertEqual(plan["published"], {"runtime": None, "corpus": None})
+                self.assertEqual(plan["corpus_sha"], self.base)
+                self.assertTrue(plan["corpus_changed"])
+                self.assertEqual(self.git("status", "--porcelain"), "")
+
+    def test_lost_history_recovers_only_verified_public_corpus_with_original_source(self):
+        files = fixture.with_metadata(fixture.corpus_files(), mutate=lambda d: d.update(source_sha=self.base))
+        archive, manifest = fixture.snapshot_fixture(files=files)
+        manifest["archive"]["path"] = "https://ai.v8std.ru/indexes/v1/" + manifest["archive"]["path"]
+        (self.root / "scripts/server.py").write_text("# runtime-only successor")
+        current = self.commit()
+        for expired in (False, True):
+            for corrupt in (False, True):
+                with self.subTest(expired=expired, corrupt=corrupt):
+                    fetched = []
+                    def get(url, limit):
+                        fetched.append(url)
+                        if url == self.p.MANIFEST_URL:
+                            return fixture.json_bytes(manifest)
+                        self.assertEqual(url, manifest["archive"]["path"])
+                        return b"corrupt" if corrupt else archive
+                    with patch.object(self.p, "api", side_effect=self.history_api(current, expired=expired)), \
+                            patch.object(self.p.CITransport, "get", side_effect=get):
+                        if corrupt:
+                            with self.assertRaises(ValueError):
+                                self.p.plan_sources(self.root, self.main_environment(current))
+                        else:
+                            plan = self.p.plan_sources(self.root, self.main_environment(current))
+                            self.assertEqual(plan["published"]["corpus"]["manifest"], manifest)
+                            self.assertEqual(plan["published"]["corpus"]["source_sha"], self.base)
+                            self.assertEqual(plan["corpus_sha"], self.base)
+                            self.assertFalse(plan["corpus_changed"])
+                    self.assertEqual(fetched, [self.p.MANIFEST_URL, manifest["archive"]["path"]])
 
 
 class TransportBoundaryTests(unittest.TestCase):
@@ -734,6 +918,69 @@ class TransportBoundaryTests(unittest.TestCase):
                     self.assertEqual(calls, ["status", "validate-envelope", "deploy"])
                 if failure == "platform":
                     self.assertEqual(calls, ["status"])
+
+    def test_runtime_polls_exact_queued_and_cleanup_receipts_with_original_deadline(self):
+        context = dict(event="push", repository="zeegin/v8std", ref="refs/heads/main",
+                       sha="c" * 40, main_sha="c" * 40, run_id=1, run_number=2, attempt=1,
+                       gates={name: "success" for name in self.p.GATES})
+        archive, manifest = fixture.snapshot_fixture()
+        manifest["archive"]["path"] = "https://ai.v8std.ru/indexes/v1/" + manifest["archive"]["path"]
+        accepted = {"runtime": {"source_sha": "b" * 40, "image_digest": "sha256:" + "a" * 64}, "manifest": manifest}
+        queued = {"state": "QUEUED", "cleanup_complete": False}
+        pending = {"state": "COMMITTED", "cleanup_complete": False, "error_code": None}
+        complete = {"state": "COMMITTED", "cleanup_complete": True, "error_code": None}
+        cases = [("eventual", [queued, {"state": "RECEIVED", "cleanup_complete": False}, pending, complete], None, 6),
+                 ("queued-timeout", [queued], "release_timeout", 300),
+                 ("cleanup-timeout", [pending], "release_timeout", 300)]
+        for state in (queued, pending):
+            for override in ({"release_id": "other"}, {"sequence": 1}, {"runtime_source_sha": "e" * 40},
+                             {"image_digest": "sha256:" + "f" * 64}):
+                cases.append((state["state"] + "-identity", [{**state, **override}], "release_receipt_identity", 0))
+            for override in ({"state": "FAILED"}, {"state": "RECOVERY_REQUIRED"}, {"state": "ROLLED_BACK"},
+                             {"error_code": "cleanup_failed"}):
+                cases.append((state["state"] + "-failure", [{**state, **override}], "release_failed", 0))
+        for name, receipts, error, elapsed in cases:
+            with self.subTest(name=name, receipts=receipts):
+                adapter = Transport(archive, manifest)
+                limits, effects = [], []
+                envelope = None
+                def command(name, payload, *, seconds=30):
+                    nonlocal envelope
+                    if not payload:
+                        return {"state": "COMMITTED", "cleanup_complete": True,
+                                "image_digest": "sha256:" + "f" * 64}
+                    data = json.loads(payload)
+                    if name == "validate-envelope":
+                        return data
+                    if name == "deploy":
+                        envelope = data
+                        return {"state": "QUEUED", "release_id": data["release_id"]}
+                    self.assertEqual(name, "status")
+                    self.assertEqual(data, {"schema_version": 1, "kind": "release", "id": "ci-1-1"})
+                    self.assertNotIn("live-smoke", effects)
+                    self.assertLessEqual(seconds, min(20, 300 - adapter.now))
+                    limits.append(seconds)
+                    return {**envelope, **receipts[min(len(limits) - 1, len(receipts) - 1)]}
+                adapter.command = command
+                index = {"manifests": [{"digest": "sha256:" + "e" * 64,
+                                       "platform": {"os": "linux", "architecture": "amd64"}}]}
+                def smoke(source):
+                    self.assertEqual(source, "b" * 40)
+                    self.assertEqual(len(limits), 4)
+                    effects.append("live-smoke")
+                with patch.object(self.p, "registry_manifest", return_value=fixture.json_bytes(index)), \
+                        patch.object(self.p, "verify_running_runtime", side_effect=smoke):
+                    if error:
+                        with self.assertRaisesRegex(self.p.PublicationError, error):
+                            self.p.deploy_runtime(context, adapter, accepted, enabled=True,
+                                                  configuration_digest="d" * 64, platform="linux/amd64")
+                    else:
+                        result = self.p.deploy_runtime(context, adapter, accepted, enabled=True,
+                                                       configuration_digest="d" * 64, platform="linux/amd64")
+                        self.assertEqual(result, {**envelope, **complete})
+                self.assertEqual(adapter.now, elapsed)
+                self.assertEqual(effects, [] if error else ["live-smoke"])
+                self.assertEqual(len(limits), 150 if elapsed == 300 else 4 if not error else 1)
 
     def test_immutable_tag_never_overwrites_conflict_and_rechecks_main_before_write(self):
         digest = "sha256:" + "a" * 64

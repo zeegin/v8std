@@ -102,16 +102,32 @@ the public corpus pointer plus verified archive, or immutable runtime source
 tags on main with equivalent committed inputs and trusted attestation. Registry
 enumeration is bounded (fewer than1000 tags, at most64 candidate ancestors);
 ambiguous/truncated history, authentication failures and malformed state fail
-closed. An expired corpus receipt followed by404 is not initial absence. Do not
-delete this history; loss beyond the verified recovery window requires an
-operator investigation. No new trusted host metadata endpoint is introduced.
+closed. Missing/deleted or expired corpus history followed by404 is UNKNOWN,
+not proof of initial absence. Read-only source planning may still select a new
+candidate, but this does not authorize publishing Pages without a verified
+pointer. Do not delete this history; investigate its loss. No new trusted host
+metadata endpoint or initial-state flag is introduced.
 
 The helper verifies archive bytes locally, sends the exact typed header plus
 archive and EOF, polls that publication ID to `COMMITTED` with completed cleanup,
 then verifies external HEAD/GET bytes before staging the Pages manifest. After
 Pages, it verifies the public pointer and acknowledges a different reference ID
 without archive bytes. `QUEUED` is never acceptance. Disabled corpus publication
-preserves the existing verified pointer; only an initial404 permits no pointer.
+preserves the existing verified pointer and archive; any manifest404 stops
+`prepare-pages` before changing the staged Pages tree or writing prepared/state
+records. `finish` also rejects a manifest-less prepared record and cannot write
+an accepted state, even with image promotion disabled.
+
+First publication and recovery from UNKNOWN use the existing enabled corpus
+publication path: local archive verification, exact publish receipt with cleanup
+complete, external archive verification, Pages manifest publication and separate
+reference acknowledgement. This path does not require a pre-existing public
+manifest or runtime activation. It still requires the independently approved
+static publisher, protection/credentials and existing publication switch;
+UNKNOWN is not authority to set them. Restoring the verified public manifest and
+archive also permits ordinary pointer-preserving Pages publication with corpus
+publication disabled. There is no manifest-less successful Pages path.
+
 The final digest cold-start proof uses anonymous credentials and the actual
 default source for both platforms before stable promotion. Initial default HEAD
 was still404 in Task6's read-only check; no public-default candidate proof or
@@ -498,12 +514,17 @@ printf '%s\n' '{"schema_version":1,"kind":"publication","id":"content-run-123"}'
 Use pipeline failure propagation (`set -o pipefail`) in CI. Poll the exact typed
 status query with bounded retry/backoff. Accept only the expected
 `publication_id`, `sequence`, `action`, `trigger_sha`, `corpus_source_sha`,
-`corpus_id`, `archive_sha256`, **state COMMITTED and no error_code**. `QUEUED`,
+`corpus_id`, `archive_sha256`, **state COMMITTED, cleanup_complete:true and no
+error_code**. `QUEUED`,
 `RECEIVED`, `VERIFIED`, `RECOVERY_REQUIRED`, `FAILED`, `NOT_FOUND`, an SSH exit0,
 or an already-existing immutable HTTP200 is not publication acknowledgement.
 The receipt is durable before enqueue; recovery reconstructs a missing inbox.
 COMMITTED means verification, retention bookkeeping and immutable visibility
 have completed, not that Pages has published a new manifest.
+For both publish and reference, COMMITTED with cleanup pending is polled within
+the original300s acknowledgement deadline, not treated as success or an immediate
+failure. Identity mismatch, a terminal failure or a non-null error fails
+immediately; pending work never resets that deadline.
 
 After that receipt, verify public archive hash/GET/HEAD, publish Pages, verify
 the public manifest and its target bytes, then send a **new** publication ID
@@ -533,6 +554,10 @@ is COMMITTED; require `cleanup_complete:true`, no error and actual health for
 an operationally complete deployment. COMMITTED with cleanup pending is already
 accepted and recovery must finish it, never undo it. `recover` queues independent
 reconciliation and does not mean rollback has already succeeded.
+An exact-envelope QUEUED response before journal creation and COMMITTED with
+pending cleanup both remain pending for CI, within its original300s deadline.
+Only cleanup-complete COMMITTED proceeds to live runtime smoke; mismatched
+identity, terminal failure or a non-null error stops polling immediately.
 
 ## Runtime recovery and retention semantics
 

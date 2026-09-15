@@ -530,7 +530,7 @@ class Publication:
                     "receipt_identity")
             require(receipt.get("state") in {"QUEUED", "RECEIVED", "VERIFIED", "COMMITTED"}
                     and receipt.get("error_code") is None, "publication_failed")
-            if receipt["state"] == "COMMITTED":
+            if receipt["state"] == "COMMITTED" and receipt.get("cleanup_complete") is True:
                 committed(receipt, header)
                 return receipt
             self.adapter.sleep(min(2, deadline - self.adapter.monotonic()))
@@ -542,8 +542,8 @@ class Publication:
         verify_archive(payload, manifest)
         return payload
 
-    def prepare(self, pages_path, manifest, archive, *, enabled, previously_published=False):
-        require(type(enabled) is bool and type(previously_published) is bool, "activation_type")
+    def prepare(self, pages_path, manifest, archive, *, enabled):
+        require(type(enabled) is bool, "activation_type")
         header = receipt = None
         if enabled:
             manifest = public_manifest(manifest)
@@ -555,23 +555,20 @@ class Publication:
             try:
                 payload = self.adapter.get(MANIFEST_URL, MAX_MANIFEST_BYTES)
             except FileNotFoundError:
-                require(not previously_published, "published_manifest_missing")
-                manifest = None
-            else:
-                manifest = public_manifest(validate_manifest(payload))
-                self.archive(manifest)
+                # Neither missing history nor HTTP404 proves initial absence.
+                raise PublicationError("published_manifest_missing") from None
+            manifest = public_manifest(validate_manifest(payload))
+            self.archive(manifest)
         pages_path = Path(pages_path)
         # Caller passes its disposable Pages build, never the public site itself.
-        if manifest is None:
-            pages_path.unlink(missing_ok=True)
-        else:
-            pages_path.parent.mkdir(parents=True, exist_ok=True)
-            _atomic_file(pages_path, canonical_json(manifest) + b"\n")
+        pages_path.parent.mkdir(parents=True, exist_ok=True)
+        _atomic_file(pages_path, canonical_json(manifest) + b"\n")
         return {"manifest": manifest, "header": header, "receipt": receipt}
 
     def finish(self, prepared, *, image=None, runtime_sha=None, promote=False):
         require(type(promote) is bool, "activation_type")
         manifest, header = prepared["manifest"], prepared["header"]
+        require(manifest is not None, "default_source_absent")
         if header is not None:
             validate_upload(header)
             require(header["action"] == "publish" and header["trigger_sha"] == self.context["sha"]
@@ -579,9 +576,6 @@ class Publication:
                     and header["publication_id"] == self.header("publish", manifest)["publication_id"]
                     and header["sequence"] == self.header("publish", manifest)["sequence"], "prepared_identity")
             committed(prepared["receipt"], header)
-        if manifest is None:
-            require(not promote, "default_source_absent")
-            return None
         observed = public_manifest(validate_manifest(self.adapter.get(MANIFEST_URL, MAX_MANIFEST_BYTES)))
         require(observed == manifest, "pages_manifest_mismatch")
         self.archive(manifest)
@@ -650,14 +644,12 @@ def plan_sources(root, environ, *, gates=False):
         require(environ.get("GITHUB_WORKFLOW_REF") == "zeegin/v8std/.github/workflows/ci.yml@refs/heads/main",
                 "workflow_identity")
         sequence = context["run_number"] * 1000 + context["attempt"]
-        expired = set()
         for kind in published:
             try:
                 published[kind] = last_published(root, context["sha"], sequence, kind, api, download_state)
             except PublicationError as error:
                 if str(error) != "published_state_expired":
                     raise
-                expired.add(kind)
                 # Recover only through existing externally verified identities,
                 # never treat expired JSON as trustworthy or salt a new image.
         if published["corpus"] is None:
@@ -665,7 +657,8 @@ def plan_sources(root, environ, *, gates=False):
             try:
                 manifest = public_manifest(validate_manifest(adapter.get(MANIFEST_URL, MAX_MANIFEST_BYTES)))
             except FileNotFoundError:
-                require("corpus" not in expired, "published_manifest_missing")
+                # Planning may build a candidate, but None remains UNKNOWN and
+                # cannot authorize manifest-less Pages publication.
                 manifest = None
             if manifest is not None:
                 git(root, "merge-base", "--is-ancestor", manifest["source_sha"], context["sha"])
@@ -920,7 +913,7 @@ def deploy_runtime(context, adapter, accepted, *, enabled, configuration_digest,
     while adapter.monotonic() < deadline:
         result = adapter.command("status", query, seconds=min(20, deadline - adapter.monotonic()))
         require(isinstance(result, dict) and all(result.get(key) == value for key, value in envelope.items()), "release_receipt_identity")
-        require(result.get("state") in {"RECEIVED", "VERIFIED", "PREPARED", "READY", "SWITCHED", "COMMITTED"}
+        require(result.get("state") in {"QUEUED", "RECEIVED", "VERIFIED", "PREPARED", "READY", "SWITCHED", "COMMITTED"}
                 and result.get("error_code") is None, "release_failed")
         if result.get("state") == "COMMITTED" and result.get("cleanup_complete") is True:
             require(result.get("error_code") is None, "release_failed")
@@ -993,7 +986,7 @@ def main(argv=None):
                     manifest, archive = verify_build(directory)
                     enabled = activated(os.environ, "MCP_CORPUS_PUBLICATION_ENABLED")
                     prepared = publication.prepare(root / "site/ai/mcp/v1/manifest.json", manifest, archive,
-                        enabled=enabled, previously_published=plan["published"]["corpus"] is not None)
+                        enabled=enabled)
                     save(directory / "prepared.json", prepared)
                     if enabled:
                         save(directory / "corpus-state/state.json", milestone(context, plan, "corpus", manifest=manifest))

@@ -1010,3 +1010,46 @@ were moved to the user's Trash (recoverable). No global Docker cleanup/login/
 config change. Original `.venv` and unrelated containers remain
 untouched. Parent's review/external gates above remain open; implementation
 evidence is not acceptance or deployment authority.
+
+## Task6 CI review repair — 2026-09-16
+
+Bounded CI1/CI2/CI3 repair from `149730d`, after the user's approval of UNKNOWN
+fail-closed in `design:mcp-tools-only` and the2026-09-16 execution refinement.
+Runtime QUEUED is pending; publish/reference COMMITTED with cleanup pending
+continues polling. Exact identities, terminal/error rejection and original300s
+deadlines are retained. No external archive check/Pages write, or downstream
+live/default smoke/promotion, is allowed before the relevant cleanup-complete
+receipt. Host lifecycle/status schemas and trust boundaries are unchanged.
+
+Missing/deleted and expired artifact history with public404 both remain UNKNOWN
+in read-only source planning. Disabled prepare now rejects every manifest404
+before Pages/prepared/state mutation; finish cannot accept manifest-less state.
+Enabled archive-first publication still works without a pre-existing manifest
+or runtime activation. Valid public pointer plus independently verified archive
+still recovers the original corpus source; attested runtime reuse is preserved.
+No new authority variable, endpoint, workflow change or host operation was added.
+
+Runner: `/tmp/v8std-final-gates.e7aqas/venv/bin/python`; repo `.venv` untouched.
+`-m unittest tests.test_mcp_publication -v`: RED48 tests/5.552s,
+29 subtest failures and3 expected production exceptions; GREEN48/48 in5.463s,
+no warnings/skips, including actual actionlint. Tests cover delayed success,
+permanent queue/cleanup timeout at300 simulated seconds, immediate invalid
+receipt failures, real artifact scanning and CLI prepare/finish filesystem
+effects. Existing real host ingress/journals and archive-first CLI also pass.
+This is local controlled-transport evidence, not live CI/registry/Pages proof.
+
+Same runner, `-m unittest tests.test_v8std_mcp_release
+tests.test_v8std_architecture_cli tests.test_v8std_architecture_model
+tests.test_v8std_architecture_process tests.test_v8std_architecture_repository
+tests.test_v8std_architecture_validation -v`: GREEN163/163 in220.895s, no warnings
+or skips. Scoped `impact --root . --base-ref 149730d`, ordinary `validate --root .`
+and `git diff --check` exit0. Semantic review confirms only the approved repair;
+empty impact output is not treated as evidence of triviality. Fixture processes
+and temporary directories completed their test-owned cleanup; no Docker/host
+cleanup or runner deletion was needed/performed.
+
+No Resources, monitoring, runtime, parser, image/load harness or prior evidence
+was changed. No strict build/full suite was run in this fix slice: parent owns
+those in that order after stable code, and independent scoped review. External
+protection/environment/credential/publication/activation prerequisites remain
+unperformed. No task/final-review checkbox is claimed accepted by this repair.
