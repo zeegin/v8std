@@ -617,3 +617,68 @@ single-runtime/overlap capacity, installed SSH/sudo policy, published-image
 provenance and external TLS/index delivery remain prerequisites for the later
 window. No window is scheduled; no host setup, main merge/push, registry publish,
 CI activation,100k capacity or live migration is claimed.
+
+### Task6 partial evidence and design pause, 2026-09-15
+
+Task6 is **not complete**. At signed `7bf5291`, the confirmed retained dev-build
+failure is repaired by explicitly including `requirements.txt` and
+`requirements-mcp.txt` in the root Docker context. Actual BuildKit disproved an
+earlier inspection-based claim that `hold.py` or dev scripts were excluded:
+`!scripts/` already includes its descendants. Runtime COPY closure passed before
+the change. Negative COPY probes for `.git/HEAD` and `spec/README.md` failed as
+expected. This is not an exclusive per-script allowlist.
+
+Two actual scratch COPY/export byte-comparison tests passed in0.477s. A fresh
+runtime build/import/package test passed in243.864s, verifying Dockerfile COPY
+bytes, server/hold imports, UID10001 and `pip check` under the restricted runtime
+profile. Its all-zero `SOURCE_SHA` deliberately identifies a local fixture,
+**not** a committed-source release candidate or a published artifact. No corpus
+load, default-source activation or capacity conclusion follows from this test.
+
+The local strict build passed with3282 vectors,1430 article checks and no article
+HTML violations; all3 license texts were published locally. The subsequent full
+suite passed628 tests in316.896s with6 opt-in Docker checks skipped. These results
+predate the later test-harness-only review fixes; they do not establish Task6 or
+whole-branch acceptance. Existing Starlette and ordinary pip build warnings were
+not suppressed. No runtime dependencies were changed to hide them.
+
+Scoped review of `203cbc0..7bf5291` approved the context correction but found two
+Important defects in the new harness: surviving process-group descendants after
+the Docker leader exits, and unverified daemon-container/image cleanup after a
+runtime-client timeout. Their focused repair and re-review are required before
+the slice can be considered complete.
+
+Signed `08ab175c0c984929dc2bbb79fe031de936eaa47a` contains their test-only repair:
+all three build paths use bounded group lifetime and file-backed capture;
+named fixture containers and the exact image tag are removed and their absence
+verified. Cleanup failure remains visible without replacing a primary timeout.
+Six focused regressions passed in9.134s; the25-test module passed in9.184s with4
+explicit opt-in skips. All3 actual Docker context/runtime checks then passed
+in245.553s, using ordinary BuildKit cache and the same explicit fixture revision.
+Post-run queries confirmed exact fixture removal; unrelated resources remained.
+An intermediate new EPERM/ResourceWarning was reproduced by an added failing
+regression and corrected before these final runs. It was not suppressed.
+Independent scoped re-review of `7bf5291..08ab175` approved both fixes, with no
+new Critical, Important or Minor findings. The reviewer checked the scenarios
+and evidence against the fix diff without duplicating the test runs. This
+completes only the context/harness repair slice, not Task6 or release acceptance.
+
+The earlier monitoring classification above is refined: preserving the existing
+dashboard is required, but the approved package does not define how its
+unprivileged reader obtains fresh live state from the root-owned container
+controller. A durable COMMITTED receipt is not runtime liveness; the controller
+unit being active is not MCP uptime; snapshot `loaded_at` is not process start.
+The real monitor reader and controller-status probes reproduce these semantic
+counterexamples even while the existing monitoring tests pass.
+
+Under `v8std-architecture` failure recovery, implementation of this integration
+and remaining Task6 work is paused for brainstorming and revised design/plan
+approval. A bounded private atomic state file is a proposed approach, not an
+implemented or accepted interface. Its producer/reader authority, identity,
+freshness, error behavior and compatibility must be specified before code.
+No Docker/sudo access was granted to the monitor and no public schema changed.
+
+CI publication/classification, process-v2 integration, the retained image-alt
+parser repair, committed-source candidate, mixed-load proof and final gates
+remain outstanding. Production, registry, GitHub settings, `main` and the
+unscheduled first-migration window were not changed by this work.
