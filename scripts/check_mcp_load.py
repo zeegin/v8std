@@ -23,8 +23,8 @@ import uuid
 import httpx
 
 from publish_mcp_artifacts import bounded_command, require, save
-from v8std_mcp_presentation import present_result
-from v8std_mcp_snapshot_format import MAX_ARCHIVE_BYTES, canonical_json, validate_manifest, verify_archive
+from check_mcp_container import (RESOURCE_REQUESTS, content, validate_envelope, validate_resource_denial)
+from v8std_mcp_snapshot_format import MAX_ARCHIVE_BYTES, validate_manifest, verify_archive
 
 ROOT = Path(__file__).resolve().parents[1]
 INIT = {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
@@ -51,34 +51,47 @@ def request(number):
     elif slot < 17:
         kind, tool, args = "diagnostics", "v8std_explain_diagnostics", {"codes": ["bslls:UsingModalWindows"]}
     else:
-        resource = ("llms.txt", "llms-full.txt", "ai/pages.jsonl")[slot - 17]
-        return "resource:" + resource, {"jsonrpc": "2.0", "id": number + 2, "method": "resources/read",
-                                       "params": {"uri": "v8std://" + resource}}
+        kind, tool, args = "related", "v8std_get_related", {"id_or_alias_or_url": "std437"}
     return kind, {"jsonrpc": "2.0", "id": number + 2, "method": "tools/call", "params": {"name": tool, "arguments": args}}
 
 
 def valid_reply(kind, body):
     try:
-        if body.startswith((b"event:", b"data:")):
-            body = next(line[6:] for line in body.splitlines() if line.startswith(b"data: "))
         reply = json.loads(body)
+        validate_envelope(reply, reply["id"])
         result = reply["result"]
-        if reply.get("error") or result.get("isError"):
+        if "error" in reply or result.get("isError"):
             return False
         if kind == "initialize":
-            return result.get("serverInfo", {}).get("name") == "v8std"
-        if kind.startswith("resource:"):
-            return any(item.get("uri") == "v8std://" + kind.split(":", 1)[1] and bool(item.get("text"))
-                       for item in result.get("contents", []))
-        content = result.get("structuredContent")
-        if content is None:
-            content = json.loads(next(item["text"] for item in result["content"] if item["type"] == "text"))
+            return (result.get("serverInfo", {}).get("name") == "v8std"
+                    and result.get("protocolVersion") == INIT["params"]["protocolVersion"]
+                    and isinstance(result.get("capabilities"), dict) and "resources" not in result["capabilities"])
+        payload = content(result)
         if kind == "search":
-            return bool(content.get("results"))
+            return bool(payload.get("results")) and all(row.get("id") for row in payload["results"])
         if kind == "page":
-            return content.get("found") is True and bool(content.get("page", {}).get("body_markdown"))
-        return bool(content.get("diagnostics") or content.get("standards"))
-    except (KeyError, ValueError, TypeError, StopIteration):
+            return (payload.get("found") is True and payload.get("page", {}).get("id") == "std437"
+                    and bool(payload["page"].get("body_markdown")))
+        if kind == "related":
+            return (payload.get("found") is True and payload.get("id") == "std437"
+                    and bool(payload.get("related"))
+                    and all(row.get("id") and row.get("relation") and row.get("url") for row in payload["related"]))
+        if kind in {"snippet", "diagnostics"}:
+            return any(row.get("id") == "bslls:UsingModalWindows" for row in payload.get("diagnostics", []))
+        return False
+    except (AssertionError, AttributeError, KeyError, ValueError, TypeError, IndexError):
+        return False
+
+
+def valid_wire_reply(kind, body, message, media):
+    try:
+        require(media.split(";")[0] == "application/json", "json_only_response")
+        reply = validate_envelope(json.loads(body), message["id"])
+        if kind == "resource_denial":
+            validate_resource_denial(reply, message["id"])
+            return True
+        return valid_reply(kind, body)
+    except (AssertionError, KeyError, TypeError, ValueError):
         return False
 
 
@@ -198,7 +211,8 @@ async def measure(client, url, kind, message=None, *, headers=None):
             elif row["status"] != 200:
                 row["outcome"] = "http_error"
             else:
-                row["outcome"] = "ok" if not message or valid_reply(kind, b"".join(chunks)) else "mcp_error"
+                row["outcome"] = "ok" if not message or valid_wire_reply(
+                    kind, b"".join(chunks), message, response.headers.get("content-type", "")) else "mcp_error"
     except httpx.TimeoutException:
         row["outcome"] = "timeout"
     except httpx.HTTPError:
@@ -220,11 +234,12 @@ def stage_snapshot(directory, destination):
     path.chmod(0o644)
     manifest["archive"]["path"] = name
     rows = [json.loads(line) for line in verified.files["pages.jsonl"].splitlines() if line.strip()]
-    paths = {row["id"]: {key: row[key] for key in ("site_path", "markdown_path")} for row in rows}
-    presented = present_result(rows, canonical_site_url=verified.metadata["canonical_site_url"],
-                               site_url="http://v8std.localhost:18765/", page_paths=paths)
-    text = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in presented)
-    return manifest, hashlib.sha256(text.encode("utf-8")).hexdigest()
+    page = next(row for row in rows if row["id"] == "std437")
+    body = page["body_markdown"]
+    # These explicitly synthetic fixtures use a bounded, literal page body.
+    # Hash archive content directly, never the runtime presentation algorithm.
+    require(isinstance(body, str) and 0 < len(body) <= 12000, "controlled_page_within_default_budget")
+    return manifest, hashlib.sha256(body.encode("utf-8")).hexdigest()
 
 
 def pointer(path, manifest):
@@ -270,25 +285,25 @@ async def maintain_idle(idle, port, stop, stats, *, interval=.25):
             pass
 
 
-async def resource_hash(client, endpoint):
-    _, message = request(19)  # The actual retained bulk pages Resource.
+async def page_content_hash(client, endpoint, expected):
+    _, message = request(7)
     async with client.stream("POST", endpoint + "/mcp", json=message) as response:
-        require(response.status_code == 200, "resource_hash_http")
+        require(response.status_code == 200, "page_hash_http")
         chunks, size = [], 0
         async for chunk in response.aiter_bytes():
             size += len(chunk)
-            require(size <= 64 * 1024 * 1024, "resource_hash_bound")
+            require(size <= 256 * 1024, "page_hash_bound")
             chunks.append(chunk)
     body = b"".join(chunks)
-    require(valid_reply("resource:ai/pages.jsonl", body), "resource_hash_reply")
-    if body.startswith((b"event:", b"data:")):
-        body = next(line[6:] for line in body.splitlines() if line.startswith(b"data: "))
-    text = next(item["text"] for item in json.loads(body)["result"]["contents"]
-                if item["uri"] == "v8std://ai/pages.jsonl")
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+    require(valid_wire_reply("page", body, message, response.headers.get("content-type", "")), "page_hash_reply")
+    page = content(json.loads(body)["result"])["page"]
+    require(page.get("body_truncated") is False, "controlled_page_truncated")
+    actual = hashlib.sha256(page["body_markdown"].encode("utf-8")).hexdigest()
+    require(actual == expected, "controlled_page_content_mismatch")
+    return actual
 
 
-async def profile(stack, args, directory, names, manifests, resource_hashes, endpoint, static_url):
+async def profile(stack, args, directory, names, manifests, page_hashes, endpoint, static_url):
     rows, samples, events = [], [], []
     headers = {"Host": "ai.v8std.ru", "Accept": "application/json, text/event-stream"}
     limits = httpx.Limits(max_connections=64, max_keepalive_connections=64)
@@ -308,8 +323,20 @@ async def profile(stack, args, directory, names, manifests, resource_hashes, end
                 and health.get("corpus_id") == manifests[0]["corpus_id"], "load_initial_readiness")
         initial = await measure(client, endpoint + "/mcp", "initialize", INIT)
         require(initial["outcome"] == "ok", "load_initialize")
-        before_hash = await resource_hash(client, endpoint)
-        require(before_hash == resource_hashes[0], "initial_resource_content")
+        client.headers["MCP-Protocol-Version"] = INIT["params"]["protocolVersion"]
+        notified = await client.post(endpoint + "/mcp", json={"jsonrpc": "2.0", "method": "notifications/initialized"})
+        require(notified.status_code == 202 and not notified.content, "load_initialized_notification")
+        async def denied_probes():
+            probes = []
+            for number, (method, params) in enumerate(RESOURCE_REQUESTS):
+                message = {"jsonrpc": "2.0", "id": "denied-" + str(number), "method": method, "params": params}
+                row = await measure(client, endpoint + "/mcp", "resource_denial", message)
+                row.update(method=method, params=params)
+                probes.append(row)
+            require(all(row["outcome"] == "ok" for row in probes), "load_resources_not_denied")
+            return probes
+        negative_before = await denied_probes()
+        before_hash = await page_content_hash(client, endpoint, page_hashes[0])
         # Burst is discovery traffic, deliberately separate from data-call mix.
         burst_start = time.monotonic()
         semaphore = asyncio.Semaphore(64)
@@ -377,14 +404,18 @@ async def profile(stack, args, directory, names, manifests, resource_hashes, end
             final = (await client.get(endpoint + "/healthz")).json()
             require(final.get("ok") is True and final.get("runtime_sha") == args.source_sha
                     and final.get("corpus_id") == manifests[1]["corpus_id"], "refresh_and_switch_readiness")
-            after_hash = await resource_hash(client, endpoint)
-            require(after_hash == resource_hashes[1], "refreshed_resource_content")
+            after_hash = await page_content_hash(client, endpoint, page_hashes[1])
+            negative_after = await denied_probes()
             data = [row for row in rows if row["kind"] != "archive"]
             return {"scope": "local HTTP (no TLS), one edge worker, two processes of the same exact image; not host-controller deployment",
                     "duration_seconds": elapsed, "configured_clients": args.clients, "maximum_inflight_data_calls": maximum_inflight,
                     "idle_connections_opened": len(idle), "idle_connections_still_open": sum(not reader.at_eof() for reader, _ in idle),
                     "idle_reconnections": idle_stats["reconnections"], "idle_maintenance_interval_seconds": .25,
-                    "resource_content_hashes": {"before": before_hash, "after": after_hash},
+                    "page_content_hashes": {"before": before_hash, "after": after_hash},
+                    "rejected_resource_probes": {"before": negative_before, "after": negative_after,
+                        "requests": len(negative_before) + len(negative_after),
+                        "rejected": len(negative_before) + len(negative_after), "unexpected_errors": 0},
+                    "initialize": initial,
                     "connection_close_requests": reconnects, "shared_nat": "all clients share one host address at edge",
                     "data": summarize(data, elapsed), "static": summarize([row for row in rows if row["kind"] == "archive"], elapsed),
                     "discovery_burst": summarize(burst, max(.001, burst_seconds)), "events": events,
@@ -429,8 +460,9 @@ def main(argv=None):
         for name in ("source", "edge"):
             (directory / name).mkdir(mode=0o755)
         staged = [stage_snapshot(path, directory / "source") for path in (args.snapshot, args.refresh_snapshot)]
-        manifests, resource_hashes = [item[0] for item in staged], [item[1] for item in staged]
+        manifests, page_hashes = [item[0] for item in staged], [item[1] for item in staged]
         require(manifests[0]["corpus_id"] != manifests[1]["corpus_id"], "distinct_refresh_fixture_required")
+        require(page_hashes[0] != page_hashes[1], "changed_page_content_required")
         pointer(directory / "source/manifest.json", manifests[0])
         (directory / "edge/nginx.conf").write_text(edge_config("mcp-a"))
         (directory / "edge/nginx.conf").chmod(0o644)
@@ -471,7 +503,7 @@ def main(argv=None):
             networks=((corpus, "edge"),))
         port = stack.inspect(names["edge"])["NetworkSettings"]["Ports"]["8000/tcp"][0]["HostPort"]
         print("owned mixed-load fixtures starting: " + stack.prefix, flush=True)
-        report = asyncio.run(profile(stack, args, directory, names, manifests, resource_hashes,
+        report = asyncio.run(profile(stack, args, directory, names, manifests, page_hashes,
                                      "http://127.0.0.1:" + port, "http://127.0.0.1:18765"))
         report.update(source_sha=args.source_sha, image_ids=[info["Id"] for info in image_info],
                       fixture_prefix=stack.prefix, source_manifests=manifests, refresh_seconds=5,
@@ -493,7 +525,7 @@ def main(argv=None):
     print(json.dumps(compact, ensure_ascii=False, indent=2))
     require(all(report[key]["unexpected_errors"] == 0 for key in ("data", "static", "discovery_burst")), "load_unexpected_errors")
     require(all(value["successes"] > 0 for value in report["data"]["by_kind"].values())
-            and len(report["data"]["by_kind"]) == 7, "load_incomplete_mix")
+            and set(report["data"]["by_kind"]) == {"search", "page", "snippet", "diagnostics", "related"}, "load_incomplete_mix")
     return 0
 
 

@@ -32,6 +32,10 @@ INIT = {"protocolVersion": "2025-03-26", "capabilities": {},
 SIGNAL = 'Предупреждение("Текст");'
 TOOLS = {"v8std_search", "v8std_get_page", "v8std_get_related",
          "v8std_explain_snippet", "v8std_explain_diagnostics"}
+RESOURCE_REQUESTS = [("resources/list", {}), ("resources/templates/list", {})] + [
+    (method, {"uri": uri})
+    for method in ("resources/read", "resources/subscribe", "resources/unsubscribe")
+    for uri in ("v8std://llms.txt", "v8std://llms-full.txt", "v8std://ai/pages.jsonl", "v8std://missing")]
 # Whole-attempt budget plus bounded interpreter/container startup margin.
 # This is only polling readiness; individual RPC/read/stop budgets stay shorter.
 STARTUP_SECONDS = 360 + 30
@@ -75,9 +79,63 @@ def http(url, message=None, headers=None):
         response = error
     with response:
         data = response.read()
-        if data.startswith(b"event:"):
-            data = next(line[6:] for line in data.splitlines() if line.startswith(b"data: "))
         return response.status, dict(response.headers), data
+
+
+def validate_envelope(reply, request_id):
+    assert isinstance(reply, dict) and reply.get("jsonrpc") == "2.0", reply
+    assert type(reply.get("id")) is type(request_id) and reply["id"] == request_id, reply
+    assert ("result" in reply) != ("error" in reply), reply
+    return reply
+
+
+def successful_result(reply):
+    assert "error" not in reply and isinstance(reply.get("result"), dict), reply
+    return reply["result"]
+
+
+def validate_resource_denial(reply, request_id):
+    validate_envelope(reply, request_id)
+    assert set(reply) == {"jsonrpc", "id", "error"}, reply
+    error = reply["error"]
+    assert isinstance(error, dict) and set(error) == {"code", "message"}, reply
+    assert error["code"] == -32601 and isinstance(error["message"], str) and error["message"].strip(), reply
+    assert len(json.dumps(reply, ensure_ascii=False).encode()) < 256, "resource error contains excessive payload"
+
+
+def check_resources_disabled(envelope):
+    for method, params in RESOURCE_REQUESTS:
+        reply = envelope(method, params)
+        # Transport adapters have already matched the typed request ID.
+        validate_resource_denial(reply, reply["id"])
+    return {"probes": len(RESOURCE_REQUESTS), "rejected": len(RESOURCE_REQUESTS), "code": -32601}
+
+
+class HttpRpc:
+    """The same complete-envelope lifecycle for online and network-none HTTP."""
+    def __init__(self, send):
+        self.send, self.seq, self.headers = send, 0, {}
+
+    def envelope(self, method, params=None):
+        self.seq += 1
+        status, headers, body = self.send({"jsonrpc": "2.0", "id": self.seq,
+            "method": method, "params": params or {}}, self.headers)
+        assert status == 200, (status, body[:200])
+        media = {key.lower(): value for key, value in headers.items()}.get("content-type", "")
+        assert media.split(";")[0] == "application/json", media
+        return validate_envelope(json.loads(body), self.seq)
+
+    def request(self, method, params=None):
+        return successful_result(self.envelope(method, params))
+
+    def initialize(self):
+        reply = self.request("initialize", INIT)
+        assert reply["serverInfo"]["name"] == "v8std" and "resources" not in reply["capabilities"], reply
+        assert reply["protocolVersion"] == INIT["protocolVersion"], reply
+        self.headers["MCP-Protocol-Version"] = reply["protocolVersion"]
+        status, _, body = self.send({"jsonrpc": "2.0", "method": "notifications/initialized"}, self.headers)
+        assert status == 202 and not body, (status, body)
+        return reply
 
 
 def check_default_source(site_url, local_default, *, require_404=False):
@@ -139,7 +197,7 @@ class Stdio:
         self.reader = threading.Thread(target=read, daemon=True)
         self.reader.start()
 
-    def request(self, method, params=None):
+    def envelope(self, method, params=None):
         self.seq += 1
         self.process.stdin.write(json.dumps({"jsonrpc": "2.0", "id": self.seq,
             "method": method, "params": params or {}}) + "\n")
@@ -148,14 +206,19 @@ class Stdio:
             line = self.lines.get(timeout=120)
             assert line is not None, "premature stdout EOF"
             message = json.loads(line)  # Every stdout line must be protocol JSON.
-            if message.get("id") == self.seq:
-                assert "error" not in message, message
-                return message["result"]
+            if "id" in message:
+                return validate_envelope(message, self.seq)
+            assert not message.get("method", "").startswith("notifications/resources/"), message
+
+    def request(self, method, params=None):
+        return successful_result(self.envelope(method, params))
 
     def initialize(self, name="v8std"):
         reply = self.request("initialize", INIT)
         if name:
             assert reply["serverInfo"]["name"] == name, reply
+            assert "resources" not in reply["capabilities"], reply
+        assert reply["protocolVersion"] == INIT["protocolVersion"], reply
         self.process.stdin.write('{"jsonrpc":"2.0","method":"notifications/initialized"}\n')
         self.process.stdin.flush()
         return reply
@@ -170,16 +233,20 @@ class Stdio:
 
 def content(reply):
     assert not reply.get("isError"), str(reply)[:400]
-    return reply.get("structuredContent") or json.loads(reply["content"][0]["text"])
+    assert reply.get("content") and all(item["type"] == "text" for item in reply["content"]), reply
+    decoded = json.loads(reply["content"][0]["text"])
+    assert isinstance(decoded, dict), decoded
+    if "structuredContent" in reply:
+        assert reply["structuredContent"] == decoded, reply
+    return decoded
 
 
-def check_tools(request, site_url, *, resources=True):
+def check_tools(request, site_url, *, aggregate_catalog=False):
     listed = request("tools/list")
     names = {tool["name"] for tool in listed["tools"]}
     assert TOOLS <= names, names
-    if resources:
+    if not aggregate_catalog:
         assert names == TOOLS
-        assert len(request("resources/list")["resources"]) == 3
     snippet = next(t for t in listed["tools"] if t["name"] == "v8std_explain_snippet")
     assert snippet["inputSchema"]["properties"]["snippet"]["maxLength"] == 4000
     def call(name, args):
@@ -196,7 +263,14 @@ def check_tools(request, site_url, *, resources=True):
     row = (result["diagnostics"] + result["standards"])[0]
     assert any(reason.startswith("snippet_signal:") for reason in row["match_reasons"]), row
     page = call("v8std_get_page", {"id_or_alias_or_url": "std437"})
+    assert page["found"] and page["page"]["id"] == "std437" and page["page"]["body_markdown"]
     assert page["page"]["url"] == site_url + "std/437/"
+    related = call("v8std_get_related", {"id_or_alias_or_url": "std437"})
+    assert related["found"] and related["id"] == "std437" and related["related"], related
+    assert all(row.get("id") and row.get("relation") and row["url"].startswith(site_url)
+               for row in related["related"]), related
+    diagnostics = call("v8std_explain_diagnostics", {"codes": ["bslls:UsingModalWindows"]})
+    assert diagnostics["diagnostics"][0]["id"] == "bslls:UsingModalWindows", diagnostics
     return [row["id"] for row in search["results"]]
 
 
@@ -323,12 +397,12 @@ def host_gateway_check(project, image, volume, site_url, directory):
                     session = Stdio(command, log, env=env)
                     sessions.append(session)
                     session.initialize(name=None)
-                    check_tools(session.request, site_url, resources=False)
+                    check_tools(session.request, site_url, aggregate_catalog=True)
                 ids = run("docker", "ps", "-q", "--filter", "label=docker-mcp-name=" + project).splitlines()
                 assert len(ids) == 2, f"expected one long-lived server per session, got {ids}"
                 time.sleep(3)
                 for session in sessions:
-                    check_tools(session.request, site_url, resources=False)
+                    check_tools(session.request, site_url, aggregate_catalog=True)
                 assert set(ids) == set(run("docker", "ps", "-q", "--filter", "label=docker-mcp-name=" + project).splitlines())
                 states = json.loads(run("docker", "inspect", *ids))
                 profiles = [validate_gateway_profile(state, expected_cache=expected_cache) for state in states]
@@ -390,7 +464,9 @@ def main():
            "V8STD_SITE_PREFIX": args.prefix, "DOCKER_DEFAULT_PLATFORM": args.platform}
     compose = ["docker", "compose", "-p", project, "-f", str(ROOT / "compose.yaml")]
     names = []
-    report = {"platform": args.platform, "site_url": site_url}
+    report = {"platform": args.platform, "site_url": site_url, "successful_tools": sorted(TOOLS),
+              "rejected_resources": {}, "browser": "incomplete: --chrome not supplied",
+              "gateway": "incomplete: Gateway acceptance not requested"}
     resolved = json.loads(run(*compose, "--profile", "mcp", "config", "--format", "json", env=env))
     assert resolved["services"]["mcp"]["environment"]["V8STD_MCP_SITE_URL"] == site_url
     report["compose_site_url"] = site_url
@@ -462,6 +538,7 @@ def main():
                     try:
                         session.initialize()
                         ranking = check_tools(session.request, site_url)
+                        report["rejected_resources"][f"stdio_{iteration}"] = check_resources_disabled(session.envelope)
                         report[f"stdio_{iteration}_ready_seconds"] = round(time.monotonic() - started, 2)
                         print(f"stdio {iteration}: ready", file=sys.stderr, flush=True)
                         state = inspect(name)
@@ -555,18 +632,15 @@ def main():
             report["http_cold_ready_seconds"] = round(time.monotonic() - started, 2)
             print("HTTP cold-online: ready", file=sys.stderr, flush=True)
             assert health["corpus_id"] == manifest["corpus_id"], health
-            count = 0
-            def request(method, params=None):
-                nonlocal count
-                count += 1
-                status, _, body = http(endpoint + "/mcp", {"jsonrpc": "2.0", "id": count,
-                                                           "method": method, "params": params or {}})
-                assert status == 200, (status, body[:200])
-                return json.loads(body)["result"]
-            assert request("initialize", INIT)["serverInfo"]["name"] == "v8std"
+            rpc = HttpRpc(lambda message, headers: http(endpoint + "/mcp", message, headers))
+            rpc.initialize()
             assert http(endpoint + "/mcp", {"jsonrpc":"2.0", "id":999,
                         "method":"initialize", "params":INIT}, headers={"Host":"untrusted.invalid"})[0] == 421
-            check_tools(request, site_url)
+            check_tools(rpc.request, site_url)
+            report["rejected_resources"]["http_online"] = check_resources_disabled(rpc.envelope)
+            version = json.loads(http(endpoint + "/version")[2])
+            assert version["api"] == "v2" and version["api_profiles"] == ["legacy-tools"], version
+            report["version"] = version
             state = inspect(mcp)
             expected_sha = json.loads(run("docker", "image", "inspect", args.mcp_image))[0]["Config"]["Labels"]["org.opencontainers.image.revision"]
             assert health["runtime_sha"] == expected_sha, health
@@ -594,15 +668,15 @@ def main():
                         stderr=subprocess.DEVNULL)), seconds=STARTUP_SECONDS)
                     assert warm_health["corpus_id"] == health["corpus_id"]
                     assert warm_health["runtime_sha"] == expected_sha
-                    def warm_request(method, params=None):
-                        message = {"jsonrpc": "2.0", "id": 1, "method": method, "params": params or {}}
-                        code = "import json,sys,urllib.request; r=urllib.request.Request('http://127.0.0.1:8000/mcp',data=sys.argv[1].encode(),headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream'}); body=urllib.request.urlopen(r,timeout=10).read(); print(body.decode())"
-                        body = run("docker", "exec", warm, "python", "-c", code, json.dumps(message))
-                        if body.startswith("event:"):
-                            body = next(line[6:] for line in body.splitlines() if line.startswith("data: "))
-                        return json.loads(body)["result"]
-                    assert warm_request("initialize", INIT)["serverInfo"]["name"] == "v8std"
-                    check_tools(warm_request, site_url)
+                    def warm_send(message, headers):
+                        code = "import json,sys,urllib.request; r=urllib.request.Request('http://127.0.0.1:8000/mcp',data=sys.argv[1].encode(),headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream',**json.loads(sys.argv[2])}); response=urllib.request.urlopen(r,timeout=10); print(json.dumps([response.status,dict(response.headers),response.read().decode()]))"
+                        status, headers, body = json.loads(run("docker", "exec", warm, "python", "-c", code,
+                                                             json.dumps(message), json.dumps(headers)))
+                        return status, headers, body.encode()
+                    warm_rpc = HttpRpc(warm_send)
+                    warm_rpc.initialize()
+                    check_tools(warm_rpc.request, site_url)
+                    report["rejected_resources"]["http_warm_offline"] = check_resources_disabled(warm_rpc.envelope)
                     assert cache_state(warm) == http_cache, "offline warm HTTP rewrote cache"
                     assert inspect(warm)["HostConfig"]["NetworkMode"] == "none"
                     report["http_warm_ready_seconds"] = round(time.monotonic() - started, 2)

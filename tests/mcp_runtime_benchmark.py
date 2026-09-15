@@ -207,11 +207,27 @@ def main():
                         assert active.index.search(query) == expected
                     print(json.dumps({"after": after, "corpus_id": active.corpus_id,
                         "identical_ranks": True, "identical_score_samples": True}), flush=True)
-            for name in ("pages.jsonl", "llms.txt", "llms-full.txt"):
+            for name, call in (
+                ("v8std_search", lambda: facade.search("модальные окна", limit=5)),
+                ("v8std_get_page", lambda: facade.page("std437")),
+                ("v8std_get_related", lambda: facade.related("std437")),
+                ("v8std_explain_snippet", lambda: facade.explain_snippet('Предупреждение("Текст");', limit=1)),
+                ("v8std_explain_diagnostics", lambda: facade.explain_diagnostics(["bslls:UsingModalWindows"])),
+            ):
                 start = time.perf_counter()
-                body = facade.read_resource_text(name)
-                print(json.dumps({"resource": name, "seconds": time.perf_counter() - start,
-                                  "chars": len(body)}), flush=True)
+                result = call()
+                elapsed = time.perf_counter() - start
+                if name == "v8std_get_page":
+                    assert result["found"] and result["page"]["id"] == "std437"
+                    assert result["page"]["body_markdown"] and len(result["page"]["body_markdown"]) <= 12005
+                elif name == "v8std_get_related":
+                    assert result["found"] and result["id"] == "std437" and result["related"]
+                elif name == "v8std_search":
+                    assert result["results"]
+                else:
+                    assert result["diagnostics"][0]["id"] == "bslls:UsingModalWindows"
+                print(json.dumps({"tool": name, "seconds": elapsed,
+                                  "chars": len(json.dumps(result, ensure_ascii=False))}), flush=True)
     finally:
         source.close()
 

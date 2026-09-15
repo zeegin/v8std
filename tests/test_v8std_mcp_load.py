@@ -17,16 +17,15 @@ class LoadProfileTests(unittest.TestCase):
         self.assertIsNotNone(importlib.util.find_spec("check_mcp_load"))
         self.load = importlib.import_module("check_mcp_load")
 
-    def test_mix_exercises_real_tools_and_all_retained_resources(self):
+    def test_mix_exercises_all_five_tools_without_resource_data_calls(self):
         requests = [self.load.request(index) for index in range(20)]
         names = [label for label, _ in requests]
         self.assertEqual({name: names.count(name) for name in set(names)}, {
-            "search": 7, "page": 5, "snippet": 3, "diagnostics": 2,
-            "resource:llms.txt": 1, "resource:llms-full.txt": 1, "resource:ai/pages.jsonl": 1})
-        for _, message in requests:
-            self.assertNotIn(message["method"], {"ping", "initialize"})
-        self.assertEqual({message["params"]["uri"] for _, message in requests if message["method"] == "resources/read"},
-                         {"v8std://llms.txt", "v8std://llms-full.txt", "v8std://ai/pages.jsonl"})
+            "search": 7, "page": 5, "snippet": 3, "diagnostics": 2, "related": 3})
+        self.assertEqual({message["method"] for _, message in requests}, {"tools/call"})
+        self.assertEqual({message["params"]["name"] for _, message in requests}, {
+            "v8std_search", "v8std_get_page", "v8std_get_related",
+            "v8std_explain_snippet", "v8std_explain_diagnostics"})
 
     def test_errors_and_retryable_admission_are_not_success_latency(self):
         rows = [dict(kind="search", seconds=.1, status=200, outcome="ok", bytes=20),
@@ -43,12 +42,31 @@ class LoadProfileTests(unittest.TestCase):
         self.assertEqual(report["success_p95_seconds"], .4)
         self.assertEqual(report["success_p99_seconds"], .4)
 
-    def test_resource_empty_or_mcp_error_is_not_a_successful_bulk_read(self):
-        for value in ({"error": {"code": -1}}, {"result": {"contents": []}},
-                      {"result": {"contents": [{"uri": "wrong", "text": "content"}]}}):
-            self.assertFalse(self.load.valid_reply("resource:llms-full.txt", json.dumps(value).encode()))
-        good = {"result": {"contents": [{"uri": "v8std://llms-full.txt", "text": "real corpus"}]}}
-        self.assertTrue(self.load.valid_reply("resource:llms-full.txt", json.dumps(good).encode()))
+    @staticmethod
+    def envelope(content):
+        return {"jsonrpc": "2.0", "id": 9, "result": {"isError": False,
+            "content": [{"type": "text", "text": json.dumps(content)}], "structuredContent": content}}
+
+    def test_related_requires_found_page_and_real_related_rows(self):
+        good = {"found": True, "id": "std437", "title": "Запросы", "relations": None,
+                "related": [{"id": "bslls:UsingModalWindows", "title": "Modal", "type": "diagnostic",
+                             "relation": "diagnostic", "url": "http://fixture/modal/", "description": "Modal"}]}
+        self.assertTrue(self.load.valid_reply("related", json.dumps(self.envelope(good)).encode()))
+        for broken in ({**good, "found": False}, {**good, "related": []}, {**good, "related": [{}]},
+                       {**good, "id": "wrong"}):
+            self.assertFalse(self.load.valid_reply("related", json.dumps(self.envelope(broken)).encode()))
+
+    def test_page_rejects_errors_empty_wrong_page_and_non_json_protocol(self):
+        good = self.envelope({"found": True, "candidates": [], "page": {
+            "id": "std437", "body_markdown": "# Controlled page\nVersion A", "body_truncated": False}})
+        self.assertTrue(self.load.valid_reply("page", json.dumps(good).encode()))
+        for value in ({"error": {"code": -32601}}, {}, {"jsonrpc": "2.0", "id": 9, "result": {}},
+                      {**good, "error": {"code": -32601}}, {**good, "jsonrpc": "1.0"},
+                      self.envelope({"found": True, "page": {"id": "wrong", "body_markdown": "text"}}),
+                      self.envelope({"found": True, "page": {"id": "std437", "body_markdown": ""}})):
+            with self.subTest(value=value):
+                self.assertFalse(self.load.valid_reply("page", json.dumps(value).encode()))
+        self.assertFalse(self.load.valid_reply("page", b"event: message\ndata: " + json.dumps(good).encode()))
 
     def test_edge_retains_admission_budgets_and_only_translates_fixture_transport(self):
         config = self.load.edge_config("mcp-a")
@@ -116,12 +134,15 @@ class LoadProfileTests(unittest.TestCase):
                 await server.wait_closed()
         asyncio.run(check())
 
-    def test_staged_hash_matches_presented_resource_not_canonical_archive_bytes(self):
+    def test_staged_page_hash_comes_from_explicit_fixture_body(self):
         import hashlib
         from tests import mcp_snapshot_fixtures as fixture
-        from v8std_mcp_snapshot_format import verify_archive
-        from v8std_mcp_runtime import build_generation
-        archive, manifest = fixture.snapshot_fixture()
+        body = "# Controlled page\nVersion A"
+        page = {**fixture.page_fixture(), "body_markdown": body}
+        vectors = fixture.vector_fixtures()
+        vectors[1]["text_sha256"] = fixture.sha256(body.encode())
+        archive, manifest = fixture.snapshot_fixture(files=fixture.with_metadata(
+            fixture.corpus_files(pages=[page], vectors=vectors)))
         with tempfile.TemporaryDirectory(prefix="v8std-load-content-") as temporary:
             directory = Path(temporary)
             source = directory / "input"
@@ -131,9 +152,47 @@ class LoadProfileTests(unittest.TestCase):
             target.parent.mkdir()
             target.write_bytes(archive)
             _, actual = self.load.stage_snapshot(source, directory / "staged")
-            expected = build_generation(verify_archive(archive, manifest), max_snippet_chars=4000,
-                site_url="http://v8std.localhost:18765/").resources["pages.jsonl"]
-            self.assertEqual(actual, hashlib.sha256(expected.encode()).hexdigest())
+            self.assertEqual(actual, hashlib.sha256(b"# Controlled page\nVersion A").hexdigest())
+
+    def test_controlled_page_read_rejects_stale_content_and_sse(self):
+        self.assertTrue(callable(getattr(self.load, "page_content_hash", None)), "refresh needs a real page verifier")
+        import asyncio
+        import hashlib
+        import httpx
+        async def check():
+            expected = hashlib.sha256(b"# Controlled page\nVersion B").hexdigest()
+            for body, media in (("# Controlled page\nVersion A", "application/json"),
+                                ("# Controlled page\nVersion B", "text/event-stream"),
+                                ("# Controlled page\nVersion B", "application/json")):
+                def respond(request):
+                    message = json.loads(request.content)
+                    self.assertEqual(message["method"], "tools/call")
+                    self.assertEqual(message["params"], {"name": "v8std_get_page", "arguments": {"id_or_alias_or_url": "std437"}})
+                    envelope = self.envelope({"found": True, "candidates": [], "page": {
+                        "id": "std437", "body_markdown": body, "body_truncated": False}})
+                    envelope["id"] = message["id"]
+                    return httpx.Response(200, json=envelope, headers={"Content-Type": media})
+                async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+                    if body.endswith("B") and media == "application/json":
+                        self.assertEqual(await self.load.page_content_hash(client, "http://fixture", expected), expected)
+                    else:
+                        with self.assertRaises(ValueError):
+                            await self.load.page_content_hash(client, "http://fixture", expected)
+        asyncio.run(check())
+
+    def test_measure_rejects_wrong_id_and_sse_instead_of_counting_success(self):
+        import asyncio
+        import httpx
+        async def check():
+            good = self.envelope({"found": True, "candidates": [], "page": {
+                "id": "std437", "body_markdown": "real text", "body_truncated": False}})
+            for media, response_id in (("application/json", "9"), ("text/event-stream", 9), ("application/json", 9)):
+                reply = {**good, "id": response_id}
+                async with httpx.AsyncClient(transport=httpx.MockTransport(lambda _: httpx.Response(
+                        200, json=reply, headers={"Content-Type": media}))) as client:
+                    row = await self.load.measure(client, "http://fixture/mcp", "page", self.load.request(7)[1])
+                    self.assertEqual(row["outcome"], "ok" if media == "application/json" and response_id == 9 else "mcp_error")
+        asyncio.run(check())
 
     def test_cleanup_attempts_each_exact_owned_resource_and_preserves_primary_error(self):
         stack = self.load.Stack()

@@ -446,6 +446,63 @@ class ImageContextClosureTests(unittest.TestCase):
             self.assertEqual(checked.returncode, 0, checked.stdout)
 
 
+class AcceptanceHelperTests(unittest.TestCase):
+    def test_real_tools_only_server_passes_direct_and_aggregate_catalog_checks(self):
+        from tests.test_v8std_mcp_tools_only import http_rpc, initialize
+        from v8std_mcp_index import V8StdIndex
+        index = V8StdIndex(pages_path=ROOT / "docs/ai/pages.jsonl",
+                          vectors_path=ROOT / "docs/ai/search-vectors.jsonl")
+        index.load()
+        with http_rpc(index) as rpc:
+            initialize(rpc)
+            def request(method, params=None):
+                return rpc.call(method, params)["result"]
+            self.assertEqual(harness.check_tools(request, "https://v8std.ru/")[0], "std437")
+            def aggregate(method, params=None):
+                result = request(method, params)
+                if method == "tools/list":
+                    result["tools"].append({"name": "gateway-helper"})
+                return result
+            with self.assertRaises(AssertionError):
+                harness.check_tools(aggregate, "https://v8std.ru/")
+            harness.check_tools(aggregate, "https://v8std.ru/", aggregate_catalog=True)
+
+    def test_resource_denial_is_semantic_and_rejects_payload_or_wrong_typed_id(self):
+        check = getattr(harness, "validate_resource_denial", None)
+        self.assertTrue(callable(check), "acceptance needs a semantic full-envelope denial verifier")
+        good = {"jsonrpc": "2.0", "id": 7, "error": {"code": -32601, "message": "Unsupported method"}}
+        check(good, 7)
+        for value in ({**good, "id": "7"}, {**good, "id": True}, {**good, "jsonrpc": "1.0"},
+                      {**good, "result": {}}, {**good, "error": {"code": -32602, "message": "bad params"}},
+                      {**good, "error": {**good["error"], "data": "corpus"}},
+                      {**good, "error": {"code": -32601, "message": "x" * 1024}}):
+            with self.subTest(value=value), self.assertRaises(AssertionError):
+                check(value, 7)
+
+    def test_stdio_expected_error_envelope_does_not_weaken_ordinary_requests(self):
+        self.assertTrue(callable(getattr(harness.Stdio, "envelope", None)), "stdio needs a complete-envelope path")
+        code = """import json,sys
+for line in sys.stdin:
+    message=json.loads(line)
+    print(json.dumps({'jsonrpc':'2.0','id':message['id'],'error':{'code':-32601,'message':'Unsupported'}}),flush=True)
+"""
+        with tempfile.TemporaryFile(mode="w+") as log:
+            session = harness.Stdio([sys.executable, "-c", code], log)
+            try:
+                reply = session.envelope("resources/list")
+                harness.validate_resource_denial(reply, 1)
+                with self.assertRaises(AssertionError):
+                    session.request("tools/list")
+            finally:
+                session.close()
+
+    def test_tool_content_rejects_embedded_resources_even_with_structured_content(self):
+        reply = {"isError": False, "content": [{"type": "resource", "resource": {
+            "uri": "v8std://llms.txt", "text": "corpus"}}], "structuredContent": {"found": True}}
+        with self.assertRaises(AssertionError):
+            harness.content(reply)
+
+
 class GatewayProfileTests(unittest.TestCase):
     def validate(self, state):
         return harness.validate_gateway_profile(state, expected_cache={
