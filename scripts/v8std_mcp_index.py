@@ -47,8 +47,6 @@ FETCH_CHUNK_BYTES = 64 * 1024
 RESOURCE_MAX_BYTES = {
     "pages.jsonl": 16 * 1024 * 1024,
     "search-vectors.jsonl": 32 * 1024 * 1024,
-    "llms.txt": 4 * 1024 * 1024,
-    "llms-full.txt": 16 * 1024 * 1024,
 }
 VECTOR_DIM = 256
 MAX_VECTOR_ROWS = 100000
@@ -776,33 +774,6 @@ class V8StdIndex:
         key = normalize_lookup_key(id_or_alias_or_url)
         with self._lock:
             return self._pages_by_key.get(key)
-
-    def read_resource_text(self, resource_name: str) -> str:
-        if self._frozen:
-            raise RuntimeError("snapshot resources belong to the generation")
-        self.refresh_if_needed()
-        if resource_name == "pages.jsonl" and self.pages_path is not None:
-            return self.pages_path.read_text(encoding="utf-8")
-
-        if self.pages_path is not None:
-            docs_dir = self.pages_path.parent.parent
-            local = {
-                "llms.txt": docs_dir / "llms.txt",
-                "llms-full.txt": docs_dir / "llms-full.txt",
-                "pages.jsonl": self.pages_path,
-            }.get(resource_name)
-            if local and local.is_file():
-                return local.read_text(encoding="utf-8")
-
-        remote_path = {
-            "llms.txt": "https://v8std.ru/llms.txt",
-            "llms-full.txt": "https://v8std.ru/llms-full.txt",
-            "pages.jsonl": self.index_url,
-        }.get(resource_name)
-        if not remote_path:
-            raise ValueError(f"unknown resource: {resource_name}")
-        payload, _source = self._load_remote_resource(resource_name, remote_path)
-        return payload
 
     @staticmethod
     def _validate_types(types: list[str] | None) -> set[str] | None:

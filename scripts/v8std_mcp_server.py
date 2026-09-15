@@ -17,6 +17,7 @@ from typing import Annotated, Any
 
 import anyio
 
+import mcp.types as mcp_types
 from mcp.server.fastmcp import FastMCP
 from mcp.server.stdio import stdio_server
 from mcp.server.transport_security import TransportSecuritySettings
@@ -59,7 +60,7 @@ MCP_EVENT_STREAM_DISABLED_MESSAGE = (
     "This stateless MCP endpoint does not provide an unsolicited SSE stream; "
     "send JSON-RPC requests with POST."
 )
-MCP_API_PROFILES = ["legacy-tools", "resources"]
+MCP_API_PROFILES = ["legacy-tools"]
 MAX_USAGE_TEXT_CHARS = 240
 MAX_USAGE_RESULTS = 50
 MAX_USAGE_CODES = 500
@@ -622,6 +623,19 @@ def install_stdio_lifecycle(server: FastMCP, index) -> None:
     server.run_stdio_async = run_stdio  # type: ignore[method-assign]
 
 
+def _disable_resource_handlers(server: FastMCP) -> None:
+    # SDK 1.27 registers these even without resource decorators. Removing the
+    # handlers also removes the capability and uses normal Method not found dispatch.
+    for request_type in (
+        mcp_types.ListResourcesRequest,
+        mcp_types.ListResourceTemplatesRequest,
+        mcp_types.ReadResourceRequest,
+        mcp_types.SubscribeRequest,
+        mcp_types.UnsubscribeRequest,
+    ):
+        server._mcp_server.request_handlers.pop(request_type, None)
+
+
 def build_server(
     index: V8StdIndex | SnapshotIndex,
     *,
@@ -659,6 +673,7 @@ def build_server(
             allowed_origins=allowed_origins,
         ),
     )
+    _disable_resource_handlers(server)
 
     @server.tool(
         name="v8std_search",
@@ -764,33 +779,6 @@ def build_server(
         result = index.explain_diagnostics(codes)
         tool_usage.record_diagnostics(codes, result, system=current_client_system())
         return result
-
-    @server.resource(
-        "v8std://llms.txt",
-        name="llms.txt",
-        description="Compact v8std.ru LLM map.",
-        mime_type="text/plain",
-    )
-    def llms_txt() -> str:
-        return index.read_resource_text("llms.txt")
-
-    @server.resource(
-        "v8std://llms-full.txt",
-        name="llms-full.txt",
-        description="Full cleaned Markdown corpus for v8std.ru.",
-        mime_type="text/plain",
-    )
-    def llms_full_txt() -> str:
-        return index.read_resource_text("llms-full.txt")
-
-    @server.resource(
-        "v8std://ai/pages.jsonl",
-        name="pages.jsonl",
-        description="Machine-readable v8std.ru pages index.",
-        mime_type="application/jsonl",
-    )
-    def pages_jsonl() -> str:
-        return index.read_resource_text("pages.jsonl")
 
     @server.custom_route("/healthz", methods=["GET"], include_in_schema=False)
     async def healthz(_: Request) -> Response:

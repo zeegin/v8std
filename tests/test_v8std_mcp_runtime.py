@@ -62,9 +62,9 @@ class RuntimeTests(unittest.TestCase):
             self.assertEqual(decoded.index.page("std437")["page"]["id"], "std437")
             with self.assertRaisesRegex(RuntimeError, "frozen"):
                 decoded.index.load()
-            with self.assertRaisesRegex(RuntimeError, "generation"):
-                decoded.index.read_resource_text("llms.txt")
-            self.assertEqual(set(decoded.resources), {"pages.jsonl", "llms.txt", "llms-full.txt"})
+            self.assertEqual(decoded.corpus_id, generation.corpus_id)
+            self.assertEqual(decoded.page_paths, {"std437": {
+                "site_path": "std/437/", "markdown_path": "std/437.md"}})
 
     def test_generation_capture_pins_nested_calls_and_returns_independent_copy(self):
         runtime = self.module()
@@ -91,10 +91,9 @@ class RuntimeTests(unittest.TestCase):
             self.assertTrue(page["found"])
             page["page"]["aliases"].append("mutation")
             self.assertNotIn("mutation", facade.page("std437")["page"]["aliases"])
-            self.assertIn('`', facade.read_resource_text("llms-full.txt"))
-            resource = json.loads(facade.read_resource_text("pages.jsonl"))
-            self.assertEqual(resource["url"], LOCAL + "std/437/")
-            self.assertEqual(resource["source_urls"], fixture.page_fixture()["source_urls"])
+            self.assertIn('`', page["page"]["body_markdown"])
+            self.assertEqual(page["page"]["url"], LOCAL + "std/437/")
+            self.assertEqual(page["page"]["source_urls"], fixture.page_fixture()["source_urls"])
 
     def test_validation_before_readiness_for_all_data_boundaries(self):
         runtime = self.module()
@@ -109,8 +108,7 @@ class RuntimeTests(unittest.TestCase):
                 self.assertNotIn("INDEX_NOT_READY", str(caught.exception))
             for call in (lambda: facade.search("std437"), lambda: facade.page("std437"),
                          lambda: facade.related("std437"), lambda: facade.explain_snippet(""),
-                         lambda: facade.explain_diagnostics([]),
-                         lambda: facade.read_resource_text("llms.txt")):
+                         lambda: facade.explain_diagnostics([])):
                 with self.assertRaisesRegex(ValueError, "INDEX_NOT_READY"):
                     call()
 
@@ -167,23 +165,49 @@ class RuntimeTests(unittest.TestCase):
         finally:
             source.close()
 
-    def test_resources_are_presented_during_build_not_in_callbacks(self):
+    def test_tools_serve_warm_page_through_slow_and_corrupt_refresh(self):
         runtime = self.module()
         from v8std_mcp_snapshots import SnapshotStore
         from tests.test_v8std_mcp_snapshots import Source
-        source = Source()
-        try:
-            with tempfile.TemporaryDirectory() as directory:
-                facade = runtime.SnapshotIndex(site_url=source.url, cache_dir=Path(directory))
-                generation = SnapshotStore(source.url, Path(directory)).refresh(prepare=facade.coordinator.build)
-                facade.coordinator = Current(generation)
-                with patch("v8std_mcp_runtime.present_markdown", side_effect=AssertionError("callback parsing")), \
-                     patch("v8std_mcp_runtime.present_result", side_effect=AssertionError("callback parsing")):
-                    for name in ("pages.jsonl", "llms.txt", "llms-full.txt"):
-                        result = facade.read_resource_text(name)
-                        self.assertIn(source.url + "std/437/", result)
-        finally:
-            source.close()
+        from tests.test_v8std_mcp_tools_only import http_rpc, initialize, call_tool, assert_resources_disabled
+        for fault in (None, "corrupt"):
+            source = Source()
+            try:
+                with self.subTest(fault=fault), tempfile.TemporaryDirectory() as directory:
+                    SnapshotStore(source.url, Path(directory)).refresh()
+                    page = fixture.page_fixture()
+                    page["body_markdown"] = "Обновлённая страница"
+                    vectors = fixture.vector_fixtures()
+                    vectors[1]["text_sha256"] = fixture.sha256(page["body_markdown"].encode())
+                    files = fixture.with_metadata(fixture.corpus_files(pages=[page], vectors=vectors))
+                    source.archive, source.manifest = fixture.snapshot_fixture(files=files)
+                    source.requested.clear()
+                    source.fault = "headers"
+                    facade = runtime.SnapshotIndex(site_url=source.url, cache_dir=Path(directory), refresh_seconds=0)
+                    with http_rpc(facade) as rpc:
+                        initialize(rpc)
+                        self.assertTrue(source.requested.wait(5))
+                        arguments = {"id_or_alias_or_url": "std437"}
+                        old = call_tool(self, rpc, "v8std_get_page", arguments)["page"]
+                        self.assertIn("[Стандарт](" + source.url, old["body_markdown"])
+                        assert_resources_disabled(self, rpc)
+                        source.fault = fault
+                        source.release.set()
+                        deadline = time.monotonic() + 8
+                        while facade.status()["last_checked_at"] is None:
+                            self.assertLess(time.monotonic(), deadline)
+                            time.sleep(.02)
+                        current = call_tool(self, rpc, "v8std_get_page", arguments)["page"]
+                        if fault:
+                            self.assertIsNotNone(facade.status()["refresh_error_code"])
+                            self.assertEqual(current, old)
+                        else:
+                            self.assertIsNone(facade.status()["refresh_error_code"])
+                            self.assertEqual(current["body_markdown"], "Обновлённая страница")
+                        self.assertEqual(current["url"], source.url + "std/437/")
+                        assert_resources_disabled(self, rpc)
+            finally:
+                source.close()
 
     def test_verified_warm_generation_becomes_ready_with_source_offline(self):
         runtime = self.module()
@@ -227,8 +251,7 @@ class RuntimeTests(unittest.TestCase):
             self.assertLessEqual(len(result["diagnostics"]) + len(result["standards"]), 1)
             self.assertEqual(current.calls, 1)
             for call in (lambda: facade.search("std437"), lambda: facade.page("std437"),
-                         lambda: facade.related("std437"), lambda: facade.explain_diagnostics(["missing"]),
-                         lambda: facade.read_resource_text("pages.jsonl")):
+                         lambda: facade.related("std437"), lambda: facade.explain_diagnostics(["missing"])):
                 before = current.calls
                 call()
                 self.assertEqual(current.calls, before + 1)
@@ -331,6 +354,11 @@ class StdioProcess:
             raise AssertionError(result)
         return result
 
+    def notify(self, method, params=None):
+        self.process.stdin.write(json.dumps({"jsonrpc": "2.0", "method": method,
+                                            "params": params or {}}) + "\n")
+        self.process.stdin.flush()
+
     def close(self):
         if self.process.poll() is None:
             self.process.terminate()
@@ -345,18 +373,42 @@ class StdioProcess:
             stream.close()
 
 
+@contextlib.contextmanager
+def measured_output_pipe():
+    """Measure the actual test pipe to EAGAIN, then hand its drained writer to the child."""
+    read_fd, write_fd = os.pipe()
+    with os.fdopen(read_fd, "rb", buffering=0) as output, os.fdopen(write_fd, "wb", buffering=0) as writer:
+        os.set_blocking(write_fd, False)
+        capacity = 0
+        try:
+            while capacity < 16 * 1024 * 1024:
+                capacity += os.write(write_fd, b"x" * 65536)
+            raise AssertionError("test pipe did not reach backpressure")
+        except BlockingIOError:
+            pass
+        remaining = capacity
+        while remaining:
+            remaining -= len(os.read(read_fd, remaining))
+        os.set_blocking(write_fd, True)
+        yield output, writer, capacity
+
+
 class WireTests(unittest.TestCase):
     def test_stdio_large_response_drained_and_backpressured_shutdown_cleans_workers(self):
         from tests.test_v8std_mcp_snapshots import Source
         from v8std_mcp_snapshots import SnapshotStore
         source = Source()
-        payload = "x" * (2 * 1024 * 1024)
-        files = fixture.corpus_files()
-        files["llms-full.txt"] = payload.encode()
+        payload = "\U0001f600" * 12000
+        page = fixture.page_fixture()
+        page["body_markdown"] = payload
+        vectors = fixture.vector_fixtures()
+        vectors[1]["text_sha256"] = fixture.sha256(payload.encode())
+        files = fixture.corpus_files(pages=[page], vectors=vectors)
         source.archive, source.manifest = fixture.snapshot_fixture(files=fixture.with_metadata(files))
         try:
             for shutdown in ("drained-eof", "eof", "sigterm"):
-                with self.subTest(shutdown=shutdown), tempfile.TemporaryDirectory() as directory:
+                with self.subTest(shutdown=shutdown), tempfile.TemporaryDirectory() as directory, \
+                     measured_output_pipe() as (output, writer, capacity):
                     source.fault = None
                     SnapshotStore(source.url, Path(directory)).refresh()
                     source.requested.clear()
@@ -364,8 +416,9 @@ class WireTests(unittest.TestCase):
                     source.fault = "headers"
                     process = subprocess.Popen([sys.executable, str(ROOT / "scripts/v8std_mcp_server.py"),
                         "--transport", "stdio", "--site-url", source.url, "--cache-dir", directory,
-                        "--refresh-seconds", "0"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                        "--refresh-seconds", "0"], stdin=subprocess.PIPE, stdout=writer,
                         stderr=subprocess.PIPE, bufsize=0, start_new_session=True)
+                    writer.close()
                     number, buffer = 0, bytearray()
 
                     def send(method, params):
@@ -379,8 +432,8 @@ class WireTests(unittest.TestCase):
                         while b"\n" not in buffer:
                             remaining = deadline - time.monotonic()
                             self.assertGreater(remaining, 0, "protocol response timeout")
-                            self.assertTrue(select.select([process.stdout], [], [], remaining)[0])
-                            block = os.read(process.stdout.fileno(), 65536)
+                            self.assertTrue(select.select([output], [], [], remaining)[0])
+                            block = os.read(output.fileno(), 65536)
                             self.assertTrue(block, "unexpected protocol EOF")
                             buffer.extend(block)
                         end = buffer.index(b"\n") + 1
@@ -388,27 +441,36 @@ class WireTests(unittest.TestCase):
                         del buffer[:end]
                         result = json.loads(line)
                         self.assertEqual(result["id"], number, "stdout must contain only SDK frames")
-                        return result
+                        return result, len(line)
 
                     try:
                         send("initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
                             "clientInfo": {"name": "backpressure", "version": "1"}})
-                        self.assertIn("serverInfo", response()["result"])
+                        self.assertIn("serverInfo", response()[0]["result"])
+                        process.stdin.write(b'{"jsonrpc":"2.0","method":"notifications/initialized"}\n')
                         self.assertTrue(source.requested.wait(5))
                         # Warm-cache generation is ready before the blocked refresh.
                         send("tools/call", {"name": "v8std_search", "arguments": {"query": "std437"}})
-                        self.assertFalse(response()["result"].get("isError", False))
+                        self.assertFalse(response()[0]["result"].get("isError", False))
                         children = [int(row.split(None, 2)[0])
                             for row in subprocess.check_output(["ps", "-axo", "pid=,ppid=,command="], text=True).splitlines()
                             if row.split(None, 2)[1] == str(process.pid) and "spawn_main" in row]
                         self.assertTrue(children, "exercise shutdown with an active spawn worker")
-                        send("resources/read", {"uri": "v8std://llms-full.txt"})
-                        if shutdown == "drained-eof":
-                            self.assertEqual(response()["result"]["contents"][0]["text"], payload)
-                        else:
-                            self.assertTrue(select.select([process.stdout], [], [], 5)[0])
-                            # At most 64 bytes consumed: a 2MB frame cannot fit in the pipe.
-                            self.assertTrue(os.read(process.stdout.fileno(), 64).startswith(b'{"jsonrpc"'))
+                        arguments = {"name": "v8std_get_page", "arguments": {"id_or_alias_or_url": "std437"}}
+                        send("tools/call", arguments)
+                        reply, encoded_bytes = response()
+                        result = reply["result"]
+                        self.assertFalse(result.get("isError", False))
+                        self.assertEqual(result["structuredContent"]["page"]["body_markdown"], payload)
+                        self.assertFalse(result["structuredContent"]["page"]["body_truncated"])
+                        self.assertEqual(json.loads(result["content"][0]["text"]), result["structuredContent"])
+                        self.assertGreater(encoded_bytes, capacity + 64,
+                                           "real SDK tool frame must exceed the measured pipe capacity")
+                        if shutdown != "drained-eof":
+                            send("tools/call", arguments)
+                            self.assertTrue(select.select([output], [], [], 5)[0])
+                            # Drain only 64 bytes of the same measured response; the rest cannot fit.
+                            self.assertTrue(os.read(output.fileno(), 64).startswith(b'{"jsonrpc"'))
                             time.sleep(.1)
                         started = time.monotonic()
                         if shutdown == "sigterm":
@@ -418,7 +480,7 @@ class WireTests(unittest.TestCase):
                         try:
                             process.wait(3)
                         except subprocess.TimeoutExpired:
-                            self.fail("2MB stdio response prevented bounded " + shutdown + " shutdown")
+                            self.fail("backpressured tool response prevented bounded " + shutdown + " shutdown")
                         self.assertEqual(process.returncode, 0)
                         self.assertLess(time.monotonic() - started, 3)
                         for pid in children:
@@ -430,13 +492,14 @@ class WireTests(unittest.TestCase):
                             # Only this test's new session; no worker orphan on RED.
                             os.killpg(process.pid, signal.SIGKILL)
                             process.wait(3)
-                        for stream in (process.stdin, process.stdout, process.stderr):
+                        for stream in (process.stdin, process.stderr):
                             stream.close()
         finally:
             source.close()
 
     def test_stdio_initialize_not_ready_eof_and_sigterm_clean_workers(self):
         from tests.test_v8std_mcp_snapshots import Source
+        from tests.test_v8std_mcp_tools_only import initialize, assert_resources_disabled
         source = Source()
         source.fault = "headers"
         try:
@@ -445,17 +508,15 @@ class WireTests(unittest.TestCase):
                     client = StdioProcess(source.url, Path(directory))
                     try:
                         started = time.monotonic()
-                        init = client.call("initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
-                                    "clientInfo": {"name": "task3-fixture", "version": "1"}})
+                        init = initialize(client, "task3-fixture")
                         self.assertEqual(init["result"]["serverInfo"]["name"], "v8std")
                         self.assertLess(time.monotonic() - started, 3)
                         self.assertEqual(len(client.call("tools/list")["result"]["tools"]), 5)
-                        self.assertEqual({r["uri"] for r in client.call("resources/list")["result"]["resources"]},
-                                         {"v8std://llms.txt", "v8std://llms-full.txt", "v8std://ai/pages.jsonl"})
+                        self.assertNotIn("resources", init["result"]["capabilities"])
+                        assert_resources_disabled(self, client)
                         result = client.call("tools/call", {"name": "v8std_search", "arguments": {"query": "std437"}})
                         self.assertTrue(result["result"]["isError"])
                         self.assertIn("INDEX_NOT_READY", str(result))
-                        self.assertIn("INDEX_NOT_READY", str(client.call("resources/read", {"uri": "v8std://llms.txt"})))
                         self.assertTrue(source.requested.wait(3))
                         child_rows = subprocess.check_output(["ps", "-axo", "pid=,ppid=,command="], text=True)
                         children = [int(row.split(None, 2)[0]) for row in child_rows.splitlines()
@@ -478,9 +539,10 @@ class WireTests(unittest.TestCase):
         finally:
             source.close()
 
-    def test_loopback_http_slow_bootstrap_then_two_agents_and_resources(self):
+    def test_loopback_http_slow_bootstrap_then_two_agents_with_tools_only(self):
         import httpx
         from tests.test_v8std_mcp_snapshots import Source
+        from tests.test_v8std_mcp_tools_only import HttpRpc, initialize, assert_resources_disabled, assert_tool_catalog
         source = Source()
         source.fault = "headers"
         try:
@@ -504,26 +566,28 @@ class WireTests(unittest.TestCase):
                                 time.sleep(.02)
                         self.assertEqual(live.status_code, 200)
                         self.assertEqual(client.get("/healthz").status_code, 503)
-                        headers = {"Accept": "application/json, text/event-stream"}
-                        def rpc(method, params):
-                            return client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 1,
-                                                "method": method, "params": params}).json()
+                        agents = []
                         for name in ("agent-one", "agent-two"):
-                            self.assertIn("serverInfo", rpc("initialize", {"protocolVersion": "2025-03-26",
-                                "capabilities": {}, "clientInfo": {"name": name, "version": "1"}})["result"])
-                        self.assertIn("INDEX_NOT_READY", str(rpc("tools/call", {"name": "v8std_search",
+                            agent = HttpRpc(client)
+                            agents.append(agent)
+                            initialized = initialize(agent, name)
+                            self.assertIn("serverInfo", initialized["result"])
+                            self.assertNotIn("resources", initialized["result"]["capabilities"])
+                            assert_tool_catalog(self, agent)
+                            assert_resources_disabled(self, agent)
+                        self.assertIn("INDEX_NOT_READY", str(agents[0].call("tools/call", {"name": "v8std_search",
                                                                 "arguments": {"query": "std437"}})))
                         source.release.set()
                         deadline = time.monotonic() + 8
                         while client.get("/healthz").status_code != 200:
                             self.assertLess(time.monotonic(), deadline)
                             time.sleep(.025)
-                        for _ in range(2):
-                            self.assertFalse(rpc("tools/call", {"name": "v8std_get_page",
+                        for agent in agents:
+                            self.assertFalse(agent.call("tools/call", {"name": "v8std_get_page",
                                 "arguments": {"id_or_alias_or_url": "std437"}})["result"].get("isError", False))
-                            for uri in ("v8std://llms.txt", "v8std://llms-full.txt", "v8std://ai/pages.jsonl"):
-                                self.assertIn("contents", rpc("resources/read", {"uri": uri})["result"])
+                            assert_resources_disabled(self, agent)
                         self.assertEqual(client.get("/version").json()["api"], "v2")
+                        self.assertEqual(client.get("/version").json()["api_profiles"], ["legacy-tools"])
                 finally:
                     process.terminate()
                     process.communicate(timeout=5)

@@ -49,9 +49,18 @@ POST. Необходимый для серверных уведомлений д
 поэтому необязательный GET с `Accept: text/event-stream` отклоняется ответом
 `405`; это не мешает обычным вызовам инструментов.
 
-Сервис комбинированный: v2 tools и MCP Resources обслуживаются одним endpoint
-`/mcp` и одним runtime. `v8std_get_page` сохраняется для совместимости, а
-Resources являются additive-профилем для клиентов, которые их поддерживают.
+Сервис предоставляет пять инструментов через `/mcp` и stdio. MCP Resources
+не поддерживаются: capability `resources` отсутствует, а запросы
+`resources/list`, `resources/templates/list`, `resources/read`,
+`resources/subscribe` и `resources/unsubscribe` возвращают `-32601 Method not found`.
+Если клиент раньше читал Resources, переведите его на инструменты:
+ищите материал через `v8std_search` и читайте отдельную страницу через
+`v8std_get_page` с ограничением длины ответа.
+
+Публичные файлы сайта остаются доступны для скачивания:
+[llms.txt](https://v8std.ru/llms.txt),
+[llms-full.txt](https://v8std.ru/llms-full.txt) и
+[pages.jsonl](https://v8std.ru/ai/pages.jsonl).
 
 Например:
 

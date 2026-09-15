@@ -30,13 +30,26 @@ class CombinedMcpRuntimeTests(unittest.TestCase):
         ]
         self.assertEqual(len(fastmcp_calls), 1)
 
-    def test_combined_profiles_keep_legacy_tool_and_resources(self):
-        server = (ROOT / "scripts/v8std_mcp_server.py").read_text(encoding="utf-8")
+    def test_common_server_keeps_legacy_tools_without_resources(self):
+        from tests import mcp_snapshot_fixtures as fixture
+        from tests.test_v8std_mcp_tools_only import (
+            http_rpc, initialize, assert_tool_catalog, assert_resources_disabled, call_tool,
+        )
+        from v8std_mcp_index import V8StdIndex
 
-        self.assertIn('MCP_API_PROFILES = ["legacy-tools", "resources"]', server)
-        self.assertIn('name="v8std_get_page"', server)
-        self.assertIn('@server.resource(', server)
-        self.assertIn('"api_profiles": MCP_API_PROFILES', server)
+        files = fixture.corpus_files()
+        index = V8StdIndex.from_validated_bytes(files["pages.jsonl"], files["search-vectors.jsonl"])
+        with http_rpc(index) as rpc:
+            initialized = initialize(rpc)
+            self.assertNotIn("resources", initialized["result"]["capabilities"])
+            assert_tool_catalog(self, rpc)
+            assert_resources_disabled(self, rpc)
+            result = call_tool(self, rpc, "v8std_get_page", {"id_or_alias_or_url": "std437"})
+            self.assertTrue(result["found"])
+            self.assertEqual(result["page"]["body_markdown"], fixture.BODY)
+            version = rpc.client.get("/version").json()
+            self.assertEqual(version["api"], "v2")
+            self.assertEqual(version["api_profiles"], ["legacy-tools"])
 
 
 if __name__ == "__main__":

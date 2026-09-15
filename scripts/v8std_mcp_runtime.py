@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import partial
-import json
 from pathlib import Path
 
 from v8std_mcp_index import (
@@ -11,7 +10,7 @@ from v8std_mcp_index import (
     MAX_SNIPPET_CHARS, MAX_ENUM_CHARS, MAX_DIAGNOSTIC_CODES, MAX_DIAGNOSTIC_CODE_CHARS,
     clamp_body_limit, clamp_limit, require_text, trim_body, validate_max_snippet_chars,
 )
-from v8std_mcp_presentation import LinkCatalog, present_markdown, present_result
+from v8std_mcp_presentation import LinkCatalog, present_result
 from v8std_mcp_snapshot_format import DEFAULT_SITE_URL, VerifiedSnapshot, normalize_site_url
 from v8std_mcp_snapshots import LoaderError, SnapshotCoordinator, SnapshotStore
 from v8std_mcp_hold import CONTROL_PATH
@@ -21,7 +20,6 @@ from v8std_mcp_hold import CONTROL_PATH
 class IndexGeneration:
     corpus_id: str
     index: V8StdIndex
-    resources: dict[str, str]
     canonical_site_url: str
     page_paths: dict
 
@@ -33,16 +31,7 @@ def build_generation(snapshot: VerifiedSnapshot, *, max_snippet_chars: int,
     paths = {page["id"]: {key: page[key] for key in ("site_path", "markdown_path")}
              for page in index._pages}
     canonical = snapshot.metadata["canonical_site_url"]
-    presentation = dict(canonical_site_url=canonical, site_url=site_url or canonical, page_paths=paths)
-    # Prepare bulk presentation in the supervised builder, before activation.
-    # Use source rows so the Resource does not acquire index-only aliases/graphs.
-    rows = [json.loads(line) for line in snapshot.files["pages.jsonl"].splitlines() if line.strip()]
-    resources = {"pages.jsonl": "".join(json.dumps(page, ensure_ascii=False) + "\n"
-                                      for page in present_result(rows, **presentation))}
-    for name in ("llms.txt", "llms-full.txt"):
-        resources[name] = present_markdown(snapshot.files[name].decode("utf-8"),
-                                           **presentation, generated_fields=True)
-    return IndexGeneration(snapshot.metadata["corpus_id"], index, resources, canonical, paths)
+    return IndexGeneration(snapshot.metadata["corpus_id"], index, canonical, paths)
 
 
 class SnapshotIndex:
@@ -141,9 +130,3 @@ class SnapshotIndex:
             require_text(code, "diagnostic code", MAX_DIAGNOSTIC_CODE_CHARS)
         generation = self._current()
         return self._present(generation, generation.index.explain_diagnostics(codes))
-
-    def read_resource_text(self, resource_name):
-        if resource_name not in {"pages.jsonl", "llms.txt", "llms-full.txt"}:
-            raise ValueError("unknown resource")
-        generation = self._current()
-        return generation.resources[resource_name]

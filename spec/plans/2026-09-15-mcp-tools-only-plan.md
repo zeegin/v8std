@@ -245,7 +245,7 @@ task-scoped spec/quality review before Task 3.
 **Files:**
 
 - Modify: `scripts/check_mcp_container.py`, `scripts/check_mcp_load.py`.
-- Modify: `tests/test_v8std_mcp_distribution.py`, `tests/test_v8std_mcp_load.py`; add focused acceptance-helper tests there as needed.
+- Modify: `tests/test_v8std_mcp_distribution.py`, `tests/test_v8std_mcp_load.py`, `tests/mcp_runtime_benchmark.py`; add focused acceptance-helper tests in the test modules as needed.
 - Create: `spec/operations/2026-09-15-mcp-tools-only-verification.md`.
 - Read only: Dockerfiles, Compose, snapshot fixture/format helpers, existing operation reports and source-provenance checks.
 
@@ -283,6 +283,9 @@ errors; keep ordinary successful calls strict. Verify capability absence and
 all negative resource methods over HTTP/stdio, with canonical lifecycle and
 warm cache. Check all five tools; direct-runtime exact catalog and Gateway's
 aggregate tool catalog are separate conditions, not a flag enabling Resources.
+Update `tests/mcp_runtime_benchmark.py` to remove calls to the deleted facade;
+retain its actual snippet/page checks and acceptance bounds. Benchmark data
+requests must exercise retained tools, not a no-op or a successful Resource.
 
 Use the old 20-slot load shape with its final three slots assigned to
 `v8std_get_related` instead of Resources. Validate real related results. Keep
