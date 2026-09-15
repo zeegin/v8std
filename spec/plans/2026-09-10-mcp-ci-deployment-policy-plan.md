@@ -43,10 +43,10 @@ references; update current policy assertions in `tests/test_v8std_architecture_r
 test repository must supply its declared current schema rather than depend on
 accidentally present checkout files. Graph reference semantics stay unchanged.
 
-- [ ] Write/run RED: a temporary repository with process v2 validates via CLI;
+- [x] Write/run RED: a temporary repository with process v2 validates via CLI;
   frozen v1 remains protected, and schema fields equal the prior schema. Use
   actual CLI behavior and graph validation, not only a string-presence assertion.
-- [ ] Implement the current schema pointer and synchronize policy prose. Replace
+- [x] Implement the current schema pointer and synchronize policy prose. Replace
   only the current manual-every-release rule with conditional automatic delivery
   after activation; preserve branch, approval, plan, freeze, merge, push and
   external-mutation boundaries.
@@ -55,7 +55,7 @@ accidentally present checkout files. Graph reference semantics stay unchanged.
 PROCESS_SCHEMA_PATH = Path("spec/process/architecture-artifacts-v2.md")
 ```
 
-- [ ] Run `.venv/bin/python -m unittest tests.test_v8std_architecture_cli tests.test_v8std_architecture_model tests.test_v8std_architecture_process tests.test_v8std_architecture_repository tests.test_v8std_architecture_validation -v`; prove no frozen document from main changed with architecture `validate --base-ref main`.
+- [x] Run `.venv/bin/python -m unittest tests.test_v8std_architecture_cli tests.test_v8std_architecture_model tests.test_v8std_architecture_process tests.test_v8std_architecture_repository tests.test_v8std_architecture_validation -v`; prove no frozen document from main changed with architecture `validate --base-ref main`.
 
 ### Task 2: Executable publication eligibility and fail-closed activation
 
@@ -68,7 +68,7 @@ gate results and explicit activation state; outputs an allowed action set.
 Missing or malformed fields deny production mutation. Host validates exact
 envelope sequence/digests independently of workflow eligibility.
 
-- [ ] Write/run RED table tests for push/main with activation, push/main before
+- [x] Write/run RED table tests for push/main with activation, push/main before
   activation, PR, fork, tag, failed gates and stale sequence. Controlled publisher
   adapter records actual attempted object/manifest/host operations:
 
@@ -78,7 +78,7 @@ self.assertEqual(host.accepted_releases, [])
 self.assertTrue(previous_manifest_path.is_file())
 ```
 
-- [ ] Implement/pin workflows, bounded typed publication helper and disabled-by-default
+- [x] Implement/pin workflows, bounded typed publication helper and disabled-by-default
   activation. Preserve the existing published site before activation; a new
   Pages publication requires a verified prior manifest/archive or a newly
   committed and externally verified corpus publication. Missing history plus404
@@ -87,7 +87,12 @@ self.assertTrue(previous_manifest_path.is_file())
   Do not publish a public manifest for a missing ai object or promote a public-default MCP
   release without a ready source. Describe required main protection/environment
   settings as explicit external prerequisites, not already configured facts.
-- [ ] Run publication and architecture tests, then strict build before full suite.
+- [x] Run publication and architecture tests, then strict build before full suite.
   Record gate results and explicit absence of live activation in operations
   evidence; mark this plan complete only with its Task 6 review. External setup,
   push and rollout remain integration operations outside these checkboxes.
+
+Completed with product Task6 and its independent final review. The source5312601
+full suite includes process, freeze, eligibility and publication coverage;
+the final runner uses a separate hash-locked environment, not a modified repo
+`.venv`. See [final integration verification](../operations/2026-09-16-mcp-final-integration.md).

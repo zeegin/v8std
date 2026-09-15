@@ -564,11 +564,11 @@ service, public endpoint or production workload is introduced by this harness.
 Publisher first places and externally verifies immutable corpus, then emits
 Pages manifest. Every runtime deployment references published exact digest.
 
-- [ ] **RED:** Test publication sequencing and early failure leaves current
+- [x] **RED:** Test publication sequencing and early failure leaves current
   manifest unchanged; main/PR/fork/tag/stale eligibility matrix produces no host
   effects for disallowed inputs. Process loader resolves v2 with identical schema;
   frozen v1 and all accepted structured documents remain byte-identical.
-- [ ] **GREEN pipeline:** PR validation without secrets; pin action SHAs, image
+- [x] **GREEN pipeline:** PR validation without secrets; pin action SHAs, image
   bases and runtime dependencies; architecture/build/tests/bench before publish;
   buildx multiarch image, SBOM/provenance/attestation and digest smoke. Detect
   content vs runtime inputs to avoid article-triggered MCP restart. Production
@@ -644,7 +644,7 @@ Pages manifest. Every runtime deployment references published exact digest.
 
   Final whole-branch review repair2026-09-16 (one combined fix wave):
 
-  - [ ] **RED/GREEN exact image pair smoke:** In
+  - [x] **RED/GREEN exact image pair smoke:** In
     `tests/test_mcp_publication.py`, execute the real `CITransport.local_smoke`
     with only Docker commands, real-network smoke and clock at their external
     boundaries substituted. A normal `docker inspect` response is an array:
@@ -660,7 +660,7 @@ Pages manifest. Every runtime deployment references published exact digest.
     all source/profile checks. Exercise both platforms, invalid array/shape,
     wrong revision/profile and cleanup on failure. Do not stub local_smoke itself
     or weaken the snapshot JSON-object parser to accommodate Docker's array.
-  - [ ] **RED/GREEN uncertain Pages retention:** Add a real Publisher/journal/
+  - [x] **RED/GREEN uncertain Pages retention:** Add a real Publisher/journal/
     filesystem regression in `tests/test_v8std_mcp_release.py`: current A,
     successfully published B, Pages now B, caller lost before reference B;
     GC after more than seven days must retain B despite cleared publish inbox.
@@ -686,7 +686,7 @@ Pages manifest. Every runtime deployment references published exact digest.
     Preserve the contract that a current manifest never references a deleted
     archive. Lack of acknowledged progress may retain more disk; existing disk
     capacity rejection, not unsafe deletion, is the response to this uncertainty.
-  - [ ] **RED/GREEN native tools-only fixture:** In
+  - [x] **RED/GREEN native tools-only fixture:** In
     `tests/test_v8std_mcp_release_docker.py`, keep the legacy bootstrap fixture
     unchanged, but make the current-runtime nginx/static/hold fixture internally
     consistent with tools-only smoke. Its old dependencies image can receive a
@@ -694,18 +694,18 @@ Pages manifest. Every runtime deployment references published exact digest.
     labelling, or use the already verified tools-only candidate. Verify source
     consistency and run the actual opted-in native nginx/static/hold test; do
     not count an overlay as a newly published or freshly built release image.
-  - [ ] **VERIFY final fix wave:** Run focused publication and release tests,
+  - [x] **VERIFY final fix wave:** Run focused publication and release tests,
     actual native nginx/static/hold fixture, then one scoped independent
     re-review of the entire fix wave. Record commands, RED/GREEN, precise image
     provenance and cleanup in operations evidence. Parent repeats strict build,
     full suite, semantic impact and merge gates after the stable fix. No live GC,
     publication, host changes or new architecture authority is granted.
-- [ ] **GREEN process:** Write separate process plan, synchronize process v2
+- [x] **GREEN process:** Write separate process plan, synchronize process v2
   pointer/instructions/tests. Preserve initial manual activation and explicit
   permission for push. Align all current policy references; historic v1 and old
   structured plans stay frozen. Write reproducible commands/evidence and separate
   external gates for registry/Catalog/target-host. Do not publish internal specs.
-- [ ] **VERIFY release scope and independent activation:** Image publication
+- [x] **VERIFY release scope and independent activation:** Image publication
   and corpus upload can run while runtime deployment is disabled. Test that
   first-bootstrap success alone does not activate automatic runtime deployment;
   failed overlap capacity leaves the running endpoint untouched. Document
@@ -767,7 +767,7 @@ Pages manifest. Every runtime deployment references published exact digest.
   isolate image-alt parser side effects without changing rendered Markdown
   semantics, then rerun presentation and snapshot-format suites for GREEN.
   Commit the bounded fix for independent review before final CI integration.
-- [ ] **Final gates:** Run semantic impact on actual paths, CLI `impact`,
+- [x] **Final gates:** Run semantic impact on actual paths, CLI `impact`,
   `validate --merge-ready`, all applicable fitness; strict build, then full suite;
   container smoke and shared-host mixed load on disposable local stack, review
   whole branch and repair concrete findings. Record exact SHA/results and
@@ -802,3 +802,9 @@ Each task's implementation/review evidence is recorded during execution in its
 SDD report and completion checkbox. Final durable summary goes in
 `spec/operations/mcp-container-verification.md`, including commands, environment,
 results and the boundary between local evidence and production acceptance.
+
+Local implementation and final review are complete at source `5312601`.
+See [final integration verification](../operations/2026-09-16-mcp-final-integration.md)
+for final gates, preserved decisions and remaining external release prerequisites.
+These checkoffs do not assert registry publication, Docker Catalog acceptance,
+production installation, activation or native target-host capacity.
