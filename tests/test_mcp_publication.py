@@ -717,6 +717,106 @@ class TransportBoundaryTests(unittest.TestCase):
     def setUp(self):
         self.p = importlib.import_module("publish_mcp_artifacts")
 
+    def test_real_local_smoke_validates_inspect_array_for_both_platforms_and_cleans_failures(self):
+        good = {"Config": {"User": "10001:10001", "Labels": {"org.opencontainers.image.revision": "d" * 40}},
+                "HostConfig": {"Privileged": False, "ReadonlyRootfs": True}}
+        bad_profiles = []
+        for section, key, value in (("Config", "User", "0:0"), ("Config", "Labels", {}),
+                                    ("HostConfig", "Privileged", True), ("HostConfig", "ReadonlyRootfs", False)):
+            item = copy.deepcopy(good)
+            item[section][key] = value
+            bad_profiles.append(item)
+        wrong_revision = copy.deepcopy(good)
+        wrong_revision["Config"]["Labels"]["org.opencontainers.image.revision"] = "b" * 40
+        runtime_root = copy.deepcopy(good)
+        runtime_root["Config"]["Labels"]["org.opencontainers.image.revision"] = "b" * 40
+        runtime_root["Config"]["User"] = "0:0"
+        cases = [("valid", None), ("revision", fixture.json_bytes([wrong_revision])),
+                 ("runtime-revision", fixture.json_bytes([good])),
+                 ("runtime-profile", fixture.json_bytes([runtime_root])),
+                 ("object", fixture.json_bytes(good)), ("empty", b"[]"),
+                 ("multiple", fixture.json_bytes([good, good])), ("scalar", b"[1]"),
+                 ("missing-config", b'[{}]'), ("null-config", b'[{"Config":null}]'),
+                 ("invalid-host", fixture.json_bytes([{**good, "HostConfig": []}])),
+                 ("invalid-labels", fixture.json_bytes([{**good, "Config": {"Labels": []}}])),
+                 ("syntax", b"["), ("duplicate", b'[{"Config":{},"Config":{}}]'),
+                 ("nested", b"[" * 100 + b"]" * 100),
+                 *[("profile-" + str(i), fixture.json_bytes([item])) for i, item in enumerate(bad_profiles)],
+                 ("smoke-timeout", None), ("cleanup", None), ("primary-and-cleanup", b"[]")]
+        for name, bad in cases:
+            with self.subTest(name=name):
+                effects, projects, configs = [], [], []
+                now = [0]
+                def command(argv, **kwargs):
+                    env = kwargs["env"]
+                    platform = env["DOCKER_DEFAULT_PLATFORM"]
+                    configs.append(env["DOCKER_CONFIG"])
+                    if argv[:2] == ["docker", "compose"]:
+                        project = argv[3]
+                        if "pull" == argv[-1]:
+                            projects.append(project)
+                            self.assertEqual(env["V8STD_MCP_IMAGE"], self.p.IMAGE + "@sha256:" + "a" * 64)
+                            self.assertEqual(env["V8STD_SITE_IMAGE"], self.p.SITE_IMAGE + "@sha256:" + "c" * 64)
+                            effects.append((platform, "pull"))
+                        elif "up" in argv:
+                            self.assertIn("--no-build", argv)
+                            effects.append((platform, "up"))
+                        elif "ps" in argv:
+                            return (("1" if argv[-1] == "mcp" else "2") * 64).encode()
+                        elif "down" in argv:
+                            effects.append((platform, "down"))
+                            if name in {"cleanup", "primary-and-cleanup"}:
+                                raise self.p.PublicationError("cleanup_denied")
+                        else:
+                            self.fail("unexpected compose operation")
+                        return b""
+                    if argv[:2] == ["docker", "inspect"]:
+                        service = "mcp" if argv[-1] == "1" * 64 else "site"
+                        effects.append((platform, "inspect:" + service))
+                        if bad is not None and service == ("mcp" if name.startswith("runtime-") else "site"):
+                            return bad
+                        item = copy.deepcopy(good)
+                        item["Config"]["Labels"]["org.opencontainers.image.revision"] = (
+                            "b" * 40 if service == "mcp" else "d" * 40)
+                        return fixture.json_bytes([item])
+                    self.assertIn(argv[1], ("container", "network", "volume"))
+                    self.assertIn("label=com.docker.compose.project=" + projects[-1], argv)
+                    effects.append((platform, "empty:" + argv[1]))
+                    return b""
+                def smoke(url, record, deadline):
+                    self.assertEqual(url, "http://127.0.0.1:18766")
+                    self.assertEqual(record["runtime_source_sha"], "b" * 40)
+                    effects.append(("linux/amd64" if len(projects) == 1 else "linux/arm64", "smoke"))
+                    if name == "smoke-timeout":
+                        now[0] += 390
+                        raise ValueError("not ready")
+                with patch.dict(os.environ, {}, clear=True), patch.object(self.p, "bounded_command", side_effect=command), \
+                        patch.object(self.p, "runtime_smoke", side_effect=smoke), \
+                        patch.object(self.p.time, "monotonic", side_effect=lambda: now[0]):
+                    if name == "valid":
+                        self.p.CITransport().local_smoke(self.p.IMAGE + "@sha256:" + "a" * 64, "b" * 40,
+                            self.p.SITE_IMAGE + "@sha256:" + "c" * 64, "d" * 40, fixture.snapshot_fixture()[1])
+                    else:
+                        with self.assertRaises(ValueError) as failed:
+                            self.p.CITransport().local_smoke(self.p.IMAGE + "@sha256:" + "a" * 64, "b" * 40,
+                                self.p.SITE_IMAGE + "@sha256:" + "c" * 64, "d" * 40, fixture.snapshot_fixture()[1])
+                        if name == "primary-and-cleanup":
+                            self.assertNotEqual(str(failed.exception), "cleanup_denied")
+                            self.assertIn("cleanup_denied", " ".join(failed.exception.__notes__))
+                platforms = ("linux/amd64", "linux/arm64") if name == "valid" else ("linux/amd64",)
+                self.assertEqual(len(projects), len(platforms))
+                if name == "valid":
+                    self.assertEqual(effects, [(platform, effect) for platform in platforms for effect in
+                        ("pull", "up", "inspect:mcp", "inspect:site", "smoke", "down",
+                         "empty:container", "empty:network", "empty:volume")])
+                for platform in platforms:
+                    self.assertIn((platform, "down"), effects)
+                    if name not in {"cleanup", "primary-and-cleanup"}:
+                        for kind in ("container", "network", "volume"):
+                            self.assertIn((platform, "empty:" + kind), effects)
+                    self.assertEqual((platform, "smoke") in effects, name in {"valid", "cleanup", "smoke-timeout"})
+                self.assertTrue(all(not Path(path).exists() for path in configs))
+
     def test_command_has_real_wall_clock_and_output_bounds(self):
         start = time.monotonic()
         with self.assertRaises(self.p.PublicationError):

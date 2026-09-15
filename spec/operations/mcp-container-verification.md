@@ -1053,3 +1053,61 @@ was changed. No strict build/full suite was run in this fix slice: parent owns
 those in that order after stable code, and independent scoped review. External
 protection/environment/credential/publication/activation prerequisites remain
 unperformed. No task/final-review checkbox is claimed accepted by this repair.
+
+## Final whole-branch review repair — 2026-09-16
+
+One combined fix wave from `e2e3526`, following the approved whole-branch review
+disposition: real CI local image-pair smoke now validates Docker inspect's
+single-object array without weakening snapshot JSON parsing; durable unresolved
+publish receipts protect possible public Pages targets from age-only GC; native
+current-runtime fixture uses the verified tools-only candidate, while legacy
+bootstrap fixture remains unchanged. No runtime MCP/schema/workflow change.
+
+Retention now derives uncertainty from publish sequence newer than the current
+acknowledged reference. A later verified reference fsyncs displaced archives'
+fresh seven-day grace before advancing the pointer. Current/pins/pending,
+exact604800s minimum, stale rejection and committed duplicate idempotency remain.
+No acknowledgement can mean indefinite retention and disk-capacity rejection,
+never permission to delete a potentially current object. Private journals are
+retention evidence; no new external authority or endpoint was introduced.
+
+Runner `/tmp/v8std-final-gates.e7aqas/venv/bin/python` (repo `.venv` untouched):
+
+- `-m unittest tests.test_mcp_publication.TransportBoundaryTests.test_real_local_smoke_validates_inspect_array_for_both_platforms_and_cleans_failures -v`:
+  RED one test/0.034s, two failures/one expected `json_type` exception;
+  GREEN0.041s, covering service-specific identity/profile assertions0.050s.
+  Real local_smoke runs both platform loops with external commands/network/clock
+  controlled; invalid shapes/profiles and primary-error-preserving cleanup pass.
+- `-m unittest tests.test_v8std_mcp_release.IngressTests -v`: RED19/1.053s,
+  nine subtest failures (actual deletion/missing grace writes); GREEN19/0.986s.
+  Actual journals/filesystem and six process deaths before/after B/C grace and
+  pointer writes prove safe GC in crash gap and recovery. Cases include8/365-day
+  uncertainty, multiple unknowns, reused hash, stale ack, pins and exact grace.
+- `-m unittest tests.test_mcp_publication tests.test_v8std_mcp_release -v`:
+  GREEN157/157 in224.584s, no warnings/skips; actual actionlint included.
+- `V8STD_TASK5_DOCKER=1` with
+  `-m unittest tests.test_v8std_mcp_release_docker.DockerReleaseTests.test_native_nginx_static_independence_hold_and_admission -v`:
+  native RED4.149s (`resource_capability` from old fixture), GREEN10.505s.
+  No warnings in test output. All16 COPY input hashes match the actual container.
+
+Native arm64 runtime is the existing local
+`sha256:5dcb8e1b92ee7e6375981b91b6a206918540aad75e93b2be809c9cabe2b612ef`,
+source/health/OCI label `c4c0878a3c5e12323358f139e070253bd9e8ac5a`; no runtime
+overlays, rebuild, relabel or publication. Root control-writer retains its old
+dependency image with a read-only host release-script fixture, not new runtime
+provenance. Runtime512MiB/nginx128MiB, one CPU each, two nginx workers,
+8 MCP active/2 static downloads at1m. Read-only/non-root runtime and edge,
+cap-drop/no-new-privileges/init; no Docker socket/group. Real tools-only smoke,
+hold revocation/re-ack, nginx rejection/restore and static service after runtime
+stop pass. Eight downloads:2 successful200 and6 retryable429, no capacity claim.
+
+Owned GREEN prefix `v8std-task5-96e84d472ebd`: runtime/edge/writer containers,
+cache/control volumes and network removed; source/config/OCI export temporary
+tree cleaned. RED cleanup also succeeded. Post-run task5-labelled inventories
+are empty; all pre-existing unrelated containers retain their IDs. No image
+or supplied runner removed; no global cleanup or external/live GC operation.
+
+Scoped impact/ordinary validate/diff-check exit0. Self-review found no new
+contract/trust decision; historical monitor-governs matches do not revive the
+cancelled monitor. Parent owns scoped re-review, strict build then full suite,
+merge/activation gates. No structured contract/design/plan checkbox changed.

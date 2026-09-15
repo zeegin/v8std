@@ -628,6 +628,138 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
         release.write_json(self.root / "pins.json", {"archives": []})
         self.assertEqual(publisher.gc(now=time.time() + 8 * 86400), [key])
 
+    def publish_retention_fixture(self, publisher, name, sequence, now):
+        files = fixture.corpus_files()
+        files["llms.txt"] += ("\n" + name + "\n").encode()
+        archive, manifest = fixture.snapshot_fixture(files=fixture.with_metadata(files))
+        manifest["archive"]["path"] = "https://ai.v8std.ru/indexes/v1/" + manifest["archive"]["path"]
+        header = self.header | {"publication_id": name + "-" + str(sequence), "sequence": sequence,
+                                "deadline": int(now) + 300, "manifest": manifest}
+        with patch.object(release.time, "time", return_value=now):
+            self.ingest(header, archive)
+            self.assertEqual(publisher.publish(header)["state"], "COMMITTED")
+        return header
+
+    def reference_retention_fixture(self, publisher, published, sequence, now, *, enqueue_only=False):
+        header = published | {"publication_id": "ref-" + str(sequence), "sequence": sequence,
+                              "action": "reference", "deadline": int(now) + 300}
+        with patch.object(release.time, "time", return_value=now):
+            self.ingest(header, b"")
+            if not enqueue_only:
+                self.assertEqual(publisher.publish(header)["state"], "COMMITTED")
+        return header
+
+    def test_gc_keeps_public_pages_archive_after_lost_reference_without_later_progress(self):
+        now = 1_800_000_000
+        publisher = release.Publisher(self.root, self.root / "static", lambda *args: None)
+        a = self.publish_retention_fixture(publisher, "a", 1, now)
+        self.reference_retention_fixture(publisher, a, 2, now)
+        b = self.publish_retention_fixture(publisher, "b", 3, now)
+        # Pages is a separate owner: host current-index remains A after caller loss.
+        release.write_json(self.root / "pages-manifest.json", b["manifest"])
+        self.assertFalse((self.root / "pending-index.json").exists())
+        release.write_json(self.root / "pins.json", {"archives": []})
+        for days in (8, 365):
+            self.assertEqual(publisher.gc(now=now + days * 86400), [])
+            public = release.read_record(self.root / "pages-manifest.json")
+            self.assertTrue((self.root / "static" / public["archive"]["sha256"] / "snapshot.tar.gz").is_file())
+
+    def test_later_reference_starts_grace_for_all_uncertain_archives_and_preserves_pins(self):
+        now = 1_800_000_000
+        publisher = release.Publisher(self.root, self.root / "static", lambda *args: None)
+        a = self.publish_retention_fixture(publisher, "a", 1, now)
+        self.reference_retention_fixture(publisher, a, 2, now)
+        b = self.publish_retention_fixture(publisher, "b", 3, now)
+        c = self.publish_retention_fixture(publisher, "c", 4, now)
+        release.write_json(self.root / "pins.json", {"archives": []})
+        self.assertEqual(publisher.gc(now=now + 8 * 86400), [])
+        later = now + 9 * 86400
+        reference = self.reference_retention_fixture(publisher, c, 5, later)
+        keys = [item["manifest"]["archive"]["sha256"] for item in (a, b, c)]
+        self.assertEqual(release.read_record(self.root / "references" / (keys[1] + ".json")),
+                         {"last_reference": later})
+        self.assertEqual(publisher.gc(now=later + 7 * 86400 - 1), [])
+        # An exact retry is not new acknowledged progress and cannot alter grace.
+        with patch.object(release.time, "time", return_value=later + 100):
+            publisher.publish(reference)
+        self.assertEqual(release.read_record(self.root / "references" / (keys[1] + ".json")),
+                         {"last_reference": later})
+        release.write_json(self.root / "pins.json", {"archives": [keys[1]]})
+        self.assertEqual(publisher.gc(now=later + 7 * 86400), [keys[0]])
+        release.write_json(self.root / "pins.json", {"archives": []})
+        self.assertEqual(publisher.gc(now=later + 7 * 86400), [keys[1]])
+        self.assertTrue((self.root / "static" / keys[2] / "snapshot.tar.gz").is_file())
+
+    def test_same_archive_republication_and_stale_reference_do_not_release_uncertainty(self):
+        now = 1_800_000_000
+        publisher = release.Publisher(self.root, self.root / "static", lambda *args: None)
+        a = self.publish_retention_fixture(publisher, "a", 1, now)
+        self.reference_retention_fixture(publisher, a, 2, now)
+        b = self.publish_retention_fixture(publisher, "b", 3, now)
+        current = self.reference_retention_fixture(publisher, b, 4, now)
+        reused = self.publish_retention_fixture(publisher, "a", 5, now)
+        self.assertEqual(reused["manifest"], a["manifest"])
+        before = {p.name: p.read_bytes() for p in (self.root / "references").iterdir()}
+        self.reference_retention_fixture(publisher, a, 3, now, enqueue_only=True)
+        with patch.object(release.time, "time", return_value=now):
+            self.assertEqual(publisher.recover()["state"], "FAILED")
+        self.assertEqual(release.read_record(self.root / "current-index.json"), current)
+        self.assertEqual({p.name: p.read_bytes() for p in (self.root / "references").iterdir()}, before)
+        release.write_json(self.root / "pins.json", {"archives": []})
+        self.assertEqual(publisher.gc(now=now + 8 * 86400), [])
+        later = now + 9 * 86400
+        self.reference_retention_fixture(publisher, b, 6, later)
+        self.assertEqual(publisher.gc(now=later + 7 * 86400 - 1), [])
+        self.assertEqual(publisher.gc(now=later + 7 * 86400), [a["manifest"]["archive"]["sha256"]])
+
+    def test_reference_grace_writes_survive_actual_process_death_and_retry(self):
+        code = '''
+import os,sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import v8std_mcp_release as r
+root, cut, when, now = Path(sys.argv[2]), sys.argv[3], sys.argv[4], int(sys.argv[5])
+r.time.time = lambda: now
+original = r.write_json
+def crash(path, value):
+    selected = str(path.relative_to(root)) == cut
+    if selected and when == 'before': os._exit(73)
+    original(path, value)
+    if selected and when == 'after': os._exit(73)
+r.write_json = crash
+r.Publisher(root, root / 'static', lambda *args: None).recover()
+'''
+        parent = self.root
+        now, later = 1_800_000_000, 1_800_000_000 + 9 * 86400
+        for cut in ("b", "c", "current-index.json"):
+            for when in ("before", "after"):
+                with self.subTest(cut=cut, when=when):
+                    self.root = parent / (cut + "-" + when)
+                    publisher = release.Publisher(self.root, self.root / "static", lambda *args: None)
+                    a = self.publish_retention_fixture(publisher, "a", 1, now)
+                    self.reference_retention_fixture(publisher, a, 2, now)
+                    b = self.publish_retention_fixture(publisher, "b", 3, now)
+                    c = self.publish_retention_fixture(publisher, "c", 4, now)
+                    d = self.publish_retention_fixture(publisher, "d", 5, later)
+                    reference = self.reference_retention_fixture(publisher, d, 6, later, enqueue_only=True)
+                    keys = [h["manifest"]["archive"]["sha256"] for h in (a, b, c, d)]
+                    target = ("references/" + keys[1 if cut == "b" else 2] + ".json"
+                              if cut != "current-index.json" else cut)
+                    died = subprocess.run([sys.executable, "-I", "-c", code, str(ROOT / "scripts"), str(self.root),
+                                           target, when, str(later)], capture_output=True, timeout=5)
+                    self.assertEqual(died.returncode, 73, died.stderr)
+                    release.write_json(self.root / "pins.json", {"archives": []})
+                    self.assertEqual(publisher.gc(now=later + 1), [])
+                    # Recreate controller after the interrupted durable writes.
+                    publisher = release.Publisher(self.root, self.root / "static", lambda *args: None)
+                    with patch.object(release.time, "time", return_value=later + 2):
+                        self.assertEqual(publisher.recover()["state"], "COMMITTED")
+                    self.assertEqual(release.read_record(self.root / "current-index.json"), reference)
+                    self.assertFalse((self.root / "pending-index.json").exists())
+                    self.assertEqual(publisher.gc(now=later + 7 * 86400 - 1), [])
+                    self.assertEqual(set(publisher.gc(now=later + 7 * 86400 + 2)), set(keys[:3]))
+                    self.assertTrue((self.root / "static" / keys[3] / "snapshot.tar.gz").is_file())
+
     def test_failed_queued_publication_records_failure_and_allows_new_job(self):
         self.ingest()
         def reject(*args):

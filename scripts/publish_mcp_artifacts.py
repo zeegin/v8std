@@ -406,11 +406,22 @@ class CITransport:
                     for service, source in (("mcp", runtime_sha), ("site", site_sha)):
                         container = bounded_command([*compose, "ps", "-q", service], env=env).decode().strip()
                         require(re.fullmatch(r"[0-9a-f]{64}", container), "fixture_container")
-                        info = strict_json(bounded_command(["docker", "inspect", container], env=env))[0]
-                        require(info["Config"]["Labels"].get("org.opencontainers.image.revision") == source
-                                and info["Config"]["User"] == "10001:10001"
-                                and info["HostConfig"]["Privileged"] is False
-                                and info["HostConfig"]["ReadonlyRootfs"] is True, "image_profile")
+                        # Docker returns an array. Wrap only at this boundary to
+                        # retain strict JSON depth/duplicate checks, without
+                        # weakening the snapshot parser's object-only contract.
+                        raw = bounded_command(["docker", "inspect", container], env=env)
+                        document = strict_json(b'{"containers":' + raw + b'}')
+                        rows = document.get("containers")
+                        require(set(document) == {"containers"} and type(rows) is list
+                                and len(rows) == 1 and type(rows[0]) is dict, "inspect_shape")
+                        info = rows[0]
+                        config, host = info.get("Config"), info.get("HostConfig")
+                        require(type(config) is dict and type(host) is dict
+                                and type(config.get("Labels")) is dict, "inspect_shape")
+                        require(config["Labels"].get("org.opencontainers.image.revision") == source
+                                and config.get("User") == "10001:10001"
+                                and host.get("Privileged") is False
+                                and host.get("ReadonlyRootfs") is True, "image_profile")
                     record = {"runtime_source_sha": runtime_sha, "corpus_id": manifest["corpus_id"],
                               "archive_sha256": manifest["archive"]["sha256"], "hold_token": None}
                     deadline = time.monotonic() + 390

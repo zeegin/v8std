@@ -1,16 +1,19 @@
 """Explicit local Task5 evidence; no pull/build/registry or host configuration.
 
 Run V8STD_TASK5_DOCKER=1 .venv/bin/python -m unittest
-tests.test_v8std_mcp_release_docker -v. The retained Task4 image supplies locked
-dependencies; only Task5 runtime modules are mounted read-only. This is not a
-claim that an image containing the new code has already been published.
+tests.test_v8std_mcp_release_docker -v. The bootstrap fixture retains its Task4
+dependency image and legacy source export. The native current-runtime fixture
+uses a verified local tools-only image and checks every COPY input against the
+checkout. Neither fixture claims a new build or registry publication.
 """
 from concurrent.futures import ThreadPoolExecutor
+import hashlib
 import http.client
 import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import socket
 import subprocess
 import tarfile
@@ -27,6 +30,8 @@ import v8std_mcp_release as release
 ROOT = Path(__file__).resolve().parents[1]
 NGINX = "sha256:dc5069ad14f19660b141b21236140b91656bf89bbc3e2417c70ae650cd66104c"
 RUNTIME = "sha256:bec25fa5b9f240225db206c5e21d35a8c28e2d4ae30b1b878d272eacd9df1031"
+CURRENT_RUNTIME = "sha256:5dcb8e1b92ee7e6375981b91b6a206918540aad75e93b2be809c9cabe2b612ef"
+CURRENT_SOURCE = "c4c0878a3c5e12323358f139e070253bd9e8ac5a"
 
 
 @unittest.skipUnless(os.environ.get("V8STD_TASK5_DOCKER") == "1", "explicit disposable Docker evidence")
@@ -93,7 +98,10 @@ class DockerReleaseTests(unittest.TestCase):
         archive, manifest = fixture.snapshot_fixture()
         archive_hash = manifest["archive"]["sha256"]
         token = "a" * 32
-        evidence = {"runtime_image": RUNTIME, "nginx_image": NGINX, "source_sha_fixture": manifest["source_sha"],
+        evidence = {"runtime_image": CURRENT_RUNTIME, "runtime_source": CURRENT_SOURCE,
+                    "runtime_fixture": "verified local tools-only candidate; no runtime overlays or rebuild",
+                    "control_writer_dependency_image": RUNTIME,
+                    "nginx_image": NGINX, "source_sha_fixture": manifest["source_sha"],
                     "limits": {"nginx_workers": 2, "mcp_active": 8, "downloads": 2, "download_rate": "1m",
                                "runtime_memory": "512m", "nginx_memory": "128m", "cpus_each": 1}}
         with tempfile.TemporaryDirectory(prefix="v8std-task5-docker-") as directory:
@@ -185,18 +193,36 @@ class DockerReleaseTests(unittest.TestCase):
                     "--mount", f"type=bind,source={source},target=/srv/source,readonly",
                     "--entrypoint=nginx", NGINX, "-g", "daemon off;")
                 evidence["nginx_t"] = self.docker("exec", nginx, "nginx", "-t").stderr.decode().strip()
-                modules = []
-                for module in ("v8std_mcp_hold.py", "v8std_mcp_runtime.py", "v8std_mcp_snapshots.py"):
-                    modules.extend(["--mount", f"type=bind,source={ROOT / 'scripts' / module},target=/opt/v8std/scripts/{module},readonly"])
                 self.docker("run", "-d", "--name", runtime, *common, "--memory=512m", "--memory-swap=512m",
                     "--mount", f"type=volume,source={volume},target=/var/lib/v8std-mcp",
-                    "--mount", f"type=volume,source={control_volume},target=/run/v8std-release,volume-subpath=slots/runtime/control,readonly", *modules,
-                    RUNTIME, "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000",
+                    "--mount", f"type=volume,source={control_volume},target=/run/v8std-release,volume-subpath=slots/runtime/control,readonly",
+                    CURRENT_RUNTIME, "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000",
                     "--site-url", source_url, "--refresh-seconds", "1", "--allowed-host", "127.0.0.1")
+                expected = {}
+                definition = (ROOT / "Dockerfile.mcp").read_text().replace("\\\n", " ")
+                for line in definition.splitlines():
+                    if not line.startswith("COPY "):
+                        continue
+                    *sources, destination = shlex.split(line)[1:]
+                    for item in sources:
+                        path = ROOT / item
+                        for file in sorted(path.rglob("*")) if path.is_dir() else [path]:
+                            if file.is_file():
+                                relative = file.relative_to(path) if path.is_dir() else Path(file.name)
+                                target = str(Path("/opt/v8std") / destination / relative)
+                                expected[target] = hashlib.sha256(file.read_bytes()).hexdigest()
+                probe = ("import hashlib,json,pathlib,sys; "
+                         "print(json.dumps({p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() "
+                         "for p in json.loads(sys.argv[1])}))")
+                observed = json.loads(self.docker("exec", runtime, "python", "-I", "-c", probe,
+                                                  json.dumps(list(expected))).stdout)
+                self.assertEqual(observed, expected)
+                evidence["verified_copy_inputs"] = len(expected)
                 upstream.write_text(f"server {runtime}:8000 max_conns=8;\n")
                 self.docker("exec", nginx, "nginx", "-t")
                 self.docker("exec", nginx, "nginx", "-s", "reload")
                 health = ready()
+                self.assertEqual(health["runtime_sha"], CURRENT_SOURCE)
                 evidence["health"] = health
                 publish_control(unreadable=True)
                 until = time.monotonic() + 5
@@ -238,6 +264,7 @@ class DockerReleaseTests(unittest.TestCase):
                 self.assertEqual(request("/healthz")[0], 200)
                 evidence["invalid_nginx_switch"] = "rejected; previous include restored; no reload; endpoint 200"
                 info = json.loads(self.docker("inspect", runtime).stdout)[0]
+                self.assertEqual(info["Config"]["Labels"]["org.opencontainers.image.revision"], CURRENT_SOURCE)
                 self.assertTrue(info["HostConfig"]["ReadonlyRootfs"])
                 self.assertEqual(info["Config"]["User"], "10001:10001")
                 self.assertTrue(info["HostConfig"]["Init"])
@@ -246,14 +273,14 @@ class DockerReleaseTests(unittest.TestCase):
                 # Read local OCI export: descriptor type/membership are explicit,
                 # independent of Docker's ambiguous .Id representation.
                 saved = directory / "image.tar"
-                self.docker("image", "save", "-o", saved, RUNTIME)
+                self.docker("image", "save", "-o", saved, CURRENT_RUNTIME)
                 with tarfile.open(saved) as tar:
-                    index_raw = tar.extractfile("blobs/sha256/" + RUNTIME[7:]).read()
+                    index_raw = tar.extractfile("blobs/sha256/" + CURRENT_RUNTIME[7:]).read()
                     index = json.loads(index_raw)
                     member = next(x for x in index["manifests"] if x.get("platform", {}).get("architecture") == "arm64")
                     child_raw = tar.extractfile("blobs/sha256/" + member["digest"][7:]).read()
                 evidence["descriptor_types"] = release.verify_descriptors(index_raw, child_raw,
-                    {"image_digest": RUNTIME, "platform_digest": member["digest"]}, "linux/arm64")
+                    {"image_digest": CURRENT_RUNTIME, "platform_digest": member["digest"]}, "linux/arm64")
                 self.assertIn(info["Image"], evidence["descriptor_types"])
                 path = f"/indexes/v1/{archive_hash}/snapshot.tar.gz"
                 before = request(path)

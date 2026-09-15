@@ -541,7 +541,15 @@ Reference verification also binds corpus/trigger authority. Its exact COMMITTED
 receipt proves `current-index.json` and old/new reference timestamps were
 durably updated; it does not independently attest the Pages job. Failed Pages
 publication must not send this acknowledgement. Failed/unreferenced objects
-remain retained for at least seven days. Stale reference sequences cannot undo
+remain retained for at least seven days. A cleared publish inbox does not prove
+that Pages never adopted the object: durable nonfailed publish receipts newer
+than the last acknowledged reference protect those archives regardless of age.
+A later verified reference starts a fresh seven-day grace for displaced
+uncertain archives, durably recording their timestamps before advancing the
+current reference pointer. Crash/retry must preserve that ordering. With no
+later acknowledgement, uncertainty may retain extra disk indefinitely; the
+existing disk-capacity gate rejects new publication rather than deleting a
+potentially current archive. Stale reference sequences cannot undo
 a newer current reference. Immutable publication IDs and release IDs cannot be
 mutated: retry the exact original header/envelope, including its deadline, or
 create a new ID/sequence for a new attempt. A terminal FAILED ID stays failed.
@@ -589,7 +597,9 @@ Retain at least one successfully served predecessor image/config/corpus and all
 in-flight pins. Stopped containers and dedicated caches are intentionally kept;
 there is no automatic Docker prune. Static GC is internal operator maintenance,
 not a public CLI verb: it checks exact immutable layout/hash, current reference,
-all pins/pending work and seven-day last-reference age before removing anything.
+all pins/pending work, durable unresolved publish receipts and seven-day
+last-reference age before removing anything. Preserve publication journals:
+they are retention evidence even after inbox cleanup, not disposable task logs.
 Without valid pin/current-reference evidence GC refuses to run. Review exact
 owned targets before later cleanup; preserve recovery records. No legacy/old
 vhost cleanup is bundled with a successful container release.

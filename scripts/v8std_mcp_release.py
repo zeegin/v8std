@@ -1525,6 +1525,23 @@ class Publisher:
             require(comparison.get("status") in {"ahead", "identical"}
                     and comparison.get("merge_base_commit", {}).get("sha") == sha, "main_ancestry")
 
+    def unacknowledged_archives(self, after, *, through=None):
+        """Caller holds release.lock; publish receipts outlive their inboxes.
+
+        Until a later reference acknowledges Pages progress, an exposed archive
+        may still be the public pointer's target. Age cannot resolve that gap.
+        Include incomplete nonfailed receipts conservatively across recovery.
+        """
+        archives = set()
+        for path in (self.root / "publications").glob("*.json"):
+            record = read_record(path)
+            header = record["header"]
+            if (header["action"] == "publish" and record["state"] != "FAILED"
+                    and header["sequence"] > after
+                    and (through is None or header["sequence"] <= through)):
+                archives.add(header["manifest"]["archive"]["sha256"])
+        return archives
+
     def publish(self, header):
         header = validate_upload(header)
         with locked(self.root):
@@ -1546,8 +1563,8 @@ class Publisher:
                 verify_archive(read_file(archive, MAX_ARCHIVE_BYTES), manifest)
                 if not verified:
                     self.verifier(archive, header, deadline)
-                # Reference bookkeeping is durable before visibility/GC. Failed
-                # Pages publication retains the object for at least seven days.
+                # Bookkeeping precedes visibility. The durable publish receipt
+                # also protects an unknown Pages outcome until a later reference.
                 reference = self.root / "references" / (archive_hash + ".json")
                 write_json(reference, {"last_reference": time.time()})
                 write_json(self.root / "manifests" / (archive_hash + ".json"), manifest)
@@ -1569,14 +1586,22 @@ class Publisher:
                 if not verified:
                     self.verifier(target / "snapshot.tar.gz", header, deadline)
                 current_path = self.root / "current-index.json"
+                current = None
                 if current_path.exists():
                     current = read_record(current_path)
                     require(header["sequence"] > current["sequence"] or current == header, "stale_sequence")
-                    old_hash = current["manifest"]["archive"]["sha256"]
-                    write_json(self.root / "references" / (old_hash + ".json"), {"last_reference": time.time()})
                 record["state"] = "VERIFIED"
                 write_json(record_path, record)
-                write_json(self.root / "references" / (archive_hash + ".json"), {"last_reference": time.time()})
+                displaced = self.unacknowledged_archives(current["sequence"] if current else 0,
+                                                        through=header["sequence"])
+                if current:
+                    displaced.add(current["manifest"]["archive"]["sha256"])
+                # Every displaced uncertain object gets a full grace period
+                # BEFORE advancing the acknowledgement watermark. A crash here
+                # leaves the old watermark protecting unfinished writes; a retry
+                # after pointer persistence finds all timestamps already durable.
+                for key in sorted(displaced | {archive_hash}):
+                    write_json(self.root / "references" / (key + ".json"), {"last_reference": time.time()})
                 write_json(current_path, header)
             record["state"] = "COMMITTED"
             record["cleanup_pending"] = True
@@ -1642,6 +1667,7 @@ class Publisher:
             require(isinstance(pins, list) and all(matches(HEX, x) for x in pins), "pins_invalid")
             current = read_record(self.root / "current-index.json")
             retained = set(pins) | {current["manifest"]["archive"]["sha256"]}
+            retained.update(self.unacknowledged_archives(current["sequence"]))
             pending = self.root / "pending-index.json"
             if pending.exists():
                 retained.add(read_record(pending)["manifest"]["archive"]["sha256"])
