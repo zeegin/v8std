@@ -1,4 +1,5 @@
 """Presentation changes link nodes, never retrieval input or code literals."""
+import hashlib
 import importlib
 import importlib.util
 import json
@@ -131,6 +132,46 @@ class SemanticPresentationTests(PresentationHelpers, unittest.TestCase):
 
     def validate(self, text):
         self.module().validate_links(text, canonical_site_url=PUBLIC, page_paths=PATHS)
+
+    def test_image_alt_html_does_not_hide_following_link_destinations(self):
+        for alt in ("<code>", "<pre>", "<script>", "<style>",
+                    '<a href="https://v8std.ru/std/437/">alt</a>'):
+            text = ('![' + alt + '](https://v8std.ru/std/437.md) '
+                    '[visible](https://v8std.ru/std/437/?view=full#query)')
+            expected = ('![' + alt + '](http://localhost:8080/kb/std/437.md) '
+                        '[visible](http://localhost:8080/kb/std/437/?view=full#query)')
+            with self.subTest(alt=alt):
+                self.assertEqual(self.markdown(text), expected)
+
+    def test_image_alt_html_does_not_hide_unknown_or_unsafe_visible_targets(self):
+        for target in ("https://v8std.ru/not-published/", "https://v8std.ru/std%2f437/"):
+            text = '![<code>](https://v8std.ru/std/437.md) [visible](' + target + ')'
+            with self.subTest(target=target), self.assertRaisesRegex(ValueError, "^unresolved_internal_link$"):
+                self.validate(text)
+
+    def test_image_alt_closing_tags_do_not_end_real_html_code_protection(self):
+        for tag in ("code", "pre", "script", "style"):
+            literal = ('prefix <' + tag + '>![</' + tag + '>](https://v8std.ru/std/437.md) '
+                       '[literal](https://v8std.ru/missing/)</' + tag + '> ')
+            text = literal + '[visible](https://v8std.ru/std/437/)'
+            with self.subTest(tag=tag):
+                self.assertEqual(self.markdown(text), literal + '[visible](http://localhost:8080/kb/std/437/)')
+                self.validate(text)
+
+    def test_image_alt_isolation_preserves_source_offsets_and_canonical_hash(self):
+        text = ('> - Начало\x00 `https://v8std.ru/std/437/`\r\n>\r\n'
+                '> ![<code>](https://v8std.ru/std/437.md) '
+                '[visible](https://v8std.ru/std/437/)\r\n')
+        expected = ('> - Начало\x00 `https://v8std.ru/std/437/`\r\n>\r\n'
+                    '> ![<code>](http://localhost:8080/kb/std/437.md) '
+                    '[visible](http://localhost:8080/kb/std/437/)\r\n')
+        original = {**fixture.page_fixture(), "body_markdown": text}
+        canonical_bytes = fixture.json_bytes(original)
+        canonical_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        result = self.present(original)
+        self.assertEqual(result["body_markdown"], expected)
+        self.assertEqual(fixture.json_bytes(original), canonical_bytes)
+        self.assertEqual(hashlib.sha256(original["body_markdown"].encode("utf-8")).hexdigest(), canonical_hash)
 
     def test_pinned_parser_dependency_is_shared_but_pure_format_stays_independent(self):
         from importlib.metadata import version

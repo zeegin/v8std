@@ -329,6 +329,18 @@ def _link_nodes(source, generated_fields):
 
     md.block.ruler.at("reference", ref_rule)
 
+    def image_rule(state, silent):
+        # Image labels are parsed into alt children, not document-level HTML
+        # or links. Keep the parser's tokens, but discard their collector side
+        # effects before wrap() records the image's own destination.
+        node_count, tag_count, text_count = len(nodes), len(tags), len(text_spans)
+        try:
+            return image(state, silent)
+        finally:
+            del nodes[node_count:]
+            del tags[tag_count:]
+            del text_spans[text_count:]
+
     def wrap(rule, kind):
         def run(state, silent):
             start, count = state.pos, len(state.tokens)
@@ -358,7 +370,7 @@ def _link_nodes(source, generated_fields):
             return accepted
         return run
 
-    for name, rule in (("link", link), ("image", image), ("autolink", autolink),
+    for name, rule in (("link", link), ("image", image_rule), ("autolink", autolink),
                        ("html_inline", _html_inline), ("text", inline_text)):
         md.inline.ruler.at(name, wrap(rule, name))
     tokens = md.parse(source)
