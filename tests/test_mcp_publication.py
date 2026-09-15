@@ -5,6 +5,7 @@ import importlib.util
 import io
 import json
 import os
+import shlex
 import subprocess
 from pathlib import Path
 import sys
@@ -783,6 +784,23 @@ class TransportBoundaryTests(unittest.TestCase):
 class WorkflowTests(unittest.TestCase):
     def workflow(self):
         return yaml.load((ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader)
+
+    def test_snippet_gate_invokes_real_cli_with_the_accepted_historical_baseline(self):
+        import snippet_benchmark
+        steps = self.workflow()["jobs"]["validate"]["steps"]
+        script = next(step["run"] for step in steps if step.get("id") == "benchmark")
+        command = next(shlex.split(line) for line in script.splitlines()
+                       if "scripts/snippet_benchmark.py" in line)
+        with tempfile.TemporaryDirectory(prefix="v8std-snippet-cli-") as directory:
+            argv = command[1:] + ["--report", str(Path(directory) / "report.json")]
+            # Exercise argparse/report writing, but not thousands of latency samples here.
+            with patch.object(sys, "argv", argv), \
+                    patch.object(snippet_benchmark, "run", return_value={"passed": True, "gates": {}}) as run, \
+                    patch("sys.stdout", new=io.StringIO()):
+                self.assertEqual(snippet_benchmark.main(), 0)
+            baseline = run.call_args.args[0].baseline_ref
+            self.assertEqual(baseline, "3df5b40e773d0e7bc146ac2d9214934bb4145f73")
+            self.assertTrue(callable(snippet_benchmark.load_baseline(baseline)))
 
     def test_pinned_fail_closed_dag_has_secretless_pr_and_independent_activation(self):
         workflow = self.workflow()
