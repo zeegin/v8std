@@ -225,6 +225,154 @@ class EnvelopeTests(unittest.TestCase):
             thread.join()
 
 
+class SmokeBoundaryTests(unittest.TestCase):
+    """Faults replace HTTP bytes only; smoke and JSON-RPC validation stay real."""
+
+    def setUp(self):
+        self.record = envelope() | {"hold_token": "e" * 32}
+        self.health = {"ok": True, "runtime_sha": "a" * 40, "corpus_id": "4" * 64,
+                       "archive_sha256": "5" * 64, "hold_token": "e" * 32}
+        self.deadline = time.monotonic() + 30
+        self.requests = [
+            ("initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
+                "clientInfo": {"name": "v8std-release", "version": "1"}}),
+            ("tools/list", {}),
+            ("tools/call", {"name": "v8std_search", "arguments": {"query": "std437", "limit": 1}}),
+            ("tools/call", {"name": "v8std_get_page", "arguments": {"id_or_alias_or_url": "std437"}}),
+            ("tools/call", {"name": "v8std_explain_snippet", "arguments": {"snippet": "Запрос = Новый Запрос;", "limit": 1}}),
+            ("tools/call", {"name": "v8std_get_related", "arguments": {"id_or_alias_or_url": "std437", "limit": 1}}),
+            ("tools/call", {"name": "v8std_explain_diagnostics", "arguments": {"codes": ["missing"]}}),
+            ("resources/read", {"uri": "v8std://llms-full.txt"}),
+        ]
+        self.results = [
+            {"serverInfo": {"name": "v8std", "version": "1"}, "protocolVersion": "2025-03-26",
+             "capabilities": {"tools": {"listChanged": False}, "prompts": {"listChanged": False}}},
+            {"tools": [{"name": name} for name in ("v8std_search", "v8std_get_page", "v8std_get_related",
+                "v8std_explain_snippet", "v8std_explain_diagnostics")]},
+        ]
+        for value in ({"results": [{"id": "std437"}]},
+                      {"found": True, "page": {"id": "std437"}},
+                      {"standards": [{"id": "std437"}]},
+                      {"found": True, "id": "std437", "title": "Запросы", "relations": None, "related": []},
+                      {"diagnostics": [], "standards": [], "unknown_codes": [{"code": "missing", "frequency": 1}],
+                       "total_input": 1, "unique_codes": 1}):
+            self.results.append({"isError": False, "content": [{"type": "text", "text": json.dumps(value)}],
+                                 "structuredContent": value})
+        self.denied = {"jsonrpc": "2.0", "id": 8, "error": {"code": -32601, "message": "Method not found"}}
+
+    def run_smoke(self, replacements=None):
+        self.seen = []
+        health_reads = 0
+        def http(url, deadline, *, body=None, limit=1024 * 1024):
+            nonlocal health_reads
+            self.assertEqual(deadline, self.deadline)
+            self.assertEqual(limit, 1024 * 1024)
+            if body is None:
+                self.assertEqual(url, "http://fixture/healthz")
+                stage = "health_before" if health_reads == 0 else "health_after"
+                health_reads += 1
+                reply = self.health
+            else:
+                self.assertEqual(url, "http://fixture/mcp")
+                request = json.loads(body)
+                number = request["id"]
+                method, params = self.requests[number - 1]
+                self.assertEqual(request, {"jsonrpc": "2.0", "id": number, "method": method, "params": params})
+                stage = params["name"] if method == "tools/call" else method
+                reply = self.denied if stage == "resources/read" else {
+                    "jsonrpc": "2.0", "id": number, "result": self.results[number - 1]}
+            self.seen.append(stage)
+            reply = (replacements or {}).get(stage, reply)
+            if isinstance(reply, Exception):
+                raise reply
+            return reply if isinstance(reply, bytes) else json.dumps(reply).encode()
+        with patch.object(release, "http", http):
+            return release.smoke("http://fixture", self.record, self.deadline)
+
+    def assert_rejected(self, stage, reply, code):
+        with self.assertRaises(release.ReleaseError) as caught:
+            self.run_smoke({stage: reply})
+        self.assertEqual(caught.exception.code, code)
+        self.assertEqual(self.seen[-1], stage)
+
+    def test_smoke_probes_all_five_tools_and_brackets_the_resource_denial(self):
+        self.assertEqual(self.run_smoke(), self.health)
+        self.assertEqual(self.seen, ["health_before", "initialize", "tools/list", "v8std_search", "v8std_get_page",
+            "v8std_explain_snippet", "v8std_get_related", "v8std_explain_diagnostics", "resources/read", "health_after"])
+
+    def test_initialize_rejects_even_empty_or_null_resource_capability(self):
+        for resources in ({}, None, {"subscribe": True}):
+            with self.subTest(resources=resources):
+                result = self.results[0] | {"capabilities": {"resources": resources, "tools": {}}}
+                self.assert_rejected("initialize", {"jsonrpc": "2.0", "id": 1, "result": result}, "resource_capability")
+
+    def test_resource_read_success_is_not_retirement(self):
+        self.assert_rejected("resources/read", {"jsonrpc": "2.0", "id": 8, "result": {
+            "contents": [{"uri": "v8std://llms-full.txt", "text": "corpus"}]}}, "resource_disabled")
+
+    def test_resource_denial_requires_exact_error_without_content_or_result(self):
+        bad = [self.denied | {"result": None}, self.denied | {"content": "corpus"},
+               self.denied | {"contents": [{"text": "corpus"}]}, self.denied | {"error": None}]
+        for error in ({"code": -32602, "message": "Invalid params"}, {"code": -32601},
+                      {"code": -32601, "message": "corpus"},
+                      {"code": -32601, "message": "Method not found", "data": {"text": "corpus"}}):
+            bad.append(self.denied | {"error": error})
+        for reply in bad:
+            with self.subTest(reply=reply):
+                self.assert_rejected("resources/read", reply, "resource_disabled")
+
+    def test_resource_denial_must_match_request_id_and_jsonrpc_version(self):
+        bad = [{key: value for key, value in self.denied.items() if key != omitted} for omitted in ("id", "jsonrpc")]
+        bad += [self.denied | change for change in ({"id": 9}, {"id": "8"}, {"id": 8.0}, {"jsonrpc": "1.0"})]
+        for reply in bad:
+            with self.subTest(reply=reply):
+                self.assert_rejected("resources/read", reply, "rpc")
+
+    def test_resource_denial_does_not_swallow_transport_parse_or_deadline_errors(self):
+        cases = [(release.ReleaseError(code), code) for code in ("http_failed", "deadline", "input_size")]
+        cases += [(b"not json", "input_shape"), (b"[]", "input_shape"),
+                  (b'data: {}\n\ndata: {}\n\n', "rpc_stream")]
+        for reply, code in cases:
+            with self.subTest(reply=reply):
+                self.assert_rejected("resources/read", reply, code)
+
+    def test_retained_tools_reject_rpc_and_tool_errors(self):
+        for name, number in (("v8std_get_related", 6), ("v8std_explain_diagnostics", 7)):
+            for reply, code in (({"jsonrpc": "2.0", "id": number, "error": self.denied["error"]}, "rpc"),
+                                ({"jsonrpc": "2.0", "id": number, "result": {"isError": True}}, "rpc_tool"),
+                                ({"jsonrpc": "2.0", "id": number, "result": {}}, "tool_content")):
+                with self.subTest(name=name, code=code):
+                    self.assert_rejected(name, reply, code)
+
+    def test_health_identity_and_generation_bracket_remain_required(self):
+        for field in ("runtime_sha", "corpus_id", "archive_sha256", "hold_token"):
+            for stage, code in (("health_before", "health_identity"), ("health_after", "smoke_generation_changed")):
+                with self.subTest(field=field, stage=stage):
+                    self.assert_rejected(stage, self.health | {field: "different"}, code)
+        self.assert_rejected("health_before", self.health | {"ok": False}, "health_identity")
+
+    def test_search_and_page_must_still_be_useful(self):
+        for name, number, value, code in (("v8std_search", 3, {"results": []}, "search_empty"),
+                ("v8std_get_page", 4, {"found": False}, "page_smoke"),
+                ("v8std_get_page", 4, {"found": True, "page": {"id": "wrong"}}, "page_smoke")):
+            with self.subTest(name=name, value=value):
+                self.assert_rejected(name, {"jsonrpc": "2.0", "id": number, "result": {"structuredContent": value}}, code)
+
+    def test_rpc_success_stays_strict_and_single_sse_frame_remains_supported(self):
+        for reply, code in (({"jsonrpc": "2.0", "id": 1, "error": self.denied["error"]}, "rpc"),
+                ({"jsonrpc": "2.0", "id": True, "result": {}}, "rpc"),
+                ({"id": 1, "result": {}}, "rpc"),
+                ({"jsonrpc": "2.0", "id": 1, "result": [], "error": None}, "rpc"),
+                ({"jsonrpc": "2.0", "id": 1, "result": {"isError": True}}, "rpc_tool")):
+            with self.subTest(reply=reply), patch.object(release, "http", return_value=json.dumps(reply).encode()):
+                with self.assertRaises(release.ReleaseError) as caught:
+                    release.rpc("http://fixture", "tools/list", {}, self.deadline, 1)
+                self.assertEqual(caught.exception.code, code)
+        raw = b'event: message\ndata: {"jsonrpc":"2.0","id":1,"result":{"tools":[]}}\n\n'
+        with patch.object(release, "http", return_value=raw):
+            self.assertEqual(release.rpc("http://fixture", "tools/list", {}, self.deadline, 1), {"tools": []})
+
+
 class IngressTests(unittest.TestCase):
     def test_committed_publication_survives_inbox_cleanup_exception(self):
         self.ingest()
@@ -638,6 +786,13 @@ class TransactionTests(unittest.TestCase):
         self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
         self.assertEqual(self.health()["corpus_source_sha"], self.source.manifest["source_sha"])
         self.assertFalse(self.adapter.inspect(self.previous, time.monotonic() + 1)["State"]["Running"])
+
+    def test_smoke_accepts_real_held_tools_only_runtime(self):
+        health = release.smoke(self.adapter.url(self.previous), self.previous, time.monotonic() + 30)
+        self.assertEqual(health["hold_token"], self.previous["hold_token"])
+        self.assertEqual(health["runtime_sha"], self.previous["runtime_source_sha"])
+        self.assertEqual(health["corpus_id"], self.source.manifest["corpus_id"])
+        self.assertEqual(health["archive_sha256"], self.source.manifest["archive"]["sha256"])
 
     def test_reboot_after_complete_commit_restores_accepted_container(self):
         self.assertEqual(self.invoke()["state"], "COMMITTED")

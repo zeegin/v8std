@@ -561,7 +561,7 @@ def http(url, deadline, *, body=None, limit=1024 * 1024):
         process.close()
 
 
-def rpc(url, method, params, deadline, number, *, limit=1024 * 1024):
+def _rpc_reply(url, method, params, deadline, number, *, limit=1024 * 1024):
     raw = http(url + "/mcp", deadline, body=canonical_json({"jsonrpc": "2.0", "id": number,
                                                "method": method, "params": params}), limit=limit)
     if raw.startswith(b"event:") or raw.startswith(b"data:"):
@@ -569,7 +569,14 @@ def rpc(url, method, params, deadline, number, *, limit=1024 * 1024):
         require(len(messages) == 1, "rpc_stream")
         raw = messages[0]
     reply = parse(raw, limit)
-    require(reply.get("id") == number and "error" not in reply and isinstance(reply.get("result"), dict), "rpc")
+    require(reply.get("jsonrpc") == "2.0" and type(reply.get("id")) is type(number)
+            and reply["id"] == number, "rpc")
+    return reply
+
+
+def rpc(url, method, params, deadline, number, *, limit=1024 * 1024):
+    reply = _rpc_reply(url, method, params, deadline, number, limit=limit)
+    require("error" not in reply and isinstance(reply.get("result"), dict), "rpc")
     result = reply["result"]
     require(not result.get("isError"), "rpc_tool")
     return result
@@ -584,6 +591,8 @@ def smoke(url, record, deadline):
     initialized = rpc(url, "initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
                       "clientInfo": {"name": "v8std-release", "version": "1"}}, deadline, 1)
     require(initialized.get("serverInfo", {}).get("name") == "v8std", "server_identity")
+    capabilities = initialized.get("capabilities")
+    require(isinstance(capabilities, dict) and "resources" not in capabilities, "resource_capability")
     listed = rpc(url, "tools/list", {}, deadline, 2)
     expected = {"v8std_search", "v8std_get_page", "v8std_get_related", "v8std_explain_snippet", "v8std_explain_diagnostics"}
     require({item["name"] for item in listed.get("tools", [])} == expected, "tool_surface")
@@ -603,9 +612,15 @@ def smoke(url, record, deadline):
     require(page.get("found") is True and page.get("page", {}).get("id") == page_id, "page_smoke")
     structured(rpc(url, "tools/call", {"name": "v8std_explain_snippet", "arguments":
                       {"snippet": "Запрос = Новый Запрос;", "limit": 1}}, deadline, 5))
-    resources = rpc(url, "resources/list", {}, deadline, 6)
-    require({item["uri"] for item in resources.get("resources", [])} == {
-        "v8std://llms.txt", "v8std://llms-full.txt", "v8std://ai/pages.jsonl"}, "resource_surface")
+    structured(rpc(url, "tools/call", {"name": "v8std_get_related", "arguments":
+                      {"id_or_alias_or_url": page_id, "limit": 1}}, deadline, 6))
+    structured(rpc(url, "tools/call", {"name": "v8std_explain_diagnostics", "arguments":
+                      {"codes": ["missing"]}}, deadline, 7))
+    denied = _rpc_reply(url, "resources/read", {"uri": "v8std://llms-full.txt"}, deadline, 8)
+    # Exact envelope excludes result, error data and any corpus payload, rather
+    # than mistaking an arbitrary transport/protocol failure for retirement.
+    require(denied == {"jsonrpc": "2.0", "id": 8,
+                      "error": {"code": -32601, "message": "Method not found"}}, "resource_disabled")
     # Bracket tool calls with the held identity so a health-only mismatch cannot
     # pass while the actual endpoint refreshes or nginx reload serves old workers.
     after = parse(http(url + "/healthz", deadline))
