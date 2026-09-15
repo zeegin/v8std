@@ -40,10 +40,11 @@ implements:
 ## Scope and file boundaries
 
 Task 1 меняет server/index/runtime и их прямые тесты, пользовательскую документацию.
-Task 2 меняет container/load acceptance и пишет новый отчёт проверки. Задачи
-выполняются последовательно; Task 2 потребляет уже проверенную новую границу.
+Task 2 обновляет smoke нового runtime в release-controller; Task 3 меняет
+container/load acceptance и пишет новый отчёт проверки. Задачи выполняются
+последовательно; обе следующие задачи потребляют проверенную новую границу.
 Ресурсные ожидания старого acceptance harness остаются промежуточным долгом
-только до Task 2. Полный suite и strict build проводятся после обеих задач;
+только до Task 3. Полный suite и strict build проводятся после всех задач;
 между ними запускается полный набор затронутых focused modules.
 
 `implements` не включает весь design/ADR и инвариант поставки, потому что
@@ -174,7 +175,72 @@ Record counts, skips, exact RED/GREEN outputs and why each fixture catches a
 production regression. Commit only this task's files; controller supplies a
 separate spec/quality review before Task 2. Full suite is an end-of-plan gate.
 
-### Task 2: Update acceptance and verify the new local candidate
+### Task 2: Align new-runtime release smoke without weakening legacy recovery
+
+**Files:**
+
+- Modify: `scripts/v8std_mcp_release.py`, `tests/test_v8std_mcp_release.py`.
+- Modify only if needed for affected assertions: `tests/test_v8std_mcp_release_docker.py`.
+- Read: `tests/mcp_release_fixture.py` and its pinned historical `LEGACY_SHA`; do not replace the legacy-source fixture with current code.
+
+**Interfaces:**
+
+- Consumes: Task 1's real HTTP tool-only API and existing health/release identity.
+- Preserves: `smoke(url, record, deadline)` returning verified health; `rpc(...)`
+  remains strict about successful results. Add a private complete-envelope
+  helper only if needed to verify expected resource errors without swallowing
+  unexpected transport/protocol failures.
+- Preserves: `HostAdapter.legacy_check`, pinned old source/cache verification,
+  rollback, attestations, held-generation bracket and all deadlines.
+
+- [ ] **Step 1: Prove the current new-runtime smoke rejects a valid tools-only server.**
+
+Use the existing real runtime fixture from `tests/mcp_release_fixture.py` and
+the held identity setup in release tests. Add regressions that call the actual
+`smoke`, not an adapter fake that simply returns healthy. A tools-only runtime
+must pass; an initialized response advertising Resources or a successful
+resource read must fail. Expected checks include:
+
+```python
+health = release.smoke(runtime_url, record, time.monotonic() + 30)
+self.assertEqual(health["hold_token"], record["hold_token"])
+self.assertEqual(health["runtime_sha"], record["runtime_source_sha"])
+```
+
+`runtime_url` and `record` are the existing local fixture's real running
+runtime and expected held-release record. For error branches, controlled HTTP
+responses may replace the network boundary, but execute real `smoke`/RPC parsing
+and assert the actual rejected category and request IDs. Do not patch smoke
+itself. Record RED caused by the obsolete required resource catalog.
+
+- [ ] **Step 2: Replace only the new-runtime resource expectation.**
+
+Retain every existing health identity, useful search/page response and
+generation bracket check. Require no `resources` key in initialize capabilities.
+Exercise the remaining retained tools (`v8std_get_related` and
+`v8std_explain_diagnostics`) with valid bounded inputs. Replace the successful
+resource catalog query with a negative probe whose full JSON-RPC envelope has
+matching ID, code `-32601`, no `result` and no content payload. Use the same
+deadline and bounded HTTP reader; do not catch all `ReleaseError` and treat it
+as expected resource denial.
+
+Keep `legacy_check` resource reads unchanged: they prove restoration of the
+specifically pinned historical runtime/cache, not support by the new server.
+The design already identifies that rollback to an old version restores its
+Resources. Do not broaden this task into automatic version detection, new
+release schema, host settings, CI polling fixes or actual deployment.
+
+- [ ] **Step 3: Run release regression GREEN, self-review and report.**
+
+```bash
+/tmp/v8std-final-gates.e7aqas/venv/bin/python -m unittest tests.test_v8std_mcp_release tests.test_v8std_mcp_tools_only -v
+```
+
+Record real fixture/recovery coverage, new smoke branch tests, RED/GREEN output
+and any skipped optional Docker cases. Commit only task-owned files and obtain
+task-scoped spec/quality review before Task 3.
+
+### Task 3: Update acceptance and verify the new local candidate
 
 **Files:**
 
