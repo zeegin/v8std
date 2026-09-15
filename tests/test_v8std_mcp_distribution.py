@@ -4,10 +4,13 @@ import html as html_module
 import json
 import os
 from pathlib import Path
+import shlex
+import signal
 import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
 from unittest.mock import patch
 
 import yaml
@@ -15,6 +18,115 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import check_mcp_container as harness
+
+
+@unittest.skipUnless(os.environ.get("V8STD_TEST_IMAGE_BUILD"), "explicit fresh image build acceptance")
+class ImageContextClosureTests(unittest.TestCase):
+    def test_retained_dev_copy_context_includes_requirements_and_entrypoint_dependencies(self):
+        definition = (ROOT / "docker-compose/docker/Dockerfile").read_text().replace("\\\n", " ")
+        copies = [line for line in definition.splitlines() if line.startswith("COPY ")]
+        with tempfile.TemporaryDirectory(prefix="v8std-task6-dev-context-") as output:
+            result = subprocess.run(
+                ["docker", "build", "--progress=plain", "--file", "-",
+                 "--output", "type=local,dest=" + output, "."],
+                cwd=ROOT, input="FROM scratch\n" + "\n".join(copies) + "\n",
+                text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout)
+            required = ["requirements.txt", "requirements-mcp.txt"] + ["scripts/" + name for name in (
+                "generate_social_cards.py", "generate_search_vectors.py", "generate_ai_artifacts.py",
+                "install_zensical.sh", "run_v8std_mcp.sh", "zensical_docs.sh", "zensical-version.sh",
+                "v8std_mcp_server.py", "check_article_html.py", "publish_diagnostic_sitemap.py",
+                "publish_license_texts.py")]
+            for relative in required:
+                self.assertEqual((Path(output) / "opt/v8std" / relative).read_bytes(),
+                                 (ROOT / relative).read_bytes(), relative)
+
+    def test_every_runtime_copy_survives_actual_buildkit_context_filter(self):
+        definition = (ROOT / "Dockerfile.mcp").read_text().replace("\\\n", " ")
+        copies = [line for line in definition.splitlines() if line.startswith("COPY ")]
+        # Execute the real COPY closure through the real ignore file. Scratch
+        # isolates context failure from registry availability and dependency I/O.
+        with tempfile.TemporaryDirectory(prefix="v8std-task6-context-") as output:
+            result = subprocess.run(
+                ["docker", "build", "--progress=plain", "--file", "-",
+                 "--output", "type=local,dest=" + output, "."],
+                cwd=ROOT, input="FROM scratch\nWORKDIR /opt/v8std\n" + "\n".join(copies) + "\n",
+                text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout)
+            for line in copies:
+                *sources, destination = shlex.split(line)[1:]
+                for source in sources:
+                    path = ROOT / source
+                    files = path.rglob("*") if path.is_dir() else [path]
+                    for item in files:
+                        if item.is_file():
+                            relative = item.relative_to(path) if path.is_dir() else Path(item.name)
+                            copied = Path(output) / "opt/v8std" / destination / relative
+                            self.assertEqual(copied.read_bytes(), item.read_bytes(), str(item))
+
+    def test_fresh_runtime_build_contains_every_copy_input_and_imports_locked_runtime(self):
+        # Catch missing dockerignore entries using BuildKit's actual context, not
+        # a second implementation of ignore-pattern semantics. This is a fixture
+        # image; the all-zero revision deliberately makes no release claim.
+        expected = {}
+        definition = (ROOT / "Dockerfile.mcp").read_text().replace("\\\n", " ")
+        for line in definition.splitlines():
+            if not line.startswith("COPY "):
+                continue
+            *sources, destination = shlex.split(line)[1:]
+            for source in sources:
+                path = ROOT / source
+                files = sorted(path.rglob("*")) if path.is_dir() else [path]
+                for item in files:
+                    if item.is_file():
+                        relative = item.relative_to(path) if path.is_dir() else Path(item.name)
+                        target = str(Path("/opt/v8std") / destination / relative)
+                        expected[target] = hashlib.sha256(item.read_bytes()).hexdigest()
+        tag = "v8std-task6-context-" + uuid.uuid4().hex + ":fixture"
+        try:
+            # Desktop credential helpers can outlive Docker and retain stderr.
+            # A regular log file avoids waiting for an inherited pipe's EOF;
+            # the process group bounds only this build and its own helpers.
+            with tempfile.TemporaryFile(mode="w+") as log:
+                built = subprocess.Popen(
+                    ["docker", "build", "--progress=plain", "--file", "Dockerfile.mcp",
+                     "--build-arg", "SOURCE_SHA=" + "0" * 40, "--tag", tag, "."],
+                    cwd=ROOT, text=True, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                try:
+                    built.wait(timeout=600)
+                finally:
+                    try:
+                        os.killpg(built.pid, signal.SIGTERM)
+                    except ProcessLookupError:
+                        pass
+                    try:
+                        built.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(built.pid, signal.SIGKILL)
+                        built.wait(timeout=5)
+                log.seek(0)
+                self.assertEqual(built.returncode, 0, log.read())
+            command = ["docker", "run", "--rm", "--network", "none", "--read-only",
+                       "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--init",
+                       "--memory", "256m", "--pids-limit", "64", "--tmpfs", "/tmp:size=16m",
+                       "--entrypoint", "python", tag]
+            probe = (
+                "import hashlib,json,os,pathlib,sys; "
+                "sys.path.insert(0,'/opt/v8std/scripts'); import v8std_mcp_server,v8std_mcp_hold; "
+                "assert os.getuid()==10001; "
+                "print(json.dumps({p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() "
+                "for p in json.loads(sys.argv[1])}))"
+            )
+            result = subprocess.run(command + ["-c", probe, json.dumps(list(expected))],
+                                    capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(result.stdout), expected)
+            checked = subprocess.run(command + ["-m", "pip", "check"],
+                                     capture_output=True, text=True, timeout=30)
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+        finally:
+            # Remove only our unique fixture tag, never prune shared Docker data.
+            subprocess.run(["docker", "image", "rm", tag], capture_output=True, timeout=30)
 
 
 class GatewayProfileTests(unittest.TestCase):

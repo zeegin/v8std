@@ -3,6 +3,8 @@
 !Dockerfile.site
 !requirements-mcp.lock
 !requirements-build.lock
+!requirements.txt
+!requirements-mcp.txt
 !zensical.toml
 !docs/
 !docs/**
@@ -18,6 +20,7 @@
 !scripts/v8std_mcp_index.py
 !scripts/v8std_mcp_snapshots.py
 !scripts/v8std_mcp_snapshot_format.py
+!scripts/v8std_mcp_hold.py
 !scripts/v8std_mcp_presentation.py
 !scripts/v8std_mcp_chunks.py
 !scripts/v8std_retrieval_rules.py
