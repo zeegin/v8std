@@ -695,3 +695,33 @@ CI publication/classification, process-v2 integration, the retained image-alt
 parser repair, committed-source candidate, mixed-load proof and final gates
 remain outstanding. Production, registry, GitHub settings, `main` and the
 unscheduled first-migration window were not changed by this work.
+
+## Task6 continuation2026-09-15: retained parser finding closed
+
+Public monitoring retirement is completed separately; see
+[production retirement evidence](2026-09-15-public-monitoring-retirement.md).
+The historical monitoring-preservation pause above is superseded: no dashboard,
+sampler or private monitor-state bridge is being resumed. Persistent private
+usage logging for the container remains a distinct Task6 gate.
+
+Signed `034eb47268c0f2dfa3064dd06b761ed2dd397ca4` fixes the retained image-alt
+defect in two files. The upstream image parser recursively parses alt children;
+its instrumented HTML tags/link nodes incorrectly affected the parent document.
+Collector isolation now leaves alt text alone and records the actual image
+destination after child parsing. Actual code protection and canonical source
+bytes/hashes remain unchanged.
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_mcp_presentation -v
+.venv/bin/python -m unittest tests.test_v8std_mcp_snapshot_format -v
+```
+
+TDD: baseline18 passed; added regressions produced12 expected assertion
+failures across22 tests before the fix. Afterward presentation22/22 in0.066s
+and snapshot35/35 in13.637s passed without warnings/skips. Cases include opening
+and closing HTML-looking alt tags, alt attributes, unknown/unsafe following
+targets, actual protected HTML, Unicode/NUL/CRLF offsets and source/hash parity.
+Independent scoped review approved specification and quality with no findings.
+Only this parser gate is complete; CI/process, private logging, final image/load
+and whole-branch gates are not inferred from these focused tests. No publication,
+push, main merge, production mutation or100000-agent capacity claim was made.

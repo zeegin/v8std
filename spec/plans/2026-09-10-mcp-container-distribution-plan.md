@@ -621,7 +621,7 @@ Pages manifest. Every runtime deployment references published exact digest.
   Existing best-effort JSONL schema stays unchanged: copytruncate has a known
   copy/truncate race, so this does not promise lossless audit or exactly-once.
   See [upstream logrotate manual](https://github.com/logrotate/logrotate/blob/main/logrotate.8.in).
-- [ ] **VERIFY retained parser finding:** Add RED/GREEN for `![<code>](...)`
+- [x] **VERIFY retained parser finding:** Add RED/GREEN for `![<code>](...)`
   followed by a visible internal link. HTML-looking image-alt text must not
   suppress rebasing or unknown-target validation of subsequent visible links.
   Preserve actual code/literal content, source offsets and canonical hashes.
