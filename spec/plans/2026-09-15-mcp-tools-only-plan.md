@@ -342,9 +342,9 @@ required local candidate evidence are available.
 ## End-of-plan verification and integration boundary
 
 - [x] Recheck actual diff against the approved five-file design package and preserve frozen main documents.
-- [ ] Run strict build first and then the full unittest suite with the existing pinned dependency environment.
-- [ ] Run architecture validate/impact, declared conformance modules and diff checks; record merge-ready outcome separately.
-- [ ] Preserve review/evidence for this plan and resolve its findings before marking its tasks complete.
+- [x] Run strict build first and then the full unittest suite with the existing pinned dependency environment.
+- [x] Run architecture validate/impact, declared conformance modules and diff checks; record merge-ready outcome separately.
+- [x] Preserve review/evidence for this plan and resolve its findings before marking its tasks complete.
 
 Commit and local merge are integration actions, not plan checkboxes. A local
 merge is permitted only when the whole branch passes required gates; no

@@ -234,3 +234,71 @@ Browser/catalog/source temporary directories were cleaned by their owners.
 Pre-existing unrelated containers retained their original IDs and
 uptimes. Only new local image tags and the dedicated evidence directory remain
 intentionally available for review; no unrelated image/cache/container was pruned.
+
+## Controller final gates — 2026-09-16
+
+The three implementation tasks passed independent spec/quality review. The
+release-smoke review found an unsupported literal SDK error-message comparison;
+commit `9f812d8` replaced it with semantic code/identity/payload/size checks,
+13 covering tests passed, and scoped re-review accepted the fix. Historical
+`legacy_check` remains unchanged because it verifies the pinned old runtime.
+Adding that distinct release-smoke task closed an omission in the initial
+plan: the old acceptance would reject every valid tools-only release.
+
+Task 3 has one deferred nonblocking coverage improvement: the mixed profile
+checks B's page body after nginx switches processes. It therefore proves
+endpoint content changed, not independently that process A refreshed before
+the switch. A bounded pre-switch page probe would separate those observations.
+Task 1 separately covers actual in-process successful/corrupt refresh. Carry
+this limitation into the eventual whole-branch integration review.
+
+Final checkout strict build used the pinned builder, network none and host
+UID/GID, then exited 0: 3283 vectors, build 15.42s, 1430 articles with zero
+violations, 1049 sitemap additions with zero duplicates, three license texts.
+The full suite ran afterwards, with no concurrent generation:
+
+```sh
+docker run --rm --name v8std-tools-only-final-strict-20260916 --network none --user 501:20 -v "$PWD:/docs" v8std-final-ci:108b91f build --strict
+V8STD_MONITORING_RETIREMENT_DOCKER=1 /tmp/v8std-final-gates.e7aqas/venv/bin/python -m unittest discover -s tests -v
+```
+
+Tested HEAD: `1786e5122b2d705ac1b9487d29ff4e406d7518af`. Exact final summary:
+
+```text
+Ran 727 tests in 362.665s
+OK (skipped=13)
+```
+
+714 passed, zero failures/errors/warnings. The 13 skips are five opt-in
+builder/image tests, four native-root logging cases, two native logging-Docker
+cases and two release-Docker cases. They are not passes; the fresh image and
+native container/load evidence above is separate. All four real nginx
+monitoring-retirement tests passed. The complete suite includes every module
+declared by API 4.0, snapshot 1.1 and the tools-only invariant; the only skips
+among those modules are the five explicitly opt-in distribution cases.
+
+CLI impact was run both for this implementation range and against main.
+Ordinary architecture validation against main and both scoped/main diff checks
+passed. The manual seven-question recheck confirms the approved breaking
+Resource boundary and compatible snapshot clarification; no new design
+contradiction, tool callback/transport setting or corpus-producer change.
+Frozen structured documents from main remain unchanged.
+
+After completing this plan, `validate --merge-ready --base-ref main` exits 1
+with exactly the two pre-existing incomplete plans:
+
+```text
+INCOMPLETE_PLAN spec/plans/2026-09-10-mcp-ci-deployment-policy-plan.md: plan is not complete
+INCOMPLETE_PLAN spec/plans/2026-09-10-mcp-container-distribution-plan.md: plan is not complete
+```
+
+Those plans and their outstanding CI/publication findings are not marked done.
+This is completed tools-only implementation and local verification, not a
+whole-branch approval. Broad integration review/merge remain blocked by that
+earlier work. No main merge, push, image publication or production deployment.
+The plan-owned review workspace is preserved for continuation, not deleted.
+
+Parent logs: `/tmp/v8std-tools-only-gates.bdZxkK/strict-build.log`,
+`full-suite.log`, `impact-tools-only.log`, `impact-main.log`, `merge-ready.log`.
+Final running-container inventory contains only the pre-existing unrelated
+containers; the strict-builder and monitoring test fixtures were cleaned up.
