@@ -47,7 +47,7 @@ implements:
 
 **Interfaces:** Consume the shipped `edge-locations.conf` using a real local nginx fixture (pinned local nginx image from `tests/test_v8std_mcp_release_docker.py`); produce opt-in HTTP conformance with `V8STD_MONITORING_RETIREMENT_DOCKER=1`. No host SSH or production work in the subagent.
 
-- [ ] **RED:** Start a disposable nginx with shipped include, bounded timeouts, dead upstream, legacy `monitoring/index.html` and `stats.json` containing a sentinel under fixture root. Probe GET/HEAD paths `/monitoring`, `/monitoring/`, `/monitoring/stats.json?x=1`, `/monitoring/unknown`. Assert literal410/no-store and absent sentinel. Before implementation existing config fails this boundary. Use loopback-only published port and exact UUID-owned container cleanup; never prune or pull. Preserve health/index boundaries in the fixture. Add architecture lifecycle expectations that old dashboard/input designs are superseded and OpenMetrics remains accepted.
+- [x] **RED:** Start a disposable nginx with shipped include, bounded timeouts, dead upstream, legacy `monitoring/index.html` and `stats.json` containing a sentinel under fixture root. Probe GET/HEAD paths `/monitoring`, `/monitoring/`, `/monitoring/stats.json?x=1`, `/monitoring/unknown`. Assert literal410/no-store and absent sentinel. Before implementation existing config fails this boundary. Use loopback-only published port and exact UUID-owned container cleanup; never prune or pull. Preserve health/index boundaries in the fixture. Add architecture lifecycle expectations that old dashboard/input designs are superseded and OpenMetrics remains accepted.
 
 ```python
 self.assertEqual(status, 410)
@@ -55,7 +55,7 @@ self.assertEqual(headers.get('cache-control'), 'no-store')
 self.assertNotIn(b'private-monitoring-sentinel', body)
 ```
 
-- [ ] **GREEN:** Remove generator and its dedicated tests; leave logger/server/logrotate unchanged. Add these locations to shipped include. Update architecture repository expectations for the successor graph; preserve historical aliases.
+- [x] **GREEN:** Remove generator and its dedicated tests; leave logger/server/logrotate unchanged. Add these locations to shipped include. Update architecture repository expectations for the successor graph; preserve historical aliases.
 
 ```nginx
 location = /monitoring {
@@ -68,7 +68,7 @@ location ^~ /monitoring/ {
 }
 ```
 
-- [ ] **VERIFY:** Run real nginx conformance and existing private logger tests. Record RED/GREEN output and prove owned fixture cleanup. Search active publication surfaces for remaining renderer/monitoring links; no source-text-only substitute for HTTP behavior.
+- [x] **VERIFY:** Run real nginx conformance and existing private logger tests. Record RED/GREEN output and prove owned fixture cleanup. Search active publication surfaces for remaining renderer/monitoring links; no source-text-only substitute for HTTP behavior.
 
 ```sh
 V8STD_MONITORING_RETIREMENT_DOCKER=1 .venv/bin/python -m unittest tests.test_v8std_mcp_monitoring_retirement -v
@@ -86,13 +86,58 @@ without changing their front matter, meaning or historical decision lifecycle.
 
 **Interfaces:** Consume Task1 tests and controller's actual production evidence. Produce unambiguous current runbooks, retaining dated historical observations as history.
 
-- [ ] Replace the container plan's public-monitor preservation step with retirement evidence plus persistent private logging/rotation checks for the new runtime (remaining incomplete until actually verified). Remove generator/tests from active test commands; replace with retirement conformance. Do not claim new container telemetry has been implemented.
-- [ ] Clarify preserve-monitoring prose to mean private logs and health/readiness; link the retirement decision for old dated statements. Record exact production archive/PID/codes/unit states with no payloads. Scan `docs`, `.github`, `deploy`, scripts and current runbooks; historical frozen design references remain as evidence, not active instructions.
-- [ ] Run semantic impact and ordinary architecture validation, strict build then full suite once. Record existing whole-branch release gates separately; no merge-ready or production-release claim from this scoped completion.
+- [x] Replace the container plan's public-monitor preservation step with retirement evidence plus persistent private logging/rotation checks for the new runtime (remaining incomplete until actually verified). Remove generator/tests from active test commands; replace with retirement conformance. Do not claim new container telemetry has been implemented.
+- [x] Clarify preserve-monitoring prose to mean private logs and health/readiness; link the retirement decision for old dated statements. Record exact production archive/PID/codes/unit states with no payloads. Scan `docs`, `.github`, `deploy`, scripts and current runbooks; historical frozen design references remain as evidence, not active instructions.
+- [x] Run semantic impact and ordinary architecture validation, strict build then full suite once. Record existing whole-branch release gates separately; no merge-ready or production-release claim from this scoped completion.
 
 ```sh
 .venv/bin/python scripts/v8std_architecture.py impact --root . --base-ref main
 .venv/bin/python scripts/v8std_architecture.py validate --root .
 VIRTUAL_ENV="$PWD/.venv" ./scripts/zensical_docs.sh build --strict
 .venv/bin/python -m unittest discover -s tests -v
+```
+
+### Task 3: Respect retired fitness declarations at the merge gate
+
+**Files:** Modify `scripts/v8std_architecture_validation.py` and
+`tests/test_v8std_architecture_validation.py` (CLI regression only if needed in
+`tests/test_v8std_architecture_cli.py`).
+
+**Interfaces:** `validate_merge_readiness(graph)` consumes existing
+`compute_states(graph, frozenset(graph.documents))`. Preserve all currently
+active fitness gates and incomplete-plan detection; no process/schema change.
+
+Actual retirement exposed an implementation defect: the gate computes lifecycle
+but still requires missing test modules for superseded/deprecated legacy
+contracts. The process requires fitness for accepted/implemented obligations,
+not retention of executable consumers of explicitly retired boundaries.
+
+- [x] **RED:** Add focused graphs with terminal contracts/invariants and missing
+  fitness modules, alongside a still-active missing declaration. Exercise
+  `validate_merge_readiness`: terminal declarations must not produce missing
+  evidence, active ones must still fail. Cover SUPERSEDED, CANCELLED, DEPRECATED,
+  RETIRED states and a previously IMPLEMENTED then retired artifact. Preserve
+  existing tests of accepted/implemented timing and incomplete plans.
+
+```python
+issues = validate_merge_readiness(graph)
+self.assertEqual([item.path for item in issues
+                  if item.code == 'MISSING_FITNESS_EVIDENCE'], [active_path])
+```
+
+- [x] **GREEN:** In the fitness loop only, ignore terminal artifacts using the
+  computed state; do not filter documents out of reference/graph validation.
+
+```python
+if states[document.key].intersection({'SUPERSEDED', 'CANCELLED', 'DEPRECATED', 'RETIRED'}):
+    continue
+```
+
+- [x] **VERIFY:** Run all architecture validation/CLI/repository tests; review
+  actual diff. Run real repository merge-ready: only other unfinished plans may
+  remain; no missing fitness for retired monitoring and no relaxed active gate.
+
+```sh
+.venv/bin/python -m unittest tests.test_v8std_architecture_validation tests.test_v8std_architecture_cli tests.test_v8std_architecture_repository -v
+.venv/bin/python scripts/v8std_architecture.py validate --root . --base-ref main --merge-ready
 ```

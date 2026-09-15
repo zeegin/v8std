@@ -127,5 +127,35 @@ real nginx conformance. With the pinned local nginx image
 - Strict build passed:3282 vectors,1430 articles,0 HTML violations and3 license
   files. Ordinary architecture validation and `git diff --check` passed.
 
-Full-suite completion and scoped reviews are recorded after their actual result;
-none of these local checks authorizes whole-branch integration or image release.
+The first full suite started before the ADR-heading fix and ended with that
+single known failure:632 tests in328.641s,10 opt-in skips. A fresh complete run
+after the correction passed:632 tests in336.791s,10 opt-in Docker skips.
+Enabled retirement nginx conformance was separately run and passed above.
+Existing Starlette deprecation warning remains recorded for release triage.
+
+Independent Task1 code review and Task2/cross-retirement graph review approved
+spec compliance and quality without blocking findings. Production assertions
+were reconciled by the controller against its actual SSH/HTTP tool outputs;
+reviewers did not perform another production operation.
+
+Subsequent real merge-ready exposed a validator implementation defect: retired
+contracts still required their removed Python fitness module. Corrective Task3
+is limited to honoring already-computed terminal lifecycle states while keeping
+all active fitness/incomplete-plan gates. It changes no product/process policy.
+Its focused verification is recorded separately; the632-test run above predates
+that correction. The broader container and CI plans are still incomplete.
+None of these checks authorizes whole-branch integration or image release.
+
+Validator correction `cbbbd17df13abd1e563d7a08aea59f9de6b00df2` adds two lines
+only to the fitness loop and two regression tests (eight lifecycle/timing
+subcases). RED produced all eight expected obsolete-evidence failures; GREEN
+passed47 architecture validation/CLI/repository tests in5.244s. Active missing
+fitness still fails, and retired artifacts still undergo reference validation.
+Real merge-ready no longer requires removed monitoring tests; it still rejects
+incomplete plans. No stub module, skipped existing test or weakened active
+declaration was added to accommodate removal.
+
+Independent final scoped follow-up approved Task3 spec compliance and quality
+without findings. The retirement implementation plan is complete. Whole-branch
+merge-ready still rejects only the two unfinished container/CI plans; this
+work intentionally leaves main, remote branches and MCP runtime deployment alone.
