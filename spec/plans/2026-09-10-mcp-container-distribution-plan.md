@@ -641,6 +641,65 @@ Pages manifest. Every runtime deployment references published exact digest.
     `spec/operations/mcp-container-verification.md`. Independent scoped review
     must cover the three fixes and absence of a Pages bootstrap deadlock. Do not
     mark the larger Task6 or process plan complete from this slice alone.
+
+  Final whole-branch review repair2026-09-16 (one combined fix wave):
+
+  - [ ] **RED/GREEN exact image pair smoke:** In
+    `tests/test_mcp_publication.py`, execute the real `CITransport.local_smoke`
+    with only Docker commands, real-network smoke and clock at their external
+    boundaries substituted. A normal `docker inspect` response is an array:
+
+    ```python
+    payload = json.dumps([{"Config": {"User": "10001:10001",
+        "Labels": {"org.opencontainers.image.revision": source_sha}},
+        "HostConfig": {"Privileged": False, "ReadonlyRootfs": True}}]).encode()
+    ```
+
+    Prove RED on the current object-only parser; fix bounded inspect parsing in
+    `scripts/publish_mcp_artifacts.py`, requiring exactly one object and retaining
+    all source/profile checks. Exercise both platforms, invalid array/shape,
+    wrong revision/profile and cleanup on failure. Do not stub local_smoke itself
+    or weaken the snapshot JSON-object parser to accommodate Docker's array.
+  - [ ] **RED/GREEN uncertain Pages retention:** Add a real Publisher/journal/
+    filesystem regression in `tests/test_v8std_mcp_release.py`: current A,
+    successfully published B, Pages now B, caller lost before reference B;
+    GC after more than seven days must retain B despite cleared publish inbox.
+    In `scripts/v8std_mcp_release.py`, derive unresolved publication retention
+    from the existing durable publish receipts and monotonic acknowledged
+    reference sequence. Publications newer than the last acknowledged reference
+    remain protected; age alone cannot make uncertainty safe. A later verified
+    reference establishes supersession, but starts at least seven days of
+    retention for displaced uncertain objects before they may be collected.
+    Persist that retention bookkeeping before advancing the current reference
+    pointer. Reuse existing journals/reference timestamps, with no new external
+    command, public endpoint, schema or operator-provided absence flag. Cover
+    no subsequent release, multiple unacknowledged publishes, same archive reuse,
+    stale acknowledgements, pins, and crash/retry at the reconciliation writes.
+    Example essential outcome:
+
+    ```python
+    self.assertNotIn(archive_b, publisher.gc(now=after_eight_days))
+    # After a newer reference displaces B, start its seven-day grace there,
+    # not at the earlier publish time; a restart/retry cannot lose that grace.
+    ```
+
+    Preserve the contract that a current manifest never references a deleted
+    archive. Lack of acknowledged progress may retain more disk; existing disk
+    capacity rejection, not unsafe deletion, is the response to this uncertainty.
+  - [ ] **RED/GREEN native tools-only fixture:** In
+    `tests/test_v8std_mcp_release_docker.py`, keep the legacy bootstrap fixture
+    unchanged, but make the current-runtime nginx/static/hold fixture internally
+    consistent with tools-only smoke. Its old dependencies image can receive a
+    complete read-only current runtime COPY-source overlay with truthful fixture
+    labelling, or use the already verified tools-only candidate. Verify source
+    consistency and run the actual opted-in native nginx/static/hold test; do
+    not count an overlay as a newly published or freshly built release image.
+  - [ ] **VERIFY final fix wave:** Run focused publication and release tests,
+    actual native nginx/static/hold fixture, then one scoped independent
+    re-review of the entire fix wave. Record commands, RED/GREEN, precise image
+    provenance and cleanup in operations evidence. Parent repeats strict build,
+    full suite, semantic impact and merge gates after the stable fix. No live GC,
+    publication, host changes or new architecture authority is granted.
 - [ ] **GREEN process:** Write separate process plan, synchronize process v2
   pointer/instructions/tests. Preserve initial manual activation and explicit
   permission for push. Align all current policy references; historic v1 and old
