@@ -193,7 +193,7 @@ separate spec/quality review before Task 2. Full suite is an end-of-plan gate.
 - Preserves: `HostAdapter.legacy_check`, pinned old source/cache verification,
   rollback, attestations, held-generation bracket and all deadlines.
 
-- [ ] **Step 1: Prove the current new-runtime smoke rejects a valid tools-only server.**
+- [x] **Step 1: Prove the current new-runtime smoke rejects a valid tools-only server.**
 
 Use the existing real runtime fixture from `tests/mcp_release_fixture.py` and
 the held identity setup in release tests. Add regressions that call the actual
@@ -213,7 +213,7 @@ responses may replace the network boundary, but execute real `smoke`/RPC parsing
 and assert the actual rejected category and request IDs. Do not patch smoke
 itself. Record RED caused by the obsolete required resource catalog.
 
-- [ ] **Step 2: Replace only the new-runtime resource expectation.**
+- [x] **Step 2: Replace only the new-runtime resource expectation.**
 
 Retain every existing health identity, useful search/page response and
 generation bracket check. Require no `resources` key in initialize capabilities.
@@ -230,7 +230,7 @@ The design already identifies that rollback to an old version restores its
 Resources. Do not broaden this task into automatic version detection, new
 release schema, host settings, CI polling fixes or actual deployment.
 
-- [ ] **Step 3: Run release regression GREEN, self-review and report.**
+- [x] **Step 3: Run release regression GREEN, self-review and report.**
 
 ```bash
 /tmp/v8std-final-gates.e7aqas/venv/bin/python -m unittest tests.test_v8std_mcp_release tests.test_v8std_mcp_tools_only -v
