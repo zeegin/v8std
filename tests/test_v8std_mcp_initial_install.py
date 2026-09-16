@@ -370,6 +370,31 @@ class InitialInstallTests(unittest.TestCase):
         self.assert_failed(self.initial.execute())
         self.adapter.fault = ""
 
+    def test_blocked_readiness_is_cancelled_and_owned_runtime_is_stopped(self):
+        self.submit()
+        self.adapter.fault = "ready"
+        self.assert_failed(self.initial.execute())
+        self.adapter.fault = ""
+
+    def assert_nginx_failure(self, fault):
+        self.submit()
+        self.adapter.fault = fault
+        result = self.initial.execute()
+        self.assertEqual(result["state"], "RECOVERY_REQUIRED", result)
+        self.assertFalse(result["cleanup_complete"])
+        candidate = self.journal()["candidate"]
+        self.assertFalse(self.adapter.inspect(candidate, time.monotonic() + 2)["State"]["Running"])
+        self.assertFalse((self.root / "active.json").exists())
+        self.assert_static()
+        self.adapter.fault = ""
+        self.assert_failed(release.Controller(self.root, self.adapter).recover())
+
+    def test_nginx_validation_failure_requires_confirmed_recovery(self):
+        self.assert_nginx_failure("nginx_test")
+
+    def test_nginx_reload_failure_requires_confirmed_recovery(self):
+        self.assert_nginx_failure("nginx_reload")
+
     def test_received_crash_before_schedule_is_recoverable(self):
         self.invoke("kill_state_RECEIVED", mode="submit")
         self.assert_failed(self.invoke(mode="recover"))
