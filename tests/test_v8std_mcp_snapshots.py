@@ -28,7 +28,7 @@ from tests import mcp_snapshot_fixtures as fixture
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from v8std_mcp_snapshots import SnapshotStore
+from runtime.v8std_mcp_snapshots import SnapshotStore
 
 
 @dataclass(frozen=True)
@@ -170,7 +170,7 @@ class CommitFault:
 
 
 def blocking_dns_transport(*args, **kwargs):
-    import v8std_mcp_snapshots as loader
+    import runtime.v8std_mcp_snapshots as loader
 
     def blocked(*args, **kwargs):
         time.sleep(120)
@@ -180,7 +180,7 @@ def blocking_dns_transport(*args, **kwargs):
 
 
 def store_in_process(site_url, cache, output):
-    import v8std_mcp_snapshots as loader
+    import runtime.v8std_mcp_snapshots as loader
     try:
         output.send(loader.SnapshotStore(site_url, cache).refresh(prepare=build))
     except (loader.LoaderError, loader.SnapshotError) as error:
@@ -277,9 +277,9 @@ class Source:
 
 class SnapshotTestCase(unittest.TestCase):
     def setUp(self):
-        self.assertIsNotNone(importlib.util.find_spec("v8std_mcp_snapshots"),
+        self.assertIsNotNone(importlib.util.find_spec("runtime.v8std_mcp_snapshots"),
                              "Task2 snapshot loader is not implemented")
-        self.loader = importlib.import_module("v8std_mcp_snapshots")
+        self.loader = importlib.import_module("runtime.v8std_mcp_snapshots")
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.cache = Path(self.temp.name) / "cache"
@@ -299,7 +299,7 @@ class SnapshotStoreTests(SnapshotTestCase):
         files = fixture.corpus_files()
         files["llms-full.txt"] = random.Random(37).randbytes(256 * 1024).hex().encode()
         archive, manifest = fixture.snapshot_fixture(files=fixture.with_metadata(files))
-        fmt = importlib.import_module("v8std_mcp_snapshot_format")
+        fmt = importlib.import_module("runtime.v8std_mcp_snapshot_format")
         verified = fmt.verify_archive(archive, manifest)
         self.store.namespace.mkdir(parents=True)
         with tempfile.TemporaryDirectory(prefix=".stage-", dir=self.store.namespace) as directory:
@@ -925,7 +925,7 @@ class SnapshotCoordinatorTests(SnapshotTestCase):
         coordinator = self.coordinator(refresh_seconds=0)
         schedule = RecordingStop(4)
         coordinator._stop = schedule
-        with patch("v8std_mcp_snapshots.random.uniform", return_value=1.2):
+        with patch("runtime.v8std_mcp_snapshots.random.uniform", return_value=1.2):
             coordinator.start()
             self.wait_until(schedule.is_set)
         self.assertEqual(schedule.delays, [36, 72, 144, 288])
@@ -936,7 +936,7 @@ class SnapshotCoordinatorTests(SnapshotTestCase):
         coordinator = self.coordinator()
         schedule = RecordingStop(2)
         coordinator._stop = schedule
-        with patch("v8std_mcp_snapshots.random.uniform", side_effect=[.8, 1.2]):
+        with patch("runtime.v8std_mcp_snapshots.random.uniform", side_effect=[.8, 1.2]):
             coordinator.start()
             self.wait_until(schedule.is_set)
         self.assertEqual(schedule.delays, [2880, 4320])
@@ -947,9 +947,9 @@ class SnapshotCoordinatorTests(SnapshotTestCase):
 
     def test_backoff_extremes_stay_within_contract(self):
         coordinator = self.coordinator()
-        with patch("v8std_mcp_snapshots.random.uniform", return_value=.8):
+        with patch("runtime.v8std_mcp_snapshots.random.uniform", return_value=.8):
             self.assertEqual(coordinator._delay(1), 30)
-        with patch("v8std_mcp_snapshots.random.uniform", return_value=1.2):
+        with patch("runtime.v8std_mcp_snapshots.random.uniform", return_value=1.2):
             self.assertEqual(coordinator._delay(10000), 3600)
 
 
@@ -1088,7 +1088,7 @@ class IdentityRefreshTests(SnapshotTestCase):
         for fault in (None, "conditional"):
             with self.subTest(fault=fault):
                 self.source.fault = fault
-                with patch("v8std_mcp_snapshots.os.fsync", side_effect=OSError(errno.ENOSPC, "full")):
+                with patch("runtime.v8std_mcp_snapshots.os.fsync", side_effect=OSError(errno.ENOSPC, "full")):
                     with self.assertRaises(OSError):
                         self.store._refresh(fail_build, time.monotonic() + 5,
                                             current_archive=current.archive_sha256)
@@ -1160,7 +1160,7 @@ class IdentityRefreshTests(SnapshotTestCase):
 
 class SnapshotLifetimeTests(unittest.TestCase):
     def test_same_hash_refresh_releases_unused_generation_before_idle_wait(self):
-        loader = importlib.import_module("v8std_mcp_snapshots")
+        loader = importlib.import_module("runtime.v8std_mcp_snapshots")
         references = []
 
         class CompletedStore:

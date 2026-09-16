@@ -194,9 +194,9 @@ class LoggingDockerTests(unittest.TestCase):
             image_at = next(i for i, arg in enumerate(command) if arg.startswith(release.IMAGE + "@"))
             command[image_at] = RUNTIME
             overlays = []
-            definition = (ROOT / "Dockerfile.mcp").read_text().replace("\\\n", " ")
+            definition = (ROOT / "delivery/mcp/Dockerfile").read_text().replace("\\\n", " ")
             for line in definition.splitlines():
-                if line.startswith("COPY scripts/"):
+                if line.startswith(("COPY scripts/", "COPY runtime/")):
                     for source in shlex.split(line)[1:-1]:
                         overlays += ["--mount", f"type=bind,source={ROOT / source},target=/opt/v8std/{source},readonly"]
             command[image_at:image_at] = ["--network", network, "--label", "pro.v8std.test=" + self.prefix, *overlays]

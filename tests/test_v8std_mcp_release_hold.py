@@ -9,7 +9,7 @@ import unittest
 
 from tests.test_v8std_mcp_snapshots import Source, build, blocking_ipc_build
 from tests import mcp_snapshot_fixtures as fixture
-from v8std_mcp_snapshots import SnapshotStore, SnapshotCoordinator
+from runtime.v8std_mcp_snapshots import SnapshotStore, SnapshotCoordinator
 
 
 def eventually(check, timeout=8):

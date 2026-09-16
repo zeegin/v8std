@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.standard_sources import (
+from dev.content.standard_sources import (
     ITS_SOURCE_RE,
     SOURCE_SECTION_RE,
     load_registry,
@@ -90,7 +90,7 @@ class StandardSourceRegistryTests(unittest.TestCase):
                         load_registry(path)
 
     def test_repository_registry_resolves_to_matching_standard_pages(self):
-        registry = load_registry(REPO_ROOT / "data/standard-english-sources.json")
+        registry = load_registry(REPO_ROOT / "dev/content/data/standard-english-sources.json")
         self.assertGreater(len(registry), 0)
         for standard in registry:
             with self.subTest(standard=standard):
@@ -235,8 +235,7 @@ class StandardSourceRenderingTests(unittest.TestCase):
             registry = self._registry(root, "std498")
             result = subprocess.run(
                 [
-                    "python3.12",
-                    str(REPO_ROOT / "scripts/standard_sources.py"),
+                    "python3.12", "-m", "dev.content.standard_sources",
                     "--check",
                     "--docs-dir",
                     str(docs),

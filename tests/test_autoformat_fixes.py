@@ -2,9 +2,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.autoformat_fixes import load_autoformat_catalog
-from scripts.diagnostic_standard_links import rewrite_standard_page
-from scripts.generate_diagnostic_standard_links import (
+from dev.content.autoformat_fixes import load_autoformat_catalog
+from dev.content.diagnostic_standard_links import rewrite_standard_page
+from dev.content.generate_diagnostic_standard_links import (
     load_standard_pages,
     render_registry_index,
 )
@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class AutoformatCatalogTests(unittest.TestCase):
     def test_catalog_has_unique_rule_keys_and_existing_targets(self):
-        catalog = load_autoformat_catalog(ROOT / "data/autoformat-fixes.json")
+        catalog = load_autoformat_catalog(ROOT / "dev/content/data/autoformat-fixes.json")
         self.assertEqual(len(catalog.fixes), 34)
         self.assertEqual(len({fix.key for fix in catalog.fixes}), 34)
         for fix in catalog.fixes:
@@ -33,7 +33,7 @@ class AutoformatCatalogTests(unittest.TestCase):
                 load_autoformat_catalog(path)
 
     def test_registry_and_standard_page_use_one_autoformat_link(self):
-        catalog = load_autoformat_catalog(ROOT / "data/autoformat-fixes.json")
+        catalog = load_autoformat_catalog(ROOT / "dev/content/data/autoformat-fixes.json")
         pages = load_standard_pages(ROOT / "docs/std")
         registry = render_registry_index((), pages, catalog.fixes)
         self.assertIn("1 исправление", registry)

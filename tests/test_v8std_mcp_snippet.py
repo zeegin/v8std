@@ -15,11 +15,11 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from v8std_mcp_index import V8StdIndex, truncate_for_query
-from v8std_retrieval_rules import (
+from runtime.v8std_mcp_index import V8StdIndex, truncate_for_query
+from scripts.v8std_retrieval_rules import (
     RetrievalRule, RetrievalRules, SECRET_ASSIGNMENT_RE, SECRET_IDENTIFIER_RE, has_secret_literal,
 )
-from v8std_mcp_server import McpToolUsageLogger, build_server, main, parse_args
+from runtime.v8std_mcp_server import McpToolUsageLogger, build_server, main, parse_args
 from starlette.testclient import TestClient
 
 
@@ -196,12 +196,6 @@ class SnippetPreviewTests(unittest.TestCase):
 
 
 class SnippetConfigurationTests(unittest.TestCase):
-    def test_public_unit_pins_the_limit_even_with_a_local_override(self):
-        unit = (ROOT / "deploy/systemd/v8std-mcp.service").read_text(encoding="utf-8")
-        command = next(line.removeprefix("ExecStart=") for line in unit.splitlines() if line.startswith("ExecStart="))
-        with patch.dict(os.environ, {"V8STD_MCP_MAX_SNIPPET_CHARS": "32000"}):
-            self.assertEqual(parse_args(shlex.split(command)[2:]).max_snippet_chars, 4000)
-
     def test_config_uses_cli_then_environment_then_default(self):
         for environment, argv, expected in (
             ({}, [], 4000),
@@ -219,7 +213,7 @@ class SnippetConfigurationTests(unittest.TestCase):
                 argv = [] if source == "env" else ["--max-snippet-chars", value]
                 stderr = io.StringIO()
                 with self.subTest(value=value, source=source), patch.dict(os.environ, environment, clear=True), \
-                     patch("v8std_mcp_server.V8StdIndex.load") as load, contextlib.redirect_stderr(stderr):
+                     patch("runtime.v8std_mcp_server.V8StdIndex.load") as load, contextlib.redirect_stderr(stderr):
                     with self.assertRaises(SystemExit) as error:
                         main(argv)
                     self.assertNotEqual(error.exception.code, 0)

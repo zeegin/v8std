@@ -6,9 +6,9 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
-import scripts.generate_diagnostic_standard_links as relationship_generator
-from scripts.diagnostic_articles import load_catalog as load_source_catalog
-from scripts.diagnostic_standard_links import (
+import dev.content.generate_diagnostic_standard_links as relationship_generator
+from dev.content.diagnostic_articles import load_catalog as load_source_catalog
+from dev.content.diagnostic_standard_links import (
     LinkReview,
     SourceProposal,
     heading_anchor,
@@ -20,7 +20,7 @@ from scripts.diagnostic_standard_links import (
     rewrite_standard_page,
     validate_review_coverage,
 )
-from scripts.generate_diagnostic_standard_links import (
+from dev.content.generate_diagnostic_standard_links import (
     load_all_reviews,
     render_registry_index,
 )
@@ -517,7 +517,7 @@ source
 class GeneratedRelationshipGraphTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.reviews = load_reviews(REPO_ROOT / "data/diagnostic-standard-links.json")
+        cls.reviews = load_reviews(REPO_ROOT / "dev/content/data/diagnostic-standard-links.json")
 
     def test_generator_loads_acc_reviews_from_the_extracted_catalog(self):
         reviews = load_all_reviews(REPO_ROOT)
@@ -730,6 +730,8 @@ class GeneratedRelationshipGraphTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "data").symlink_to(REPO_ROOT / "data", target_is_directory=True)
+            (root / "dev/content").mkdir(parents=True)
+            (root / "dev/content/data").symlink_to(REPO_ROOT / "dev/content/data", target_is_directory=True)
             (root / "docs/diagnostics").mkdir(parents=True)
             (root / "docs/std").symlink_to(
                 REPO_ROOT / "docs/std", target_is_directory=True
@@ -821,7 +823,7 @@ class BsllsSemanticReviewTests(unittest.TestCase):
     def setUpClass(cls):
         cls.reviews = tuple(
             review
-            for review in load_reviews(REPO_ROOT / "data/diagnostic-standard-links.json")
+            for review in load_reviews(REPO_ROOT / "dev/content/data/diagnostic-standard-links.json")
             if review.diagnostic.startswith("bslls:")
         )
 
@@ -934,7 +936,7 @@ class V8CodeStyleSemanticReviewTests(unittest.TestCase):
     def setUpClass(cls):
         cls.reviews = tuple(
             review
-            for review in load_reviews(REPO_ROOT / "data/diagnostic-standard-links.json")
+            for review in load_reviews(REPO_ROOT / "dev/content/data/diagnostic-standard-links.json")
             if review.diagnostic.startswith("v8cs:")
         )
 

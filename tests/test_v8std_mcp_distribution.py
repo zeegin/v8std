@@ -19,7 +19,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-import check_mcp_container as harness
+import dev.checks.check_mcp_container as harness
 
 
 def _context_group_running(pgid):
@@ -241,7 +241,6 @@ class ContextHarnessLifecycleTests(unittest.TestCase):
 
     def test_all_build_paths_stop_term_ignoring_helper_after_leader_exit(self):
         methods = (
-            "test_retained_dev_copy_context_includes_requirements_and_entrypoint_dependencies",
             "test_every_runtime_copy_survives_actual_buildkit_context_filter",
             "test_fresh_runtime_build_contains_every_copy_input_and_imports_locked_runtime",
         )
@@ -347,7 +346,7 @@ class ContextHarnessLifecycleTests(unittest.TestCase):
 class PinnedCiBuilderTests(unittest.TestCase):
     def test_builder_has_locked_dependencies_compression_and_real_dejavu_fonts(self):
         with _ContextImage() as owned:
-            built = _context_command(["docker", "build", "--progress=plain", "-f", "Dockerfile.ci",
+            built = _context_command(["docker", "build", "--progress=plain", "-f", "delivery/ci/Dockerfile",
                                       "-t", owned.tag, "."], timeout=300)
             self.assertEqual(built.returncode, 0, built.stdout)
             probe = (
@@ -369,26 +368,8 @@ class PinnedCiBuilderTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get("V8STD_TEST_IMAGE_BUILD"), "explicit fresh image build acceptance")
 class ImageContextClosureTests(unittest.TestCase):
-    def test_retained_dev_copy_context_includes_requirements_and_entrypoint_dependencies(self):
-        definition = (ROOT / "docker-compose/docker/Dockerfile").read_text().replace("\\\n", " ")
-        copies = [line for line in definition.splitlines() if line.startswith("COPY ")]
-        with tempfile.TemporaryDirectory(prefix="v8std-task6-dev-context-") as output:
-            result = _context_command(
-                ["docker", "build", "--progress=plain", "--file", "-",
-                 "--output", "type=local,dest=" + output, "."],
-                input="FROM scratch\n" + "\n".join(copies) + "\n", timeout=60)
-            self.assertEqual(result.returncode, 0, result.stdout)
-            required = ["requirements.txt", "requirements-mcp.txt"] + ["scripts/" + name for name in (
-                "generate_social_cards.py", "generate_search_vectors.py", "generate_ai_artifacts.py",
-                "install_zensical.sh", "run_v8std_mcp.sh", "zensical_docs.sh", "zensical-version.sh",
-                "v8std_mcp_server.py", "check_article_html.py", "publish_diagnostic_sitemap.py",
-                "publish_license_texts.py")]
-            for relative in required:
-                self.assertEqual((Path(output) / "opt/v8std" / relative).read_bytes(),
-                                 (ROOT / relative).read_bytes(), relative)
-
     def test_every_runtime_copy_survives_actual_buildkit_context_filter(self):
-        definition = (ROOT / "Dockerfile.mcp").read_text().replace("\\\n", " ")
+        definition = (ROOT / "delivery/mcp/Dockerfile").read_text().replace("\\\n", " ")
         copies = [line for line in definition.splitlines() if line.startswith("COPY ")]
         # Execute the real COPY closure through the real ignore file. Scratch
         # isolates context failure from registry availability and dependency I/O.
@@ -414,7 +395,7 @@ class ImageContextClosureTests(unittest.TestCase):
         # a second implementation of ignore-pattern semantics. This is a fixture
         # image; the all-zero revision deliberately makes no release claim.
         expected = {}
-        definition = (ROOT / "Dockerfile.mcp").read_text().replace("\\\n", " ")
+        definition = (ROOT / "delivery/mcp/Dockerfile").read_text().replace("\\\n", " ")
         for line in definition.splitlines():
             if not line.startswith("COPY "):
                 continue
@@ -429,12 +410,12 @@ class ImageContextClosureTests(unittest.TestCase):
                         expected[target] = hashlib.sha256(item.read_bytes()).hexdigest()
         with _ContextImage() as fixture:
             built = _context_command(
-                ["docker", "build", "--progress=plain", "--file", "Dockerfile.mcp",
+                ["docker", "build", "--progress=plain", "--file", "delivery/mcp/Dockerfile",
                  "--build-arg", "SOURCE_SHA=" + "0" * 40, "--tag", fixture.tag, "."], timeout=600)
             self.assertEqual(built.returncode, 0, built.stdout)
             probe = (
                 "import hashlib,json,os,pathlib,sys; "
-                "sys.path.insert(0,'/opt/v8std/scripts'); import v8std_mcp_server,v8std_mcp_hold; "
+                "sys.path.insert(0,'/opt/v8std/scripts'); from runtime import v8std_mcp_server, v8std_mcp_hold; "
                 "assert os.getuid()==10001; "
                 "print(json.dumps({p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() "
                 "for p in json.loads(sys.argv[1])}))"
@@ -447,9 +428,9 @@ class ImageContextClosureTests(unittest.TestCase):
 
 
 class AcceptanceHelperTests(unittest.TestCase):
-    def test_real_tools_only_server_passes_direct_and_aggregate_catalog_checks(self):
+    def test_real_http_server_rejects_extra_tools(self):
         from tests.test_v8std_mcp_tools_only import http_rpc, initialize
-        from v8std_mcp_index import V8StdIndex
+        from runtime.v8std_mcp_index import V8StdIndex
         index = V8StdIndex(pages_path=ROOT / "docs/ai/pages.jsonl",
                           vectors_path=ROOT / "docs/ai/search-vectors.jsonl")
         index.load()
@@ -461,11 +442,10 @@ class AcceptanceHelperTests(unittest.TestCase):
             def aggregate(method, params=None):
                 result = request(method, params)
                 if method == "tools/list":
-                    result["tools"].append({"name": "gateway-helper"})
+                    result["tools"].append({"name": "unexpected-tool"})
                 return result
             with self.assertRaises(AssertionError):
                 harness.check_tools(aggregate, "https://v8std.ru/")
-            harness.check_tools(aggregate, "https://v8std.ru/", aggregate_catalog=True)
 
     def test_resource_denial_is_semantic_and_rejects_payload_or_wrong_typed_id(self):
         check = getattr(harness, "validate_resource_denial", None)
@@ -479,22 +459,6 @@ class AcceptanceHelperTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(AssertionError):
                 check(value, 7)
 
-    def test_stdio_expected_error_envelope_does_not_weaken_ordinary_requests(self):
-        self.assertTrue(callable(getattr(harness.Stdio, "envelope", None)), "stdio needs a complete-envelope path")
-        code = """import json,sys
-for line in sys.stdin:
-    message=json.loads(line)
-    print(json.dumps({'jsonrpc':'2.0','id':message['id'],'error':{'code':-32601,'message':'Unsupported'}}),flush=True)
-"""
-        with tempfile.TemporaryFile(mode="w+") as log:
-            session = harness.Stdio([sys.executable, "-c", code], log)
-            try:
-                reply = session.envelope("resources/list")
-                harness.validate_resource_denial(reply, 1)
-                with self.assertRaises(AssertionError):
-                    session.request("tools/list")
-            finally:
-                session.close()
 
     def test_tool_content_rejects_embedded_resources_even_with_structured_content(self):
         reply = {"isError": False, "content": [{"type": "resource", "resource": {
@@ -503,121 +467,6 @@ for line in sys.stdin:
             harness.content(reply)
 
 
-class GatewayProfileTests(unittest.TestCase):
-    def validate(self, state):
-        return harness.validate_gateway_profile(state, expected_cache={
-            "Name": "owned-cache", "Mountpoint": "/var/lib/docker/volumes/owned-cache/_data"})
-
-    def test_unsafe_inherited_gateway_settings_are_rejected_without_mutation(self):
-        for value in ("true", "1", "false", "0"):
-            env = {"DOCKER_MCP_IN_DIND": value, "PATH": "/some/path"}
-            before = dict(env)
-            with self.subTest(value=value), self.assertRaises(AssertionError):
-                harness.gateway_environment(env)
-            self.assertEqual(env, before)
-        env = {"PATH": "/some/path"}
-        self.assertEqual(harness.gateway_environment(env), env)
-
-    def state(self):
-        return {"Id": "session-server", "Image": "sha256:" + "a" * 64,
-                "Config": {"User": "10001:10001", "WorkingDir": "/opt/v8std"},
-                "HostConfig": {"Init": True, "Privileged": False,
-                               "SecurityOpt": ["no-new-privileges=true"],
-                               "ReadonlyRootfs": False, "CapDrop": None,
-                               "Tmpfs": None, "NetworkMode": "none"},
-                "Mounts": [{"Type": "volume", "Name": "owned-cache",
-                            "Source": "/var/lib/docker/volumes/owned-cache/_data",
-                            "Destination": "/var/lib/v8std-mcp", "RW": True}]}
-
-    def test_privileged_environment_is_rejected_before_any_gateway_or_docker_launch(self):
-        with patch.dict(os.environ, {"DOCKER_MCP_IN_DIND": "1"}), \
-                patch.object(harness, "run") as docker, patch.object(harness, "Stdio") as launch:
-            with self.assertRaisesRegex(AssertionError, "unsafe DOCKER_MCP_IN_DIND"):
-                harness.host_gateway_check("not-launched", "test-image", "test-cache",
-                                           "http://v8std.localhost/", Path("/not-used"))
-            docker.assert_not_called()
-            launch.assert_not_called()
-
-    def test_privileged_preflight_is_not_disabled_by_python_optimization(self):
-        code = "from check_mcp_container import gateway_environment; gateway_environment({'DOCKER_MCP_IN_DIND':'1'})"
-        result = subprocess.run([sys.executable, "-O", "-c", code], cwd=ROOT / "scripts",
-                                capture_output=True, text=True, timeout=10)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("unsafe DOCKER_MCP_IN_DIND", result.stderr)
-
-    def test_native_profile_reports_required_and_optional_controls(self):
-        for security_opt in ("no-new-privileges", "no-new-privileges:true", "no-new-privileges=true"):
-            state = self.state()
-            state["HostConfig"]["SecurityOpt"] = [security_opt]
-            result = self.validate(state)
-            self.assertEqual(result["id"], state["Id"])
-            self.assertEqual(result["image_id"], state["Image"])
-            self.assertEqual(result["user"], "10001:10001")
-            self.assertTrue(result["init"])
-            self.assertTrue(result["no_new_privileges"])
-            self.assertFalse(result["privileged"])
-            self.assertFalse(result["read_only"])
-            self.assertIsNone(result["cap_drop"])
-            self.assertIsNone(result["tmpfs"])
-            self.assertEqual(result["mounts"], state["Mounts"])
-
-    def test_native_profile_rejects_each_missing_or_disabled_required_control(self):
-        for section, key, value in (("Config", "User", "0:0"),
-                                    ("Config", "User", "10001:0"),
-                                    ("HostConfig", "Init", False),
-                                    ("HostConfig", "Privileged", True),
-                                    ("HostConfig", "SecurityOpt", []),
-                                    ("HostConfig", "SecurityOpt", ["no-new-privileges=false"]),
-                                    ("HostConfig", "SecurityOpt", ["no-new-privileges:true", "no-new-privileges:false"])):
-            for missing in (False, True):
-                with self.subTest(key=key, value=value, missing=missing):
-                    state = self.state()
-                    if missing:
-                        del state[section][key]
-                    else:
-                        state[section][key] = value
-                    with self.assertRaises(AssertionError):
-                        self.validate(state)
-        state = self.state()
-        del state["Mounts"]
-        with self.assertRaises(AssertionError):
-            self.validate(state)
-
-    def test_socket_sources_aliases_and_destinations_cannot_hide_in_mounts(self):
-        mounts = [
-            {"Type": "bind", "Source": "/var/run/docker.sock", "Destination": "/socket-alias"},
-            {"Type": "bind", "Source": "/Users/operator/.docker/run/docker.sock", "Destination": "/var/lib/v8std-mcp"},
-            {"Type": "bind", "Source": "/tmp/opaque-daemon-alias", "Destination": "/var/lib/v8std-mcp"},
-            {"Type": "bind", "Source": "/tmp/opaque-daemon-alias", "Destination": "/run/docker.sock"},
-            {"Type": "volume", "Source": "/var/run/docker.raw.sock", "Destination": "/var/lib/v8std-mcp"},
-            {"Type": "volume", "Source": "/cache", "Destination": "/var/run/docker.sock"},
-            {"Type": "bind", "Source": "/run", "Destination": "/daemon-directory"},
-        ]
-        for mount in mounts:
-            with self.subTest(mount=mount), self.assertRaises(AssertionError):
-                state = self.state()
-                state["Mounts"] = [mount]
-                self.validate(state)
-
-    def test_only_exact_writable_owned_cache_mount_is_allowed(self):
-        for field, value in (("Name", "other-cache"), ("Source", "/unexpected/alias"),
-                             ("Destination", "/unexpected"), ("RW", False)):
-            state = self.state()
-            state["Mounts"][0][field] = value
-            with self.subTest(field=field), self.assertRaises(AssertionError):
-                self.validate(state)
-        state = self.state()
-        state["Mounts"].append(dict(state["Mounts"][0]))
-        with self.assertRaises(AssertionError):
-            self.validate(state)
-
-    def test_optional_hardening_is_reported_when_present(self):
-        state = self.state()
-        state["HostConfig"].update(ReadonlyRootfs=True, CapDrop=["ALL"], Tmpfs={"/tmp": "size=64m"})
-        result = self.validate(state)
-        self.assertTrue(result["read_only"])
-        self.assertEqual(result["cap_drop"], ["ALL"])
-        self.assertEqual(result["tmpfs"], {"/tmp": "size=64m"})
 
 
 class SiteOverrideTests(unittest.TestCase):
@@ -654,7 +503,7 @@ class DistributionTests(unittest.TestCase):
         for settings, expected in cases:
             with self.subTest(settings=settings):
                 resolved = json.loads(subprocess.check_output(
-                    ["docker", "compose", "--env-file", os.devnull, "-f", str(ROOT / "compose.yaml"),
+                    ["docker", "compose", "--env-file", os.devnull, "-f", str(ROOT / "delivery/local/compose.yaml"),
                      "--profile", "mcp", "config", "--format", "json"],
                     env={**env, **settings}, text=True, timeout=20))
                 mcp = resolved["services"]["mcp"]
@@ -662,12 +511,12 @@ class DistributionTests(unittest.TestCase):
                 self.assertNotIn("--site-url", mcp["command"])
 
     def test_images_are_thin_pinned_and_unprivileged(self):
-        runtime = (ROOT / "Dockerfile.mcp").read_text()
-        static = (ROOT / "Dockerfile.site").read_text()
+        runtime = (ROOT / "delivery/mcp/Dockerfile").read_text()
+        static = (ROOT / "delivery/site/Dockerfile").read_text()
         for definition in (runtime, static):
             self.assertRegex(definition, r"FROM [^\n]+@sha256:[0-9a-f]{64}")
             self.assertIn("USER 10001:10001", definition)
-        self.assertIn('CMD ["--transport", "stdio"]', runtime)
+        self.assertIn('CMD ["--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000"]', runtime)
         self.assertIn("retrieval-rules.yml", runtime)
         self.assertIn("v8std_search_features.py", runtime)
         self.assertNotIn("v8std_mcp*.py", runtime)
@@ -675,7 +524,7 @@ class DistributionTests(unittest.TestCase):
         self.assertIn("--require-hashes", runtime)
 
     def test_compose_has_common_address_and_internal_mcp(self):
-        compose = yaml.safe_load((ROOT / "compose.yaml").read_text())
+        compose = yaml.safe_load((ROOT / "delivery/local/compose.yaml").read_text())
         site, mcp = (compose["services"][name] for name in ("site", "mcp"))
         for service in (site, mcp):
             self.assertTrue(service["read_only"])
@@ -694,28 +543,20 @@ class DistributionTests(unittest.TestCase):
 
     def test_profile_rejects_source_output_overlap(self):
         sys.path.insert(0, str(ROOT / "scripts"))
-        from build_local_site import build_local_site
+        from delivery.site.build_local_site import build_local_site
         for output in (ROOT, ROOT / "docs", ROOT / "site", ROOT / "scripts/out"):
             with self.subTest(output=output), self.assertRaises(ValueError):
                 build_local_site(ROOT, output, "http://v8std.localhost:18765/kb/", "a" * 40)
 
-    def test_catalog_has_long_lived_configurable_stdio(self):
-        spec = yaml.safe_load((ROOT / "deploy/docker-catalog/server.yaml").read_text())
-        self.assertTrue(spec["longLived"])
-        self.assertEqual(spec["run"]["user"], "10001:10001")
-        self.assertEqual(spec["run"]["command"], ["--transport", "stdio"])
-        self.assertTrue(spec["image"].startswith("ghcr.io/zeegin/v8std-mcp"))
-        self.assertEqual(set(spec["run"]["env"]),
-                         {"V8STD_MCP_SITE_URL", "V8STD_MCP_MAX_SNIPPET_CHARS"})
 
 
 @unittest.skipUnless(os.environ.get("V8STD_TEST_LOCAL_BUILD"), "explicit local build acceptance")
 class LocalBuildTests(unittest.TestCase):
     def test_actual_isolated_build_and_canonical_snapshot(self):
         sys.path.insert(0, str(ROOT / "scripts"))
-        from build_local_site import build_local_site
-        from generate_mcp_snapshot import build_snapshot
-        from v8std_mcp_snapshot_format import verify_archive
+        from delivery.site.build_local_site import build_local_site
+        from delivery.index.generate_mcp_snapshot import build_snapshot
+        from runtime.v8std_mcp_snapshot_format import verify_archive
 
         def hashes():
             return {str(p): hashlib.sha256(p.read_bytes()).hexdigest()

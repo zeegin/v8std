@@ -25,8 +25,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 class PublicationTests(unittest.TestCase):
     def setUp(self):
-        self.assertIsNotNone(importlib.util.find_spec("publish_mcp_artifacts"))
-        self.p = importlib.import_module("publish_mcp_artifacts")
+        self.assertIsNotNone(importlib.util.find_spec("delivery.ci.publish_mcp_artifacts"))
+        self.p = importlib.import_module("delivery.ci.publish_mcp_artifacts")
         self.temp = tempfile.TemporaryDirectory(prefix="v8std-publication-test-")
         self.addCleanup(self.temp.cleanup)
         self.pages = Path(self.temp.name) / "site/ai/mcp/v1/manifest.json"
@@ -62,6 +62,15 @@ class PublicationTests(unittest.TestCase):
         self.assertGreater(reference[0]["sequence"], publish[0]["sequence"])
         self.assertEqual(publish[1], self.archive)
         self.assertEqual(reference[1], b"")
+
+    def test_current_gate_set_does_not_require_architecture(self):
+        current = {**self.context, "gates": {name: "success" for name in self.p.GATES}}
+        self.p.authorized(current)
+        self.p.authorized(self.context)  # Historical receipts remain readable.
+        for gates in ({**current["gates"], "unknown": "success"},
+                      {**current["gates"], "build": "failure"}):
+            with self.subTest(gates=gates), self.assertRaises(self.p.PublicationError):
+                self.p.authorized({**current, "gates": gates})
 
     def test_disallowed_main_pr_fork_tag_stale_malformed_and_failed_gates_have_no_effects(self):
         cases = [{"event": "pull_request"}, {"repository": "fork/v8std"},
@@ -225,7 +234,7 @@ class PublicationTests(unittest.TestCase):
                 self.assertNotIn("promote", self.adapter.effects)
 
     def test_real_host_ingress_journals_and_separate_reference_receipt(self):
-        import v8std_mcp_release as host
+        import delivery.vps.v8std_mcp_release as host
         root = Path(self.temp.name) / "controller"
         static = Path(self.temp.name) / "static"
         adapter = self.adapter
@@ -449,26 +458,29 @@ class Transport:
 
 class InputIdentityTests(unittest.TestCase):
     def setUp(self):
-        self.p = importlib.import_module("publish_mcp_artifacts")
+        self.p = importlib.import_module("delivery.ci.publish_mcp_artifacts")
         self.temp = tempfile.TemporaryDirectory(prefix="v8std-input-test-")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
         self.git("config", "user.name", "Input Test")
         self.git("config", "user.email", "input@example.invalid")
-        files = {"Dockerfile.mcp": "FROM pinned\nCOPY requirements-mcp.lock ./\nCOPY scripts/server.py scripts/imported.py ./scripts/\n",
-                 ".dockerignore": "**\n!scripts/\n", "requirements-mcp.lock": "runtime==1",
+        files = {"delivery/mcp/Dockerfile": "FROM pinned\nCOPY runtime/requirements-mcp.lock ./\nCOPY scripts/server.py scripts/imported.py ./scripts/\n",
+                 ".dockerignore": "**\n!scripts/\n", "runtime/requirements-mcp.lock": "runtime==1",
                  ".github/workflows/ci.yml": "pinned tools\n",
                  "scripts/server.py": "import imported\n", "scripts/imported.py": "VALUE = 1\n",
-                 "scripts/v8std_mcp_release.py": "host only", "docs/article.md": "article",
+                 "delivery/vps/v8std_mcp_release.py": "host only", "docs/article.md": "article",
                  "scripts/generate_ai_artifacts.py": "from generator_dep import VALUE\n",
                  "scripts/generator_dep.py": "VALUE = 1\n",
-                 "scripts/generate_search_vectors.py": "", "scripts/generate_mcp_snapshot.py": "",
+                 "scripts/generate_search_vectors.py": "", "delivery/index/generate_mcp_snapshot.py": "",
                  "scripts/zensical_docs.sh": '"${PYTHON_BIN}" "${SCRIPT_DIR}/publish_license_texts.py"\n',
-                 "scripts/publish_license_texts.py": "# producer\n", "scripts/build_local_site.py": "# local profile\n",
+                 "scripts/publish_license_texts.py": "# producer\n", "delivery/site/build_local_site.py": "# local profile\n",
                  "scripts/zensical-version.sh": "",
-                 "Dockerfile.ci": "FROM compression-pinned", "deploy/ci/fonts.sha256": "font",
+                 "delivery/ci/Dockerfile": "FROM compression-pinned", "delivery/ci/fonts.sha256": "font",
                  "requirements-build.lock": "builder==1", "zensical.toml": "config",
+                 "overrides/main.html": "template", "delivery/site/Dockerfile": "FROM pinned",
+                 "delivery/site/site.conf": "nginx",
+                 "data/diagnostic-sources.json": "{}", "data/acc-diagnostics.json": "{}",
                  "retrieval-rules.yml": "rules", "LICENSE": "license", "LICENSES/a.txt": "attribution"}
         for name, content in files.items():
             path = self.root / name
@@ -509,7 +521,7 @@ class InputIdentityTests(unittest.TestCase):
         self.assertEqual(base["corpus"], current["corpus"])
         state = {"runtime": {"input_id": current["runtime"], "source_sha": runtime_sha},
                  "corpus": {"input_id": base["corpus"], "source_sha": self.base}}
-        (self.root / "scripts/v8std_mcp_release.py").write_text("host change, not an image input")
+        (self.root / "delivery/vps/v8std_mcp_release.py").write_text("host change, not an image input")
         successor = self.commit()
         decision = self.p.choose_sources(successor, self.p.input_identities(self.root, successor), state)
         self.assertEqual(decision, {"runtime_sha": runtime_sha, "corpus_sha": self.base,
@@ -518,7 +530,8 @@ class InputIdentityTests(unittest.TestCase):
 
     def test_corpus_generator_import_closure_and_builder_change_are_content_inputs(self):
         base = self.p.input_identities(self.root, self.base)
-        for name in ("scripts/generator_dep.py", "deploy/ci/fonts.sha256", "Dockerfile.ci"):
+        for name in ("scripts/generator_dep.py", "delivery/ci/fonts.sha256", "delivery/ci/Dockerfile",
+                     "data/diagnostic-sources.json", "overrides/main.html", "delivery/site/Dockerfile"):
             with self.subTest(name=name):
                 with (self.root / name).open("a") as stream:
                     stream.write("\n# changed\n")
@@ -529,7 +542,7 @@ class InputIdentityTests(unittest.TestCase):
 
     def test_wrapper_invoked_producer_and_local_profile_are_in_source_closure(self):
         base = self.p.input_identities(self.root, self.base)
-        for name in ("scripts/publish_license_texts.py", "scripts/build_local_site.py"):
+        for name in ("scripts/publish_license_texts.py", "delivery/site/build_local_site.py"):
             with self.subTest(name=name):
                 with (self.root / name).open("a") as stream:
                     stream.write("# changed\n")
@@ -612,7 +625,7 @@ class InputIdentityTests(unittest.TestCase):
             self.p.last_published(self.root, self.base, 5001, "runtime", api, download)
 
     def test_actual_pr_cli_builds_source_plan_without_credentials_or_network(self):
-        result = subprocess.run([sys.executable, str(ROOT / "scripts/publish_mcp_artifacts.py"), "plan",
+        result = subprocess.run([sys.executable, "-m", "delivery.ci.publish_mcp_artifacts", "plan",
                                  "--root", str(self.root), "--directory", str(self.root / ".ci")],
                                 env={**os.environ, "GITHUB_EVENT_NAME": "pull_request", "GITHUB_SHA": self.base,
                                      "GITHUB_REPOSITORY": "zeegin/v8std", "GITHUB_REF": "refs/pull/1/merge",
@@ -715,7 +728,7 @@ class InputIdentityTests(unittest.TestCase):
 
 class TransportBoundaryTests(unittest.TestCase):
     def setUp(self):
-        self.p = importlib.import_module("publish_mcp_artifacts")
+        self.p = importlib.import_module("delivery.ci.publish_mcp_artifacts")
 
     def test_real_local_smoke_validates_inspect_array_for_both_platforms_and_cleans_failures(self):
         good = {"Config": {"User": "10001:10001", "Labels": {"org.opencontainers.image.revision": "d" * 40}},
@@ -1133,13 +1146,13 @@ class WorkflowTests(unittest.TestCase):
         return yaml.load((ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader)
 
     def test_snippet_gate_invokes_real_cli_with_the_accepted_historical_baseline(self):
-        import snippet_benchmark
+        import dev.checks.snippet_benchmark as snippet_benchmark
         steps = self.workflow()["jobs"]["validate"]["steps"]
         script = next(step["run"] for step in steps if step.get("id") == "benchmark")
         command = next(shlex.split(line) for line in script.splitlines()
-                       if "scripts/snippet_benchmark.py" in line)
+                       if "dev.checks.snippet_benchmark" in line)
         with tempfile.TemporaryDirectory(prefix="v8std-snippet-cli-") as directory:
-            argv = command[1:] + ["--report", str(Path(directory) / "report.json")]
+            argv = command[2:] + ["--report", str(Path(directory) / "report.json")]
             # Exercise argparse/report writing, but not thousands of latency samples here.
             with patch.object(sys, "argv", argv), \
                     patch.object(snippet_benchmark, "run", return_value={"passed": True, "gates": {}}) as run, \
@@ -1179,10 +1192,23 @@ class WorkflowTests(unittest.TestCase):
         publication = json.dumps(jobs["publish"])
         self.assertIn("MCP_IMAGE_PUBLICATION_ENABLED", publication)
         self.assertIn("MCP_CORPUS_PUBLICATION_ENABLED", publication)
-        self.assertIn("publish_mcp_artifacts.py", publication)
+        self.assertIn("delivery.ci.publish_mcp_artifacts", publication)
         self.assertIn("type=sbom,generator=", publication)
         self.assertIn("moby/buildkit@sha256:", publication)
         self.assertIn("tonistiigi/binfmt@sha256:", publication)
+
+    def test_site_only_publication_does_not_require_an_mcp_manifest(self):
+        steps = self.workflow()["jobs"]["publish"]["steps"]
+        dependent = [step for step in steps
+                     if any(command in step.get("run", "") for command in (" prepare-pages ", " finish "))
+                     or step.get("id") == "accepted"]
+        self.assertEqual(len(dependent), 3)
+        expected = " || ".join("vars." + name + " == 'true'" for name in (
+            "MCP_IMAGE_PUBLICATION_ENABLED", "MCP_CORPUS_PUBLICATION_ENABLED", "MCP_RUNTIME_DEPLOY_ENABLED"))
+        for step in dependent:
+            self.assertEqual(step["if"], expected)
+        pages = next(step for step in steps if step.get("uses", "").startswith("actions/deploy-pages@"))
+        self.assertNotIn("if", pages)
 
     def test_workflow_actual_actionlint(self):
         result = subprocess.run(["actionlint", "-color", ".github/workflows/ci.yml"], cwd=ROOT,

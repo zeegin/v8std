@@ -20,11 +20,11 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from generate_mcp_snapshot import build_snapshot
-from search_benchmark import collect_case_ids, read_case_payloads, run_ranked_case, run_diagnostics_case, percentile
-from v8std_mcp_index import V8StdIndex
-from v8std_mcp_runtime import SnapshotIndex, build_generation
-from v8std_mcp_snapshots import SnapshotCoordinator, SnapshotStore
+from delivery.index.generate_mcp_snapshot import build_snapshot
+from dev.checks.search_benchmark import collect_case_ids, read_case_payloads, run_ranked_case, run_diagnostics_case, percentile
+from runtime.v8std_mcp_index import V8StdIndex
+from runtime.v8std_mcp_runtime import SnapshotIndex, build_generation
+from runtime.v8std_mcp_snapshots import SnapshotCoordinator, SnapshotStore
 from tests.test_v8std_mcp_runtime import Current
 from tests.test_v8std_mcp_snapshots import Source
 from tests import mcp_snapshot_fixtures as fixture
@@ -130,7 +130,7 @@ def main():
             active = None
             for phase in ("cold", "warm", "same_hash", "new_generation", "slow_source"):
                 if phase == "new_generation":
-                    from v8std_mcp_snapshot_format import verify_archive
+                    from runtime.v8std_mcp_snapshot_format import verify_archive
                     files = dict(verify_archive(archive, manifest).files)
                     del files["metadata.json"]
                     files["llms.txt"] += b"\nBenchmark next generation\n"

@@ -45,7 +45,7 @@ class MonitoringRetirementTests(unittest.TestCase):
         for path in (config, web, indexes):
             path.mkdir(mode=0o755)
         for name in ("edge-http.conf", "edge-locations.conf"):
-            shutil.copyfile(ROOT / "deploy/container" / name, config / name)
+            shutil.copyfile(ROOT / "delivery/vps/nginx" / name, config / name)
         (config / "v8std-release").mkdir()
         (config / "v8std-release/upstream.conf").write_text(
             "server 127.0.0.1:9;\n", encoding="utf-8",

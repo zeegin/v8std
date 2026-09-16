@@ -12,13 +12,13 @@ from unittest.mock import patch
 from starlette.testclient import TestClient
 
 from tests import mcp_snapshot_fixtures as fixture
-from tests.test_v8std_mcp_runtime import Current, StdioProcess
+from tests.test_v8std_mcp_runtime import Current
 from tests.test_v8std_mcp_snapshots import Source
-from v8std_mcp_index import V8StdIndex
-from v8std_mcp_runtime import SnapshotIndex, build_generation
-from v8std_mcp_server import build_server
-from v8std_mcp_snapshot_format import verify_archive
-from v8std_mcp_snapshots import SnapshotStore
+from runtime.v8std_mcp_index import V8StdIndex
+from runtime.v8std_mcp_runtime import SnapshotIndex, build_generation
+from runtime.v8std_mcp_server import build_server
+from runtime.v8std_mcp_snapshot_format import verify_archive
+from runtime.v8std_mcp_snapshots import SnapshotStore
 
 
 TOOL_NAMES = ["v8std_search", "v8std_get_page", "v8std_get_related",
@@ -124,7 +124,12 @@ def assert_tool_catalog(test, rpc):
     tools = rpc.call("tools/list")["result"]["tools"]
     test.assertEqual([tool["name"] for tool in tools], TOOL_NAMES)
     for tool, (name, required, properties) in zip(tools, SCHEMAS):
-        test.assertEqual(tool["inputSchema"], {"properties": properties, "required": required,
+        schema = dict(tool["inputSchema"])
+        schema["properties"] = {}
+        for key, value in tool["inputSchema"]["properties"].items():
+            test.assertTrue(value.get("description"), (tool["name"], key))
+            schema["properties"][key] = {k: v for k, v in value.items() if k != "description"}
+        test.assertEqual(schema, {"properties": properties, "required": required,
                                               "title": name + "Arguments", "type": "object"})
         test.assertEqual(tool["outputSchema"], {"additionalProperties": True,
                                                "title": name + "DictOutput", "type": "object"})
@@ -196,37 +201,6 @@ class ToolsOnlyWireTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 405)
                 self.assertEqual(response.headers["allow"], "POST, HEAD")
 
-    def test_stdio_cold_and_ready_resources_fail_while_tools_keep_their_contract(self):
-        # Catches an HTTP-only filter; the actual launcher must enforce the same boundary.
-        source = Source()
-        source.fault = "headers"
-        self.addCleanup(source.close)
-        with tempfile.TemporaryDirectory() as directory:
-            client = StdioProcess(source.url, Path(directory))
-            try:
-                initialized = initialize(client)
-                with self.subTest(capabilities=True):
-                    self.assertNotIn("resources", initialized["result"]["capabilities"])
-                for state in ("cold", "ready"):
-                    with self.subTest(state=state):
-                        assert_tool_catalog(self, client)
-                        assert_resources_disabled(self, client)
-                        if state == "cold":
-                            self.assert_cold_tools(client)
-                            source.release.set()
-                            deadline = time.monotonic() + 8
-                            while True:
-                                result = client.call("tools/call", {"name": "v8std_get_page",
-                                    "arguments": {"id_or_alias_or_url": "std437"}})["result"]
-                                if not result.get("isError", False):
-                                    break
-                                self.assertIn("INDEX_NOT_READY", str(result))
-                                self.assertLess(time.monotonic(), deadline, "snapshot startup timeout")
-                                time.sleep(.02)
-                        else:
-                            self.assert_ready_tools(client, source.url)
-            finally:
-                client.close()
 
     def test_resource_rejection_never_accesses_data_or_starts_io(self):
         # Any data-facade lookup is a bug, even when its failure is masked as -32601.
@@ -243,8 +217,8 @@ class ToolsOnlyWireTests(unittest.TestCase):
         index = FailingDataFacade()
         with http_rpc(index) as rpc:
             initialize(rpc)
-            with patch("v8std_mcp_snapshots._download", side_effect=AssertionError("download")), \
-                 patch("v8std_mcp_snapshots._read_file", side_effect=AssertionError("cache read")), \
+            with patch("runtime.v8std_mcp_snapshots._download", side_effect=AssertionError("download")), \
+                 patch("runtime.v8std_mcp_snapshots._read_file", side_effect=AssertionError("cache read")), \
                  patch.object(V8StdIndex, "_fetch_url", side_effect=AssertionError("legacy fetch")):
                 assert_resources_disabled(self, rpc)
             self.assertEqual(index.accesses, [])
@@ -254,8 +228,8 @@ class ToolsOnlyGenerationTests(unittest.TestCase):
     def test_verified_generation_skips_bulk_formatting_and_survives_pickle(self):
         # Restoring eager full-corpus presentation must fail before it can be activated.
         snapshot = verify_archive(*fixture.snapshot_fixture())
-        with patch("v8std_mcp_runtime.present_result", side_effect=AssertionError("bulk formatting")), \
-             patch("v8std_mcp_runtime.present_markdown", create=True, side_effect=AssertionError("bulk markdown")), \
+        with patch("runtime.v8std_mcp_runtime.present_result", side_effect=AssertionError("bulk formatting")), \
+             patch("runtime.v8std_mcp_runtime.present_markdown", create=True, side_effect=AssertionError("bulk markdown")), \
              patch.object(V8StdIndex, "_fetch_url", side_effect=AssertionError("network")):
             generation = build_generation(snapshot, max_snippet_chars=4000)
             encoded = pickle.dumps(generation)
@@ -281,7 +255,7 @@ class ToolsOnlyGenerationTests(unittest.TestCase):
             self.assertEqual(archived.read_bytes(), source.archive)
             source.server.shutdown()
             source.server.server_close()
-            with patch("v8std_mcp_snapshots._download", side_effect=AssertionError("offline download")):
+            with patch("runtime.v8std_mcp_snapshots._download", side_effect=AssertionError("offline download")):
                 cached = SnapshotStore(source.url, cache).cached()
                 self.assertIsNotNone(cached)
                 self.assertEqual(set(cached.files),

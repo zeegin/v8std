@@ -10,7 +10,10 @@ import math
 import struct
 from pathlib import Path
 
-from v8std_mcp_chunks import MAX_CHUNK_CHARS, page_chunks
+try:
+    from scripts.v8std_mcp_chunks import MAX_CHUNK_CHARS, page_chunks
+except ModuleNotFoundError:  # Direct script invocation outside the package route.
+    from v8std_mcp_chunks import MAX_CHUNK_CHARS, page_chunks
 from v8std_retrieval_rules import tokenize
 from atomic_files import atomic_write_text
 

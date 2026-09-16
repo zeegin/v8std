@@ -25,7 +25,7 @@ from unittest.mock import patch
 
 from tests import mcp_snapshot_fixtures as fixture
 from tests.test_v8std_mcp_release import port
-import v8std_mcp_release as release
+import delivery.vps.v8std_mcp_release as release
 
 ROOT = Path(__file__).resolve().parents[1]
 NGINX = "sha256:dc5069ad14f19660b141b21236140b91656bf89bbc3e2417c70ae650cd66104c"
@@ -60,7 +60,7 @@ class DockerReleaseTests(unittest.TestCase):
                  for method in unittest.defaultTestLoader.getTestCaseNames(cls)]
         with tempfile.TemporaryDirectory(prefix="v8std-task5-legacy-source-") as temp:
             source = Path(temp)
-            for path in ("scripts/v8std_mcp_server.py", "scripts/v8std_mcp_index.py",
+            for path in ("runtime/v8std_mcp_server.py", "runtime/v8std_mcp_index.py",
                          "scripts/v8std_retrieval_rules.py", "retrieval-rules.yml"):
                 target = source / path
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -110,7 +110,7 @@ class DockerReleaseTests(unittest.TestCase):
             for path in (config, static, source):
                 path.mkdir(mode=0o755)
             for filename in ("edge-http.conf", "edge-locations.conf"):
-                shutil.copyfile(ROOT / "deploy/container" / filename, config / filename)
+                shutil.copyfile(ROOT / "delivery/vps/nginx" / filename, config / filename)
             (config / "v8std-release").mkdir()
             upstream = config / "v8std-release/upstream.conf"
             upstream.write_text("server 127.0.0.1:9 max_conns=8;\n")
@@ -133,7 +133,7 @@ class DockerReleaseTests(unittest.TestCase):
                 # Native Linux root writer with the recovery service's umask.
                 # Only this disposable named volume is writable; no Docker socket.
                 code = ("import os,sys,json; from pathlib import Path; "
-                        "sys.path.insert(0,'/opt/v8std/scripts'); import v8std_mcp_release as r; "
+                        "sys.path.insert(0,'/opt/v8std/scripts'); import delivery.vps.v8std_mcp_release as r; "
                         "os.umask(0o077); p=Path('/state/slots/runtime/control'); ")
                 if unreadable:
                     code += "os.chmod(p/'control.json',0); print('{}')"
@@ -147,7 +147,7 @@ class DockerReleaseTests(unittest.TestCase):
                     "--memory=128m", "--memory-swap=128m", "--cpus=1", "--pids-limit=128",
                     "--label=pro.v8std.test=task5", "--tmpfs=/tmp:rw,noexec,nosuid,size=64m",
                     "--mount", f"type=volume,source={control_volume},target=/state",
-                    "--mount", f"type=bind,source={ROOT / 'scripts/v8std_mcp_release.py'},target=/opt/v8std/scripts/v8std_mcp_release.py,readonly",
+                    "--mount", f"type=bind,source={ROOT / 'delivery/vps/v8std_mcp_release.py'},target=/opt/v8std/delivery/vps/v8std_mcp_release.py,readonly",
                     "--entrypoint=python", RUNTIME, "-I", "-c", code)
                 return json.loads(result.stdout)
 
@@ -199,7 +199,7 @@ class DockerReleaseTests(unittest.TestCase):
                     CURRENT_RUNTIME, "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000",
                     "--site-url", source_url, "--refresh-seconds", "1", "--allowed-host", "127.0.0.1")
                 expected = {}
-                definition = (ROOT / "Dockerfile.mcp").read_text().replace("\\\n", " ")
+                definition = (ROOT / "delivery/mcp/Dockerfile").read_text().replace("\\\n", " ")
                 for line in definition.splitlines():
                     if not line.startswith("COPY "):
                         continue

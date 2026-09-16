@@ -18,10 +18,10 @@ from tests.test_v8std_mcp_snapshots import Source
 from tests.test_v8std_mcp_release_hold import eventually
 from tests.mcp_release_fixture import ProcessAdapter, BootstrapAdapter, bootstrap_environment, prepare_legacy, LEGACY_SHA
 from tests import mcp_snapshot_fixtures as fixture
-import v8std_mcp_release as release
+import delivery.vps.v8std_mcp_release as release
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT))
 
 
 def envelope(**changes):
@@ -100,7 +100,7 @@ class EnvelopeTests(unittest.TestCase):
                     self.assertEqual(run.call_count, 1)
                     self.assertEqual(run.call_args.args[0][1], "inspect")
     def test_root_policy_static_only_activation_and_immutable_trust(self):
-        policy = json.loads((ROOT / "deploy/container/release-policy.example.json").read_text())
+        policy = json.loads((ROOT / "delivery/vps/release-policy.example.json").read_text())
         with self.assertRaisesRegex(release.ReleaseError, "not_activated"):
             release.validate_policy(policy)
         policy["enabled"] = True
@@ -119,7 +119,7 @@ class EnvelopeTests(unittest.TestCase):
     def test_ci_entry_rejects_bootstrap_internal_commands_and_shell_syntax(self):
         for command in ("bootstrap", "bootstrap-recover", "bootstrap-status", "_deploy", "_index",
                         "deploy --policy /tmp/x", "status; id", "scp -t /etc", "internal-sftp"):
-            result = subprocess.run([sys.executable, "-I", str(ROOT / "deploy/container/release-entry.py")],
+            result = subprocess.run([sys.executable, "-I", str(ROOT / "delivery/vps/release-entry.py")],
                 env={"SSH_ORIGINAL_COMMAND": command}, capture_output=True, timeout=2)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn(b"restricted command", result.stderr)
@@ -133,12 +133,12 @@ class EnvelopeTests(unittest.TestCase):
         self.assertNotIn("--pipe", argv)
         self.assertNotIn("--wait", argv)
         self.assertEqual(argv[-1], "_deploy")
-        unit = (ROOT / "deploy/container/v8std-release-recover.service").read_text()
+        unit = (ROOT / "delivery/vps/v8std-release-recover.service").read_text()
         self.assertIn("Type=exec\n", unit)
         self.assertIn("RuntimeMaxSec=300s\n", unit)
     def module(self):
-        self.assertIsNotNone(importlib.util.find_spec("v8std_mcp_release"))
-        return importlib.import_module("v8std_mcp_release")
+        self.assertIsNotNone(importlib.util.find_spec("delivery.vps.v8std_mcp_release"))
+        return importlib.import_module("delivery.vps.v8std_mcp_release")
 
     def test_strict_unprivileged_envelope_boundary(self):
         release = self.module()
@@ -186,7 +186,7 @@ class EnvelopeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "injected"
             request = envelope() | {"release_id": "$(touch " + str(target) + ")"}
-            result = subprocess.run([sys.executable, "-I", str(ROOT / "scripts/v8std_mcp_release.py"), "validate-envelope"],
+            result = subprocess.run([sys.executable, "-I", str(ROOT / "delivery/vps/v8std_mcp_release.py"), "validate-envelope"],
                                     input=release.canonical_json(request) + b"\n", capture_output=True, timeout=5)
             self.assertEqual(result.returncode, 1)
             self.assertFalse(target.exists())
@@ -383,6 +383,138 @@ class SmokeBoundaryTests(unittest.TestCase):
             self.assertEqual(release.rpc("http://fixture", "tools/list", {}, self.deadline, 1), {"tools": []})
 
 
+class PublicationOrderingTests(unittest.TestCase):
+    """Ordering is enforced by real ingestion and Publisher, including recovery."""
+
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root, self.store = Path(temp.name) / "state", Path(temp.name) / "objects"
+        self.archive, self.manifest = fixture.snapshot_fixture()
+        self.manifest["archive"]["path"] = "https://ai.v8std.ru/indexes/v1/" + self.manifest["archive"]["path"]
+        self.publisher = release.Publisher(self.root, self.store)
+        self.transport = patch.object(release, "run", self.command)
+        self.transport.start()
+        self.addCleanup(self.transport.stop)
+
+    def command(self, argv, deadline, **kwargs):
+        if argv[:3] == ["gh", "attestation", "verify"]:
+            self.assertIn("--deny-self-hosted-runners", argv)
+            self.assertEqual(argv[argv.index("--source-ref") + 1], "refs/heads/main")
+            return b"[]"
+        if argv[:2] == ["gh", "api"]:
+            sha = argv[2].split("/compare/")[1].split("...")[0]
+            return json.dumps({"status": "behind" if sha == "c" * 40 else "identical",
+                               "merge_base_commit": {"sha": sha}}).encode()
+        self.fail("unexpected external transport")
+
+    def header(self, identity, sequence, action="publish", **changes):
+        return dict(schema_version=1, publication_id=identity, sequence=sequence,
+                    trigger_sha="b" * 40, manifest=self.manifest,
+                    deadline=int(time.time()) + 300, action=action) | changes
+
+    def ingest(self, header):
+        with tempfile.TemporaryFile() as stream:
+            stream.write(release.canonical_json(header) + b"\n")
+            if header["action"] == "publish":
+                stream.write(self.archive)
+            stream.seek(0)
+            return release.ingest(self.root, self.store, stream.fileno())
+
+    def history(self):
+        headers = [self.header("current", 36), self.header("ack", 37, "reference"),
+                   self.header("failed-latest", 41, trigger_sha="c" * 40)]
+        for header in headers:
+            self.ingest(header)
+            result = self.publisher.recover()
+        self.assertEqual(result["state"], "FAILED")
+        return headers
+
+    def test_failed_watermark_rejects_older_equal_and_keeps_exact_duplicates(self):
+        headers = self.history()
+        before = (self.root / "current-index.json").read_bytes()
+        for sequence in (40, 41):
+            with self.subTest(sequence=sequence), self.assertRaisesRegex(release.ReleaseError, "stale_sequence"):
+                self.ingest(self.header("new-" + str(sequence), sequence))
+        self.assertFalse((self.root / "publications/new-40.json").exists())
+        for header, state in zip(headers, ("COMMITTED", "COMMITTED", "FAILED")):
+            self.assertEqual(self.ingest(header)["state"], state)
+        with self.assertRaisesRegex(release.ReleaseError, "mutated_duplicate"):
+            self.ingest(headers[0] | {"sequence": 43})
+        self.assertEqual(self.ingest(self.header("new-42", 42))["state"], "QUEUED")
+        self.assertEqual(self.publisher.recover()["state"], "COMMITTED")
+        self.assertEqual((self.root / "current-index.json").read_bytes(), before)
+
+    def test_unverified_queued_request_cannot_bypass_later_failed_history(self):
+        headers = self.history()
+        old = headers[0]
+        release.write_json(self.root / "publications/current.json", {"header": old, "state": "RECEIVED"})
+        with self.assertRaisesRegex(release.ReleaseError, "stale_sequence"):
+            self.publisher.publish(old)
+
+    def test_verified_reconciliation_and_terminal_duplicate_keep_later_pointer(self):
+        headers = self.history()
+        for state in ("VERIFIED", "RECOVERY_REQUIRED", "COMMITTED"):
+            release.write_json(self.root / "publications/current.json", {"header": headers[0], "state": state})
+            self.assertEqual(self.publisher.publish(headers[0])["state"], "COMMITTED")
+            self.assertEqual(release.read_record(self.root / "current-index.json")["sequence"], 37)
+
+    def test_handoff_marker_cannot_replace_missing_history_or_allow_partial_import(self):
+        self.history()
+        marker = dict(schema_version=1, handoff_sha256="a" * 64, state="PREPARED", publication_sequence=41)
+        for change in ({}, {"state": "BROKEN"}, {"state": "COMMITTED", "publication_sequence": 40},
+                       {"state": "COMMITTED", "extra": True}, {"schema_version": True}):
+            release.write_json(self.root / "handoff-import.json", marker | change)
+            with self.subTest(change=change), self.assertRaises(release.ReleaseError):
+                self.ingest(self.header("new-42", 42))
+        release.write_json(self.root / "handoff-import.json", marker | {"state": "COMMITTED"})
+        self.assertEqual(self.ingest(self.header("new-42", 42))["state"], "QUEUED")
+
+    def test_unknown_corrupt_misnamed_and_duplicate_sequence_history_fail_closed(self):
+        headers = self.history()
+        path = self.root / "publications/failed-latest.json"
+        original = path.read_bytes()
+        for change in ({"state": "UNKNOWN"}, {"header": headers[2] | {"sequence": 36}},
+                       {"header": headers[2] | {"publication_id": "wrong-id"}}, {"unexpected": 1}):
+            release.write_json(path, {"header": headers[2], "state": "FAILED"} | change)
+            with self.subTest(change=change), self.assertRaises(release.ReleaseError):
+                self.ingest(self.header("new-42", 42))
+            path.write_bytes(original)
+
+    def test_killed_atomic_receipt_writer_does_not_poison_durable_history(self):
+        headers = self.history()
+        code = '''
+import os, sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import delivery.vps.v8std_mcp_release as r
+path = Path(sys.argv[2])
+record = r.read_record(path)
+def die(*args): os._exit(73)
+r.os.replace = die
+r.write_json(path, record)
+'''
+        result = subprocess.run([sys.executable, "-I", "-c", code, str(ROOT),
+            str(self.root / "publications/failed-latest.json")], capture_output=True, timeout=5)
+        self.assertEqual(result.returncode, 73, result.stderr)
+        self.assertEqual(len(list((self.root / "publications").glob(".write-*"))), 1)
+        self.assertEqual(self.ingest(self.header("new-42", 42))["state"], "QUEUED")
+        self.assertEqual(self.publisher.recover()["state"], "COMMITTED")
+        self.assertEqual(self.ingest(headers[2])["state"], "FAILED")
+
+    def test_more_than_ten_thousand_receipts_do_not_permanently_stop_publication(self):
+        self.history()
+        directory = self.root / "publications"
+        for sequence in range(42, 10043):
+            header = self.header("failed-" + str(sequence), sequence)
+            (directory / (header["publication_id"] + ".json")).write_bytes(
+                json.dumps({"header": header, "state": "FAILED"}).encode())
+        with self.assertRaisesRegex(release.ReleaseError, "stale_sequence"):
+            self.ingest(self.header("stale", 10042))
+        self.assertEqual(self.ingest(self.header("next", 10043))["state"], "QUEUED")
+        self.assertEqual(self.publisher.recover()["state"], "COMMITTED")
+
+
 class IngressTests(unittest.TestCase):
     def test_committed_publication_survives_inbox_cleanup_exception(self):
         self.ingest()
@@ -392,7 +524,7 @@ class IngressTests(unittest.TestCase):
             for after_unlink in (False, True):
                 with self.subTest(action=action, after_unlink=after_unlink):
                     header = self.header | {"publication_id": f"{action}-{int(after_unlink)}",
-                        "action": action, "sequence": 10 + int(after_unlink)}
+                        "action": action, "sequence": (20 if action == "reference" else 10) + int(after_unlink)}
                     if action == "publish" and not after_unlink:
                         header = self.header
                     else:
@@ -450,7 +582,7 @@ class IngressTests(unittest.TestCase):
 import os, sys
 from pathlib import Path
 sys.path.insert(0, sys.argv[1])
-import v8std_mcp_release as r
+import delivery.vps.v8std_mcp_release as r
 root = Path(sys.argv[2])
 original = r.write_json
 def crash(path, value):
@@ -460,7 +592,7 @@ def crash(path, value):
 r.write_json = crash
 r.ingest(root, root / 'static', sys.stdin.fileno())
 '''
-        result = subprocess.run([sys.executable, "-I", "-c", code, str(ROOT / "scripts"), str(self.root)],
+        result = subprocess.run([sys.executable, "-I", "-c", code, str(ROOT), str(self.root)],
             input=release.canonical_json(self.header) + b"\n" + self.archive, capture_output=True, timeout=5)
         self.assertEqual(result.returncode, 73, result.stderr)
         self.assertFalse((self.root / "pending-index.json").exists())
@@ -481,7 +613,7 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
         self.ingest()
         publisher = release.Publisher(self.root, self.root / "static", lambda *args: None)
         publisher.publish(self.header)
-        reference = self.header | {"publication_id": "reference-1", "action": "reference"}
+        reference = self.header | {"publication_id": "reference-1", "action": "reference", "sequence": 2}
         self.ingest(reference, b"")
         def reject(*args):
             raise release.ReleaseError("main_ancestry")
@@ -508,7 +640,7 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
         self.assertEqual(publisher.recover()["state"], "COMMITTED")
         query = {"schema_version": 1, "kind": "publication", "id": header["publication_id"]}
         self.assertEqual(release.query_status(self.root, None, query)["state"], "COMMITTED")
-        reference = header | {"publication_id": "ref-1", "action": "reference"}
+        reference = header | {"publication_id": "ref-1", "action": "reference", "sequence": 2}
         self.assertEqual(self.ingest(reference, b"")["state"], "QUEUED")
         self.assertEqual(publisher.recover()["state"], "COMMITTED")
         self.assertEqual(self.ingest(header)["state"], "COMMITTED")
@@ -523,7 +655,7 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
         archive = self.root / "static" / self.header["manifest"]["archive"]["sha256"] / "snapshot.tar.gz"
         self.assertEqual(archive.read_bytes(), self.archive)
         self.assertFalse(list((self.root / "static").glob(".upload-*")))
-        reference = self.header | {"publication_id": "reference-1", "action": "reference"}
+        reference = self.header | {"publication_id": "reference-1", "action": "reference", "sequence": 2}
         self.ingest(reference, b"")
         self.assertEqual(publisher.publish(reference)["state"], "COMMITTED")
         self.assertEqual(json.loads((self.root / "current-index.json").read_text()), reference)
@@ -592,7 +724,7 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
         publisher.publish(self.header)
         outcome = release.query_status(self.root, None, query)
         self.assertEqual((outcome["publication_id"], outcome["sequence"], outcome["state"]), ("content-1", 1, "COMMITTED"))
-        reference = self.header | {"publication_id": "reference-1", "action": "reference"}
+        reference = self.header | {"publication_id": "reference-1", "action": "reference", "sequence": 2}
         query["id"] = "reference-1"
         self.assertEqual(release.query_status(self.root, None, query)["state"], "NOT_FOUND")
         self.ingest(reference, b"")
@@ -611,8 +743,8 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
         self.ingest(reference, b"")
         publisher.publish(reference)
         stale = reference | {"publication_id": "stale", "sequence": 2}
-        self.ingest(stale, b"")
-        self.assertEqual(publisher.recover()["state"], "FAILED")
+        with self.assertRaisesRegex(release.ReleaseError, "stale_sequence"):
+            self.ingest(stale, b"")
         self.assertEqual(json.loads((self.root / "current-index.json").read_text()), reference)
         release.write_json(self.root / "pins.json", {"archives": []})
         self.assertEqual(publisher.gc(now=time.time() + 8 * 86400), [])
@@ -700,9 +832,8 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
         reused = self.publish_retention_fixture(publisher, "a", 5, now)
         self.assertEqual(reused["manifest"], a["manifest"])
         before = {p.name: p.read_bytes() for p in (self.root / "references").iterdir()}
-        self.reference_retention_fixture(publisher, a, 3, now, enqueue_only=True)
-        with patch.object(release.time, "time", return_value=now):
-            self.assertEqual(publisher.recover()["state"], "FAILED")
+        with self.assertRaisesRegex(release.ReleaseError, "stale_sequence"):
+            self.reference_retention_fixture(publisher, a, 3, now, enqueue_only=True)
         self.assertEqual(release.read_record(self.root / "current-index.json"), current)
         self.assertEqual({p.name: p.read_bytes() for p in (self.root / "references").iterdir()}, before)
         release.write_json(self.root / "pins.json", {"archives": []})
@@ -717,7 +848,7 @@ r.ingest(root, root / 'static', sys.stdin.fileno())
 import os,sys
 from pathlib import Path
 sys.path.insert(0, sys.argv[1])
-import v8std_mcp_release as r
+import delivery.vps.v8std_mcp_release as r
 root, cut, when, now = Path(sys.argv[2]), sys.argv[3], sys.argv[4], int(sys.argv[5])
 r.time.time = lambda: now
 original = r.write_json
@@ -745,7 +876,7 @@ r.Publisher(root, root / 'static', lambda *args: None).recover()
                     keys = [h["manifest"]["archive"]["sha256"] for h in (a, b, c, d)]
                     target = ("references/" + keys[1 if cut == "b" else 2] + ".json"
                               if cut != "current-index.json" else cut)
-                    died = subprocess.run([sys.executable, "-I", "-c", code, str(ROOT / "scripts"), str(self.root),
+                    died = subprocess.run([sys.executable, "-I", "-c", code, str(ROOT), str(self.root),
                                            target, when, str(later)], capture_output=True, timeout=5)
                     self.assertEqual(died.returncode, 73, died.stderr)
                     release.write_json(self.root / "pins.json", {"archives": []})
@@ -810,11 +941,11 @@ class BootstrapBoundaryTests(unittest.TestCase):
         for name, expected in (("legacy-release-guard.conf", release.LEGACY_GUARD),
                                ("v8std-bootstrap-recover.service", release.BOOTSTRAP_SERVICE),
                                ("v8std-bootstrap-recover.timer", release.BOOTSTRAP_TIMER)):
-            self.assertEqual((ROOT / "deploy/container" / name).read_text(), expected)
+            self.assertEqual((ROOT / "delivery/vps" / name).read_text(), expected)
         self.assertNotIn("Before=v8std-mcp.service", release.BOOTSTRAP_SERVICE)
         self.assertNotIn("ExecStart=", release.LEGACY_GUARD)  # Original legacy command preserved.
         for command in ("bootstrap", "bootstrap-status", "bootstrap-recover", "_bootstrap", "_legacy-allowed"):
-            result = subprocess.run([sys.executable, "-I", str(ROOT / "deploy/container/release-entry.py")],
+            result = subprocess.run([sys.executable, "-I", str(ROOT / "delivery/vps/release-entry.py")],
                 env={"SSH_ORIGINAL_COMMAND": command}, capture_output=True, timeout=2)
             self.assertNotEqual(result.returncode, 0)
 

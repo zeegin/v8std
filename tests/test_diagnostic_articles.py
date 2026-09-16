@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts.diagnostic_articles import (
+from dev.content.diagnostic_articles import (
     SourceEntry,
     SourceFamily,
     content_sha256,
@@ -104,7 +104,7 @@ class DiagnosticArticleCoreTests(unittest.TestCase):
 class DiagnosticArticleRenderingTests(unittest.TestCase):
     def test_verify_checkout_revision_rejects_wrong_sha(self):
         checkout = Path("/tmp/source-checkout")
-        with patch("scripts.diagnostic_articles.subprocess.run") as run:
+        with patch("dev.content.diagnostic_articles.subprocess.run") as run:
             run.return_value.stdout = "1" * 40 + "\n"
 
             with self.assertRaisesRegex(ValueError, "checkout revision mismatch"):
@@ -266,7 +266,7 @@ https://example.com/source
             acc_path.write_text("ACC remains unchanged.\n", encoding="utf-8")
             acc_before = acc_path.read_bytes()
 
-            with patch("scripts.diagnostic_articles.verify_checkout_revision") as verify:
+            with patch("dev.content.diagnostic_articles.verify_checkout_revision") as verify:
                 written = synchronize_articles(
                     repo_root=repo,
                     checkouts={"bslls": bslls, "v8-code-style": edt},
@@ -302,8 +302,7 @@ class DiagnosticArticleRepositoryTests(unittest.TestCase):
     def test_offline_integrity_verifier_checks_all_committed_articles_and_proposals(self):
         result = subprocess.run(
             [
-                sys.executable,
-                str(REPO_ROOT / "scripts/check_diagnostic_articles.py"),
+                sys.executable, "-m", "dev.checks.check_diagnostic_articles",
                 "--root",
                 str(REPO_ROOT),
             ],
@@ -322,7 +321,9 @@ class DiagnosticArticleRepositoryTests(unittest.TestCase):
             root = Path(directory)
             (root / "data").mkdir()
             for name in ("diagnostic-sources.json", "diagnostic-standard-links.json"):
-                shutil.copy2(REPO_ROOT / "data" / name, root / "data" / name)
+                relative = Path("data" if name == "diagnostic-sources.json" else "dev/content/data") / name
+                (root / relative).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(REPO_ROOT / relative, root / relative)
             for family in ("bslls", "v8-code-style"):
                 shutil.copytree(
                     REPO_ROOT / "docs/diagnostics" / family,
@@ -338,8 +339,7 @@ class DiagnosticArticleRepositoryTests(unittest.TestCase):
 
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(REPO_ROOT / "scripts/check_diagnostic_articles.py"),
+                    sys.executable, "-m", "dev.checks.check_diagnostic_articles",
                     "--root",
                     str(root),
                 ],

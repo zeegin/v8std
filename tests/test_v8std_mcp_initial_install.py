@@ -529,7 +529,7 @@ class InitialBoundaryTests(unittest.TestCase):
             with patch.object(sys, "argv", ["release", command]), patch.object(os, "geteuid", return_value=1001):
                 with self.assertRaisesRegex(release.ReleaseError, "host_privilege"):
                     release.main()
-            result = subprocess.run([sys.executable, "-I", str(ROOT / "deploy/container/release-entry.py")],
+            result = subprocess.run([sys.executable, "-I", str(ROOT / "delivery/vps/release-entry.py")],
                 env={"SSH_ORIGINAL_COMMAND": command}, capture_output=True, timeout=3)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn(b"restricted command", result.stderr)

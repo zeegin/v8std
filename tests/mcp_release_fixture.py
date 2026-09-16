@@ -17,7 +17,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-import v8std_mcp_release as release
+import delivery.vps.v8std_mcp_release as release
 
 LEGACY_SHA = "b7bef11e145a188b30e7a7b17df2be4cb1acbd0c"
 
@@ -448,8 +448,8 @@ if __name__ == "__main__":
             except Exception as error:
                 print(json.dumps({"state": "REJECTED", "error_code": getattr(error, "code", "host_failure")}))
     elif mode == "runtime":
-        from v8std_mcp_runtime import SnapshotIndex
-        from v8std_mcp_server import build_server
+        from runtime.v8std_mcp_runtime import SnapshotIndex
+        from runtime.v8std_mcp_server import build_server
         port, site_url, sha, behavior = args
         index = SnapshotIndex(site_url=site_url, cache_dir=directory / "cache", runtime_sha=sha,
                               refresh_seconds=1, release_control=directory / "control" / "control.json")

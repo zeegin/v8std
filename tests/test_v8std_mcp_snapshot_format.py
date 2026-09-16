@@ -26,9 +26,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 class SnapshotFormatTests(unittest.TestCase):
     def modules(self):
-        self.assertIsNotNone(importlib.util.find_spec("generate_mcp_snapshot"))
-        return (importlib.import_module("v8std_mcp_snapshot_format"),
-                importlib.import_module("generate_mcp_snapshot"))
+        self.assertIsNotNone(importlib.util.find_spec("delivery.index.generate_mcp_snapshot"))
+        return (importlib.import_module("runtime.v8std_mcp_snapshot_format"),
+                importlib.import_module("delivery.index.generate_mcp_snapshot"))
 
     def verify_rejected(self, archive, manifest, code=None):
         fmt, _ = self.modules()
@@ -41,7 +41,7 @@ class SnapshotFormatTests(unittest.TestCase):
 
     def test_00_producer_exists_and_rebuilds_identical_archive(self):
         # This assertion must run before any production module import in RED.
-        self.assertIsNotNone(importlib.util.find_spec("generate_mcp_snapshot"))
+        self.assertIsNotNone(importlib.util.find_spec("delivery.index.generate_mcp_snapshot"))
         fmt, producer = self.modules()
         with tempfile.TemporaryDirectory() as directory:
             docs = Path(directory)
@@ -326,7 +326,7 @@ class SnapshotFormatTests(unittest.TestCase):
 
     def test_chunk_boundaries_match_existing_generator_without_reembedding(self):
         fmt, _ = self.modules()
-        generator = importlib.import_module("generate_search_vectors")
+        generator = importlib.import_module("scripts.generate_search_vectors")
         for length in [2194, 2195, 2196, 2197, 2198, 2199, 2200, 2201, 4400]:
             with self.subTest(length=length):
                 page = fixture.page_fixture()
@@ -341,9 +341,9 @@ class SnapshotFormatTests(unittest.TestCase):
                 fmt.verify_archive(archive, manifest)
 
     def test_chunk_rule_is_shared_and_generator_exports_remain_available(self):
-        self.assertIsNotNone(importlib.util.find_spec("v8std_mcp_chunks"))
-        chunks = importlib.import_module("v8std_mcp_chunks")
-        generator = importlib.import_module("generate_search_vectors")
+        self.assertIsNotNone(importlib.util.find_spec("scripts.v8std_mcp_chunks"))
+        chunks = importlib.import_module("scripts.v8std_mcp_chunks")
+        generator = importlib.import_module("scripts.generate_search_vectors")
         fmt, _ = self.modules()
         self.assertIs(generator.page_chunks, chunks.page_chunks)
         self.assertIs(fmt.page_chunks, chunks.page_chunks)
@@ -353,7 +353,7 @@ class SnapshotFormatTests(unittest.TestCase):
         self.assertIsInstance(generator.page_chunks(fixture.page_fixture()), list)
 
     def test_chunk_rule_preserves_independent_boundary_examples(self):
-        generator = importlib.import_module("generate_search_vectors")
+        generator = importlib.import_module("scripts.generate_search_vectors")
         self.assertEqual(generator.page_chunks({}), [])
         cases = [
             (" \n\n \n", []),
@@ -370,7 +370,7 @@ class SnapshotFormatTests(unittest.TestCase):
                                  [("metadata", 0, "std437 Запросы Параметры #std437"), *expected])
 
     def test_vector_regeneration_preserves_exact_current_corpus_bytes(self):
-        generator = importlib.import_module("generate_search_vectors")
+        generator = importlib.import_module("scripts.generate_search_vectors")
         rows = generator.generate_rows(ROOT / "docs/ai/pages.jsonl")
         regenerated = ("\n".join(rows) + "\n").encode("utf-8")
         self.assertEqual(regenerated, (ROOT / "docs/ai/search-vectors.jsonl").read_bytes())
@@ -378,11 +378,11 @@ class SnapshotFormatTests(unittest.TestCase):
     def test_shared_chunks_and_reader_load_without_generator_or_external_packages(self):
         result = subprocess.run(
             [sys.executable, "-S", "-c",
-             "import sys; import v8std_mcp_chunks as chunks; "
-             "import v8std_mcp_snapshot_format as fmt; "
+             "import sys; import scripts.v8std_mcp_chunks as chunks; "
+             "import runtime.v8std_mcp_snapshot_format as fmt; "
              "assert fmt.page_chunks is chunks.page_chunks; "
              "assert chunks.page_chunks({}) == []; "
-             "assert not {'yaml', 'PIL', 'generate_search_vectors', 'generate_ai_artifacts'} & sys.modules.keys()"],
+             "assert not {'yaml', 'PIL', 'scripts.generate_search_vectors', 'scripts.generate_ai_artifacts'} & sys.modules.keys()"],
             env={**os.environ, "PYTHONPATH": str(ROOT / "scripts")}, capture_output=True, text=True,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -616,7 +616,7 @@ class SnapshotFormatTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture.write_docs(root / "docs")
-            command = [sys.executable, str(ROOT / "scripts/generate_mcp_snapshot.py"),
+            command = [sys.executable, "-m", "delivery.index.generate_mcp_snapshot",
                        "--docs", str(root / "docs"), "--output", str(root / "output"),
                        "--source-sha", fixture.SOURCE_SHA]
             environment = {**os.environ, "V8STD_MCP_SITE_URL": ""}
@@ -633,13 +633,13 @@ class SnapshotFormatTests(unittest.TestCase):
         self.modules()
         environment = {**os.environ, "PYTHONPATH": str(ROOT / "scripts")}
         result = subprocess.run([sys.executable, "-S", "-c",
-                                 "import v8std_mcp_snapshot_format"],
+                                 "import runtime.v8std_mcp_snapshot_format as v8std_mcp_snapshot_format"],
                                 env=environment, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture.write_docs(root / "docs")
-            command = [sys.executable, str(ROOT / "scripts/generate_mcp_snapshot.py"),
+            command = [sys.executable, "-m", "delivery.index.generate_mcp_snapshot",
                        "--docs", str(root / "docs"), "--output", str(root / "output"),
                        "--source-sha", fixture.SOURCE_SHA, "--site-url", fixture.SITE_URL]
             result = subprocess.run(command, env=environment, capture_output=True, text=True)
@@ -659,7 +659,7 @@ class SnapshotFormatTests(unittest.TestCase):
         original_pages = [json.loads(line) for line in (ROOT / "docs/ai/pages.jsonl").read_bytes().splitlines()]
         pages = [json.loads(line) for line in verified.files["pages.jsonl"].splitlines()]
         self.assertEqual(len(pages), len(original_pages))
-        generator = importlib.import_module("generate_search_vectors")
+        generator = importlib.import_module("scripts.generate_search_vectors")
         expected_hashes = {(p["id"], field, index): hashlib.sha256(text.encode()).hexdigest()
                            for p in original_pages for field, index, text in generator.page_chunks(p)}
         for page, original in zip(pages, original_pages):

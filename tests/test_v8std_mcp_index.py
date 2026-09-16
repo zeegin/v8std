@@ -16,7 +16,7 @@ import sys
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from v8std_mcp_index import (  # noqa: E402
+from runtime.v8std_mcp_index import (  # noqa: E402
     IndexLoadError,
     VECTOR_DIM,
     V8StdIndex,
@@ -408,7 +408,7 @@ class V8StdMcpIndexTests(unittest.TestCase):
                 self.offset += len(chunk)
                 return chunk
 
-        with patch("v8std_mcp_index.urlopen", return_value=FakeResponse(b"x" * 11)):
+        with patch("runtime.v8std_mcp_index.urlopen", return_value=FakeResponse(b"x" * 11)):
             with self.assertRaises(IndexLoadError):
                 V8StdIndex()._fetch_url("https://example.test/index.jsonl", max_bytes=10)
 

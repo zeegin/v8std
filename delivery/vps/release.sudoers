@@ -1,0 +1,8 @@
+# Install with visudo -cf validation. No wildcards or editable interpreter paths.
+Cmnd_Alias V8STD_RELEASE = /usr/bin/python3 -I /opt/v8std-release/delivery/vps/v8std_mcp_release.py validate-envelope, \
+ /usr/bin/python3 -I /opt/v8std-release/delivery/vps/v8std_mcp_release.py deploy, \
+ /usr/bin/python3 -I /opt/v8std-release/delivery/vps/v8std_mcp_release.py recover, \
+ /usr/bin/python3 -I /opt/v8std-release/delivery/vps/v8std_mcp_release.py status, \
+ /usr/bin/python3 -I /opt/v8std-release/delivery/vps/v8std_mcp_release.py publish-index
+v8std-publisher ALL=(root) NOPASSWD: V8STD_RELEASE
+Defaults!V8STD_RELEASE !setenv

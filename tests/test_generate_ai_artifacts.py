@@ -18,7 +18,7 @@ UI_DESIGN_NAV_SECTIONS = {
 
 
 def load_module():
-    spec = importlib.util.spec_from_file_location("generate_ai_artifacts", SCRIPT_PATH)
+    spec = importlib.util.spec_from_file_location("scripts.generate_ai_artifacts", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)

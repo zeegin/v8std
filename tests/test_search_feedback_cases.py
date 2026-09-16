@@ -8,7 +8,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from search_feedback_cases import (  # noqa: E402
+from dev.checks.search_feedback_cases import (  # noqa: E402
     build_feedback_cases,
     sanitize_query,
     write_feedback_report,

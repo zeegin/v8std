@@ -13,7 +13,7 @@ from tests import mcp_snapshot_fixtures as corpus
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-import v8std_mcp_release as release
+import delivery.vps.v8std_mcp_release as release
 
 HOST_LOG = Path("/var/log/v8std-mcp/tool-usage.jsonl")
 CONTAINER_LOG = "/var/log/v8std-mcp-usage.jsonl"
@@ -121,7 +121,7 @@ def native_observe():
 
 
 def native_rotate():
-    stanza = (ROOT / "scripts/v8std_mcp_usage.logrotate").read_text()
+    stanza = (ROOT / "delivery/vps/v8std_mcp_usage.logrotate").read_text()
     config = Path("/fixture/logrotate.conf")
     config.write_text(stanza.replace("/var/lib/v8std-mcp/tool-usage.jsonl", "/fixture/legacy/tool-usage.jsonl")
                      .replace("/var/log/v8std-mcp/tool-usage.jsonl", "/fixture/logs/tool-usage.jsonl"))

@@ -87,7 +87,7 @@ class LoggingLaunchTests(unittest.TestCase):
             "    daily\n    rotate 365\n    compress\n    missingok\n    notifempty\n"
             "    copytruncate\n    su root root\n}\n"
         )
-        path = Path(__file__).resolve().parents[1] / "scripts/v8std_mcp_usage.logrotate"
+        path = Path(__file__).resolve().parents[1] / "delivery/vps/v8std_mcp_usage.logrotate"
         self.assertEqual(path.read_bytes(), expected.encode())
 
 

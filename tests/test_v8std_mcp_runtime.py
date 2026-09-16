@@ -2,20 +2,15 @@
 from functools import partial
 import importlib
 import importlib.util
-import json
 import contextlib
 import io
 import os
 from pathlib import Path
 import pickle
-import queue
-import signal
-import select
 import socket
 import subprocess
 import sys
 import tempfile
-import threading
 import time
 import unittest
 from unittest.mock import patch
@@ -29,7 +24,7 @@ LOCAL = "http://localhost:8080/kb/"
 
 
 def verified():
-    from v8std_mcp_snapshot_format import verify_archive
+    from runtime.v8std_mcp_snapshot_format import verify_archive
     return verify_archive(*fixture.snapshot_fixture())
 
 
@@ -46,12 +41,12 @@ class Current:
 
 class RuntimeTests(unittest.TestCase):
     def module(self):
-        self.assertIsNotNone(importlib.util.find_spec("v8std_mcp_runtime"))
-        return importlib.import_module("v8std_mcp_runtime")
+        self.assertIsNotNone(importlib.util.find_spec("runtime.v8std_mcp_runtime"))
+        return importlib.import_module("runtime.v8std_mcp_runtime")
 
     def test_frozen_factory_and_ipc_reconstruction_never_load_sources(self):
         runtime = self.module()
-        from v8std_mcp_index import V8StdIndex
+        from runtime.v8std_mcp_index import V8StdIndex
         with patch.object(V8StdIndex, "_fetch_url", side_effect=AssertionError("network")):
             generation = runtime.build_generation(verified(), max_snippet_chars=4000)
             encoded = pickle.dumps(generation)
@@ -68,7 +63,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_generation_capture_pins_nested_calls_and_returns_independent_copy(self):
         runtime = self.module()
-        from v8std_mcp_index import V8StdIndex
+        from runtime.v8std_mcp_index import V8StdIndex
         old = runtime.build_generation(verified(), max_snippet_chars=4000, site_url=LOCAL)
         new = runtime.build_generation(verified(), max_snippet_chars=4000, site_url=LOCAL)
         current = Current(old)
@@ -114,7 +109,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_full_link_is_rebased_before_existing_body_budget_is_applied(self):
         runtime = self.module()
-        from v8std_mcp_snapshot_format import verify_archive
+        from runtime.v8std_mcp_snapshot_format import verify_archive
         body = "x" * 965 + " [boundary](https://v8std.ru/std/437/?query=yes#anchor) end"
         page = fixture.page_fixture()
         page["body_markdown"] = body
@@ -135,7 +130,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_official_http_discovery_before_ready_and_session_end_does_not_close_index(self):
         runtime = self.module()
-        from v8std_mcp_server import build_server
+        from runtime.v8std_mcp_server import build_server
         from starlette.testclient import TestClient
         from tests.test_v8std_mcp_snapshots import Source
         source = Source()
@@ -167,7 +162,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_tools_serve_warm_page_through_slow_and_corrupt_refresh(self):
         runtime = self.module()
-        from v8std_mcp_snapshots import SnapshotStore
+        from runtime.v8std_mcp_snapshots import SnapshotStore
         from tests.test_v8std_mcp_snapshots import Source
         from tests.test_v8std_mcp_tools_only import http_rpc, initialize, call_tool, assert_resources_disabled
         for fault in (None, "corrupt"):
@@ -211,7 +206,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_verified_warm_generation_becomes_ready_with_source_offline(self):
         runtime = self.module()
-        from v8std_mcp_snapshots import SnapshotStore
+        from runtime.v8std_mcp_snapshots import SnapshotStore
         from tests.test_v8std_mcp_snapshots import Source
         source = Source()
         try:
@@ -258,8 +253,16 @@ class RuntimeTests(unittest.TestCase):
 
 
 class ConfigurationTests(unittest.TestCase):
+    def test_http_is_only_supported_transport(self):
+        from runtime.v8std_mcp_server import parse_args
+        self.assertEqual(parse_args([]).transport, "streamable-http")
+        self.assertEqual(parse_args(["--transport", "streamable-http"]).transport, "streamable-http")
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:
+            parse_args(["--transport", "stdio"])
+        self.assertEqual(error.exception.code, 2)
+
     def test_cache_cli_env_default_precedence_and_early_invalid_inputs(self):
-        from v8std_mcp_server import parse_args, main
+        from runtime.v8std_mcp_server import parse_args, main
         with patch.dict(os.environ, {}, clear=True):
             self.assertEqual(parse_args([]).cache_dir, Path("/var/lib/v8std-mcp"))
         with patch.dict(os.environ, {"V8STD_MCP_CACHE_DIR": "/tmp/env-cache"}, clear=True):
@@ -275,8 +278,8 @@ class ConfigurationTests(unittest.TestCase):
             with self.subTest(argv=argv, environment=environment), \
                  patch.dict(os.environ, environment, clear=True), \
                  contextlib.redirect_stderr(io.StringIO()), \
-                 patch("v8std_mcp_server.SnapshotIndex", side_effect=AssertionError("source construction")), \
-                 patch("v8std_mcp_server.V8StdIndex", side_effect=AssertionError("source construction")):
+                 patch("runtime.v8std_mcp_server.SnapshotIndex", side_effect=AssertionError("source construction")), \
+                 patch("runtime.v8std_mcp_server.V8StdIndex", side_effect=AssertionError("source construction")):
                 with self.assertRaises(SystemExit):
                     main(argv)
         with patch.dict(os.environ, {}, clear=True):
@@ -284,7 +287,7 @@ class ConfigurationTests(unittest.TestCase):
                 self.assertEqual(parse_args(["--port", str(port)]).port, port)
 
     def test_site_default_precedence_and_explicit_legacy_mode(self):
-        from v8std_mcp_server import parse_args
+        from runtime.v8std_mcp_server import parse_args
         with patch.dict(os.environ, {}, clear=True):
             args = parse_args([])
             self.assertEqual(getattr(args, "site_url", None), "https://v8std.ru/")
@@ -298,12 +301,12 @@ class ConfigurationTests(unittest.TestCase):
                              "https://example.org/kb/")
 
     def test_ambiguous_or_empty_configuration_fails_without_loading(self):
-        from v8std_mcp_server import main
+        from runtime.v8std_mcp_server import main
         for argv in (["--site-url", ""], ["--site-url", LOCAL, "--index-url", "http://secret.invalid/x"],
                      ["--site-url", LOCAL, "--pages", "private-path"], ["--refresh-seconds", "-1"]):
             with self.subTest(argv=argv), patch.dict(os.environ, {}, clear=True), \
                  contextlib.redirect_stderr(io.StringIO()) as stderr, \
-                 patch("v8std_mcp_server.V8StdIndex.load", side_effect=AssertionError("source load")):
+                 patch("runtime.v8std_mcp_server.V8StdIndex.load", side_effect=AssertionError("source load")):
                 with self.assertRaises(SystemExit):
                     main(argv)
                 self.assertNotIn("private-path", stderr.getvalue())
@@ -311,7 +314,7 @@ class ConfigurationTests(unittest.TestCase):
 
 
 def frozen_real_index(maximum=4000):
-    from v8std_mcp_index import V8StdIndex
+    from runtime.v8std_mcp_index import V8StdIndex
     return V8StdIndex.from_validated_bytes((ROOT / "docs/ai/pages.jsonl").read_bytes(),
         (ROOT / "docs/ai/search-vectors.jsonl").read_bytes(), max_snippet_chars=maximum)
 
@@ -329,215 +332,10 @@ class FrozenLargeSnippetCompatibility(snippet_compat.LargeSnippetTests):
         cls.large = frozen_real_index(32000)
 
 
-class StdioProcess:
-    def __init__(self, site, cache, *extra):
-        self.process = subprocess.Popen([sys.executable, str(ROOT / "scripts/v8std_mcp_server.py"),
-            "--transport", "stdio", "--site-url", site, "--cache-dir", str(cache),
-            "--refresh-seconds", "0", *extra], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, text=True, env={**os.environ, "NO_PROXY": "127.0.0.1,localhost"})
-        self.lines = queue.Queue()
-        self.thread = threading.Thread(target=self._read, daemon=True)
-        self.thread.start()
-        self.number = 0
-
-    def _read(self):
-        for line in self.process.stdout:
-            self.lines.put(line)
-
-    def call(self, method, params=None):
-        self.number += 1
-        self.process.stdin.write(json.dumps({"jsonrpc": "2.0", "id": self.number,
-                                            "method": method, "params": params or {}}) + "\n")
-        self.process.stdin.flush()
-        result = json.loads(self.lines.get(timeout=5))
-        if result.get("id") != self.number:
-            raise AssertionError(result)
-        return result
-
-    def notify(self, method, params=None):
-        self.process.stdin.write(json.dumps({"jsonrpc": "2.0", "method": method,
-                                            "params": params or {}}) + "\n")
-        self.process.stdin.flush()
-
-    def close(self):
-        if self.process.poll() is None:
-            self.process.terminate()
-        try:
-            self.process.wait(5)
-        except subprocess.TimeoutExpired:
-            self.process.kill()
-            self.process.wait(3)
-            raise
-        self.thread.join(1)
-        for stream in (self.process.stdin, self.process.stdout, self.process.stderr):
-            stream.close()
-
-
-@contextlib.contextmanager
-def measured_output_pipe():
-    """Measure the actual test pipe to EAGAIN, then hand its drained writer to the child."""
-    read_fd, write_fd = os.pipe()
-    with os.fdopen(read_fd, "rb", buffering=0) as output, os.fdopen(write_fd, "wb", buffering=0) as writer:
-        os.set_blocking(write_fd, False)
-        capacity = 0
-        try:
-            while capacity < 16 * 1024 * 1024:
-                capacity += os.write(write_fd, b"x" * 65536)
-            raise AssertionError("test pipe did not reach backpressure")
-        except BlockingIOError:
-            pass
-        remaining = capacity
-        while remaining:
-            remaining -= len(os.read(read_fd, remaining))
-        os.set_blocking(write_fd, True)
-        yield output, writer, capacity
 
 
 class WireTests(unittest.TestCase):
-    def test_stdio_large_response_drained_and_backpressured_shutdown_cleans_workers(self):
-        from tests.test_v8std_mcp_snapshots import Source
-        from v8std_mcp_snapshots import SnapshotStore
-        source = Source()
-        payload = "\U0001f600" * 12000
-        page = fixture.page_fixture()
-        page["body_markdown"] = payload
-        vectors = fixture.vector_fixtures()
-        vectors[1]["text_sha256"] = fixture.sha256(payload.encode())
-        files = fixture.corpus_files(pages=[page], vectors=vectors)
-        source.archive, source.manifest = fixture.snapshot_fixture(files=fixture.with_metadata(files))
-        try:
-            for shutdown in ("drained-eof", "eof", "sigterm"):
-                with self.subTest(shutdown=shutdown), tempfile.TemporaryDirectory() as directory, \
-                     measured_output_pipe() as (output, writer, capacity):
-                    source.fault = None
-                    SnapshotStore(source.url, Path(directory)).refresh()
-                    source.requested.clear()
-                    source.release.clear()
-                    source.fault = "headers"
-                    process = subprocess.Popen([sys.executable, str(ROOT / "scripts/v8std_mcp_server.py"),
-                        "--transport", "stdio", "--site-url", source.url, "--cache-dir", directory,
-                        "--refresh-seconds", "0"], stdin=subprocess.PIPE, stdout=writer,
-                        stderr=subprocess.PIPE, bufsize=0, start_new_session=True)
-                    writer.close()
-                    number, buffer = 0, bytearray()
 
-                    def send(method, params):
-                        nonlocal number
-                        number += 1
-                        process.stdin.write((json.dumps({"jsonrpc": "2.0", "id": number,
-                            "method": method, "params": params}) + "\n").encode())
-
-                    def response():
-                        deadline = time.monotonic() + 8
-                        while b"\n" not in buffer:
-                            remaining = deadline - time.monotonic()
-                            self.assertGreater(remaining, 0, "protocol response timeout")
-                            self.assertTrue(select.select([output], [], [], remaining)[0])
-                            block = os.read(output.fileno(), 65536)
-                            self.assertTrue(block, "unexpected protocol EOF")
-                            buffer.extend(block)
-                        end = buffer.index(b"\n") + 1
-                        line = bytes(buffer[:end])
-                        del buffer[:end]
-                        result = json.loads(line)
-                        self.assertEqual(result["id"], number, "stdout must contain only SDK frames")
-                        return result, len(line)
-
-                    try:
-                        send("initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
-                            "clientInfo": {"name": "backpressure", "version": "1"}})
-                        self.assertIn("serverInfo", response()[0]["result"])
-                        process.stdin.write(b'{"jsonrpc":"2.0","method":"notifications/initialized"}\n')
-                        self.assertTrue(source.requested.wait(5))
-                        # Warm-cache generation is ready before the blocked refresh.
-                        send("tools/call", {"name": "v8std_search", "arguments": {"query": "std437"}})
-                        self.assertFalse(response()[0]["result"].get("isError", False))
-                        children = [int(row.split(None, 2)[0])
-                            for row in subprocess.check_output(["ps", "-axo", "pid=,ppid=,command="], text=True).splitlines()
-                            if row.split(None, 2)[1] == str(process.pid) and "spawn_main" in row]
-                        self.assertTrue(children, "exercise shutdown with an active spawn worker")
-                        arguments = {"name": "v8std_get_page", "arguments": {"id_or_alias_or_url": "std437"}}
-                        send("tools/call", arguments)
-                        reply, encoded_bytes = response()
-                        result = reply["result"]
-                        self.assertFalse(result.get("isError", False))
-                        self.assertEqual(result["structuredContent"]["page"]["body_markdown"], payload)
-                        self.assertFalse(result["structuredContent"]["page"]["body_truncated"])
-                        self.assertEqual(json.loads(result["content"][0]["text"]), result["structuredContent"])
-                        self.assertGreater(encoded_bytes, capacity + 64,
-                                           "real SDK tool frame must exceed the measured pipe capacity")
-                        if shutdown != "drained-eof":
-                            send("tools/call", arguments)
-                            self.assertTrue(select.select([output], [], [], 5)[0])
-                            # Drain only 64 bytes of the same measured response; the rest cannot fit.
-                            self.assertTrue(os.read(output.fileno(), 64).startswith(b'{"jsonrpc"'))
-                            time.sleep(.1)
-                        started = time.monotonic()
-                        if shutdown == "sigterm":
-                            process.send_signal(signal.SIGTERM)
-                        else:
-                            process.stdin.close()
-                        try:
-                            process.wait(3)
-                        except subprocess.TimeoutExpired:
-                            self.fail("backpressured tool response prevented bounded " + shutdown + " shutdown")
-                        self.assertEqual(process.returncode, 0)
-                        self.assertLess(time.monotonic() - started, 3)
-                        for pid in children:
-                            with self.assertRaises(ProcessLookupError):
-                                os.kill(pid, 0)
-                    finally:
-                        source.release.set()
-                        if process.poll() is None:
-                            # Only this test's new session; no worker orphan on RED.
-                            os.killpg(process.pid, signal.SIGKILL)
-                            process.wait(3)
-                        for stream in (process.stdin, process.stderr):
-                            stream.close()
-        finally:
-            source.close()
-
-    def test_stdio_initialize_not_ready_eof_and_sigterm_clean_workers(self):
-        from tests.test_v8std_mcp_snapshots import Source
-        from tests.test_v8std_mcp_tools_only import initialize, assert_resources_disabled
-        source = Source()
-        source.fault = "headers"
-        try:
-            for shutdown in ("eof", "sigterm"):
-                with self.subTest(shutdown=shutdown), tempfile.TemporaryDirectory() as directory:
-                    client = StdioProcess(source.url, Path(directory))
-                    try:
-                        started = time.monotonic()
-                        init = initialize(client, "task3-fixture")
-                        self.assertEqual(init["result"]["serverInfo"]["name"], "v8std")
-                        self.assertLess(time.monotonic() - started, 3)
-                        self.assertEqual(len(client.call("tools/list")["result"]["tools"]), 5)
-                        self.assertNotIn("resources", init["result"]["capabilities"])
-                        assert_resources_disabled(self, client)
-                        result = client.call("tools/call", {"name": "v8std_search", "arguments": {"query": "std437"}})
-                        self.assertTrue(result["result"]["isError"])
-                        self.assertIn("INDEX_NOT_READY", str(result))
-                        self.assertTrue(source.requested.wait(3))
-                        child_rows = subprocess.check_output(["ps", "-axo", "pid=,ppid=,command="], text=True)
-                        children = [int(row.split(None, 2)[0]) for row in child_rows.splitlines()
-                                    if row.split(None, 2)[1] == str(client.process.pid)
-                                    and "spawn_main" in row]
-                        self.assertTrue(children)
-                        started = time.monotonic()
-                        if shutdown == "eof":
-                            client.process.stdin.close()
-                        else:
-                            client.process.send_signal(signal.SIGTERM)
-                        self.assertEqual(client.process.wait(4), 0)
-                        self.assertLess(time.monotonic() - started, 3)
-                        for pid in children:
-                            with self.assertRaises(ProcessLookupError):
-                                os.kill(pid, 0)
-                        self.assertTrue(client.lines.empty(), "stdout contains non-protocol output")
-                    finally:
-                        client.close()
-        finally:
-            source.close()
 
     def test_loopback_http_slow_bootstrap_then_two_agents_with_tools_only(self):
         import httpx
@@ -550,7 +348,7 @@ class WireTests(unittest.TestCase):
                 reservation.bind(("127.0.0.1", 0))
                 port = reservation.getsockname()[1]
                 reservation.close()
-                process = subprocess.Popen([sys.executable, str(ROOT / "scripts/v8std_mcp_server.py"),
+                process = subprocess.Popen([sys.executable, "-m", "runtime.v8std_mcp_server",
                     "--site-url", source.url, "--cache-dir", directory, "--port", str(port),
                     "--refresh-seconds", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 try:

@@ -7,8 +7,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-import scripts.acc_diagnostics as acc_diagnostics
-from scripts.acc_diagnostics import (
+import dev.content.acc_diagnostics as acc_diagnostics
+from dev.content.acc_diagnostics import (
     build_link_reviews,
     extract_catalog,
     generate,
@@ -535,10 +535,11 @@ class AccRenderingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "data").mkdir()
+            (root / "dev/content/data").mkdir(parents=True)
             (root / "docs/diagnostics/acc").mkdir(parents=True)
             (root / "docs/std").mkdir(parents=True)
             (root / "data/acc-diagnostics.json").write_text(json.dumps(catalog), encoding="utf-8")
-            (root / "data/acc-standard-link-overrides.json").write_text(
+            (root / "dev/content/data/acc-standard-link-overrides.json").write_text(
                 json.dumps({"version": 1, "overrides": []}), encoding="utf-8"
             )
             stale = root / "docs/diagnostics/acc/456.md"
@@ -574,10 +575,11 @@ class AccRenderingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "data").mkdir()
+            (root / "dev/content/data").mkdir(parents=True)
             (root / "docs/diagnostics/acc").mkdir(parents=True)
             (root / "docs/std").mkdir(parents=True)
             (root / "data/acc-diagnostics.json").write_text(json.dumps(catalog), encoding="utf-8")
-            (root / "data/acc-standard-link-overrides.json").write_text(
+            (root / "dev/content/data/acc-standard-link-overrides.json").write_text(
                 json.dumps({"version": 1, "overrides": []}), encoding="utf-8"
             )
             stale = root / "docs/diagnostics/acc/456.md"
@@ -617,10 +619,11 @@ class AccRenderingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "data").mkdir()
+            (root / "dev/content/data").mkdir(parents=True)
             (root / "docs/diagnostics/acc").mkdir(parents=True)
             (root / "docs/std").mkdir(parents=True)
             (root / "data/acc-diagnostics.json").write_text(json.dumps(catalog), encoding="utf-8")
-            (root / "data/acc-standard-link-overrides.json").write_text(
+            (root / "dev/content/data/acc-standard-link-overrides.json").write_text(
                 json.dumps({"version": 1, "overrides": []}), encoding="utf-8"
             )
             stale = root / "docs/diagnostics/acc/456.md"
@@ -657,6 +660,7 @@ class AccRenderingTests(unittest.TestCase):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 (root / "data").mkdir()
+                (root / "dev/content/data").mkdir(parents=True)
                 acc = root / "docs/diagnostics/acc"
                 acc.mkdir(parents=True)
                 (root / "docs/std").symlink_to(
@@ -666,8 +670,8 @@ class AccRenderingTests(unittest.TestCase):
                     json.dumps(catalog, ensure_ascii=False), encoding="utf-8"
                 )
                 shutil.copy2(
-                    REPO_ROOT / "data/acc-standard-link-overrides.json",
-                    root / "data/acc-standard-link-overrides.json",
+                    REPO_ROOT / "dev/content/data/acc-standard-link-overrides.json",
+                    root / "dev/content/data/acc-standard-link-overrides.json",
                 )
                 existing = acc / "1.md"
                 stale = acc / "999999.md"
@@ -701,10 +705,11 @@ class AccRenderingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "data").mkdir()
+            (root / "dev/content/data").mkdir(parents=True)
             (root / "docs/diagnostics/acc").mkdir(parents=True)
             (root / "docs/std").mkdir(parents=True)
             (root / "data/acc-diagnostics.json").write_text(json.dumps(catalog), encoding="utf-8")
-            (root / "data/acc-standard-link-overrides.json").write_text(
+            (root / "dev/content/data/acc-standard-link-overrides.json").write_text(
                 json.dumps({"version": 1, "overrides": []}), encoding="utf-8"
             )
 
@@ -733,10 +738,11 @@ class AccRenderingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "data").mkdir()
+            (root / "dev/content/data").mkdir(parents=True)
             (root / "docs/diagnostics/acc").mkdir(parents=True)
             (root / "docs/std").mkdir(parents=True)
             (root / "data/acc-diagnostics.json").write_text(json.dumps(catalog), encoding="utf-8")
-            (root / "data/acc-standard-link-overrides.json").write_text(
+            (root / "dev/content/data/acc-standard-link-overrides.json").write_text(
                 json.dumps({"version": 1, "overrides": []}), encoding="utf-8"
             )
 

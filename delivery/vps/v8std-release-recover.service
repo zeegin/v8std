@@ -1,0 +1,19 @@
+[Unit]
+Description=Reconcile v8std release journal and durable inbox
+After=docker.service nginx.service network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/v8std-release/policy.json
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/python3 -I /opt/v8std-release/delivery/vps/v8std_mcp_release.py _recover
+RuntimeMaxSec=300s
+TimeoutStopSec=5s
+KillMode=control-group
+UMask=0077
+LimitNOFILE=4096
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectHome=yes
+# Host-owned job intentionally needs narrow Docker/nginx authority. The SSH
+# identity has no Docker group/socket access and can invoke only fixed verbs.

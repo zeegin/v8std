@@ -14,8 +14,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 class LoadProfileTests(unittest.TestCase):
     def setUp(self):
-        self.assertIsNotNone(importlib.util.find_spec("check_mcp_load"))
-        self.load = importlib.import_module("check_mcp_load")
+        self.assertIsNotNone(importlib.util.find_spec("dev.checks.check_mcp_load"))
+        self.load = importlib.import_module("dev.checks.check_mcp_load")
 
     def test_mix_exercises_all_five_tools_without_resource_data_calls(self):
         requests = [self.load.request(index) for index in range(20)]
@@ -68,15 +68,18 @@ class LoadProfileTests(unittest.TestCase):
                 self.assertFalse(self.load.valid_reply("page", json.dumps(value).encode()))
         self.assertFalse(self.load.valid_reply("page", b"event: message\ndata: " + json.dumps(good).encode()))
 
-    def test_edge_retains_admission_budgets_and_only_translates_fixture_transport(self):
+    def test_edge_uses_delivery_configuration_with_only_fixture_upstream_replaced(self):
         config = self.load.edge_config("mcp-a")
-        for value in ("rate=100r/s", "burst=400", "max_conns=2048", "keepalive 256", "limit_req_status 429",
-                      "limit_conn_status 503", "limit_conn v8std_mcp_connections 40000"):
-            self.assertIn(value, config)
-        self.assertIn("server mcp-a:8000 max_conns=2048", config)
-        self.assertNotIn("ssl_certificate", config)
+        root = Path(__file__).resolve().parents[1]
+        http = (root / "delivery/vps/nginx/edge-http.conf").read_text().replace(
+            "include /etc/nginx/v8std-release/upstream.conf;", "server mcp-a:8000;")
+        locations = (root / "delivery/vps/nginx/edge-locations.conf").read_text()
+        self.assertIn(http, config)
+        self.assertIn(locations, config)
         self.assertIn("listen 8000;", config)
-        self.assertNotIn("listen 443", config)
+        self.assertNotIn("include /etc/nginx/v8std-release/upstream.conf;", config)
+        with self.assertRaises(ValueError):
+            self.load.edge_config("foreign-upstream")
 
     def test_readonly_edge_places_all_nginx_temporary_directories_on_owned_tmpfs(self):
         config = self.load.edge_config("mcp-a")
@@ -85,7 +88,7 @@ class LoadProfileTests(unittest.TestCase):
             self.assertIn(f"{directive}_temp_path /tmp/{directory};", config)
 
     def test_local_evidence_preserves_finite_latency_numbers_without_relaxing_snapshot_json(self):
-        from v8std_mcp_snapshot_format import canonical_json, SnapshotError
+        from runtime.v8std_mcp_snapshot_format import canonical_json, SnapshotError
         report = {"duration_seconds": 60.125, "data": {"success_p95_seconds": .234}}
         with tempfile.TemporaryDirectory(prefix="v8std-load-report-") as directory:
             output = Path(directory) / "evidence/report.json"
