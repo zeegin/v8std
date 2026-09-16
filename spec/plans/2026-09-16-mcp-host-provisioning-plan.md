@@ -191,6 +191,12 @@ Service verifier credentials are created separately under the fixed release HOME
 by the operator, not copied from their personal account. check reports controlled
 missing-auth code if gh attestation, upstream main access or registry verification
 fails; no raw output or credential echo. Runtime CI remains disabled regardless.
+Before apply, operator may create only the standard root-private gh/Docker
+credential files under that HOME. Preflight explicitly recognizes those owned
+credential paths without reading their content into the plan or journal; they
+are not a foreign publication/runtime store. Missing credentials may permit
+package staging, but prevent final source verification and COMMITTED setup.
+Re-running apply after the separate credential step resumes its own journal.
 
 `prepare-runtime` requires COMMITTED provision and COMMITTED handoff import,
 exact matching runtime artifact identity (source/index/platform/config/corpus,
