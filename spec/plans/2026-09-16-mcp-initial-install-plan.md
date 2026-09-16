@@ -61,7 +61,7 @@ HostAdapter методы, без переноса или переписыван�
 - Existing `bootstrap_prepared(candidate, deadline)` may supply the preloaded exact image/archive check; if renamed to a neutral private helper, retain the bootstrap wrapper and tests.
 - `Controller.recover` dispatches `kind: initial-install` before ordinary/legacy logic; `schedule` allows initial-install only for root CLI. Received initial attempts found by recovery fail closed and require a new ID after cleanup, rather than inventing acceptance.
 
-- [ ] **Step 1: Write behavioral RED tests using real journals and runtime smoke.**
+- [x] **Step 1: Write behavioral RED tests using real journals and runtime smoke.**
 
 Build a fixture around the existing process runtime and edge; substitute only
 host OS/Docker/systemd boundaries. The actual controller, journal writes,
@@ -90,7 +90,7 @@ restricted entry reject initial verbs for publisher identity. Failed retry needs
 confirmed cleanup and higher sequence, while COMMITTED forever prohibits a second
 initial attempt. Public index archive remains readable during maintenance.
 
-- [ ] **Step 2: Observe RED.**
+- [x] **Step 2: Observe RED.**
 
 Run `python -m unittest tests.test_v8std_mcp_initial_install -v` using the
 verified locked dependency interpreter selected for this checkout. Start with
@@ -98,7 +98,7 @@ an assertion that the required controller/CLI behavior exists so absence is a
 clear assertion failure, not an unrelated fixture/import failure. Record command,
 failure and missing behavior in the private execution report.
 
-- [ ] **Step 3: Implement the durable state machine and bounded host adapters.**
+- [x] **Step 3: Implement the durable state machine and bounded host adapters.**
 
 Use the existing common release lock and `Controller.existing` duplicate logic.
 Check genuine empty-host predicates for a new ID. Save a RECEIVED journal before
@@ -132,7 +132,7 @@ the accepted container if stopped/missing and confirms public service before
 repairing pointer/resuming. Ordinary later releases supersede initial history:
 recovery must not switch back to the first image after a newer accepted release.
 
-- [ ] **Step 4: Add crash, uncertain-write and boundary regressions.**
+- [x] **Step 4: Add crash, uncertain-write and boundary regressions.**
 
 Inject process exits after each durable transition and before/after candidate
 start, switch, COMMITTED write and active pointer write. Recreate controller and
@@ -154,7 +154,7 @@ self.assertFalse(adapter.inspect(candidate, deadline)['State']['Running'])
 Here edge and adapter belong to the real-process fixture, and error paths use
 explicit before/after fault points. Do not substitute a canned healthy smoke.
 
-- [ ] **Step 5: Focused GREEN, self-review and scoped independent review.**
+- [x] **Step 5: Focused GREEN, self-review and scoped independent review.**
 
 Run `python -m unittest tests.test_v8std_mcp_initial_install tests.test_v8std_mcp_release tests.test_v8std_mcp_tools_only -v`.
 Record actual counts and skips; distinguish process-fixture proof from real-host
