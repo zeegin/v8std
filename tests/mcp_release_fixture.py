@@ -349,6 +349,12 @@ def serve_edge(root, port):
             connection = None
             try:
                 target = json.loads((root / "edge.json").read_text())["port"]
+                if target is None:
+                    self.send_response(503)
+                    self.send_header("Retry-After", "1")
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
                 connection = http.client.HTTPConnection("127.0.0.1", target, timeout=3)
                 body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
                 connection.request(self.command, self.path, body, dict(self.headers))

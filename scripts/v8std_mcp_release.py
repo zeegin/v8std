@@ -51,6 +51,8 @@ LEGACY_PYTHON = Path("/usr/bin/python3.12")
 LEGACY_CACHE = {"pages.jsonl", "search-vectors.jsonl", "llms.txt", "llms-full.txt"}
 RESTORE_STAGE = ".v8std-release-restore-v1"
 BOOTSTRAP_WINDOW = Path("/etc/v8std-release/bootstrap.json")
+INITIAL_INSTALL_AUTH = Path("/etc/v8std-release/initial-install.json")
+MAINTENANCE_UPSTREAM = b"server 127.0.0.1:9 down;\n"
 LEGACY_GUARD = ("[Unit]\nRequires=v8std-bootstrap-recover.timer\nAfter=v8std-bootstrap-recover.timer\n"
     "\n[Service]\nExecCondition=+/usr/bin/python3 -I /opt/v8std-release/scripts/v8std_mcp_release.py _legacy-allowed\n")
 BOOTSTRAP_SERVICE = ("[Unit]\nDescription=Recover operator v8std first migration independently of SSH\n"
@@ -68,6 +70,7 @@ STOP = 45
 # Rollback gets a live budget even if preparation uses its entire work allowance.
 # 90 ready + 30 smoke + 45 stop + 15 nginx/control overhead.
 RECOVERY_RESERVE = 180
+INITIAL_RECOVERY_RESERVE = 60
 TERMINAL = {"FAILED", "ROLLED_BACK", "COMMITTED", "RECOVERY_REQUIRED"}
 ID = re.compile(r"[a-z0-9][a-z0-9-]{0,63}\Z")
 HEX = re.compile(r"[0-9a-f]{64}\Z")
@@ -512,14 +515,22 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise ReleaseError("http_redirect")
 
 
-def _http(url, deadline, body, limit):
+def _http(url, deadline, body, limit, maintenance=False):
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
     request = urllib.request.Request(url, data=body, headers={
         "Content-Type": "application/json", "Accept": "application/json, text/event-stream",
         "Accept-Encoding": "identity"})
     try:
-        with opener.open(request, timeout=remaining(deadline, 3)) as response:
-            require(response.status == 200, "http_status")
+        try:
+            response = opener.open(request, timeout=remaining(deadline, 3))
+        except urllib.error.HTTPError as error:
+            # urllib raises for the very 503 that establishes maintenance.
+            response = error
+        with response:
+            require(response.status == (503 if maintenance else 200), "http_status")
+            if maintenance:
+                retry = response.headers.get("Retry-After", "")
+                require(retry.isdigit() and 0 < int(retry) <= 300, "maintenance_retry")
             raw = response.read(limit + 1)
             require(len(raw) <= limit, "http_size")
             remaining(deadline)
@@ -528,21 +539,21 @@ def _http(url, deadline, body, limit):
         raise ReleaseError("http_failed") from None
 
 
-def _http_worker(channel, url, deadline, body, limit):
+def _http_worker(channel, url, deadline, body, limit, maintenance=False):
     try:
-        channel.send_bytes(b"1" + _http(url, deadline, body, limit))
+        channel.send_bytes(b"1" + _http(url, deadline, body, limit, maintenance))
     except Exception:
         channel.send_bytes(b"0")
     finally:
         channel.close()
 
 
-def http(url, deadline, *, body=None, limit=1024 * 1024):
+def http(url, deadline, *, body=None, limit=1024 * 1024, maintenance=False):
     # DNS and drip-fed bodies cannot spend rollback's reserved time. This process
     # has no host effects and is killed/reaped at the caller's actual deadline.
     context = multiprocessing.get_context("spawn")
     parent, child = context.Pipe(duplex=False)
-    process = context.Process(target=_http_worker, args=(child, url, deadline, body, limit), daemon=True)
+    process = context.Process(target=_http_worker, args=(child, url, deadline, body, limit, maintenance), daemon=True)
     process.start()
     child.close()
     try:
@@ -657,14 +668,103 @@ class HostAdapter:
 
     def capacity(self, deadline, *, reclaim_bytes=0):
         limits = self.policy["capacity"]
-        require(shutil.disk_usage(self.root).free >= limits["disk_bytes"], "disk_capacity")
-        values = dict(re.findall(r"^(\w+):\s+(\d+)", read_file(Path("/proc/meminfo")).decode(), re.M))
-        require(int(values.get("MemAvailable", 0)) * 1024 + reclaim_bytes >= limits["available_memory_bytes"], "memory_capacity")
-        import resource
-        require(resource.getrlimit(resource.RLIMIT_NOFILE)[0] >= limits["file_descriptors"], "fd_capacity")
+        self._basic_capacity(deadline, limits["available_memory_bytes"], reclaim_bytes=reclaim_bytes)
         evidence = read_file(self.root / "capacity" / (limits["network_evidence"] + ".json"))
         require(digest(evidence) == limits["network_evidence"], "network_capacity")
         remaining(deadline)
+
+    def _basic_capacity(self, deadline, memory_bytes, *, reclaim_bytes=0):
+        limits = self.policy["capacity"]
+        require(shutil.disk_usage(self.root).free >= limits["disk_bytes"], "disk_capacity")
+        values = dict(re.findall(r"^(\w+):\s+(\d+)", read_file(Path("/proc/meminfo")).decode(), re.M))
+        require(int(values.get("MemAvailable", 0)) * 1024 + reclaim_bytes >= memory_bytes, "memory_capacity")
+        import resource
+        require(resource.getrlimit(resource.RLIMIT_NOFILE)[0] >= limits["file_descriptors"], "fd_capacity")
+        remaining(deadline)
+
+    def initial_capacity(self, candidate, deadline):
+        self._basic_capacity(deadline, self.config(candidate)["memory_bytes"] + 128 * 1024 * 1024)
+
+    def initial_authorization(self, envelope):
+        trusted_path(INITIAL_INSTALL_AUTH)
+        authorization = parse(read_file(INITIAL_INSTALL_AUTH))
+        require(set(authorization) == {"schema_version", "mode", "envelope_sha256", "allow_no_predecessor"}
+                and type(authorization["schema_version"]) is int and authorization["schema_version"] == 1
+                and authorization["mode"] == "clean-host" and authorization["allow_no_predecessor"] is True
+                and authorization["envelope_sha256"] == digest(canonical_json(envelope)), "initial_authorization")
+
+    def initial_host(self, journals, deadline):
+        # Absence of active.json is insufficient: keep all historical ownership
+        # evidence, including stopped containers and failed, cleaned journals.
+        for path in (self.root / "active.json", self.root / "predecessor.json", self.root / "pending-deploy.json",
+                     LEGACY_APP, LEGACY_DATA, LEGACY_CONFIG):
+            require(not os.path.lexists(path), "initial_host_not_empty")
+        unit = dict(line.split("=", 1) for line in run(["systemctl", "show", LEGACY_UNIT,
+            "--property=LoadState", "--property=ActiveState", "--property=MainPID", "--property=FragmentPath"],
+            deadline).decode().splitlines())
+        require(unit.get("LoadState") == "not-found" and unit.get("ActiveState") == "inactive"
+                and unit.get("MainPID") == "0" and unit.get("FragmentPath") == "", "initial_legacy_unit")
+        handoff = self.root / "handoff-import.json"
+        if os.path.lexists(handoff):
+            imported = read_record(handoff)
+            require(set(imported) == {"schema_version", "handoff_sha256", "state", "publication_sequence"}
+                    and type(imported["schema_version"]) is int and imported["schema_version"] == 1
+                    and matches(HEX, imported["handoff_sha256"]) and imported["state"] == "COMMITTED"
+                    and type(imported["publication_sequence"]) is int
+                    and 0 <= imported["publication_sequence"] <= 2**53 - 1, "initial_handoff_incomplete")
+        owned = {}
+        for journal in journals:
+            validate_initial_journal(journal, self.policy)
+            require(journal["state"] == "FAILED" and journal.get("cleanup_complete") is True,
+                    "initial_history")
+            candidate = journal["candidate"]
+            if candidate:
+                owned[candidate["name"]] = candidate
+                info = self.inspect(candidate, deadline)
+                require(info is None or info["State"]["Running"] is False, "initial_running_candidate")
+        for directory in (self.root / "releases", self.root / "rejected", self.root / "slots"):
+            if not os.path.lexists(directory):
+                continue
+            require(stat.S_ISDIR(directory.lstat().st_mode), "initial_directory")
+            allowed = ({j["envelope"]["release_id"] + ".json" for j in journals} if directory.name == "releases" else
+                       {c["release_id"] for c in owned.values()} if directory.name == "slots" else set())
+            # The current RECEIVED journal is checked by execute, not historical
+            # admission; its filename is still required to match its envelope.
+            for entry in directory.iterdir():
+                if directory.name == "releases" and entry.name not in allowed:
+                    current = read_record(entry)
+                    validate_initial_journal(current, self.policy)
+                    require(current["state"] == "RECEIVED" and current["candidate"] is None
+                            and entry.name == current["envelope"]["release_id"] + ".json", "initial_history")
+                else:
+                    require(entry.name in allowed and not entry.is_symlink(), "initial_unowned_path")
+        names = run(["docker", "ps", "-a", "--format", "{{.Names}}"], deadline).decode().splitlines()
+        for name in names:
+            require(bool(name) and not name.startswith("-"), "initial_container_inventory")
+            info = json.loads(run(["docker", "inspect", "--type", "container", name], deadline))[0]
+            labels = info["Config"].get("Labels") or {}
+            image = info["Config"].get("Image", "")
+            ports = info.get("HostConfig", {}).get("PortBindings") or {}
+            runtime = (name.startswith("v8std-") or any(key.startswith("pro.v8std.") for key in labels)
+                       or image == IMAGE or image.startswith(IMAGE + "@") or image.startswith(IMAGE + ":")
+                       or any(str(binding.get("HostPort")) in {str(p) for p in self.policy["ports"]}
+                              for bindings in ports.values() for binding in (bindings or [])))
+            require(not runtime or name in owned, "initial_unowned_container")
+        path = Path(self.policy["nginx_include"])
+        trusted_path(path)
+        require(read_file(path) == MAINTENANCE_UPSTREAM, "initial_upstream")
+        remaining(deadline)
+
+    def maintenance(self, deadline):
+        path = Path(self.policy["nginx_include"])
+        trusted_path(path)
+        managed = {MAINTENANCE_UPSTREAM} | {
+            f"server 127.0.0.1:{port} max_conns=8;\n".encode() for port in self.policy["ports"]}
+        require(read_file(path) in managed, "initial_upstream")
+        atomic(path, MAINTENANCE_UPSTREAM)
+        run(["nginx", "-t"], deadline)
+        run(["nginx", "-s", "reload"], deadline)
+        http(self.policy["public_url"] + "/mcp", deadline, body=b"{}", limit=65536, maintenance=True)
 
     def pull(self, record, deadline):
         run(["docker", "pull", "--platform", self.policy["platform"], IMAGE + "@" + record["platform_digest"]], deadline)
@@ -967,7 +1067,7 @@ class Controller:
 
     def journals(self):
         directory = self.root / "releases"
-        return [parse(read_file(path), 65536) for path in directory.glob("*.json")] if directory.exists() else []
+        return [read_record(path) for path in directory.glob("*.json")] if directory.exists() else []
 
     def status(self):
         records = self.journals()
@@ -1130,6 +1230,8 @@ class Controller:
             if not records:
                 return self.status()
             journal = max(records, key=lambda item: item["envelope"]["sequence"])
+            if journal.get("kind") == "initial-install":
+                return InitialInstallController(self.root, self.adapter).reconcile(journal)
             if journal.get("kind") == "bootstrap":
                 return BootstrapController(self.root, self.adapter).reconcile(journal)
             if journal.get("cleanup_complete"):
@@ -1184,6 +1286,180 @@ class Controller:
             else:
                 self.rollback(journal, deadline)
             return self.status()
+
+
+def validate_initial_journal(journal, policy):
+    """Fail closed before deriving any owned path or recovery effect."""
+    require(journal.get("kind") == "initial-install" and "predecessor" not in journal, "initial_history")
+    envelope = validate_envelope(canonical_json(journal.get("envelope")), expired=True)
+    require(journal.get("state") in {"RECEIVED", "VERIFIED", "PREPARED", "READY", "SWITCHED",
+                                    "COMMITTED", "FAILED", "RECOVERY_REQUIRED"}
+            and type(journal.get("cleanup_complete")) is bool
+            and isinstance(journal.get("intent"), str) and "candidate" in journal, "initial_journal")
+    require(not journal["cleanup_complete"] or journal["state"] in {"FAILED", "COMMITTED"}, "initial_journal")
+    candidate = journal["candidate"]
+    if candidate is None:
+        require(journal["state"] in {"RECEIVED", "FAILED", "RECOVERY_REQUIRED"}, "initial_candidate")
+        return
+    hashed = digest(canonical_json(envelope))
+    require(isinstance(candidate, dict) and all(candidate.get(k) == v for k, v in envelope.items())
+            and candidate.get("name") == "v8std-release-" + envelope["release_id"]
+            and candidate.get("envelope_hash") == hashed and candidate.get("hold_token") == hashed[:32]
+            and candidate.get("port") == policy["ports"][0], "initial_candidate")
+    descriptors = candidate.get("descriptors")
+    require(isinstance(descriptors, dict) and descriptors.get(envelope["image_digest"]) in INDEX_TYPES
+            and descriptors.get(envelope["platform_digest"]) in MANIFEST_TYPES
+            and all(matches(DIGEST, key) and value in INDEX_TYPES | MANIFEST_TYPES | CONFIG_TYPES
+                    for key, value in descriptors.items()), "initial_descriptors")
+    manifest = validate_manifest(canonical_json(journal.get("manifest")))
+    require(manifest["corpus_id"] == envelope["corpus_id"]
+            and manifest["archive"]["sha256"] == envelope["archive_sha256"], "manifest_identity")
+
+
+class InitialInstallController(Controller):
+    """One durable first acceptance, with maintenance as the precommit outcome."""
+
+    def admission(self, envelope, journals, deadline):
+        require(self.adapter.policy.get("enabled") is True and self.adapter.policy.get("runtime_enabled") is False,
+                "initial_policy")
+        self.adapter.initial_authorization(envelope)
+        self.adapter.config(envelope)
+        self.adapter.initial_host(journals, deadline)
+
+    def submit(self, raw: bytes) -> dict:
+        envelope = validate_envelope(raw, expired=True)
+        with locked(self.root):
+            existing = self.existing(envelope)
+            if existing:
+                return self.result(existing)
+            validate_envelope(raw)
+            require(envelope["deadline"] - time.time() > INITIAL_RECOVERY_RESERVE, "insufficient_transaction_budget")
+            deadline = time.monotonic() + min(TRANSACTION, envelope["deadline"] - time.time())
+            self.admission(envelope, self.journals(), deadline - INITIAL_RECOVERY_RESERVE)
+            journal = {"kind": "initial-install", "envelope": envelope, "state": "RECEIVED", "intent": "verify",
+                       "candidate": None, "cleanup_complete": False}
+            self.save(journal)
+        # A failed enqueue preserves the receipt. Recovery never retries a
+        # RECEIVED attempt; the operator must authorize a fresh ID after cleanup.
+        schedule("initial-install")
+        return self.result(journal)
+
+    def execute(self) -> dict:
+        with locked(self.root):
+            records = self.journals()
+            require(bool(records), "initial_missing")
+            journal = max(records, key=lambda item: item["envelope"]["sequence"])
+            validate_initial_journal(journal, self.adapter.policy)
+            if journal["state"] != "RECEIVED":
+                return self.result(journal)
+            envelope = journal["envelope"]
+            deadline = time.monotonic() + min(TRANSACTION, envelope["deadline"] - time.time())
+            work = deadline - INITIAL_RECOVERY_RESERVE
+            try:
+                validate_envelope(canonical_json(envelope))
+                remaining(work)
+                self.admission(envelope, [item for item in records if item is not journal], work)
+                descriptors = self.adapter.verify(envelope, work)
+                hashed = digest(canonical_json(envelope))
+                candidate = {**envelope, "name": "v8std-release-" + envelope["release_id"],
+                    "envelope_hash": hashed, "descriptors": descriptors,
+                    "port": self.adapter.policy["ports"][0], "hold_token": hashed[:32]}
+                manifest = self.adapter.manifest(candidate)
+                self.adapter.bootstrap_prepared(candidate, work)
+                self.adapter.initial_capacity(candidate, work)
+                journal.update(candidate=candidate, manifest=manifest)
+                self.save(journal, "VERIFIED", "pin_candidate")
+                self.pins(journal)
+                self.save(journal, intent="start_candidate")
+                candidate = self.adapter.hold(candidate, candidate["hold_token"],
+                    min(work, time.monotonic() + READINESS), manifest)
+                journal["candidate"] = candidate
+                self.save(journal, "PREPARED", "candidate_smoke")
+                self.adapter.check(candidate, min(work, time.monotonic() + SMOKE))
+                self.save(journal, "READY", "switch")
+                self.adapter.switch(candidate, work)
+                self.save(journal, "SWITCHED", "public_smoke")
+                self.adapter.check(candidate, min(work, time.monotonic() + SMOKE), public=True)
+                remaining(work)
+                self.save(journal, "COMMITTED", "accept_pointer")
+                self.finish(journal, deadline)
+            except Exception as error:
+                # save() mutates memory before rename/fsync; only the durable
+                # record decides whether acceptance has already happened.
+                journal = read_record(self.root / "releases" / (envelope["release_id"] + ".json"))
+                validate_initial_journal(journal, self.adapter.policy)
+                journal["error_code"] = getattr(error, "code", "host_failure")
+                if journal["state"] == "COMMITTED":
+                    journal["cleanup_complete"] = False
+                    self.save(journal, intent="cleanup_pending")
+                else:
+                    self.fail(journal, deadline)
+            return self.result(journal)
+
+    def pins(self, journal):
+        write_json(self.root / "pins.json", {"archives": [journal["envelope"]["archive_sha256"]]})
+
+    def fail(self, journal, deadline):
+        journal["cleanup_complete"] = False
+        completed = True
+        # Maintenance has at most15s, preserving up to45s for owned stop. One
+        # failed obligation must not suppress the other while time remains.
+        for intent in ("maintenance", "stop_candidate"):
+            try:
+                self.save(journal, intent=intent)
+                if intent == "maintenance":
+                    self.adapter.maintenance(min(deadline, time.monotonic() + INITIAL_RECOVERY_RESERVE - STOP))
+                elif journal["candidate"] is not None:
+                    self.adapter.stop(journal["candidate"], min(deadline, time.monotonic() + STOP))
+            except Exception:
+                completed = False
+        journal["cleanup_complete"] = completed
+        if completed:
+            self.save(journal, "FAILED", "complete")
+        else:
+            journal["error_code"] = "initial_cleanup_failed"
+            self.save(journal, "RECOVERY_REQUIRED", "operator_recovery")
+
+    def finish(self, journal, deadline):
+        journal["cleanup_complete"] = False
+        self.save(journal, intent="ensure_accepted_candidate")
+        candidate = journal["candidate"]
+        candidate = self.adapter.hold(candidate, candidate["hold_token"],
+            min(deadline, time.monotonic() + READINESS), journal["manifest"])
+        journal["candidate"] = candidate
+        self.save(journal, intent="accepted_switch")
+        self.adapter.switch(candidate, deadline)
+        self.save(journal, intent="accepted_smoke")
+        self.adapter.check(candidate, min(deadline, time.monotonic() + SMOKE), public=True)
+        self.save(journal, intent="accept_pointer")
+        write_json(self.root / "active.json", candidate)
+        self.pins(journal)
+        self.save(journal, intent="resume_candidate")
+        self.adapter.resume(candidate, min(deadline, time.monotonic() + SMOKE))
+        journal["cleanup_complete"] = True
+        journal.pop("error_code", None)
+        self.save(journal, intent="complete")
+
+    def reconcile(self, journal: dict) -> dict:
+        # Caller holds the common release lock and selects the newest journal,
+        # so ordinary releases always supersede this historical first image.
+        validate_initial_journal(journal, self.adapter.policy)
+        deadline = time.monotonic() + TRANSACTION
+        if journal["state"] == "COMMITTED":
+            try:
+                info = self.adapter.inspect(journal["candidate"], deadline)
+                path = self.root / "active.json"
+                pointer = read_record(path) if path.exists() else None
+                if not journal["cleanup_complete"] or info is None or not info["State"]["Running"] or pointer != journal["candidate"]:
+                    self.finish(journal, deadline)
+            except Exception:
+                journal.update(cleanup_complete=False, error_code="initial_recovery_failed")
+                self.save(journal, intent="cleanup_pending")
+        elif not journal["cleanup_complete"]:
+            if journal["state"] == "RECEIVED":
+                journal["error_code"] = "interrupted_preparation"
+            self.fail(journal, deadline)
+        return self.result(journal)
 
 
 class BootstrapController(Controller):
@@ -1689,7 +1965,9 @@ class Publisher:
 
 
 def schedule(kind):
-    require(kind in {"deploy", "index", "recover", "bootstrap"}, "job_kind")
+    require(kind in {"deploy", "index", "recover", "bootstrap", "initial-install"}, "job_kind")
+    if kind == "initial-install":
+        require(os.geteuid() == 0, "host_privilege")
     # Shared unit name and controller lock serialize all host effects. No --pipe,
     # --wait or inherited SSH stdin; timer recovers a crash before enqueue.
     return run(["systemd-run", "--unit=v8std-release-job", "--collect", "--no-block",
@@ -1725,7 +2003,8 @@ def main():
     command = sys.argv[1]
     require(command in {"validate-envelope", "deploy", "recover", "status", "publish-index",
                         "_deploy", "_index", "_recover", "bootstrap", "bootstrap-recover", "bootstrap-status",
-                        "_bootstrap", "_legacy-allowed"}, "command")
+                        "_bootstrap", "_legacy-allowed", "initial-install", "_initial-install",
+                        "initial-install-recover"}, "command")
     if command == "validate-envelope":
         header = read_header(sys.stdin.fileno(), time.monotonic() + 20, 8192)
         eof(sys.stdin.fileno(), time.monotonic() + 20)
@@ -1747,6 +2026,14 @@ def main():
         envelope = read_header(sys.stdin.fileno(), time.monotonic() + 20, 8192)
         eof(sys.stdin.fileno(), time.monotonic() + 20)
         return BootstrapController(ROOT, adapter).submit(canonical_json(envelope))
+    if command == "initial-install":
+        envelope = read_header(sys.stdin.fileno(), time.monotonic() + 20, 8192)
+        eof(sys.stdin.fileno(), time.monotonic() + 20)
+        return InitialInstallController(ROOT, adapter).submit(canonical_json(envelope))
+    if command == "_initial-install":
+        return InitialInstallController(ROOT, adapter).execute()
+    if command == "initial-install-recover":
+        return controller.recover()
     if command == "_bootstrap":
         return BootstrapController(ROOT, adapter).execute()
     if command == "bootstrap-recover":
