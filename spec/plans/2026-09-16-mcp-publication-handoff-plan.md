@@ -41,6 +41,7 @@ IMPLEMENTED до host provisioning и полной приёмки. Production tr
 **Files:**
 
 - Create: `scripts/v8std_mcp_handoff.py`, `scripts/v8std_mcp_provision.py`, `tests/test_v8std_mcp_handoff.py`.
+- Modify narrowly: `scripts/v8std_mcp_release.py`, `tests/test_v8std_mcp_release.py` for the publication high-water prerequisite proved missing by the real regression below. Do not alter initial-install/ordinary runtime controllers.
 - Read: release `Publisher`, envelope/descriptor helpers, snapshot format, existing publication fixtures.
 - `v8std_mcp_provision.py` initially owns only root-only handoff subcommands. Host setup will extend this same CLI in its separate plan, without changing these interfaces.
 
@@ -90,6 +91,48 @@ extra unlisted files, duplicate JSON keys, traversal or implicit recursive copy.
 At most 10000 entries, manifest at most 4 MiB, total at most 8 GiB, each snapshot
 at most existing MAX_ARCHIVE_BYTES, state records at most 128 KiB, proofs at most
 4 MiB. Use streaming hashes/copies; validate snapshots with existing bounded parser.
+
+- [ ] **Step 0: Repair the consumer's missing publication high-water guard.**
+
+A prerequisite probe against real ingest/Publisher reproduced admission and
+COMMITTED sequence40 after real FAILED41 with current-index37. Preserving those
+bytes cannot by itself fix ordering. This is an implementation defect under the
+approved publication continuity requirement, not permission to alter history.
+
+Add one bounded shared publication-history helper in release.py that validates
+receipt headers/IDs and computes the maximum sequence including FAILED receipts.
+Under release.lock, ingest handles an exact existing-ID duplicate first, then
+requires every new ID to have a strictly greater sequence before receiving/staging
+new archive bytes. Mutated duplicate still rejects. Worker publish must also
+reject an older unverified RECEIVED record against other receipt sequences so a
+queued historical request cannot bypass admission. Exclude that exact record
+from the comparison. Preserve legitimate VERIFIED/RECOVERY_REQUIRED reconciliation
+and exact terminal duplicates; already exposed immutable archive completion is
+not a new publication, and current-index must never regress. Wrong/unknown
+history fails closed rather than silently reducing the watermark.
+
+An existing handoff-import receipt in PREPARED or invalid shape denies new
+publication ingress as well as runtime activation; COMMITTED must have a
+watermark consistent with the actual imported history (newer later receipts are
+valid). The receipt does not substitute for missing imported history. Reuse the
+existing strict receipt validation where possible, without a circular import.
+
+```python
+publish('current', sequence=36)
+reference('ack', sequence=37)
+fail_verification('failed-latest', sequence=41)
+with self.assertRaisesRegex(ReleaseError, 'stale_sequence'):
+    ingest_new('older', sequence=40)
+self.assertEqual(read_record(root / 'current-index.json')['sequence'], 37)
+```
+
+These helpers in the new regression test execute real ingest/Publisher with only
+external gh transport replaced. Retain exact duplicate outcomes for sequences
+36/37/41 after later history exists, reject equal sequence/new ID, allow sequence42,
+and cover deferred unverified/verified recovery separately. Update the existing
+stale-reference test to expect earlier rejection at ingress, preserving its actual
+GC/reference assertions. Run focused publication tests RED then GREEN before
+building handoff; final handoff tests consume this corrected real boundary.
 
 - [ ] **Step 1: Write RED for history preservation and strict import.**
 
