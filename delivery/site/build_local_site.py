@@ -56,6 +56,8 @@ def build_local_site(root: Path, output: Path, site_url: str, source_sha: str) -
                             ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         for name in ("zensical.toml", "retrieval-rules.yml", "LICENSE"):
             shutil.copy2(root / name, stage / name)
+        # The public MCP guide embeds the release Compose files as YAML snippets.
+        shutil.copytree(root / "delivery/local", stage / "delivery/local")
         env = {**os.environ, "V8STD_REPO_ROOT": str(stage), "PYTHONPATH": str(stage)}
         def run(*args: str):
             subprocess.run([sys.executable, *args], cwd=stage, env=env, check=True)

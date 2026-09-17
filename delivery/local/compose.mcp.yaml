@@ -1,0 +1,28 @@
+# Standalone MCP: downloads the public index and keeps it in a persistent volume.
+services:
+  mcp:
+    image: ${V8STD_MCP_IMAGE:-ghcr.io/zeegin/v8std-mcp:stable}
+    user: "10001:10001"
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001"]
+    mem_limit: 1536m
+    cpus: 2
+    pids_limit: 128
+    volumes: [mcp-cache:/var/lib/v8std-mcp]
+    environment:
+      V8STD_MCP_SITE_URL: "${V8STD_MCP_SITE_URL:-https://v8std.ru/}"
+      V8STD_MCP_MAX_SNIPPET_CHARS: "${V8STD_MCP_MAX_SNIPPET_CHARS:-4000}"
+    command: [--transport, streamable-http, --host, 0.0.0.0, --port, "8000"]
+    ports:
+      - "127.0.0.1:${V8STD_MCP_PORT:-18766}:8000"
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 90s
+      retries: 3
+volumes:
+  mcp-cache:
