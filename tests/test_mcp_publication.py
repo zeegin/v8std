@@ -730,6 +730,33 @@ class TransportBoundaryTests(unittest.TestCase):
     def setUp(self):
         self.p = importlib.import_module("delivery.ci.publish_mcp_artifacts")
 
+    @staticmethod
+    def platform_references(image):
+        namespace = image.split("@")[0]
+        return {"linux/amd64": namespace + "@sha256:" + "1" * 64,
+                "linux/arm64": namespace + "@sha256:" + "2" * 64}
+
+    def test_platform_images_select_children_bound_to_exact_index_digest(self):
+        members = [{"mediaType": "application/vnd.oci.image.manifest.v1+json",
+                    "digest": "sha256:" + digit * 64,
+                    "platform": {"os": "linux", "architecture": arch}}
+                   for arch, digit in (("amd64", "1"), ("arm64", "2"))]
+        members[1]["platform"]["variant"] = "v8"
+        valid = {"schemaVersion": 2, "mediaType": "application/vnd.oci.image.index.v1+json", "manifests": members}
+        def resolve(value, digest=None):
+            raw = fixture.json_bytes(value)
+            reference = self.p.IMAGE + "@sha256:" + (digest or self.p.hashlib.sha256(raw).hexdigest())
+            with patch.object(self.p, "registry_request", return_value=(200, raw)):
+                return self.p.platform_images(reference)
+        self.assertEqual(resolve(valid), self.platform_references(self.p.IMAGE))
+        with self.assertRaisesRegex(self.p.PublicationError, "registry_digest"):
+            resolve(valid, "a" * 64)
+        for replacement in (None, members[:1], members + [members[0]],
+                            [members[0], {**members[1], "digest": "invalid"}],
+                            [members[0], {**members[1], "mediaType": "invalid"}]):
+            with self.subTest(members=replacement), self.assertRaisesRegex(self.p.PublicationError, "platform_descriptor"):
+                resolve({**valid, "manifests": replacement})
+
     def test_registry_without_tagged_images_has_no_reusable_runtime(self):
         with patch.object(self.p, "registry_request", return_value=(200, b'{"name":"zeegin/v8std-mcp","tags":null}')):
             self.assertEqual(self.p.registry_tags(), [])
@@ -778,8 +805,8 @@ class TransportBoundaryTests(unittest.TestCase):
                         project = argv[3]
                         if "pull" == argv[-1]:
                             projects.append(project)
-                            self.assertEqual(env["V8STD_MCP_IMAGE"], self.p.IMAGE + "@sha256:" + "a" * 64)
-                            self.assertEqual(env["V8STD_SITE_IMAGE"], self.p.SITE_IMAGE + "@sha256:" + "c" * 64)
+                            self.assertEqual(env["V8STD_MCP_IMAGE"], self.platform_references(self.p.IMAGE)[platform])
+                            self.assertEqual(env["V8STD_SITE_IMAGE"], self.platform_references(self.p.SITE_IMAGE)[platform])
                             effects.append((platform, "pull"))
                         elif "up" in argv:
                             self.assertIn("--no-build", argv)
@@ -814,6 +841,7 @@ class TransportBoundaryTests(unittest.TestCase):
                         now[0] += 390
                         raise ValueError("not ready")
                 with patch.dict(os.environ, {}, clear=True), patch.object(self.p, "bounded_command", side_effect=command), \
+                        patch.object(self.p, "platform_images", side_effect=self.platform_references), \
                         patch.object(self.p, "runtime_smoke", side_effect=smoke), \
                         patch.object(self.p.time, "monotonic", side_effect=lambda: now[0]):
                     if name == "valid":
@@ -995,6 +1023,7 @@ class TransportBoundaryTests(unittest.TestCase):
             return b"{}"
         with patch.dict(os.environ, {"DOCKER_AUTH_CONFIG": "synthetic", "DOCKER_CONTEXT": "synthetic-remote",
                                      "REGISTRY_AUTH_FILE": "/synthetic/auth"}, clear=True), \
+                patch.object(self.p, "platform_images", side_effect=self.platform_references), \
                 patch.object(self.p, "bounded_command", side_effect=command):
             with self.assertRaisesRegex(self.p.PublicationError, "command_timeout") as raised:
                 self.p.CITransport().smoke(self.p.IMAGE + "@sha256:" + "a" * 64, "b" * 40, {})
@@ -1005,6 +1034,31 @@ class TransportBoundaryTests(unittest.TestCase):
             for name in ("DOCKER_AUTH_CONFIG", "DOCKER_CONTEXT", "REGISTRY_AUTH_FILE"):
                 self.assertFalse(name in kwargs["env"], "anonymous environment retains key: " + name)
             self.assertFalse(Path(kwargs["env"]["DOCKER_CONFIG"]).exists())
+
+    def test_default_source_uses_distinct_child_digests_for_pull_and_run(self):
+        pulled, running = {}, {}
+        image = self.p.IMAGE + "@sha256:" + "a" * 64
+        def command(argv, **kwargs):
+            if argv[:2] == ["docker", "pull"]:
+                platform = argv[3]
+                self.assertNotIn(argv[-1], pulled.values())
+                pulled[platform] = argv[-1]
+            elif argv[:2] == ["docker", "run"]:
+                platform = argv[argv.index("--platform") + 1]
+                self.assertEqual(pulled[platform], self.platform_references(image)[platform])
+                self.assertIn(pulled[platform], argv)
+                running[argv[argv.index("--name") + 1]] = platform
+            elif argv[:2] == ["docker", "inspect"]:
+                self.assertIn(argv[-1], running)
+                return json.dumps([{"Config": {"Labels": {"org.opencontainers.image.revision": "b" * 40}},
+                    "NetworkSettings": {"Ports": {"8000/tcp": [{"HostPort": "12345"}]}}}]).encode()
+            return b""
+        with patch.object(self.p, "platform_images", side_effect=self.platform_references), \
+                patch.object(self.p, "bounded_command", side_effect=command), \
+                patch.object(self.p, "runtime_smoke") as smoke:
+            self.p.CITransport().smoke(image, "b" * 40, fixture.snapshot_fixture()[1])
+        self.assertEqual(set(pulled), {"linux/amd64", "linux/arm64"})
+        self.assertEqual(smoke.call_count, 2)
 
     def test_release_exact_queue_identity_capacity_failure_and_malformed_platform_fail_closed(self):
         context = dict(event="push", repository="zeegin/v8std", ref="refs/heads/main",

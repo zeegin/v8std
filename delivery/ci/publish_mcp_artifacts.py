@@ -348,10 +348,12 @@ class CITransport:
         """
         require(re.fullmatch(re.escape(IMAGE) + r"@sha256:[0-9a-f]{64}", image), "image_identity")
         bounded_command(attestation_command("oci://" + image, runtime_sha), seconds=90)
+        images = platform_images(image)
         with tempfile.TemporaryDirectory(prefix="v8std-anonymous-") as directory:
             env = anonymous_environment(directory)
             for platform in ("linux/amd64", "linux/arm64"):
-                bounded_command(["docker", "pull", "--platform", platform, image], env=env, seconds=180)
+                platform_image = images[platform]
+                bounded_command(["docker", "pull", "--platform", platform, platform_image], env=env, seconds=180)
                 name = "v8std-ci-default-" + uuid.uuid4().hex
                 primary = None
                 try:
@@ -359,7 +361,7 @@ class CITransport:
                         "--platform", platform, "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
                         "--init", "--pids-limit", "128", "--memory", "1024m", "--cpus", "2",
                         "--tmpfs", "/tmp:size=16m", "--tmpfs", "/var/lib/v8std-mcp:rw,size=256m,uid=10001,gid=10001,mode=0700",
-                        "-p", "127.0.0.1::8000", image, "--transport", "streamable-http", "--host", "0.0.0.0",
+                        "-p", "127.0.0.1::8000", platform_image, "--transport", "streamable-http", "--host", "0.0.0.0",
                         "--port", "8000", "--refresh-seconds", "0"], env=env, seconds=30)
                     inspected = json.loads(bounded_command(["docker", "inspect", name], env=env))[0]
                     require(inspected["Config"]["Labels"].get("org.opencontainers.image.revision") == runtime_sha,
@@ -402,11 +404,12 @@ class CITransport:
         links share the unchanged Compose v8std.localhost address.
         """
         root = Path(__file__).resolve().parents[2]
+        runtime_images, site_images = platform_images(image), platform_images(site_image)
         with tempfile.TemporaryDirectory(prefix="v8std-pair-proof-") as directory:
             for platform in ("linux/amd64", "linux/arm64"):
                 project = "v8std-ci-pair-" + uuid.uuid4().hex[:16]
                 env = {**anonymous_environment(directory), "DOCKER_DEFAULT_PLATFORM": platform,
-                       "V8STD_SITE_IMAGE": site_image, "V8STD_MCP_IMAGE": image,
+                       "V8STD_SITE_IMAGE": site_images[platform], "V8STD_MCP_IMAGE": runtime_images[platform],
                        "V8STD_SITE_PORT": "18765", "V8STD_MCP_PORT": "18766",
                        "V8STD_SITE_PREFIX": "/", "V8STD_MCP_SITE_URL": "http://v8std.localhost:18765/"}
                 compose = ["docker", "compose", "-p", project, "-f", str(root / "delivery/local/compose.yaml"), "--profile", "mcp"]
@@ -795,6 +798,37 @@ def registry_manifest(image, reference):
     if reference.startswith("sha256:"):
         require("sha256:" + hashlib.sha256(raw).hexdigest() == reference, "registry_digest")
     return raw
+
+
+def platform_images(image):
+    """Select children of the verified index without reusing its local digest.
+
+    Docker's classic image store cannot pull two architectures under the same
+    index digest ("cannot overwrite digest"). Child digests remain bound to the
+    signed index by its checked content hash and are distinct local references.
+    """
+    namespace, separator, digest = image.partition("@")
+    require(separator and namespace in {IMAGE, SITE_IMAGE}
+            and re.fullmatch(r"sha256:[0-9a-f]{64}", digest), "image_identity")
+    raw = registry_manifest(namespace, digest)
+    require(raw is not None, "published_image_required")
+    members = strict_json(raw).get("manifests")
+    require(isinstance(members, list), "platform_descriptor")
+    result = {}
+    for architecture in ("amd64", "arm64"):
+        selected = [item for item in members if isinstance(item, dict)
+                    and isinstance(item.get("platform"), dict)
+                    and item["platform"].get("os") == "linux"
+                    and item["platform"].get("architecture") == architecture
+                    and item["platform"].get("variant", "") in ({"", "v8"} if architecture == "arm64" else {""})]
+        require(len(selected) == 1, "platform_descriptor")
+        child = selected[0]
+        require(child.get("mediaType") in {
+            "application/vnd.oci.image.manifest.v1+json", "application/vnd.docker.distribution.manifest.v2+json"}
+            and isinstance(child.get("digest"), str) and re.fullmatch(r"sha256:[0-9a-f]{64}", child["digest"]),
+            "platform_descriptor")
+        result["linux/" + architecture] = namespace + "@" + child["digest"]
+    return result
 
 
 def registry_tags():
