@@ -803,6 +803,9 @@ def registry_tags():
         return []
     require(status == 200, "registry_tags_unavailable")
     value = strict_json(raw)
+    # GHCR returns null while the repository contains only untagged digests.
+    if "tags" in value and value["tags"] is None:
+        value["tags"] = []
     require(value.get("name") == IMAGE.removeprefix("ghcr.io/") and isinstance(value.get("tags"), list)
             and len(value["tags"]) < 1000 and all(isinstance(tag, str) for tag in value["tags"]), "registry_tags_window")
     return value["tags"]

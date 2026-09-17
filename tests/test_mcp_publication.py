@@ -730,6 +730,16 @@ class TransportBoundaryTests(unittest.TestCase):
     def setUp(self):
         self.p = importlib.import_module("delivery.ci.publish_mcp_artifacts")
 
+    def test_registry_without_tagged_images_has_no_reusable_runtime(self):
+        with patch.object(self.p, "registry_request", return_value=(200, b'{"name":"zeegin/v8std-mcp","tags":null}')):
+            self.assertEqual(self.p.registry_tags(), [])
+        for value in ({"name": "zeegin/v8std-mcp"},
+                      {"name": "other/repository", "tags": None},
+                      {"name": "zeegin/v8std-mcp", "tags": "stable"}):
+            with self.subTest(value=value), patch.object(self.p, "registry_request", return_value=(200, json.dumps(value).encode())):
+                with self.assertRaisesRegex(self.p.PublicationError, "registry_tags_window"):
+                    self.p.registry_tags()
+
     def test_real_local_smoke_validates_inspect_array_for_both_platforms_and_cleans_failures(self):
         good = {"Config": {"User": "10001:10001", "Labels": {"org.opencontainers.image.revision": "d" * 40}},
                 "HostConfig": {"Privileged": False, "ReadonlyRootfs": True}}
