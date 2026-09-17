@@ -16,7 +16,7 @@ import sys
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from v8std_mcp_index import (  # noqa: E402
+from runtime.v8std_mcp_index import (  # noqa: E402
     IndexLoadError,
     VECTOR_DIM,
     V8StdIndex,
@@ -345,45 +345,44 @@ class V8StdMcpIndexTests(unittest.TestCase):
             self.assertEqual(index.metadata.source, str(cache_path))
             self.assertIsNotNone(index.resolve("std111"))
 
-    def test_remote_resource_cache_uses_ttl_and_fallback(self):
+    def test_remote_page_cache_uses_ttl_and_fallback(self):
         pages_payload = '{"id":"std111","type":"standard","title":"Cached"}\n'
+        fresh_payload = '{"id":"std111","type":"standard","title":"Fresh"}\n'
 
-        class ResourceIndex(V8StdIndex):
+        class FetchingIndex(V8StdIndex):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.fail = False
                 self.fetches = []
-                self.payloads = {"https://v8std.ru/llms.txt": "fresh llms"}
 
             def _fetch_url(self, url: str, *, max_bytes: int) -> str:
                 self.fetches.append(url)
-                if self.fail or url not in self.payloads:
+                if self.fail or url != self.index_url:
                     raise URLError("offline")
-                return self.payloads[url]
+                return fresh_payload
 
         with tempfile.TemporaryDirectory() as temp_dir:
             cache_dir = Path(temp_dir)
-            (cache_dir / "pages.jsonl").write_text(pages_payload, encoding="utf-8")
+            pages_cache = cache_dir / "pages.jsonl"
+            pages_cache.write_text(pages_payload, encoding="utf-8")
             (cache_dir / "search-vectors.jsonl").write_text("", encoding="utf-8")
-            llms_cache = cache_dir / "llms.txt"
-            llms_cache.write_text("cached llms", encoding="utf-8")
 
-            index = ResourceIndex(cache_dir=cache_dir, refresh_seconds=3600)
+            index = FetchingIndex(cache_dir=cache_dir, refresh_seconds=3600)
             index.load()
             self.assertEqual(index.fetches, [])
-
-            self.assertEqual(index.read_resource_text("llms.txt"), "cached llms")
-            self.assertEqual(index.fetches, [])
+            self.assertEqual(index.page("std111")["page"]["title"], "Cached")
 
             old_time = time.time() - 7200
-            os.utime(llms_cache, (old_time, old_time))
-            self.assertEqual(index.read_resource_text("llms.txt"), "fresh llms")
-            self.assertEqual(index.fetches, ["https://v8std.ru/llms.txt"])
+            os.utime(pages_cache, (old_time, old_time))
+            index.load()
+            self.assertEqual(index.page("std111")["page"]["title"], "Fresh")
+            self.assertEqual(index.fetches, [index.index_url])
 
-            os.utime(llms_cache, (old_time, old_time))
+            os.utime(pages_cache, (old_time, old_time))
             index.fail = True
-            self.assertEqual(index.read_resource_text("llms.txt"), "fresh llms")
-            self.assertEqual(index.fetches[-1], "https://v8std.ru/llms.txt")
+            index.load()
+            self.assertEqual(index.page("std111")["page"]["title"], "Fresh")
+            self.assertEqual(index.fetches, [index.index_url, index.index_url])
 
     def test_fetch_url_rejects_oversized_payload(self):
         class FakeResponse:
@@ -409,7 +408,7 @@ class V8StdMcpIndexTests(unittest.TestCase):
                 self.offset += len(chunk)
                 return chunk
 
-        with patch("v8std_mcp_index.urlopen", return_value=FakeResponse(b"x" * 11)):
+        with patch("runtime.v8std_mcp_index.urlopen", return_value=FakeResponse(b"x" * 11)):
             with self.assertRaises(IndexLoadError):
                 V8StdIndex()._fetch_url("https://example.test/index.jsonl", max_bytes=10)
 

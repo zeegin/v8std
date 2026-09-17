@@ -58,7 +58,9 @@
 {% block extrahead %}
   {{ super() }}
 
+  {% if not config.extra.local_publication %}
   <script defer src="https://u.ingvar.pro/script.js" data-website-id="e6d9711e-3090-45e1-aa57-be1a9fe4567a"></script>
   <script defer src="https://u.ingvar.pro/recorder.js" data-website-id="e6d9711e-3090-45e1-aa57-be1a9fe4567a" data-sample-rate="0.15" data-mask-level="moderate" data-max-duration="300000"></script>
+  {% endif %}
   {% include "partials/social_meta.html" ignore missing %}
 {% endblock %}

@@ -1,4 +1,4 @@
-"""Manual loopback-only smoke for the real Python, wrapper and Compose launches."""
+"""Manual loopback-only smoke for the native Python launch and existing servers."""
 from __future__ import annotations
 
 import argparse
@@ -63,7 +63,7 @@ def check(url: str, maximum: int) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--launch", choices=["python", "wrapper"])
+    parser.add_argument("--launch", choices=["python"])
     parser.add_argument("--url")
     parser.add_argument("--limit", type=int, default=32000)
     args = parser.parse_args()
@@ -75,14 +75,9 @@ def main():
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
         port = listener.getsockname()[1]
-    env = {**os.environ, "V8STD_MCP_MAX_SNIPPET_CHARS": str(args.limit),
-           "V8STD_REPO_ROOT": str(ROOT), "V8STD_MCP_GENERATE_INDEX": "never",
-           "V8STD_MCP_HOST": "127.0.0.1", "V8STD_MCP_PORT": str(port),
-           "PATH": str(Path(sys.executable).parent) + os.pathsep + os.environ.get("PATH", "")}
-    command = [sys.executable, "scripts/v8std_mcp_server.py", "--pages", "docs/ai/pages.jsonl",
+    env = {**os.environ, "V8STD_MCP_MAX_SNIPPET_CHARS": str(args.limit)}
+    command = [sys.executable, "-m", "runtime.v8std_mcp_server", "--pages", "docs/ai/pages.jsonl",
                "--vectors", "docs/ai/search-vectors.jsonl", "--host", "127.0.0.1", "--port", str(port)]
-    if args.launch == "wrapper":
-        command = ["bash", "scripts/run_v8std_mcp.sh"]
     with tempfile.TemporaryFile(mode="w+") as log:
         process = subprocess.Popen(command, cwd=ROOT, env=env, stdout=log, stderr=log)
         try:

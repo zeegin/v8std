@@ -7,18 +7,19 @@ import base64
 import hashlib
 import json
 import math
-import re
 import struct
 from pathlib import Path
-from typing import Any
 
+try:
+    from scripts.v8std_mcp_chunks import MAX_CHUNK_CHARS, page_chunks
+except ModuleNotFoundError:  # Direct script invocation outside the package route.
+    from v8std_mcp_chunks import MAX_CHUNK_CHARS, page_chunks
 from v8std_retrieval_rules import tokenize
 from atomic_files import atomic_write_text
 
 
 DEFAULT_DIM = 256
 DEFAULT_MODEL = "v8std-hash-embeddings-v1"
-MAX_CHUNK_CHARS = 2200
 
 
 def signed_hash(value: str) -> tuple[int, float]:
@@ -54,39 +55,6 @@ def embed_text(value: str, *, dim: int = DEFAULT_DIM) -> list[float]:
 
 def encode_vector(vector: list[float]) -> str:
     return base64.b64encode(struct.pack(f"<{len(vector)}f", *vector)).decode("ascii")
-
-
-def page_chunks(page: dict[str, Any]) -> list[tuple[str, int, str]]:
-    metadata = " ".join(
-        [
-            page.get("id", ""),
-            page.get("title", ""),
-            page.get("description", ""),
-            " ".join(page.get("aliases", [])),
-        ]
-    ).strip()
-    chunks: list[tuple[str, int, str]] = []
-    if metadata:
-        chunks.append(("metadata", 0, metadata))
-
-    body = page.get("body_markdown") or ""
-    paragraphs = [item.strip() for item in re.split(r"\n{2,}", body) if item.strip()]
-    current: list[str] = []
-    current_len = 0
-    chunk_index = 0
-    for paragraph in paragraphs:
-        next_len = current_len + len(paragraph) + 2
-        if current and next_len > MAX_CHUNK_CHARS:
-            chunks.append(("body", chunk_index, "\n\n".join(current)))
-            chunk_index += 1
-            current = []
-            current_len = 0
-        current.append(paragraph)
-        current_len += len(paragraph) + 2
-    if current:
-        chunks.append(("body", chunk_index, "\n\n".join(current)))
-
-    return chunks
 
 
 def generate_rows(pages_path: Path, *, dim: int = DEFAULT_DIM, model: str = DEFAULT_MODEL) -> list[str]:

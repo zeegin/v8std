@@ -1,6 +1,0 @@
-# Keep Docker build context minimal
-**
-!requirements.txt
-!requirements-mcp.txt
-!scripts/
-!scripts/**

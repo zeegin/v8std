@@ -1,0 +1,16 @@
+[Unit]
+Description=Recover operator v8std first migration independently of SSH
+After=docker.service nginx.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/python3 -I /opt/v8std-release/delivery/vps/v8std_mcp_release.py bootstrap-recover
+RuntimeMaxSec=300s
+TimeoutStopSec=5s
+KillMode=control-group
+UMask=0077
+LimitNOFILE=4096
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectHome=yes

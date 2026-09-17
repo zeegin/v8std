@@ -49,6 +49,14 @@ def publish_license_texts(repo_root: Path, site_dir: Path) -> set[str]:
             raise FileNotFoundError(f"canonical license text is missing: {source}")
         shutil.copyfile(source, target_dir / filename)
 
+    links = "\n".join(f'<li><a href="{name}">{name}</a></li>'
+                      for name in sorted(LICENSE_FILENAMES))
+    (target_dir / "index.html").write_text(
+        '<!doctype html><html lang="en"><meta charset="utf-8">'
+        '<link rel="icon" href="data:,">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        '<title>Third-party license texts</title><h1>Third-party license texts</h1>'
+        f'<ul>{links}</ul></html>\n', encoding="utf-8")
     return set(LICENSE_FILENAMES)
 
 

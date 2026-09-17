@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from snippet_benchmark import within_budget, summarize_series
+from dev.checks.snippet_benchmark import within_budget, summarize_series
 
 
 class SnippetBenchmarkTests(unittest.TestCase):

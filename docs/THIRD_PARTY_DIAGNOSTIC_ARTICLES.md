@@ -27,4 +27,4 @@ CC0 не заменяет и не изменяет лицензии содерж
 `diagnostic-source:start` и `diagnostic-source:end`.
 
 Обычная сборка сайта не обращается к сети. Обновление выполняется только из
-явно переданных локальных checkout командой `scripts/sync_diagnostic_articles.py`.
+явно переданных локальных checkout командой `dev/content/sync_diagnostic_articles.py`.

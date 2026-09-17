@@ -1,0 +1,4 @@
+# Public artifact builder input, independently hashed from Debian over HTTPS.
+# Extracted without apt/package dependency resolution; font family unchanged.
+# https://deb.debian.org/debian/pool/main/f/fonts-dejavu/fonts-dejavu-core_2.37-8_all.deb
+86635b3d25b3655fc11cb3ecc3af59f0bf19643b02b94f2de48bd10253cdba12  fonts-dejavu-core_2.37-8_all.deb

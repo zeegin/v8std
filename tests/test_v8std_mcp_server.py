@@ -14,7 +14,7 @@ from functools import lru_cache
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SERVER_PATH = REPO_ROOT / "scripts" / "v8std_mcp_server.py"
+SERVER_PATH = REPO_ROOT / 'runtime/v8std_mcp_server.py'
 SCRIPTS_PATH = REPO_ROOT / "scripts"
 
 EXPECTED_TOOL_NAMES = [
@@ -26,38 +26,13 @@ EXPECTED_TOOL_NAMES = [
 ]
 
 EXPECTED_TOOL_GUIDANCE = {
-    "v8std_search": [
-        "Use this when",
-        "arbitrary phrase",
-        "Do not use this first for code snippets",
-        "diagnostic-code lists",
-    ],
-    "v8std_get_page": [
-        "Use this when",
-        "clean Markdown",
-        "exact id",
-        "After v8std_search",
-    ],
-    "v8std_get_related": [
-        "Use this when",
-        "from a known standard or diagnostic",
-        "related standards",
-        "diagnostics",
-    ],
-    "v8std_explain_snippet": [
-        "Use this when",
-        "one BSL procedure or SDBL code fragment",
-        "applicable standards",
-        "Do not use it for ordinary prose",
-    ],
-    "v8std_explain_diagnostics": [
-        "Use this when",
-        "ACC",
-        "BSLLS",
-        "EDT",
-        "standard clauses",
-    ],
+    "v8std_search": ["natural-language", "v8std_explain_diagnostics", "v8std_explain_snippet", "not probabilities"],
+    "v8std_get_page": ["Markdown", "body_truncated", "found=false", "v8std_search"],
+    "v8std_get_related": ["explicit corpus links", "not evidence", "v8std_get_page"],
+    "v8std_explain_snippet": ["one BSL procedure", "not confirmed violations", "heuristic confidence", "smaller relevant fragment"],
+    "v8std_explain_diagnostics": ["source-code comments", "unknown_codes", "does not justify", "No wildcard"],
 }
+
 
 OPENAI_TOOL_NAME_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 LOWER_SNAKE_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
@@ -111,15 +86,15 @@ def load_server_module():
     if str(SCRIPTS_PATH) not in sys.path:
         sys.path.insert(0, str(SCRIPTS_PATH))
     try:
-        import v8std_mcp_server
+        import runtime.v8std_mcp_server as v8std_mcp_server
 
         return v8std_mcp_server
     except ModuleNotFoundError as error:
         if error.name not in {"mcp", "starlette"}:
             raise
         _install_server_dependency_stubs()
-        sys.modules.pop("v8std_mcp_server", None)
-        import v8std_mcp_server
+        sys.modules.pop("runtime.v8std_mcp_server", None)
+        import runtime.v8std_mcp_server as v8std_mcp_server
 
         return v8std_mcp_server
 

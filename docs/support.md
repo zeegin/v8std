@@ -20,7 +20,7 @@ hide:
 
 ### Как развернуть локально?
 
-Для локального запуска без Docker требуется `Python 3.12`. Zensical устанавливается из PyPI в зафиксированной версии.
+Для разработки сайта требуется `Python 3.12`. Zensical устанавливается из PyPI в зафиксированной версии.
 
 === ":fontawesome-brands-apple: mac"
     ```bash
@@ -61,20 +61,6 @@ hide:
     ./scripts/zensical_docs.sh serve
     ```
 
-=== ":fontawesome-brands-docker: docker"
-    ```bash
-    git clone https://github.com/zeegin/v8std.git
-    cd v8std
-
-    docker compose -f docker-compose/docker-compose.yml up --build
-    ```
-
-    Статическая сборка и проверка через `nginx`:
-
-    ```bash
-    docker compose -f docker-compose/docker-compose.ngnix.yml up --build
-    ```
-
 Скрипт [`./scripts/install_zensical.sh`](https://github.com/zeegin/v8std/blob/main/scripts/install_zensical.sh) устанавливает зафиксированную версию Zensical из PyPI и Python-зависимости проекта из [`requirements.txt`](https://github.com/zeegin/v8std/blob/main/requirements.txt).
 
 Скрипт [`./scripts/zensical_docs.sh`](https://github.com/zeegin/v8std/blob/main/scripts/zensical_docs.sh) перед `serve` и `build` обновляет временные social cards и AI-артефакты. Пример production-сборки:
@@ -83,144 +69,4 @@ hide:
 ./scripts/zensical_docs.sh build --strict
 ```
 
-Документация будет доступна по адресу `http://127.0.0.1:8000`.
-
-### Локальный MCP { #local-mcp }
-
-Локальный MCP нужен, если вы не хотите отправлять фрагменты закрытого кода в
-публичный сервис, работаете без доступа к интернету или проверяете изменения
-сайта до публикации.
-
-Самый простой запуск — через Docker:
-
-```bash
-git clone https://github.com/zeegin/v8std.git
-cd v8std
-
-docker compose -f docker-compose/docker-compose.yml up -d v8std-mcp
-```
-
-Локальный адрес MCP:
-
-```text
-http://127.0.0.1:8765/mcp
-```
-
-Подключение к Codex:
-
-```bash
-codex mcp add v8std-local --url http://127.0.0.1:8765/mcp
-```
-
-Подключение к Claude Code:
-
-```bash
-claude mcp add --transport http v8std-local http://127.0.0.1:8765/mcp
-```
-
-Для Cursor и Kiro используйте тот же адрес в `mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "v8std-local": {
-      "url": "http://127.0.0.1:8765/mcp"
-    }
-  }
-}
-```
-
-Для Antigravity используйте `mcp_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "v8std-local": {
-      "serverUrl": "http://127.0.0.1:8765/mcp"
-    }
-  }
-}
-```
-
-Контейнер читает файлы `docs/ai/pages.jsonl` и
-`docs/ai/search-vectors.jsonl`. Если их нет, он сгенерирует индекс при старте.
-
-Без Docker MCP можно запустить так:
-
-```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
-
-pip install -r requirements.txt -r requirements-mcp.txt
-python scripts/generate_ai_artifacts.py
-python scripts/generate_search_vectors.py
-python scripts/v8std_mcp_server.py \
-  --pages docs/ai/pages.jsonl \
-  --vectors docs/ai/search-vectors.jsonl \
-  --host 127.0.0.1 \
-  --port 8765
-```
-
-#### Крупные процедуры
-
-По умолчанию `v8std_explain_snippet` принимает до 4000 символов. На локальном
-экземпляре можно задать целое значение от 4000 до 32 000 включительно:
-
-```bash
-V8STD_MCP_MAX_SNIPPET_CHARS=32000 \
-  docker compose -f docker-compose/docker-compose.yml up -d --build v8std-mcp
-```
-
-Для повторных запусков настройку можно сохранить в файле `.env` каталога
-`docker-compose` и явно передавать `--env-file docker-compose/.env` команде
-`docker compose`. Простого `docker compose restart` недостаточно для применения
-новых переменных: выполните `up -d`, чтобы пересоздать контейнер с новой средой.
-
-При запуске Python или `scripts/run_v8std_mcp.sh` используется та же переменная.
-У Python-сервера есть также аргумент `--max-snippet-chars 32000`:
-CLI имеет приоритет над env, затем применяется default 4000. Пустое, дробное
-или выходящее за диапазон значение останавливает запуск с ошибкой. Настройка
-фиксируется до запуска сервера; после изменения нужен перезапуск.
-
-Проверьте эффективный предел через описание инструмента и
-`tools/list.inputSchema.properties.snippet.maxLength`. Превышение не обрезает
-код молча: передавайте одну релевантную процедуру в пределах своего экземпляра.
-Лимит обычного `v8std_search` остаётся 500 символов. Настройка локального
-экземпляра не меняет публичный сервис и не увеличивает число поисковых проходов
-на вызов.
-
-Размер считается в символах декодированной Unicode-строки, не в токенах модели
-или байтах HTTP. Если перед локальным сервером стоит свой reverse proxy,
-настройте его byte-limit отдельно: для 32k строки с JSON-экранированием
-Unicode и обычным конвертом запроса ориентир — 512 KiB. Дополнительные поля и
-избыточные пробелы увеличивают тело запроса. Само расширение окна не означает
-доказанную поддержку большего числа одновременных пользователей.
-
-Полезные команды:
-
-```bash
-docker logs v8std-mcp
-docker compose -f docker-compose/docker-compose.yml restart v8std-mcp
-```
-
-### Поиск и LLM-индексы
-
-Форматы запросов описаны на странице [Поиск по сайту](search-help.md).
-
-При `serve` и `build` автоматически генерируются статические AI-артефакты:
-
-- [`/llms.txt`](/llms.txt) — компактная карта сайта для LLM;
-- [`/llms-full.txt`](/llms-full.txt) — очищенный полный Markdown-корпус;
-- [`/ai/pages.jsonl`](/ai/pages.jsonl) — индекс страниц, алиасов, связей и очищенного Markdown;
-
-Чтобы исключить страницу из `/llms.txt` и `/llms-full.txt`, добавьте в её front matter:
-
-```yaml
-llms:
-  ignore: true
-```
-
-Это не влияет на обычную сборку сайта, навигацию и поиск Zensical. Стандарты с
-таким флагом остаются в `/ai/pages.jsonl`, чтобы MCP мог находить их по теме,
-номеру или коду диагностики. Служебные страницы с этим флагом в MCP-индекс не
-попадают.
+Сайт будет доступен по адресу `http://127.0.0.1:8000`.

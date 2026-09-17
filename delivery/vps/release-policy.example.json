@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "enabled": false,
+  "runtime_enabled": false,
+  "platform": "linux/amd64",
+  "public_url": "https://ai.v8std.ru",
+  "ports": [18766, 18767],
+  "nginx_include": "/etc/nginx/v8std-release/upstream.conf",
+  "static_root": "/srv/v8std-indexes/v1",
+  "configs": {},
+  "capacity": {
+    "disk_bytes": 3221225472,
+    "available_memory_bytes": 1073741824,
+    "file_descriptors": 4096,
+    "network_evidence": null
+  }
+}

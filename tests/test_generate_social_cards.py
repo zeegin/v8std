@@ -12,7 +12,7 @@ SCRIPT_PATH = REPO_ROOT / "scripts" / "generate_social_cards.py"
 
 
 def load_module():
-    spec = importlib.util.spec_from_file_location("generate_social_cards", SCRIPT_PATH)
+    spec = importlib.util.spec_from_file_location("scripts.generate_social_cards", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)

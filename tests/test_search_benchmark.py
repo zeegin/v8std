@@ -9,7 +9,7 @@ import sys
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from search_benchmark import parse_args, ranked_summary, read_case_payloads  # noqa: E402
+from dev.checks.search_benchmark import parse_args, ranked_summary, read_case_payloads  # noqa: E402
 
 
 class SearchBenchmarkTests(unittest.TestCase):
