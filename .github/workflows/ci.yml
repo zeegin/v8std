@@ -141,11 +141,6 @@ jobs:
           digest-mismatch: error
       - name: Fresh main and actual external protection prerequisites
         run: .venv/bin/python -m delivery.ci.publish_mcp_artifacts guard --directory .ci --environment github-pages
-      - name: Isolate registry credentials on this ephemeral runner
-        if: vars.MCP_IMAGE_PUBLICATION_ENABLED == 'true'
-        run: |
-          mkdir -p "$RUNNER_TEMP/v8std-registry"
-          echo "DOCKER_CONFIG=$RUNNER_TEMP/v8std-registry" >> "$GITHUB_ENV"
       - name: Preserve selected corpus source identity
         id: corpus
         run: echo "changed=$(.venv/bin/python -m delivery.ci.publish_mcp_artifacts value --directory .ci --field corpus_changed)" >> "$GITHUB_OUTPUT"
