@@ -34,6 +34,25 @@ def envelope(**changes):
 
 
 class EnvelopeTests(unittest.TestCase):
+    def test_process_reaped_between_proc_stat_check_and_read_is_stopped(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "processes").mkdir()
+            record = {"release_id": "reaped", "envelope_hash": "test"}
+            (root / "processes/reaped.json").write_text(json.dumps({"record": record, "pid": 12345}))
+            adapter = object.__new__(ProcessAdapter)
+            adapter.root = root
+            read_text = Path.read_text
+
+            def disappearing_stat(path, *args, **kwargs):
+                if path == Path("/proc/12345/stat"):
+                    raise FileNotFoundError(str(path))
+                return read_text(path, *args, **kwargs)
+
+            with patch("os.kill"), patch.object(Path, "exists", return_value=True), \
+                    patch.object(Path, "read_text", disappearing_stat):
+                self.assertFalse(adapter.inspect(record, time.monotonic() + 2)["State"]["Running"])
+
     def test_control_directory_is_readable_under_recovery_umask(self):
         with tempfile.TemporaryDirectory() as temp:
             adapter = release.HostAdapter(Path(temp), {})

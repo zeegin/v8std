@@ -10,7 +10,7 @@
 
 Проверяется сбой после переключения и восстановление прежнего процесса через локальный адаптер.
 
-- `tests.test_v8std_mcp_release.TransactionTests.test_public_failure_restores_observed_predecessor_and_retains_snapshot` — [код](../../tests/test_v8std_mcp_release.py#L1130).
+- `tests.test_v8std_mcp_release.TransactionTests.test_public_failure_restores_observed_predecessor_and_retains_snapshot` — [код](../../tests/test_v8std_mcp_release.py#L1149).
 
 Запуск из корня репозитория:
 

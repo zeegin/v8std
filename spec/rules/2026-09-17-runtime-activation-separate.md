@@ -10,7 +10,7 @@
 
 Тест отключает флаг политики и проверяет ошибку runtime_not_activated без вызова schedule.
 
-- `tests.test_v8std_mcp_release.TransactionTests.test_runtime_activation_is_separate_from_publication` — [код](../../tests/test_v8std_mcp_release.py#L1123).
+- `tests.test_v8std_mcp_release.TransactionTests.test_runtime_activation_is_separate_from_publication` — [код](../../tests/test_v8std_mcp_release.py#L1142).
 
 Запуск из корня репозитория:
 

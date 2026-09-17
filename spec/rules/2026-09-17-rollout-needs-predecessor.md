@@ -10,7 +10,7 @@
 
 Тест удаляет сведения о предшественнике и проверяет отказ до постановки операции в очередь.
 
-- `tests.test_v8std_mcp_release.TransactionTests.test_ordinary_submit_rejects_missing_predecessor_before_scheduling` — [код](../../tests/test_v8std_mcp_release.py#L1115).
+- `tests.test_v8std_mcp_release.TransactionTests.test_ordinary_submit_rejects_missing_predecessor_before_scheduling` — [код](../../tests/test_v8std_mcp_release.py#L1134).
 
 Запуск из корня репозитория:
 

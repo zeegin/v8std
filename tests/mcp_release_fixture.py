@@ -103,7 +103,8 @@ class ProcessAdapter(release.HostAdapter):
             else:
                 status = subprocess.run(["ps", "-p", str(state["pid"]), "-o", "stat="], capture_output=True).stdout.strip()
                 running = bool(status) and not status.startswith(b"Z")
-        except ProcessLookupError:
+        except (ProcessLookupError, FileNotFoundError):
+            # Linux can reap the process between exists() and reading /proc/stat.
             running = False
         return {"State": {"Running": running}, "pid": state["pid"]}
 
