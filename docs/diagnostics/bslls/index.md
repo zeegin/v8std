@@ -62,8 +62,8 @@ llms:
 | [EventHandlerInvalidSignature](EventHandlerInvalidSignature.md) | Ошибка | Важный | — |
 | [EventHandlerOutsideEventRegion](EventHandlerOutsideEventRegion.md) | Дефект кода | Информационный | [#std455, п. 1.5: Структура модуля](../../std/455.md#15)<br>[#std455, п. 1.6: Структура модуля](../../std/455.md#16) |
 | [ExcessiveAutoTestCheck](ExcessiveAutoTestCheck.md) | Дефект кода | Незначительный | [#std456, п. 3: Тексты модулей](../../std/456.md#3) |
-| [ExecuteExternalCode](ExecuteExternalCode.md) | Уязвимость | Критичный | [#std770, п. 1: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md#1) |
-| [ExecuteExternalCodeInCommonModule](ExecuteExternalCodeInCommonModule.md) | Потенциальная уязвимость | Критичный | [#std770, п. 3: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md#3) |
+| [ExecuteExternalCode](ExecuteExternalCode.md) | Уязвимость | Критичный | [#std770, п. 3: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md#3) |
+| [ExecuteExternalCodeInCommonModule](ExecuteExternalCodeInCommonModule.md) | Потенциальная уязвимость | Критичный | [#std770, п. 4.4: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md#44) |
 | [ExportVariables](ExportVariables.md) | Дефект кода | Важный | [#std639, п. 2.1: Использование переменных в программных модулях](../../std/639.md#21) |
 | [ExternalAppStarting](ExternalAppStarting.md) | Потенциальная уязвимость | Важный | [#std774, п. 1: Безопасность запуска приложений](../../std/774.md#1) |
 | [ExtraCommas](ExtraCommas.md) | Дефект кода | Важный | [#std640, п. 7: Параметры процедур и функций](../../std/640.md#7) |

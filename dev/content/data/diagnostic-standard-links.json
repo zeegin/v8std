@@ -569,24 +569,28 @@
     {
       "diagnostic": "bslls:ExecuteExternalCode",
       "standard": "std770",
-      "clause": "1",
-      "anchor": "1",
+      "clause": "3",
+      "anchor": "3",
       "evidence": [
-        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCode.md"
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCode.md",
+        "local:docs/std/770.md#3"
       ],
-      "reason": "Диагностика «Выполнение произвольного кода на сервере (ExecuteExternalCode)» проверяет условие пункта 1 стандарта std770.",
-      "review": "confirmed"
+      "reason": "Диагностика выявляет выполнение произвольного кода на сервере; риск подмены исполняемой строки описан в пункте 3.",
+      "review": "confirmed",
+      "notes": "Описание диагностики отражает прежнюю редакцию и не является полным изложением текущего стандарта. Ограничения на клиенте изложены отдельно в #std801."
     },
     {
       "diagnostic": "bslls:ExecuteExternalCodeInCommonModule",
       "standard": "std770",
-      "clause": "3",
-      "anchor": "3",
+      "clause": "4.4",
+      "anchor": "44",
       "evidence": [
-        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCodeInCommonModule.md"
+        "https://github.com/1c-syntax/bsl-language-server/blob/f4616cda8a216789ee40529ed857e614b9e2ea25/docs/diagnostics/ExecuteExternalCodeInCommonModule.md",
+        "local:docs/std/770.md#44"
       ],
-      "reason": "Диагностика «Выполнение произвольного кода в общем модуле на сервере (ExecuteExternalCodeInCommonModule)» проверяет условие пункта 3 стандарта std770.",
-      "review": "confirmed"
+      "reason": "Пункт 4.4 требует аудита внешнего кода, который не может выполняться в безопасном режиме.",
+      "review": "confirmed",
+      "notes": "Прежний пункт 3 переработан. Указание исходной статьи на размещение произвольного кода в общем модуле не заменяет требования текущей редакции к проверенному внешнему коду; для клиента действует #std801."
     },
     {
       "diagnostic": "bslls:ExportVariables",
@@ -3386,14 +3390,15 @@
     {
       "diagnostic": "v8cs:server-execution-safe-mode",
       "standard": "std770",
-      "clause": "2",
-      "anchor": "2",
+      "clause": "4.1",
+      "anchor": "41",
       "evidence": [
         "https://github.com/1C-Company/v8-code-style/blob/c8fe7932babf718c0ace3cf836a99d6a3b98d098/bundles/com.e1c.v8codestyle.bsl/markdown/ru/server-execution-safe-mode.md",
-        "local:docs/std/770.md#2"
+        "local:docs/std/770.md#41"
       ],
-      "reason": "Диагностика v8cs:server-execution-safe-mode проверяет требование пункта 2 стандарта std770.",
-      "review": "confirmed"
+      "reason": "Диагностика проверяет включение безопасного режима перед Выполнить и Вычислить; в редакции сентября 2026 года требование находится в пункте 4.1.",
+      "review": "confirmed",
+      "notes": "Прежний пункт 2 перенумерован; пункт 2 текущей редакции относится к пользовательским формулам."
     },
     {
       "diagnostic": "v8cs:structure-constructor-too-many-keys",

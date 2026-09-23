@@ -165,7 +165,7 @@ llms:
 | [security-software-call](security-software-call.md) | `bsl` | [#std775, п. 1: Безопасность программного обеспечения, вызываемого через открытые интерфейсы](../../std/775.md#1) |
 | [self-assign](self-assign.md) | `bsl` | — |
 | [semicolon-missing](semicolon-missing.md) | `bsl` | — |
-| [server-execution-safe-mode](server-execution-safe-mode.md) | `bsl` | [#std770, п. 2: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md#2) |
+| [server-execution-safe-mode](server-execution-safe-mode.md) | `bsl` | [#std770, п. 4.1: Ограничения на использование Выполнить и Вычислить на сервере](../../std/770.md#41) |
 | [statement-type-change](statement-type-change.md) | `bsl` | — |
 | [string-literal-type-annotation-invalid-place](string-literal-type-annotation-invalid-place.md) | `bsl` | — |
 | [structure-constructor-too-many-keys](structure-constructor-too-many-keys.md) | `bsl` | [#std640, п. 6.2: Параметры процедур и функций](../../std/640.md#62)<br>[#std693, п. 1: Использование объектов типа Структура](../../std/693.md#1) |

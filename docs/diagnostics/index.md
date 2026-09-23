@@ -5313,36 +5313,48 @@ llms:
       <span class="diagnostics-standard__counts">0 проверок · 0 пунктов · 0 исправлений</span>
     </summary>
     <div class="diagnostics-standard__clauses">
-      <section class="diagnostics-clause" data-clause data-search="п. 1 — эта рекомендация применяется, когда объект информационной базы становится неактуальным временно или постоянно (например, сотрудник уволился или ушел в декрет)" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#1">п. 1 — Эта рекомендация применяется, когда объект информационной базы становится неактуальным временно или постоянно (например, сотрудник уволился или ушел в декрет)</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 1 — объект может стать неактуальным временно или навсегда: сотрудник уволился или ушел в декрет, подразделение расформировано" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#1">п. 1 — Объект может стать неактуальным временно или навсегда: сотрудник уволился или ушел в декрет, подразделение расформировано</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 2 — чтобы запретить выбор неактуальных объектов через автоподбор и быстрый выбор в полях ввода, используйте один из двух подходов:" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#2">п. 2 — Чтобы запретить выбор неактуальных объектов через автоподбор и быстрый выбор в полях ввода, используйте один из двух подходов:</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 2.1 — для объектов, поддерживающих механизм недействительности, предусмотрите булев реквизит недействителен или аналогичный с начальным значением ложь" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#21">п. 2.1 — Для объектов, поддерживающих механизм недействительности, предусмотрите булев реквизит Недействителен или аналогичный с начальным значением Ложь</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 2.1 — если ограничение должно действовать во всех или в большинстве полей ввода, задавайте его по умолчанию" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#21">п. 2.1 — Если ограничение должно действовать во всех или в большинстве полей ввода, задавайте его по умолчанию</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 2.2 — при использовании подсистемы «недействительные объекты» бсп 3.2.2 и выше можно включить объект метаданных в состав общего реквизита недействителен, не добавляя собственный реквизит" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#22">п. 2.2 — При использовании подсистемы «Недействительные объекты» БСП 3.2.2 и выше можно включить объект метаданных в состав общего реквизита Недействителен, не добавляя собственный реквизит</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 2.1.1 — в модуле менеджера справочника пользователи реализуйте обработчики обработкаполученияданныхвыбора и обработкаполученияформы, которые устанавливают параметры отбора" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#211">п. 2.1.1 — В модуле менеджера справочника Пользователи реализуйте обработчики ОбработкаПолученияДанныхВыбора и ОбработкаПолученияФормы, которые устанавливают параметры отбора</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 3 — рекомендуется скрывать недействительные объекты в автоподборе и быстром выборе полей ввода" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#3">п. 3 — Рекомендуется скрывать недействительные объекты в автоподборе и быстром выборе полей ввода</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 2.1.2 — для реквизитов, где поведение нужно изменить, явно задавайте свойства параметры выбора и связи параметров выбора:" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#212">п. 2.1.2 — Для реквизитов, где поведение нужно изменить, явно задавайте свойства Параметры выбора и Связи параметров выбора:</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 3.1.1 — для переопределения скрытия или отображения используйте булево свойство добавлятьнедействительныеобъектывданныевыбора в параметрах выбора реквизита объекта или поля формы" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#311">п. 3.1.1 — Для переопределения скрытия или отображения используйте булево свойство ДобавлятьНедействительныеОбъектыВДанныеВыбора в параметрах выбора реквизита объекта или поля формы</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 2.2 — если запрет на выбор неактуальных объектов сильно зависит от контекста, не задавайте его по умолчанию" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#22">п. 2.2 — Если запрет на выбор неактуальных объектов сильно зависит от контекста, не задавайте его по умолчанию</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 3.1.2 — в модуле менеджера реализуйте обработкаполученияданныхвыбора, который по умолчанию добавляет отбор недействителен = ложь и обрабатывает параметр добавлятьнедействительныеобъектывданныевыбора" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#312">п. 3.1.2 — В модуле менеджера реализуйте ОбработкаПолученияДанныхВыбора, который по умолчанию добавляет отбор Недействителен = Ложь и обрабатывает параметр ДобавлятьНедействительныеОбъектыВДанныеВыбора</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 3 — в формах списка и выбора пользователей рекомендуется добавить флажок показывать недействительных пользователей" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#3">п. 3 — В формах списка и выбора пользователей рекомендуется добавить флажок Показывать недействительных пользователей</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 3.1.3 — при выборе недействительного объекта через автоподбор или быстрый выбор рекомендуется предупреждать пользователя, если объект не помечен на удаление" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#313">п. 3.1.3 — При выборе недействительного объекта через автоподбор или быстрый выбор рекомендуется предупреждать пользователя, если объект не помечен на удаление</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 4 — для отображения неактуальных объектов в списках используйте элемент стиля текстзапрещеннойячейкицвет (192,192,192)" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/638.md#4">п. 4 — Для отображения неактуальных объектов в списках используйте элемент стиля ТекстЗапрещеннойЯчейкиЦвет (192,192,192)</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 3.2 — в формах списка и выбора рекомендуется по умолчанию скрывать недействительные объекты и добавлять в меню «еще» команду «показать недействительные», которая переключает отбор" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#32">п. 3.2 — В формах списка и выбора рекомендуется по умолчанию скрывать недействительные объекты и добавлять в меню «Еще» команду «Показать недействительные», которая переключает отбор</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 4 — в формах списка, выбора и элемента добавьте в меню «еще» команду «пометить недействительным / снять пометку», аналогичную команде управления пометкой удаления" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#4">п. 4 — В формах списка, выбора и элемента добавьте в меню «Еще» команду «Пометить недействительным / Снять пометку», аналогичную команде управления пометкой удаления</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 5 — при установке пометки удаления объект также помечается недействительным" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#5">п. 5 — При установке пометки удаления объект также помечается недействительным</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 6 — для отображения недействительных объектов в списках рекомендуется элемент стиля текстзапрещеннойячейкицвет (192,192,192)" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/638.md#6">п. 6 — Для отображения недействительных объектов в списках рекомендуется элемент стиля ТекстЗапрещеннойЯчейкиЦвет (192,192,192)</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
     </div>
@@ -5546,6 +5558,26 @@ llms:
       </section>
       <section class="diagnostics-clause" data-clause data-search="п. 5 — иногда длительная операция требует монопольного режима" hidden data-empty="true">
         <h2 class="diagnostics-clause__title"><a href="../std/642.md#5">п. 5 — Иногда длительная операция требует монопольного режима</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 6 — при запуске фоновых заданий предотвращайте непредусмотренные вызовы процедур и функций и подмену параметров, прямо или косвенно полученных с клиента" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/642.md#6">п. 6 — При запуске фоновых заданий предотвращайте непредусмотренные вызовы процедур и функций и подмену параметров, прямо или косвенно полученных с клиента</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 6.1 — полное имя обработчика задавайте строковым литералом при вызовах:" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/642.md#61">п. 6.1 — Полное имя обработчика задавайте строковым литералом при вызовах:</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 6.2 — при использовании бсп соблюдайте дополнительные правила запуска и регистрации обработчиков" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/642.md#62">п. 6.2 — При использовании БСП соблюдайте дополнительные правила запуска и регистрации обработчиков</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 6.2.1 — для длительных операций используйте общий модуль длительныеоперации" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/642.md#621">п. 6.2.1 — Для длительных операций используйте общий модуль ДлительныеОперации</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 6.2.2 — в общих модулях, модулях менеджеров и объектов, содержащих обработчики длительных операций или вызовов через общегоназначения.выполнитьфоновоезадание, добавьте экспортную процедуру с перечнем разрешенных имен:" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/642.md#622">п. 6.2.2 — В общих модулях, модулях менеджеров и объектов, содержащих обработчики длительных операций или вызовов через ОбщегоНазначения.ВыполнитьФоновоеЗадание, добавьте экспортную процедуру с перечнем разрешенных имен:</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
     </div>
@@ -6272,8 +6304,8 @@ llms:
           <a class="diagnostic-chip" href="v8-code-style/restriction-execute-external-code.md">v8cs:restriction-execute-external-code</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 8 — регламентные задания по-умолчанию запускаются под полными правами" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/669.md#8">п. 8 — Регламентные задания по-умолчанию запускаются под полными правами</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 8 — если конфигурация работает в модели сервиса и поддерживает перенос данных из локальной версии, отключайте весь пользовательский внешний код и тексты запросов, введенные в локальной базе" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/669.md#8">п. 8 — Если конфигурация работает в модели сервиса и поддерживает перенос данных из локальной версии, отключайте весь пользовательский внешний код и тексты запросов, введенные в локальной базе</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
     </div>
@@ -9493,14 +9525,30 @@ llms:
       <span class="diagnostics-standard__counts">8 проверок · 3 пункта · 0 исправлений</span>
     </summary>
     <div class="diagnostics-standard__clauses">
-      <section class="diagnostics-clause" data-clause data-search="п. 1 — опасность представляет не только прямое выполнение кода пользователя, но и выполнение строк, собранных из параметров и переданных в серверные процедуры/функции bslls:executeexternalcode">
-        <h2 class="diagnostics-clause__title"><a href="../std/770.md#1">п. 1 — Опасность представляет не только прямое выполнение кода пользователя, но и выполнение строк, собранных из параметров и переданных в серверные процедуры/функции</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 1 — в общем случае рекомендуется отказаться от исполнения произвольного кода через выполнить и вычислить" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#1">п. 1 — В общем случае рекомендуется отказаться от исполнения произвольного кода через Выполнить и Вычислить</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 2 — пользовательские формулы рекомендуется собирать из предусмотренных составляющих и вычислять без выполнить и вычислить" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#2">п. 2 — Пользовательские формулы рекомендуется собирать из предусмотренных составляющих и вычислять без Выполнить и Вычислить</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 2.1 — если формулу нельзя представить набором предусмотренных составляющих, вычисляйте ее в безопасном режиме" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#21">п. 2.1 — Если формулу нельзя представить набором предусмотренных составляющих, вычисляйте ее в безопасном режиме</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 3 — опасность представляет не только код, введенный пользователем, но и строки, собранные из параметров серверных методов: как из данных клиента, так и из базы bslls:executeexternalcode">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#3">п. 3 — Опасность представляет не только код, введенный пользователем, но и строки, собранные из параметров серверных методов: как из данных клиента, так и из базы</a></h2>
         <div class="diagnostics-clause__links diagnostic-links">
           <a class="diagnostic-chip" href="bslls/ExecuteExternalCode.md">bslls:ExecuteExternalCode</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 2 — перед вызовом выполнить/вычислить в серверном коде включайте безопасный режим acc:486 acc:487 acc:488 acc:489 acc:490 v8cs:server-execution-safe-mode">
-        <h2 class="diagnostics-clause__title"><a href="../std/770.md#2">п. 2 — Перед вызовом Выполнить/Вычислить в серверном коде включайте безопасный режим</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 4 — если отказаться от выполнить и вычислить невозможно, выполняйте следующие требования" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#4">п. 4 — Если отказаться от Выполнить и Вычислить невозможно, выполняйте следующие требования</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 4.1 — перед динамическим выполнением включайте безопасный режим acc:486 acc:487 acc:488 acc:489 acc:490 v8cs:server-execution-safe-mode">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#41">п. 4.1 — Перед динамическим выполнением включайте безопасный режим</a></h2>
         <div class="diagnostics-clause__links diagnostic-links">
           <a class="diagnostic-chip" href="acc/486.md">acc:486</a>
           <a class="diagnostic-chip" href="acc/487.md">acc:487</a>
@@ -9510,14 +9558,22 @@ llms:
           <a class="diagnostic-chip" href="v8-code-style/server-execution-safe-mode.md">v8cs:server-execution-safe-mode</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 3 — если код нельзя выполнить в безопасном режиме (например, есть доступ к файлам), запускайте его только после аудита и только из контролируемого источника bslls:executeexternalcodeincommonmodule">
-        <h2 class="diagnostics-clause__title"><a href="../std/770.md#3">п. 3 — Если код нельзя выполнить в безопасном режиме (например, есть доступ к файлам), запускайте его только после аудита и только из контролируемого источника</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 4.2 — предотвращайте вызовы методов платформы, процедур и функций конфигурации, не предусмотренных для конкретного сценария" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#42">п. 4.2 — Предотвращайте вызовы методов платформы, процедур и функций конфигурации, не предусмотренных для конкретного сценария</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 4.3 — технологические динамические вызовы, например вызов процедуры по полному имени, рекомендуется заменять прямыми" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#43">п. 4.3 — Технологические динамические вызовы, например вызов процедуры по полному имени, рекомендуется заменять прямыми</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 4.4 — если произвольный код не работает в безопасном режиме, например требует доступа к файлам, замените его внешним кодом, который можно проверить перед подключением bslls:executeexternalcodeincommonmodule">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#44">п. 4.4 — Если произвольный код не работает в безопасном режиме, например требует доступа к файлам, замените его внешним кодом, который можно проверить перед подключением</a></h2>
         <div class="diagnostics-clause__links diagnostic-links">
           <a class="diagnostic-chip" href="bslls/ExecuteExternalCodeInCommonModule.md">bslls:ExecuteExternalCodeInCommonModule</a>
         </div>
       </section>
-      <section class="diagnostics-clause" data-clause data-search="п. 4 — если конфигурация работает в модели сервиса и поддерживает перенос из локальной версии, отключайте пользовательские фрагменты кода и тексты запросов, пришедшие из локальной базы" hidden data-empty="true">
-        <h2 class="diagnostics-clause__title"><a href="../std/770.md#4">п. 4 — Если конфигурация работает в модели сервиса и поддерживает перенос из локальной версии, отключайте пользовательские фрагменты кода и тексты запросов, пришедшие из локальной базы</a></h2>
+      <section class="diagnostics-clause" data-clause data-search="п. 4.5 — регламентные задания по умолчанию запускаются под полными правами" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/770.md#45">п. 4.5 — Регламентные задания по умолчанию запускаются под полными правами</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
     </div>
@@ -10180,6 +10236,78 @@ llms:
         <h2 class="diagnostics-clause__title"><a href="../std/799.md#3">п. 3 — Исправления ошибок в правилах обмена поставляйте расширениями (патчами)</a></h2>
         <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
       </section>
+    </div>
+  </details>
+  <details class="diagnostics-standard" data-standard data-search="std800 работа с формами объектов" hidden data-empty="true">
+    <summary class="diagnostics-standard__summary">
+      <span class="diagnostics-standard__title">#std800: Работа с формами объектов</span>
+      <span class="diagnostics-standard__counts">0 проверок · 0 пунктов · 0 исправлений</span>
+    </summary>
+    <div class="diagnostics-standard__clauses">
+      <section class="diagnostics-clause" data-clause data-search="п. 1 — все изменения объекта в форме должны инициироваться явными действиями пользователя: редактированием полей и таблиц, выполнением команд, открытием вспомогательных форм" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/800.md#1">п. 1 — Все изменения объекта в форме должны инициироваться явными действиями пользователя: редактированием полей и таблиц, выполнением команд, открытием вспомогательных форм</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 2 — рекомендуется давать пользователю возможность отказаться от изменений и сохранить исходное состояние объекта: кнопкой «отмена» или закрытием формы без записи" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/800.md#2">п. 2 — Рекомендуется давать пользователю возможность отказаться от изменений и сохранить исходное состояние объекта: кнопкой «Отмена» или закрытием формы без записи</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 3 — не рекомендуется записывать объект из формы, в том числе в фоновом режиме, без явного намерения пользователя" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/800.md#3">п. 3 — Не рекомендуется записывать объект из формы, в том числе в фоновом режиме, без явного намерения пользователя</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 4 — не рекомендуется записывать объект, полученный через реквизитформывзначение" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/800.md#4">п. 4 — Не рекомендуется записывать объект, полученный через РеквизитФормыВЗначение</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 5 — не рекомендуется изменять объект в обработчиках формы:" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/800.md#5">п. 5 — Не рекомендуется изменять объект в обработчиках формы:</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 6 — не рекомендуется устанавливать модифицированность формы объекта в ложь" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/800.md#6">п. 6 — Не рекомендуется устанавливать Модифицированность формы объекта в Ложь</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+    </div>
+  </details>
+  <details class="diagnostics-standard" data-standard data-search="std801 ограничения на использование выполнить и вычислить на клиенте" hidden data-empty="true">
+    <summary class="diagnostics-standard__summary">
+      <span class="diagnostics-standard__title">#std801: Ограничения на использование Выполнить и Вычислить на клиенте</span>
+      <span class="diagnostics-standard__counts">0 проверок · 0 пунктов · 0 исправлений</span>
+    </summary>
+    <div class="diagnostics-standard__clauses">
+      <section class="diagnostics-clause" data-clause data-search="п. 1 — в общем случае рекомендуется отказаться от исполнения произвольного кода через выполнить и вычислить" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/801.md#1">п. 1 — В общем случае рекомендуется отказаться от исполнения произвольного кода через Выполнить и Вычислить</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 2 — для пользовательских формул рекомендуется предусматривать набор допустимых составляющих и вычислять результат без выполнить и вычислить" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/801.md#2">п. 2 — Для пользовательских формул рекомендуется предусматривать набор допустимых составляющих и вычислять результат без Выполнить и Вычислить</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 2.1 — если формулу нельзя представить набором предусмотренных составляющих, вычисляйте ее на сервере в безопасном режиме" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/801.md#21">п. 2.1 — Если формулу нельзя представить набором предусмотренных составляющих, вычисляйте ее на сервере в безопасном режиме</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 3 — на клиенте нет ограничений на выполнение кода, переданного в выполнить или вычислить" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/801.md#3">п. 3 — На клиенте нет ограничений на выполнение кода, переданного в Выполнить или Вычислить</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 3.1 — если динамическое выполнение используется для технологических задач, например вызова функции по имени, рекомендуется заменить его прямыми вызовами" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/801.md#31">п. 3.1 — Если динамическое выполнение используется для технологических задач, например вызова функции по имени, рекомендуется заменить его прямыми вызовами</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+      <section class="diagnostics-clause" data-clause data-search="п. 3.2 — если отказаться от выполнить или вычислить невозможно, проверяйте, что динамическая часть содержит только допустимое имя функции, полное имя из корректных имен через точку или имя переменной" hidden data-empty="true">
+        <h2 class="diagnostics-clause__title"><a href="../std/801.md#32">п. 3.2 — Если отказаться от Выполнить или Вычислить невозможно, проверяйте, что динамическая часть содержит только допустимое имя функции, полное имя из корректных имен через точку или имя переменной</a></h2>
+        <p class="diagnostics-clause__empty">Нет проверок и исправлений</p>
+      </section>
+    </div>
+  </details>
+  <details class="diagnostics-standard" data-standard data-search="std802 общие рекомендации" hidden data-empty="true">
+    <summary class="diagnostics-standard__summary">
+      <span class="diagnostics-standard__title">#std802: Общие рекомендации</span>
+      <span class="diagnostics-standard__counts">0 проверок · 0 пунктов · 0 исправлений</span>
+    </summary>
+    <div class="diagnostics-standard__clauses">
     </div>
   </details>
 </div>
