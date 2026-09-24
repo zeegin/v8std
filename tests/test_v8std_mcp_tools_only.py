@@ -37,7 +37,7 @@ TOOL_ARGUMENTS = ({"query": "std437"}, {"id_or_alias_or_url": "std437"},
                   {"id_or_alias_or_url": "std437"}, {"snippet": "std437"},
                   {"codes": ["missing"]})
 
-# Hand-written expectations for the five inherited signatures, including defaults.
+# Hand-written expectations for the five public signatures, including defaults.
 SCHEMAS = (
     ("search", ["query"], {
         "query": {"title": "Query", "type": "string"},
@@ -45,6 +45,8 @@ SCHEMAS = (
         "types": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}],
                   "default": None, "title": "Types"},
         "mode": {"default": "hybrid", "title": "Mode", "type": "string"},
+        "cursor": {"anyOf": [{"type": "string"}, {"type": "null"}],
+                   "default": None, "title": "Cursor"},
     }),
     ("page", ["id_or_alias_or_url"], {
         "id_or_alias_or_url": {"title": "Id Or Alias Or Url", "type": "string"},
@@ -144,6 +146,25 @@ def call_tool(test, rpc, name, arguments):
 
 
 class ToolsOnlyWireTests(unittest.TestCase):
+    def test_public_search_continues_past_the_first_fifty_results(self):
+        index = V8StdIndex(
+            pages_path=Path(__file__).resolve().parents[1] / "docs/ai/pages.jsonl",
+            vectors_path=Path(__file__).resolve().parents[1] / "docs/ai/search-vectors.jsonl",
+        )
+        index.load()
+        with http_rpc(index) as rpc:
+            initialize(rpc)
+            assert_tool_catalog(self, rpc)
+            first = call_tool(self, rpc, "v8std_search", {"query": "модуль", "limit": 50})
+            second = call_tool(self, rpc, "v8std_search", {
+                "query": "модуль", "limit": 50, "cursor": first["next_cursor"],
+            })
+            self.assertGreater(first["total"], 50)
+            self.assertEqual(len(first["results"]), 50)
+            self.assertEqual(len(second["results"]), 50)
+            self.assertFalse({item["id"] for item in first["results"]} &
+                             {item["id"] for item in second["results"]})
+
     def assert_ready_tools(self, rpc, site_url):
         results = [call_tool(self, rpc, name, arguments)
                    for name, arguments in zip(TOOL_NAMES, TOOL_ARGUMENTS)]
