@@ -267,7 +267,7 @@ jobs:
       needs.validate.result == 'success' && needs.publish.result == 'success' &&
       vars.MCP_RUNTIME_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     environment: mcp-production
     permissions:
       contents: read
@@ -276,6 +276,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       MCP_RUNTIME_DEPLOY_ENABLED: ${{ vars.MCP_RUNTIME_DEPLOY_ENABLED }}
+      MCP_STOP_START_DEPLOY_ENABLED: ${{ vars.MCP_STOP_START_DEPLOY_ENABLED }}
       MCP_GATES: >-
         {"build":"${{ needs.validate.outputs.build }}","tests":"${{ needs.validate.outputs.tests }}","benchmark":"${{ needs.validate.outputs.benchmark }}"}
     steps:

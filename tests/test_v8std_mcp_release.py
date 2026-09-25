@@ -1060,6 +1060,15 @@ class TransactionTests(unittest.TestCase):
         except release.ReleaseError:
             return None
 
+    def enable_stop_start(self):
+        self.env["deadline"] = int(time.time()) + release.STOP_START_TRANSACTION
+        self.policy["stop_start"] = {key: self.env[key] for key in (
+            "trigger_sha", "runtime_source_sha", "image_digest", "platform_digest",
+            "configuration_digest", "corpus_id", "archive_sha256")}
+        self.policy["stop_start"]["expires_at"] = int(time.time()) + 3600
+        release.write_json(self.root / "policy.json", self.policy)
+        release.write_json(self.root / "envelope.json", self.env)
+
     def invoke(self, fault="", mode="deploy"):
         result = subprocess.run([sys.executable, "-m", "tests.mcp_release_fixture", mode, str(self.root), fault],
             cwd=ROOT, capture_output=True, timeout=25)
@@ -1078,6 +1087,88 @@ class TransactionTests(unittest.TestCase):
         self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
         self.assertEqual(self.health()["corpus_source_sha"], self.source.manifest["source_sha"])
         self.assertFalse(self.adapter.inspect(self.previous, time.monotonic() + 1)["State"]["Running"])
+
+    def test_stop_start_updates_without_overlapping_runtimes(self):
+        self.enable_stop_start()
+        before = len((self.root / "calls.jsonl").read_text().splitlines())
+        result = self.invoke()
+        self.assertEqual(result["state"], "COMMITTED", result)
+        self.assertTrue(result["cleanup_complete"])
+        self.assertEqual(self.health()["runtime_sha"], self.env["runtime_source_sha"])
+        calls = [json.loads(line) for line in (self.root / "calls.jsonl").read_text().splitlines()[before:]]
+        operations = [call["operation"] for call in calls]
+        self.assertLess(operations.index("capacity_pre_stop"), operations.index("pull"))
+        self.assertLess(next(i for i, call in enumerate(calls) if call ==
+            {"operation": "stop", "release_id": "predecessor"}), operations.index("capacity"))
+        self.assertLess(operations.index("capacity"), next(i for i, call in enumerate(calls) if call ==
+            {"operation": "start", "release_id": "release-1"}))
+
+    def test_stop_start_post_stop_capacity_failure_restores_predecessor(self):
+        self.enable_stop_start()
+        result = self.invoke("capacity")
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertEqual(result["error_code"], "injected_capacity")
+        self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
+
+    def test_stop_start_public_failure_stops_candidate_before_restoring_predecessor(self):
+        self.enable_stop_start()
+        result = self.invoke("public_dead")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
+
+    def test_stop_start_cleanup_public_failure_still_restores_predecessor(self):
+        self.enable_stop_start()
+        result = self.invoke("cleanup_public_dead")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
+
+    def test_stop_start_resume_failure_after_pointer_restores_predecessor(self):
+        self.enable_stop_start()
+        result = self.invoke("cleanup_resume")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assertEqual(result["error_code"], "injected_resume")
+        self.assertEqual(release.read_record(self.root / "active.json")["release_id"], "predecessor")
+        self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
+
+    def test_stop_start_crash_after_old_stop_recovers_predecessor(self):
+        self.enable_stop_start()
+        self.invoke("crash_after_predecessor_stop")
+        self.assertIsNone(self.health())
+        result = self.invoke(mode="recover")
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
+
+    def test_stop_start_crash_after_candidate_start_stops_it_before_recovery(self):
+        self.enable_stop_start()
+        self.invoke("crash_after_start")
+        result = self.invoke(mode="recover")
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
+
+    def test_stop_start_requires_exact_unexpired_target_before_scheduling(self):
+        self.enable_stop_start()
+        with patch.object(release, "schedule") as schedule:
+            self.policy["stop_start"]["image_digest"] = "sha256:" + "f" * 64
+            with self.assertRaisesRegex(release.ReleaseError, "stop_start_target"):
+                release.submit(self.root, self.adapter, release.canonical_json(self.env))
+            self.policy["stop_start"]["image_digest"] = self.env["image_digest"]
+            self.policy["stop_start"]["expires_at"] = int(time.time()) - 1
+            with self.assertRaisesRegex(release.ReleaseError, "stop_start_expired"):
+                release.submit(self.root, self.adapter, release.canonical_json(self.env))
+            schedule.assert_not_called()
+
+    def test_stop_start_target_expiring_after_submit_is_durably_rejected(self):
+        self.enable_stop_start()
+        with patch.object(release, "schedule"):
+            self.assertEqual(release.submit(self.root, self.adapter, release.canonical_json(self.env))["state"], "QUEUED")
+        self.policy["stop_start"]["expires_at"] = int(time.time()) + 60
+        release.write_json(self.root / "policy.json", self.policy)
+        self.invoke(mode="queued_expired")
+        query = {"schema_version": 1, "kind": "release", "id": self.env["release_id"]}
+        result = release.query_status(self.root, self.adapter, query)
+        self.assertEqual(result["state"], "REJECTED", result)
+        self.assertEqual(result["error_code"], "stop_start_expired")
+        self.assertFalse((self.root / "pending-deploy.json").exists())
 
     def test_smoke_accepts_real_held_tools_only_runtime(self):
         health = release.smoke(self.adapter.url(self.previous), self.previous, time.monotonic() + 30)
