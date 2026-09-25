@@ -563,11 +563,13 @@ class V8StdIndex:
                 [query, mode, sorted(allowed_types) if allowed_types else None, requested_limit],
                 ensure_ascii=False, separators=(",", ":"),
             ).encode("utf-8"))
-            for score, page, candidate in entries:
+            # The index digests cover projected hit content. Hash only the
+            # ranked identity and score here: projecting every hit for a
+            # one-page request made ordinary searches pay for all pages.
+            for score, page, _candidate in entries:
                 result_fingerprint.update(b"\0")
                 result_fingerprint.update(json.dumps(
-                    self._search_entry(page, score, candidate),
-                    ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+                    [page["id"], score], ensure_ascii=False, separators=(",", ":"),
                 ).encode("utf-8"))
             fingerprint = result_fingerprint.hexdigest()
             offset = 0
