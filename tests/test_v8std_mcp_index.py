@@ -56,6 +56,89 @@ class V8StdMcpIndexTests(unittest.TestCase):
         self.assertIn("match_reasons", std_results[0])
         self.assertIn("score_details", std_results[0])
 
+    def test_search_cursor_reads_past_fifty_without_reordering_or_duplication(self):
+        first = self.index.search("модуль", limit=50)
+        self.assertGreater(first["total"], 50)
+        self.assertEqual(len(first["results"]), 50)
+        self.assertIsNotNone(first["next_cursor"])
+        second = self.index.search("модуль", limit=50, cursor=first["next_cursor"])
+        self.assertEqual(second, self.index.search("модуль", limit=50, cursor=first["next_cursor"]))
+        self.assertFalse({item["id"] for item in first["results"]} &
+                         {item["id"] for item in second["results"]})
+        with self.assertRaisesRegex(ValueError, "stale search cursor"):
+            self.index.search("форма", limit=50, cursor=first["next_cursor"])
+        with self.assertRaisesRegex(ValueError, "stale search cursor"):
+            self.index.search("модуль", limit=20, cursor=first["next_cursor"])
+        with self.assertRaisesRegex(ValueError, "stale search cursor"):
+            self.index.search("модуль", limit=50, mode="bm25", cursor=first["next_cursor"])
+        with self.assertRaisesRegex(ValueError, "stale search cursor"):
+            self.index.search("модуль", limit=50, types=["standard"], cursor=first["next_cursor"])
+
+        seen = first["results"] + second["results"]
+        page = second
+        while page["next_cursor"] is not None:
+            page = self.index.search("модуль", limit=50, cursor=page["next_cursor"])
+            seen.extend(page["results"])
+        self.assertEqual(len(seen), first["total"])
+        self.assertEqual(len({item["id"] for item in seen}), first["total"])
+        self.assertLessEqual(len(page["results"]), 50)
+
+    def test_search_cursor_rejects_a_changed_index(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            pages_path = Path(temp_dir) / "pages.jsonl"
+            pages_path.write_text(
+                '\n'.join(json.dumps({"id": f"std{number}", "type": "standard", "title": "Page module"})
+                          for number in (1, 2, 3)) + '\n',
+                encoding="utf-8",
+            )
+            index = V8StdIndex(
+                pages_path=pages_path,
+                vectors_path=REPO_ROOT / "docs" / "ai" / "search-vectors.jsonl",
+            )
+            index.load()
+            first = index.search("module", limit=1)
+            self.assertIsNotNone(first["next_cursor"])
+            pages_path.write_text(
+                '\n'.join(json.dumps({"id": f"std{number}", "type": "standard", "title": "Page module changed"})
+                          for number in (1, 2, 3)) + '\n',
+                encoding="utf-8",
+            )
+            index.load()
+            with self.assertRaisesRegex(ValueError, "stale search cursor"):
+                index.search("module", limit=1, cursor=first["next_cursor"])
+            with self.assertRaisesRegex(ValueError, "invalid search cursor"):
+                index.search("module", limit=1, cursor="vs1.invalid.1")
+
+    def test_search_cursor_rejects_changed_rules_with_same_ranked_hits(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            pages_path = Path(temp_dir) / "pages.jsonl"
+            rules_path = Path(temp_dir) / "retrieval-rules.yml"
+            pages_path.write_text(
+                '\n'.join(json.dumps({"id": f"std{number}", "type": "standard", "title": "Page module"})
+                          for number in (1, 2, 3)) + '\n',
+                encoding="utf-8",
+            )
+
+            def load_with_standard(standard_id):
+                rules_path.write_text(
+                    f"rules:\n  - id: example\n    primary: std1\n    standards: [{standard_id}]\n",
+                    encoding="utf-8",
+                )
+                index = V8StdIndex(pages_path=pages_path, rules_path=rules_path)
+                index.load()
+                return index
+
+            original = load_with_standard("std2")
+            first = original.search("module", mode="bm25", limit=1)
+            changed = load_with_standard("std3")
+            changed_first = changed.search("module", mode="bm25", limit=1)
+            self.assertEqual(first["results"][0]["id"], changed_first["results"][0]["id"])
+            self.assertEqual(first["results"][0]["score"], changed_first["results"][0]["score"])
+            self.assertNotEqual(first["results"][0]["related_preview"],
+                                changed_first["results"][0]["related_preview"])
+            with self.assertRaisesRegex(ValueError, "stale search cursor"):
+                changed.search("module", mode="bm25", limit=1, cursor=first["next_cursor"])
+
     def test_generated_code_aliases_are_top_ranked(self):
         layout_results = self.index.search("ыев437", limit=3)["results"]
         bare_number_results = self.index.search("#437", limit=3)["results"]

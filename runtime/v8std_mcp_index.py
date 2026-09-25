@@ -9,7 +9,7 @@ import struct
 import threading
 import time
 from collections import Counter, defaultdict
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
@@ -36,6 +36,7 @@ MAX_QUERY_CHARS = 500
 MAX_ID_OR_ALIAS_CHARS = 1000
 MAX_LIMIT = 50
 DEFAULT_LIMIT = 10
+SEARCH_CURSOR_RE = re.compile(r"^vs1\.([0-9a-f]{64})\.([1-9][0-9]*)$")
 MAX_BODY_CHARS = 12000
 MAX_BODY_LIMIT_CHARS = 30000
 MAX_SNIPPET_CHARS = 4000
@@ -393,6 +394,12 @@ class V8StdIndex:
         self.refresh_seconds = refresh_seconds
         self.request_timeout = request_timeout
         self.rules = RetrievalRules.load(rules_path)
+        # Retrieval rules can change projected hits (reasons and relations)
+        # without changing corpus bytes, vectors, or ranked scores.
+        self._rules_sha256 = hashlib.sha256(json.dumps(
+            [asdict(rule) for rule in self.rules.rules],
+            ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+        ).encode("utf-8")).hexdigest()
         self._lock = threading.RLock()
         self._pages: list[dict[str, Any]] = []
         self._pages_by_id: dict[str, dict[str, Any]] = {}
@@ -491,42 +498,50 @@ class V8StdIndex:
         types: list[str] | None = None,
         mode: str = "hybrid",
         limit: int | None = None,
+        cursor: str | None = None,
     ) -> dict[str, Any]:
         query = require_text(query, "query", MAX_QUERY_CHARS)
         requested_limit = clamp_limit(limit)
         allowed_types = self._validate_types(types)
         mode = self._validate_mode(mode)
+        cursor_match = self.validate_search_cursor(cursor)
         self.refresh_if_needed()
         normalized_query = normalize_query(query)
         if not normalized_query:
+            if cursor_match is not None:
+                raise ValueError("invalid search cursor")
             return {
                 "query": query,
                 "normalized_query": normalized_query,
                 "mode": mode,
                 "types": sorted(allowed_types) if allowed_types else None,
                 "results": [],
+                "total": 0,
+                "next_cursor": None,
             }
 
-        query_tokens = self._query_tokens(query)
-        candidates: dict[str, dict[str, Any]] = {}
-
-        if mode in {"hybrid", "exact"}:
-            self._add_exact_scores(candidates, query, normalized_query)
-            self._add_code_lookup_scores(candidates, query)
-            self._add_fuzzy_code_scores(candidates, query)
-
-        if mode in {"hybrid", "bm25"}:
-            self._add_bm25_scores(candidates, query_tokens)
-            self._add_metadata_coverage_scores(candidates, query)
-
-        if mode in {"hybrid", "semantic"}:
-            self._add_semantic_scores(candidates, query)
-
-        if mode == "hybrid":
-            self._add_related_boosts(candidates)
-
-        entries = []
+        # A refresh must not replace the index between ranking, fingerprinting,
+        # and projection of one page. The lock is reentrant for lookup helpers.
         with self._lock:
+            query_tokens = self._query_tokens(query)
+            candidates: dict[str, dict[str, Any]] = {}
+
+            if mode in {"hybrid", "exact"}:
+                self._add_exact_scores(candidates, query, normalized_query)
+                self._add_code_lookup_scores(candidates, query)
+                self._add_fuzzy_code_scores(candidates, query)
+
+            if mode in {"hybrid", "bm25"}:
+                self._add_bm25_scores(candidates, query_tokens)
+                self._add_metadata_coverage_scores(candidates, query)
+
+            if mode in {"hybrid", "semantic"}:
+                self._add_semantic_scores(candidates, query)
+
+            if mode == "hybrid":
+                self._add_related_boosts(candidates)
+
+            entries = []
             for page_id, candidate in candidates.items():
                 page = self._pages_by_id.get(page_id)
                 if not page:
@@ -541,18 +556,62 @@ class V8StdIndex:
                     continue
                 entries.append((score, page, candidate))
 
-        entries.sort(key=lambda item: (-item[0], concrete_rank(item[1]), item[1]["type"], item[1]["id"]))
-        return {
-            "query": query,
-            "normalized_query": normalized_query,
-            "mode": mode,
-            "types": sorted(allowed_types) if allowed_types else None,
-            "semantic_enabled": self._vector_metadata is not None and bool(self._vectors),
-            "results": [
-                self._search_entry(page, score, candidate)
-                for score, page, candidate in entries[:requested_limit]
-            ],
-        }
+            entries.sort(key=lambda item: (-item[0], concrete_rank(item[1]), item[1]["type"], item[1]["id"]))
+            result_fingerprint = hashlib.sha256()
+            result_fingerprint.update(b"v8std-search-v1\0")
+            result_fingerprint.update(self._metadata.sha256.encode("ascii") if self._metadata else b"")
+            result_fingerprint.update(b"\0")
+            result_fingerprint.update(
+                self._vector_metadata.sha256.encode("ascii") if self._vector_metadata else b""
+            )
+            result_fingerprint.update(b"\0")
+            result_fingerprint.update(self._rules_sha256.encode("ascii"))
+            result_fingerprint.update(b"\0")
+            result_fingerprint.update(json.dumps(
+                [query, mode, sorted(allowed_types) if allowed_types else None, requested_limit],
+                ensure_ascii=False, separators=(",", ":"),
+            ).encode("utf-8"))
+            # The index digests cover projected hit content. Hash only the
+            # ranked identity and score here: projecting every hit for a
+            # one-page request made ordinary searches pay for all pages.
+            for score, page, _candidate in entries:
+                result_fingerprint.update(b"\0")
+                result_fingerprint.update(json.dumps(
+                    [page["id"], score], ensure_ascii=False, separators=(",", ":"),
+                ).encode("utf-8"))
+            fingerprint = result_fingerprint.hexdigest()
+            offset = 0
+            if cursor_match is not None:
+                if cursor_match.group(1) != fingerprint:
+                    raise ValueError("stale search cursor")
+                offset = int(cursor_match.group(2))
+                if offset >= len(entries):
+                    raise ValueError("invalid search cursor")
+            next_offset = min(offset + requested_limit, len(entries))
+            return {
+                "query": query,
+                "normalized_query": normalized_query,
+                "mode": mode,
+                "types": sorted(allowed_types) if allowed_types else None,
+                "semantic_enabled": self._vector_metadata is not None and bool(self._vectors),
+                "results": [
+                    self._search_entry(page, score, candidate)
+                    for score, page, candidate in entries[offset:next_offset]
+                ],
+                "total": len(entries),
+                "next_cursor": f"vs1.{fingerprint}.{next_offset}" if next_offset < len(entries) else None,
+            }
+
+    @staticmethod
+    def validate_search_cursor(cursor: str | None) -> re.Match[str] | None:
+        if cursor is None:
+            return None
+        if not isinstance(cursor, str) or len(cursor) > 128:
+            raise ValueError("invalid search cursor")
+        match = SEARCH_CURSOR_RE.fullmatch(cursor)
+        if match is None:
+            raise ValueError("invalid search cursor")
+        return match
 
     def page(self, id_or_alias_or_url: str, *, body_limit: int = MAX_BODY_CHARS) -> dict[str, Any]:
         id_or_alias_or_url = require_text(

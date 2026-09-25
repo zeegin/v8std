@@ -581,7 +581,9 @@ def build_server(
             'identifier. Returns ranked page IDs, titles, descriptions, URLs, scores and match '
             'reasons; no full article text. Known diagnostic codes are handled by '
             'v8std_explain_diagnostics; BSL/SDBL source fragments by v8std_explain_snippet. An exact '
-            'page ID or URL can be read with v8std_get_page. An empty result means no match in this '
+            'page ID or URL can be read with v8std_get_page. Pass next_cursor back with the same '
+            'query, limit, types and mode to continue; an updated ranking rejects the old cursor. '
+            'An empty result means no match in this '
             'corpus, not that the code is correct. Scores rank candidates and are not probabilities.'
         ),
     )
@@ -590,8 +592,9 @@ def build_server(
         limit: Annotated[int, Field(description="Maximum results, default 10; clamped to 1–50.")] = 10,
         types: Annotated[list[str] | None, Field(description="Page types: standard, diagnostic, fix, pattern, service. null or [] means all types.")] = None,
         mode: Annotated[str, Field(description="hybrid: combined search (default); exact: includes identifier variants and fuzzy code matches; bm25: text/metadata; semantic: indexed vectors.")] = "hybrid",
+        cursor: Annotated[str | None, Field(description="Opaque next_cursor from a previous search with identical query, limit, types and mode; rejects changed rankings.")] = None,
     ) -> dict[str, Any]:
-        result = index.search(query, types=types, mode=mode, limit=limit)
+        result = index.search(query, types=types, mode=mode, limit=limit, cursor=cursor)
         tool_usage.record_search(query, result, system=current_client_system())
         return result
 

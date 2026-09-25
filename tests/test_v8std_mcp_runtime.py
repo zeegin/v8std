@@ -95,6 +95,7 @@ class RuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             facade = runtime.SnapshotIndex(site_url=LOCAL, cache_dir=Path(directory))
             for call in (lambda: facade.search("x" * 501), lambda: facade.search("x", mode="invalid"),
+                         lambda: facade.search("x", cursor="invalid"),
                          lambda: facade.page("x" * 1001), lambda: facade.related("std437", relations=["bad"]),
                          lambda: facade.explain_snippet("x" * 4001),
                          lambda: facade.explain_diagnostics([1])):

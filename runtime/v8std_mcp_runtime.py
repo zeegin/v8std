@@ -83,13 +83,16 @@ class SnapshotIndex:
     def _lookup(self, generation, value):
         return LinkCatalog(generation.canonical_site_url, self.site_url, generation.page_paths).lookup(value)
 
-    def search(self, query, *, types=None, mode="hybrid", limit=None):
+    def search(self, query, *, types=None, mode="hybrid", limit=None, cursor=None):
         require_text(query, "query", MAX_QUERY_CHARS)
         clamp_limit(limit)
         V8StdIndex._validate_types(types)
         V8StdIndex._validate_mode(mode)
+        V8StdIndex.validate_search_cursor(cursor)
         generation = self._current()
-        return self._present(generation, generation.index.search(query, types=types, mode=mode, limit=limit))
+        return self._present(generation, generation.index.search(
+            query, types=types, mode=mode, limit=limit, cursor=cursor,
+        ))
 
     def page(self, id_or_alias_or_url, *, body_limit=MAX_BODY_CHARS):
         require_text(id_or_alias_or_url, "id_or_alias_or_url", MAX_ID_OR_ALIAS_CHARS)
