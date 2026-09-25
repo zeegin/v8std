@@ -1163,7 +1163,10 @@ class Controller:
             self.save(journal)
             try:
                 descriptors = self.adapter.verify(envelope, work)
-                self.adapter.capacity(work, pre_stop=mode == "stop-start")
+                if mode == "stop-start":
+                    self.adapter.capacity(work, pre_stop=True)
+                else:
+                    self.adapter.capacity(work)
                 manifest = self.adapter.manifest(envelope)
                 self.save(journal, "VERIFIED", "hold_predecessor")
                 token = digest(canonical_json(envelope))[:32]
@@ -2088,8 +2091,9 @@ class Publisher:
             return removed
 
 
-def schedule(kind, *, runtime_max=TRANSACTION):
+def schedule(kind, *, runtime_max=None):
     require(kind in {"deploy", "index", "recover", "bootstrap", "initial-install"}, "job_kind")
+    runtime_max = TRANSACTION if runtime_max is None else runtime_max
     require(runtime_max in {TRANSACTION, STOP_START_TRANSACTION}
             and (runtime_max == TRANSACTION or kind == "deploy"), "job_budget")
     if kind == "initial-install":
