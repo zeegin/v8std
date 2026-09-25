@@ -1159,6 +1159,34 @@ class TransportBoundaryTests(unittest.TestCase):
                 self.assertEqual(effects, [] if error else ["live-smoke"])
                 self.assertEqual(len(limits), 150 if elapsed == 300 else 4 if not error else 1)
 
+    def test_stop_start_runtime_uses_extended_bounded_deadline(self):
+        context = dict(event="push", repository="zeegin/v8std", ref="refs/heads/main",
+                       sha="c" * 40, main_sha="c" * 40, run_id=1, run_number=2, attempt=1,
+                       gates={name: "success" for name in self.p.GATES})
+        archive, manifest = fixture.snapshot_fixture()
+        manifest["archive"]["path"] = "https://ai.v8std.ru/indexes/v1/" + manifest["archive"]["path"]
+        accepted = {"runtime": {"source_sha": "b" * 40, "image_digest": "sha256:" + "a" * 64}, "manifest": manifest}
+        adapter = Transport(archive, manifest)
+        submitted = {}
+        def command(name, payload, **kwargs):
+            if name == "status" and not payload:
+                return {"state": "COMMITTED", "cleanup_complete": True, "image_digest": "sha256:" + "f" * 64}
+            if name == "validate-envelope":
+                return json.loads(payload)
+            if name == "deploy":
+                submitted.update(json.loads(payload))
+                return {"state": "QUEUED", "release_id": submitted["release_id"]}
+            return {**submitted, "state": "COMMITTED", "cleanup_complete": True, "error_code": None}
+        adapter.command = command
+        index = {"manifests": [{"digest": "sha256:" + "e" * 64,
+                               "platform": {"os": "linux", "architecture": "amd64"}}]}
+        with patch.object(self.p, "registry_manifest", return_value=fixture.json_bytes(index)), \
+                patch.object(self.p, "verify_running_runtime"):
+            result = self.p.deploy_runtime(context, adapter, accepted, enabled=True,
+                configuration_digest="d" * 64, platform="linux/amd64", stop_start=True)
+        self.assertEqual(submitted["deadline"], 1_800_000_900)
+        self.assertEqual(result["state"], "COMMITTED")
+
     def test_immutable_tag_never_overwrites_conflict_and_rechecks_main_before_write(self):
         digest = "sha256:" + "a" * 64
         image = self.p.IMAGE + "@" + digest

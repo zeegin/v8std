@@ -64,12 +64,15 @@ BOOTSTRAP_TIMER = ("[Unit]\nDescription=Independent first-migration recovery gua
     "OnBootSec=5s\nOnUnitInactiveSec=15s\nUnit=v8std-bootstrap-recover.service\n\n"
     "[Install]\nWantedBy=timers.target\n")
 TRANSACTION = 300
+STOP_START_TRANSACTION = 900
 READINESS = 90
 SMOKE = DRAIN = 30
 STOP = 45
 # Rollback gets a live budget even if preparation uses its entire work allowance.
 # 90 ready + 30 smoke + 45 stop + 15 nginx/control overhead.
 RECOVERY_RESERVE = 180
+STOP_START_RECOVERY_RESERVE = STOP + READINESS + 2 * SMOKE + 15
+STOP_START_ACCEPTANCE_BUDGET = STOP + 2 * READINESS + 3 * SMOKE + DRAIN + 20
 INITIAL_RECOVERY_RESERVE = 60
 TERMINAL = {"FAILED", "ROLLED_BACK", "COMMITTED", "RECOVERY_REQUIRED"}
 ID = re.compile(r"[a-z0-9][a-z0-9-]{0,63}\Z")
@@ -133,7 +136,7 @@ def validate_envelope(raw, *, now=None, expired=False):
     require(type(value["deadline"]) is int, "deadline")
     if not expired:
         now = time.time() if now is None else now
-        require(now < value["deadline"] <= now + TRANSACTION, "deadline")
+        require(now < value["deadline"] <= now + STOP_START_TRANSACTION, "deadline")
     return value
 
 
@@ -446,8 +449,9 @@ def backup_inventory(root, window, deadline):
 
 
 def validate_policy(policy):
-    require(set(policy) == {"schema_version", "enabled", "runtime_enabled", "platform", "public_url", "configs",
-            "capacity", "ports", "nginx_include", "static_root"}, "policy_fields")
+    fields = {"schema_version", "enabled", "runtime_enabled", "platform", "public_url", "configs",
+              "capacity", "ports", "nginx_include", "static_root"}
+    require(fields <= set(policy) <= fields | {"stop_start"}, "policy_fields")
     require(type(policy["schema_version"]) is int and policy["schema_version"] == 1
             and policy["enabled"] is True, "not_activated")
     require(type(policy["runtime_enabled"]) is bool, "runtime_activation")
@@ -475,7 +479,30 @@ def validate_policy(policy):
                 "capacity_reserve")
     else:
         require(capacity["network_evidence"] is None or matches(HEX, capacity["network_evidence"]), "capacity_evidence")
+    if "stop_start" in policy:
+        target = policy["stop_start"]
+        keys = {"trigger_sha", "runtime_source_sha", "image_digest", "platform_digest",
+                "configuration_digest", "corpus_id", "archive_sha256", "expires_at"}
+        require(isinstance(target, dict) and set(target) == keys, "stop_start_fields")
+        for key in ("trigger_sha", "runtime_source_sha"):
+            require(matches(SHA, target[key]), "stop_start_target")
+        for key in ("image_digest", "platform_digest"):
+            require(matches(DIGEST, target[key]), "stop_start_target")
+        for key in ("configuration_digest", "corpus_id", "archive_sha256"):
+            require(matches(HEX, target[key]), "stop_start_target")
+        require(type(target["expires_at"]) is int and target["expires_at"] > 0, "stop_start_expiry")
     return policy
+
+
+def rollout_mode(policy, envelope, *, now=None):
+    target = policy.get("stop_start")
+    if target is None:
+        require(envelope["deadline"] - (time.time() if now is None else now) <= TRANSACTION, "deadline")
+        return "overlap"
+    require(all(envelope[key] == value for key, value in target.items() if key != "expires_at"),
+            "stop_start_target")
+    require((time.time() if now is None else now) < target["expires_at"], "stop_start_expired")
+    return "stop-start"
 
 
 def verify_descriptors(index_raw, child_raw, envelope, platform):
@@ -666,9 +693,13 @@ class HostAdapter:
         child = run(["docker", "buildx", "imagetools", "inspect", "--raw", IMAGE + "@" + envelope["platform_digest"]], deadline)
         return verify_descriptors(index, child, envelope, self.policy["platform"])
 
-    def capacity(self, deadline, *, reclaim_bytes=0):
+    def capacity(self, deadline, *, reclaim_bytes=0, pre_stop=False):
         limits = self.policy["capacity"]
-        self._basic_capacity(deadline, limits["available_memory_bytes"], reclaim_bytes=reclaim_bytes)
+        require(not pre_stop or reclaim_bytes == 0, "capacity_mode")
+        # The old container still owns its memory during stop-start preflight.
+        # Check disk, descriptors and real network evidence before disruption;
+        # memory must be checked again after the old container has stopped.
+        self._basic_capacity(deadline, 0 if pre_stop else limits["available_memory_bytes"], reclaim_bytes=reclaim_bytes)
         evidence = read_file(self.root / "capacity" / (limits["network_evidence"] + ".json"))
         require(digest(evidence) == limits["network_evidence"], "network_capacity")
         remaining(deadline)
@@ -876,7 +907,8 @@ class HostAdapter:
         run(["nginx", "-s", "reload"], deadline)
 
     def stop(self, record, deadline):
-        if self.inspect(record, deadline) is not None:
+        info = self.inspect(record, deadline)
+        if info is not None and info["State"]["Running"]:
             # No automatic restart policy; deterministic named objects survive
             # controller death and are reconciled, not replaced by unrelated IDs.
             run(["docker", "stop", "--time", str(max(0, min(DRAIN, int(remaining(deadline)) - 5))), record["name"]], deadline)
@@ -1115,20 +1147,26 @@ class Controller:
             if existing:
                 return self.result(existing)
             require(self.adapter.policy.get("runtime_enabled") is True, "runtime_not_activated")
+            mode = rollout_mode(self.adapter.policy, envelope)
             self.adapter.config(envelope)
             validate_envelope(raw)
-            require(envelope["deadline"] - time.time() > RECOVERY_RESERVE, "insufficient_transaction_budget")
+            reserve = STOP_START_RECOVERY_RESERVE if mode == "stop-start" else RECOVERY_RESERVE
+            require(envelope["deadline"] - time.time() > reserve, "insufficient_transaction_budget")
             require((self.root / "active.json").is_file(), "predecessor_required")
             previous = parse(read_file(self.root / "active.json"), 65536)
             self.adapter.config(previous)
-            deadline = time.monotonic() + min(TRANSACTION, envelope["deadline"] - time.time())
-            work = deadline - RECOVERY_RESERVE
+            transaction = STOP_START_TRANSACTION if mode == "stop-start" else TRANSACTION
+            deadline = time.monotonic() + min(transaction, envelope["deadline"] - time.time())
+            work = deadline - reserve
             journal = {"envelope": envelope, "state": "RECEIVED", "intent": "verify", "predecessor": previous,
-                       "candidate": None, "cleanup_complete": False}
+                       "candidate": None, "cleanup_complete": False, "rollout_mode": mode}
             self.save(journal)
             try:
                 descriptors = self.adapter.verify(envelope, work)
-                self.adapter.capacity(work)
+                if mode == "stop-start":
+                    self.adapter.capacity(work, pre_stop=True)
+                else:
+                    self.adapter.capacity(work)
                 manifest = self.adapter.manifest(envelope)
                 self.save(journal, "VERIFIED", "hold_predecessor")
                 token = digest(canonical_json(envelope))[:32]
@@ -1144,6 +1182,13 @@ class Controller:
                 journal["candidate"] = candidate
                 self.save(journal, intent="pull_candidate")
                 self.adapter.pull(candidate, work)
+                if mode == "stop-start":
+                    require(remaining(work) >= STOP_START_ACCEPTANCE_BUDGET,
+                            "insufficient_stop_start_budget")
+                    self.save(journal, intent="stop_predecessor")
+                    self.adapter.stop(previous, min(work, time.monotonic() + STOP))
+                    self.save(journal, intent="capacity_after_stop")
+                    self.adapter.capacity(work)
                 self.save(journal, intent="start_candidate")
                 candidate = self.adapter.hold(candidate, token, min(work, time.monotonic() + READINESS), manifest)
                 journal["candidate"] = candidate
@@ -1154,8 +1199,11 @@ class Controller:
                 self.adapter.switch(candidate, work)
                 self.save(journal, "SWITCHED", "public_smoke")
                 self.adapter.check(candidate, min(work, time.monotonic() + SMOKE), public=True)
-                self.save(journal, "COMMITTED", "accept_pointer")
-                self.cleanup(journal, deadline)
+                # In stop-start the predecessor is already down. Keep rollback
+                # possible through the second public check and candidate resume.
+                if mode != "stop-start":
+                    self.save(journal, "COMMITTED", "accept_pointer")
+                self.cleanup(journal, work if mode == "stop-start" else deadline)
             except Exception as error:
                 journal["error_code"] = error.code if isinstance(error, ReleaseError) else "host_failure"
                 self.save(journal)
@@ -1197,12 +1245,18 @@ class Controller:
         self.adapter.resume(candidate, min(deadline, time.monotonic() + SMOKE))
         journal["cleanup_complete"] = True
         journal.pop("error_code", None)
-        self.save(journal, intent="complete")
+        self.save(journal, "COMMITTED" if journal.get("rollout_mode") == "stop-start" else None, "complete")
 
     def rollback(self, journal, deadline):
         switched = journal.get("switch_attempted", False)
         try:
             previous = journal["predecessor"]
+            if journal.get("rollout_mode") == "stop-start" and journal["candidate"]:
+                # A stopped predecessor cannot be restarted alongside the
+                # candidate on a small host. Persist before stopping it, also
+                # when recovery is replaying a crash after candidate start.
+                self.save(journal, intent="stop_candidate")
+                self.adapter.stop(journal["candidate"], min(deadline, time.monotonic() + STOP))
             self.save(journal, intent="restore_predecessor")
             # A crash during capture might leave no acknowledged identity. Select
             # the persisted previously accepted generation, never a newer cache pointer.
@@ -1214,7 +1268,7 @@ class Controller:
             self.adapter.switch(previous, deadline - STOP - SMOKE)
             self.adapter.check(previous, min(deadline - STOP, time.monotonic() + SMOKE), public=True)
             write_json(self.root / "active.json", previous)
-            if journal["candidate"]:
+            if journal["candidate"] and journal.get("rollout_mode") != "stop-start":
                 self.save(journal, intent="stop_candidate")
                 self.adapter.stop(journal["candidate"], min(deadline, time.monotonic() + STOP))
             self.adapter.resume(previous, deadline)
@@ -2037,14 +2091,17 @@ class Publisher:
             return removed
 
 
-def schedule(kind):
+def schedule(kind, *, runtime_max=None):
     require(kind in {"deploy", "index", "recover", "bootstrap", "initial-install"}, "job_kind")
+    runtime_max = TRANSACTION if runtime_max is None else runtime_max
+    require(runtime_max in {TRANSACTION, STOP_START_TRANSACTION}
+            and (runtime_max == TRANSACTION or kind == "deploy"), "job_budget")
     if kind == "initial-install":
         require(os.geteuid() == 0, "host_privilege")
     # Shared unit name and controller lock serialize all host effects. No --pipe,
     # --wait or inherited SSH stdin; timer recovers a crash before enqueue.
     return run(["systemd-run", "--unit=v8std-release-job", "--collect", "--no-block",
-                "--property=Type=exec", "--property=RuntimeMaxSec=300s", "--property=TimeoutStopSec=5s",
+                "--property=Type=exec", f"--property=RuntimeMaxSec={runtime_max}s", "--property=TimeoutStopSec=5s",
                 "--property=KillMode=control-group", "/usr/bin/python3", "-I", INSTALL, "_" + kind],
                time.monotonic() + 10)
 
@@ -2057,17 +2114,19 @@ def submit(root, adapter, raw):
         if existing:
             return controller.result(existing)
         require(adapter.policy.get("runtime_enabled") is True, "runtime_not_activated")
+        mode = rollout_mode(adapter.policy, envelope)
         adapter.config(envelope)
         require((Path(root) / "active.json").is_file(), "predecessor_required")
         validate_envelope(raw)
-        require(envelope["deadline"] - time.time() > RECOVERY_RESERVE, "insufficient_transaction_budget")
+        reserve = STOP_START_RECOVERY_RESERVE if mode == "stop-start" else RECOVERY_RESERVE
+        require(envelope["deadline"] - time.time() > reserve, "insufficient_transaction_budget")
         pending = Path(root) / "pending-deploy.json"
         if pending.exists():
             previous = parse(read_file(pending))
             require(previous == envelope or any(item["envelope"] == previous and item.get("cleanup_complete")
                                                for item in controller.journals()), "busy")
         write_json(pending, envelope)
-    schedule("deploy")
+    schedule("deploy", runtime_max=STOP_START_TRANSACTION if mode == "stop-start" else TRANSACTION)
     return {"state": "QUEUED", "release_id": envelope["release_id"]}
 
 
@@ -2135,7 +2194,8 @@ def main():
                             pending.unlink()
                             sync_dir(ROOT)
             except ReleaseError as error:
-                if error.code not in {"deadline", "insufficient_transaction_budget", "runtime_not_activated", "predecessor_required", "stale_sequence"}:
+                if error.code not in {"deadline", "insufficient_transaction_budget", "runtime_not_activated", "predecessor_required",
+                                      "stale_sequence", "stop_start_target", "stop_start_expired"}:
                     raise
                 with locked(ROOT):
                     write_json(ROOT / "rejected" / (envelope["release_id"] + ".json"),

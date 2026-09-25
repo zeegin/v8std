@@ -82,8 +82,8 @@ class ProcessAdapter(release.HostAdapter):
         return {envelope["image_digest"]: next(iter(release.INDEX_TYPES)),
                 envelope["platform_digest"]: next(iter(release.MANIFEST_TYPES))}
 
-    def capacity(self, deadline):
-        self.record("capacity")
+    def capacity(self, deadline, *, reclaim_bytes=0, pre_stop=False):
+        self.record("capacity_pre_stop" if pre_stop else "capacity")
 
     def pull(self, record, deadline):
         self.record("pull", record)
@@ -110,6 +110,10 @@ class ProcessAdapter(release.HostAdapter):
 
     def start(self, record, deadline):
         self.record("start", record)
+        if self.policy.get("stop_start"):
+            live = [path.stem for path in (self.root / "processes").glob("*.json")
+                    if self.inspect(release.read_record(path)["record"], deadline)["State"]["Running"]]
+            release.require(not live or live == [record["release_id"]], "fixture_overlap")
         info = self.inspect(record, deadline)
         if info and info["State"]["Running"]:
             return
@@ -145,6 +149,10 @@ class ProcessAdapter(release.HostAdapter):
         # fail a real HTTP request before rollback can be claimed.
         if "public_dead" in self.fault.split(",") and public and record["release_id"] != "predecessor":
             self.stop(record, deadline)
+        if self.fault == "cleanup_public_dead" and operation == "public":
+            calls = [json.loads(line) for line in (self.root / "calls.jsonl").read_text().splitlines()]
+            if sum(call["operation"] == "public" for call in calls) == 2:
+                self.stop(record, deadline)
         result = super().check(record, min(deadline, time.monotonic() + 5), public=public)
         if self.fault == "kill_active_after_smoke" and public:
             os.kill(os.getpid(), signal.SIGKILL)
@@ -153,6 +161,8 @@ class ProcessAdapter(release.HostAdapter):
     def resume(self, record, deadline):
         if self.fault == "kill_active_before_resume":
             os.kill(os.getpid(), signal.SIGKILL)
+        if self.fault == "cleanup_resume" and record["release_id"] != "predecessor":
+            raise release.ReleaseError("injected_resume")
         return super().resume(record, deadline)
 
     def stop(self, record, deadline):
@@ -167,6 +177,8 @@ class ProcessAdapter(release.HostAdapter):
             os.waitpid(info["pid"], os.WNOHANG)
         except (ChildProcessError, TypeError):
             pass
+        if self.fault == "crash_after_predecessor_stop" and record["release_id"] == "predecessor":
+            os._exit(93)
 
 
 class BootstrapAdapter(ProcessAdapter):

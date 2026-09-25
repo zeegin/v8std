@@ -928,9 +928,10 @@ def verify_running_runtime(source_sha):
     return runtime_smoke(url, record, deadline)
 
 
-def deploy_runtime(context, adapter, accepted, *, enabled, configuration_digest, platform):
+def deploy_runtime(context, adapter, accepted, *, enabled, configuration_digest, platform, stop_start=False):
     authorized(context)
     require(type(enabled) is bool, "activation_type")
+    require(type(stop_start) is bool, "activation_type")
     if not enabled:
         return {"state": "DISABLED"}
     runtime = accepted.get("runtime")
@@ -956,15 +957,16 @@ def deploy_runtime(context, adapter, accepted, *, enabled, configuration_digest,
                    and item["platform"].get("os") == os_name and item["platform"].get("architecture") == architecture
                    and item["platform"].get("variant", "") in ({"", "v8"} if architecture == "arm64" else {""})]
     require(len(descriptors) == 1, "platform_descriptor")
+    duration = 900 if stop_start else 300
     envelope = {"schema_version": 1, "release_id": f"ci-{context['run_id']}-{context['attempt']}",
         "sequence": context["run_number"] * 1000 + context["attempt"], "trigger_sha": context["sha"],
         "runtime_source_sha": runtime["source_sha"], "image": IMAGE, "image_digest": runtime["image_digest"],
         "platform_digest": descriptors[0]["digest"], "configuration_digest": configuration_digest,
         "corpus_id": manifest["corpus_id"], "archive_sha256": manifest["archive"]["sha256"],
-        "deadline": int(adapter.time()) + 300}
+        "deadline": int(adapter.time()) + duration}
     validate_envelope(canonical_json(envelope), now=adapter.time())
     wire = canonical_json(envelope) + b"\n"
-    deadline = adapter.monotonic() + 300
+    deadline = adapter.monotonic() + duration
     require(adapter.command("validate-envelope", wire) == envelope, "validated_envelope_identity")
     initial = adapter.command("deploy", wire)
     require(isinstance(initial, dict) and initial.get("release_id") == envelope["release_id"], "release_queue_identity")
@@ -1063,7 +1065,8 @@ def main(argv=None):
                     require(accepted["trigger_sha"] == context["sha"], "accepted_trigger")
                     result = deploy_runtime(context, adapter, accepted,
                         enabled=activated(os.environ, "MCP_RUNTIME_DEPLOY_ENABLED"),
-                        configuration_digest=os.environ.get("MCP_CONFIGURATION_DIGEST"), platform=os.environ.get("MCP_PLATFORM"))
+                        configuration_digest=os.environ.get("MCP_CONFIGURATION_DIGEST"), platform=os.environ.get("MCP_PLATFORM"),
+                        stop_start=activated(os.environ, "MCP_STOP_START_DEPLOY_ENABLED"))
                     print("runtime " + result["state"])
     except (ValueError, OSError, subprocess.SubprocessError) as error:
         code = str(error) if isinstance(error, PublicationError) else getattr(error, "code", type(error).__name__)
