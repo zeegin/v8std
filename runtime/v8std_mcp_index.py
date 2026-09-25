@@ -9,7 +9,7 @@ import struct
 import threading
 import time
 from collections import Counter, defaultdict
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
@@ -394,6 +394,12 @@ class V8StdIndex:
         self.refresh_seconds = refresh_seconds
         self.request_timeout = request_timeout
         self.rules = RetrievalRules.load(rules_path)
+        # Retrieval rules can change projected hits (reasons and relations)
+        # without changing corpus bytes, vectors, or ranked scores.
+        self._rules_sha256 = hashlib.sha256(json.dumps(
+            [asdict(rule) for rule in self.rules.rules],
+            ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+        ).encode("utf-8")).hexdigest()
         self._lock = threading.RLock()
         self._pages: list[dict[str, Any]] = []
         self._pages_by_id: dict[str, dict[str, Any]] = {}
@@ -558,6 +564,8 @@ class V8StdIndex:
             result_fingerprint.update(
                 self._vector_metadata.sha256.encode("ascii") if self._vector_metadata else b""
             )
+            result_fingerprint.update(b"\0")
+            result_fingerprint.update(self._rules_sha256.encode("ascii"))
             result_fingerprint.update(b"\0")
             result_fingerprint.update(json.dumps(
                 [query, mode, sorted(allowed_types) if allowed_types else None, requested_limit],

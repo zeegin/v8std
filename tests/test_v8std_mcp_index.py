@@ -109,6 +109,36 @@ class V8StdMcpIndexTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "invalid search cursor"):
                 index.search("module", limit=1, cursor="vs1.invalid.1")
 
+    def test_search_cursor_rejects_changed_rules_with_same_ranked_hits(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            pages_path = Path(temp_dir) / "pages.jsonl"
+            rules_path = Path(temp_dir) / "retrieval-rules.yml"
+            pages_path.write_text(
+                '\n'.join(json.dumps({"id": f"std{number}", "type": "standard", "title": "Page module"})
+                          for number in (1, 2, 3)) + '\n',
+                encoding="utf-8",
+            )
+
+            def load_with_standard(standard_id):
+                rules_path.write_text(
+                    f"rules:\n  - id: example\n    primary: std1\n    standards: [{standard_id}]\n",
+                    encoding="utf-8",
+                )
+                index = V8StdIndex(pages_path=pages_path, rules_path=rules_path)
+                index.load()
+                return index
+
+            original = load_with_standard("std2")
+            first = original.search("module", mode="bm25", limit=1)
+            changed = load_with_standard("std3")
+            changed_first = changed.search("module", mode="bm25", limit=1)
+            self.assertEqual(first["results"][0]["id"], changed_first["results"][0]["id"])
+            self.assertEqual(first["results"][0]["score"], changed_first["results"][0]["score"])
+            self.assertNotEqual(first["results"][0]["related_preview"],
+                                changed_first["results"][0]["related_preview"])
+            with self.assertRaisesRegex(ValueError, "stale search cursor"):
+                changed.search("module", mode="bm25", limit=1, cursor=first["next_cursor"])
+
     def test_generated_code_aliases_are_top_ranked(self):
         layout_results = self.index.search("ыев437", limit=3)["results"]
         bare_number_results = self.index.search("#437", limit=3)["results"]
