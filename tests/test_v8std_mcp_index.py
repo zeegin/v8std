@@ -18,8 +18,12 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from runtime.v8std_mcp_index import (  # noqa: E402
     IndexLoadError,
+    SEMANTIC_MODE_MAX_RESULTS,
     VECTOR_DIM,
+    VECTOR_MODEL,
     V8StdIndex,
+    embed_query,
+    signed_hash,
     normalize_lookup_key,
     normalize_page_schema,
 )
@@ -232,6 +236,55 @@ class V8StdMcpIndexTests(unittest.TestCase):
         self.assertEqual(query_allowed[0]["id"], "std415")
         self.assertEqual(modal[0]["id"], "bslls:UsingModalWindows")
         self.assertEqual(log_event[0]["id"], "std498")
+
+    def test_unmatched_query_is_empty_in_lexical_and_hybrid_modes(self):
+        for query in ("zzzqqqxyz", "абырвалг"):
+            for mode in ("hybrid", "exact", "bm25"):
+                with self.subTest(query=query, mode=mode):
+                    result = self.index.search(query, mode=mode)
+                    self.assertEqual((result["total"], result["results"], result["next_cursor"]),
+                                     (0, [], None))
+
+    def test_semantic_similarity_reranks_but_does_not_add_hybrid_candidates(self):
+        if not self.index.status()["semantic_enabled"]:
+            self.skipTest("search vectors are not generated")
+        query = "GetFormMethod"
+        lexical = self.index.search(query, mode="exact", limit=50)["total"]
+        lexical += self.index.search(query, mode="bm25", limit=50)["total"]
+        hybrid = self.index.search(query, limit=50)
+        self.assertEqual(hybrid["results"][0]["id"], "bslls:GetFormMethod")
+        # Related boosts expand matches through page links; semantic noise
+        # used to make every page in the corpus a candidate.
+        self.assertLess(hybrid["total"], len(self.index._pages) // 4)
+        self.assertGreater(hybrid["total"], 0)
+        self.assertGreater(lexical, 0)
+
+    def test_semantic_mode_returns_bounded_nearest_pages(self):
+        if not self.index.status()["semantic_enabled"]:
+            self.skipTest("search vectors are not generated")
+        result = self.index.search("Separation of Concerns", mode="semantic", types=["pattern"], limit=5)
+        self.assertEqual(result["results"][0]["id"], "patterns:engineering:separation_of_concerns")
+        self.assertLessEqual(result["total"], SEMANTIC_MODE_MAX_RESULTS)
+        self.assertLessEqual(self.index.search("zzzqqqxyz", mode="semantic")["total"],
+                             SEMANTIC_MODE_MAX_RESULTS)
+
+    def test_hash_embedding_sign_is_independent_of_bucket(self):
+        signs_by_parity = {0: set(), 1: set()}
+        for number in range(200):
+            hashed, sign = signed_hash(f"feature{number}")
+            signs_by_parity[hashed % VECTOR_DIM % 2].add(sign)
+        self.assertEqual(signs_by_parity, {0: {-1.0, 1.0}, 1: {-1.0, 1.0}})
+
+    def test_runtime_query_embedding_matches_vector_generator(self):
+        import generate_search_vectors as generator
+
+        self.assertEqual((generator.DEFAULT_MODEL, generator.DEFAULT_DIM), (VECTOR_MODEL, VECTOR_DIM))
+        text = "Модальные окна OpenFormModal ПроверкаЗаполнения реквизитов"
+        expected = struct.unpack(f"<{VECTOR_DIM}f", struct.pack(
+            f"<{VECTOR_DIM}f", *generator.embed_text(text, dim=VECTOR_DIM)))
+        actual = struct.unpack(f"<{VECTOR_DIM}f", struct.pack(
+            f"<{VECTOR_DIM}f", *embed_query(text, VECTOR_DIM)))
+        self.assertEqual(actual, expected)
 
     def test_search_validates_types_and_modes(self):
         with self.assertRaises(ValueError):
@@ -504,7 +557,7 @@ class V8StdMcpIndexTests(unittest.TestCase):
                 "id": "std111",
                 "field": "body",
                 "chunk_index": 0,
-                "model": "v8std-hash-embeddings-v1",
+                "model": VECTOR_MODEL,
                 "dim": VECTOR_DIM,
                 "vector_base64": good_vector,
             }
@@ -527,6 +580,10 @@ class V8StdMcpIndexTests(unittest.TestCase):
                     vector_row(model="model-a"),
                     vector_row(model="model-b", chunk_index=1),
                 ],
+                # Vectors of the previous hashing scheme are not comparable
+                # with this runtime's query embedding.
+                vector_row(model="v8std-hash-embeddings-v1"),
+                {key: value for key, value in vector_row().items() if key != "model"},
             ]
             for payload in invalid_payloads:
                 rows = payload if isinstance(payload, list) else [payload]

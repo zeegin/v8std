@@ -25,7 +25,7 @@ from scripts.v8std_mcp_chunks import page_chunks
 
 DEFAULT_SITE_URL = "https://v8std.ru/"
 PUBLIC_DELIVERY_URL = "https://ai.v8std.ru/indexes/v1/"
-VECTOR_MODEL = "v8std-hash-embeddings-v1"
+VECTOR_MODEL = "v8std-hash-embeddings-v2"
 VECTOR_DIM = 256
 MAX_MANIFEST_BYTES = 64 * 1024
 MAX_ARCHIVE_BYTES = 16 * 1024 * 1024

@@ -12,7 +12,7 @@ from pathlib import Path
 
 SOURCE_SHA = "1" * 40
 SITE_URL = "https://v8std.ru/"
-MODEL = "v8std-hash-embeddings-v1"
+MODEL = "v8std-hash-embeddings-v2"
 MEMBERS = (
     "metadata.json", "pages.jsonl", "search-vectors.jsonl", "llms.txt", "llms-full.txt",
 )

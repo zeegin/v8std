@@ -591,7 +591,7 @@ def build_server(
         query: Annotated[str, Field(description="Question, topic or uncertain identifier; up to 500 Unicode characters. Example: модальные окна. Not a source module.")],
         limit: Annotated[int, Field(description="Maximum results, default 10; clamped to 1–50.")] = 10,
         types: Annotated[list[str] | None, Field(description="Page types: standard, diagnostic, fix, pattern, service. null or [] means all types.")] = None,
-        mode: Annotated[str, Field(description="hybrid: combined search (default); exact: includes identifier variants and fuzzy code matches; bm25: text/metadata; semantic: indexed vectors.")] = "hybrid",
+        mode: Annotated[str, Field(description="hybrid: combined search (default); exact: includes identifier variants and fuzzy code matches; bm25: text/metadata; semantic: up to 50 nearest pages by indexed vectors, even without a text match.")] = "hybrid",
         cursor: Annotated[str | None, Field(description="Opaque next_cursor from a previous search with identical query, limit, types and mode; rejects changed rankings.")] = None,
     ) -> dict[str, Any]:
         result = index.search(query, types=types, mode=mode, limit=limit, cursor=cursor)

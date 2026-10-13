@@ -16,6 +16,7 @@ from typing import Any
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+from runtime.v8std_mcp_snapshot_format import VECTOR_MODEL
 from scripts.v8std_retrieval_rules import RetrievalRules, normalize_text, tokenize
 from scripts.v8std_search_features import (
     canonical_search_terms,
@@ -50,6 +51,10 @@ RESOURCE_MAX_BYTES = {
     "search-vectors.jsonl": 32 * 1024 * 1024,
 }
 VECTOR_DIM = 256
+# Hashing-trick similarity of unrelated texts reaches the similarity of real
+# matches (0.2-0.4 cosine), so no threshold separates them. Pure semantic mode
+# is a nearest-neighbour ranking and returns at most one full page of them.
+SEMANTIC_MODE_MAX_RESULTS = MAX_LIMIT
 MAX_VECTOR_ROWS = 100000
 MAX_VECTOR_BASE64_CHARS = 8192
 VALID_TYPES = {"standard", "diagnostic", "fix", "pattern", "service"}
@@ -294,9 +299,12 @@ def concrete_rank(page: dict[str, Any]) -> int:
 
 
 def signed_hash(value: str) -> tuple[int, float]:
+    # The bucket is taken from the low bits (number % dim); the sign must come
+    # from a bit the bucket does not use, otherwise every bucket has a fixed
+    # sign and all vectors correlate positively.
     digest = hashlib.blake2b(value.encode("utf-8"), digest_size=8).digest()
     number = int.from_bytes(digest, "little")
-    return number, -1.0 if number & 1 else 1.0
+    return number, -1.0 if number >> 63 else 1.0
 
 
 def embed_query(value: str, dim: int) -> tuple[float, ...]:
@@ -535,8 +543,12 @@ class V8StdIndex:
                 self._add_bm25_scores(candidates, query_tokens)
                 self._add_metadata_coverage_scores(candidates, query)
 
-            if mode in {"hybrid", "semantic"}:
-                self._add_semantic_scores(candidates, query)
+            if mode == "hybrid":
+                # Hashing-trick similarity only re-ranks pages that some
+                # lexical method matched; it never makes a page a match.
+                self._add_semantic_scores(candidates, query, rerank_only=True)
+            elif mode == "semantic":
+                self._add_semantic_scores(candidates, query, rerank_only=False)
 
             if mode == "hybrid":
                 self._add_related_boosts(candidates)
@@ -557,6 +569,8 @@ class V8StdIndex:
                 entries.append((score, page, candidate))
 
             entries.sort(key=lambda item: (-item[0], concrete_rank(item[1]), item[1]["type"], item[1]["id"]))
+            if mode == "semantic":
+                del entries[SEMANTIC_MODE_MAX_RESULTS:]
             result_fingerprint = hashlib.sha256()
             result_fingerprint.update(b"v8std-search-v1\0")
             result_fingerprint.update(self._metadata.sha256.encode("ascii") if self._metadata else b"")
@@ -1054,13 +1068,24 @@ class V8StdIndex:
                 coverage,
             )
 
-    def _add_semantic_scores(self, candidates: dict[str, dict[str, Any]], query: str) -> None:
+    def _add_semantic_scores(
+        self,
+        candidates: dict[str, dict[str, Any]],
+        query: str,
+        *,
+        rerank_only: bool,
+    ) -> None:
         metadata = self._vector_metadata
         if metadata is None or not self._vectors:
             return
+        if rerank_only and not candidates:
+            return
+        eligible = set(candidates) if rerank_only else None
         query_vector = embed_query(query, metadata.dim)
         per_page: dict[str, tuple[float, str]] = {}
         for entry in self._vectors:
+            if eligible is not None and entry.page_id not in eligible:
+                continue
             score = dot(query_vector, entry.vector)
             if score <= 0:
                 continue
@@ -1195,8 +1220,10 @@ class V8StdIndex:
                         f"vector_base64 is too long: max {MAX_VECTOR_BASE64_CHARS} characters"
                     )
                 row_model = str(row.get("model", ""))
-                if model and row_model and row_model != model:
-                    raise ValueError("inconsistent vector model")
+                if row_model != VECTOR_MODEL:
+                    # Query embeddings are computed by this module; vectors
+                    # of another model are not comparable with them.
+                    raise ValueError(f"vector model must be {VECTOR_MODEL}")
                 if dim and row_dim != dim:
                     raise ValueError("inconsistent vector dim")
                 vectors.append(

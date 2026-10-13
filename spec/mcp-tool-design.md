@@ -162,7 +162,7 @@ Resolve diagnostic identifiers from analyzer reports or source-code comments and
 |---|---|
 | `search.query` | `Question, topic or uncertain identifier, in Russian or English. Maximum 500 Unicode characters. Example: модальные окна. Not a full source module.` |
 | `search.types` | `Optional page types: standard, diagnostic, fix, pattern, service. null or [] means all types.` |
-| `search.mode` | `hybrid combines available matching methods (default); exact includes identifier variants and fuzzy code matches; bm25 is text/metadata search; semantic uses indexed vectors.` |
+| `search.mode` | `hybrid combines available matching methods (default); exact includes identifier variants and fuzzy code matches; bm25 is text/metadata search; semantic returns up to 50 nearest pages by indexed vectors, even without a text match.` |
 | `*.limit` | `Maximum results, default 10. Values are clamped to 1–50. For explain_snippet this is the combined diagnostics and standards budget.` — последнее предложение только для snippet |
 | `*.id_or_alias_or_url` | `Known article ID, alias, source path, HTML or Markdown URL; maximum 1000 Unicode characters. Example: std437.` |
 | `page.body_limit` | `Markdown body budget in Unicode characters, default 12000, clamped to 1000–30000. A truncation marker may add characters; inspect body_truncated.` |
