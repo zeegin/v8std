@@ -1655,6 +1655,24 @@ cases:
   expected: bslls:UsingModalWindows
   required_top: 1
   limit: 1
+- scenario: nonsense query is empty
+  query: zzzqqqxyz
+  max_total: 0
+- scenario: cyrillic nonsense query is empty
+  query: абырвалг
+  max_total: 0
+- scenario: keyboard mash query is empty
+  query: qwerty asdf zxcv
+  max_total: 0
+- scenario: off-topic question has a small total
+  query: как сварить борщ
+  max_total: 3
+- scenario: off-topic travel question has a small total
+  query: купить билет на самолёт
+  max_total: 3
+- scenario: off-topic english question has a small total
+  query: how to cook pasta
+  max_total: 3
 thresholds:
   mrr: 0.85
   p95_latency_ms: 500

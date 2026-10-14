@@ -90,18 +90,21 @@ def rank_expected(ids: list[str], expected: str) -> int | None:
         return None
 
 
+def run_search(index: V8StdIndex, case: dict) -> dict[str, Any]:
+    return index.search(
+        case["query"],
+        limit=int(case.get("limit", 10)),
+        types=case.get("types"),
+        mode=case.get("mode", "hybrid"),
+    )
+
+
 def collect_case_ids(index: V8StdIndex, case: dict) -> list[str]:
     tool = case.get("tool", "search")
     limit = int(case.get("limit", 10))
 
     if tool == "search":
-        result = index.search(
-            case["query"],
-            limit=limit,
-            types=case.get("types"),
-            mode=case.get("mode", "hybrid"),
-        )
-        return [item["id"] for item in result["results"]]
+        return [item["id"] for item in run_search(index, case)["results"]]
 
     if tool == "snippet":
         result = index.explain_snippet(
@@ -327,6 +330,35 @@ def main() -> int:
                     ),
                     "rank": None,
                     "ok": not case_failures,
+                    "latency_ms": elapsed_ms,
+                    "top_ids": ids,
+                    "_case_source": case.get("_case_source", "static"),
+                }
+            )
+            continue
+
+        if "max_total" in case:
+            result = run_search(index, case)
+            elapsed_ms = (time.perf_counter() - start) * 1000
+            latencies_ms.append(elapsed_ms)
+            ids = [item["id"] for item in result["results"]]
+            max_total = int(case["max_total"])
+            ok = result["total"] <= max_total
+            print(
+                f"{label}: total_ok={ok} total={result['total']} max_total={max_total} "
+                f"top={ids[:5]} latency_ms={elapsed_ms:.1f}"
+            )
+            if not ok:
+                failures.append(f"{label}: expected total <= {max_total}, got {result['total']} {ids[:5]}")
+            records.append(
+                {
+                    "scenario": scenario,
+                    "input": case_input(case),
+                    "tool": "search",
+                    "expected": f"total <= {max_total}",
+                    "rank": None,
+                    "ok": ok,
+                    "negative": True,
                     "latency_ms": elapsed_ms,
                     "top_ids": ids,
                     "_case_source": case.get("_case_source", "static"),
