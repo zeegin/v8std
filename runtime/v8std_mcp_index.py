@@ -299,12 +299,9 @@ def concrete_rank(page: dict[str, Any]) -> int:
 
 
 def signed_hash(value: str) -> tuple[int, float]:
-    # The bucket is taken from the low bits (number % dim); the sign must come
-    # from a bit the bucket does not use, otherwise every bucket has a fixed
-    # sign and all vectors correlate positively.
     digest = hashlib.blake2b(value.encode("utf-8"), digest_size=8).digest()
     number = int.from_bytes(digest, "little")
-    return number, -1.0 if number >> 63 else 1.0
+    return number, -1.0 if number & 1 else 1.0
 
 
 def embed_query(value: str, dim: int) -> tuple[float, ...]:

@@ -19,15 +19,13 @@ from atomic_files import atomic_write_text
 
 
 DEFAULT_DIM = 256
-DEFAULT_MODEL = "v8std-hash-embeddings-v2"
+DEFAULT_MODEL = "v8std-hash-embeddings-v1"
 
 
 def signed_hash(value: str) -> tuple[int, float]:
-    # The bucket uses the low bits (number % dim); the sign comes from the top
-    # bit so that buckets do not have a fixed sign. Must match the runtime.
     digest = hashlib.blake2b(value.encode("utf-8"), digest_size=8).digest()
     number = int.from_bytes(digest, "little")
-    return number, -1.0 if number >> 63 else 1.0
+    return number, -1.0 if number & 1 else 1.0
 
 
 def embed_text(value: str, *, dim: int = DEFAULT_DIM) -> list[float]:

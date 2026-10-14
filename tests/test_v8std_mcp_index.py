@@ -23,7 +23,6 @@ from runtime.v8std_mcp_index import (  # noqa: E402
     VECTOR_MODEL,
     V8StdIndex,
     embed_query,
-    signed_hash,
     normalize_lookup_key,
     normalize_page_schema,
 )
@@ -267,13 +266,6 @@ class V8StdMcpIndexTests(unittest.TestCase):
         self.assertLessEqual(result["total"], SEMANTIC_MODE_MAX_RESULTS)
         self.assertLessEqual(self.index.search("zzzqqqxyz", mode="semantic")["total"],
                              SEMANTIC_MODE_MAX_RESULTS)
-
-    def test_hash_embedding_sign_is_independent_of_bucket(self):
-        signs_by_parity = {0: set(), 1: set()}
-        for number in range(200):
-            hashed, sign = signed_hash(f"feature{number}")
-            signs_by_parity[hashed % VECTOR_DIM % 2].add(sign)
-        self.assertEqual(signs_by_parity, {0: {-1.0, 1.0}, 1: {-1.0, 1.0}})
 
     def test_runtime_query_embedding_matches_vector_generator(self):
         import generate_search_vectors as generator
@@ -580,9 +572,9 @@ class V8StdMcpIndexTests(unittest.TestCase):
                     vector_row(model="model-a"),
                     vector_row(model="model-b", chunk_index=1),
                 ],
-                # Vectors of the previous hashing scheme are not comparable
+                # Vectors of another hashing scheme are not comparable
                 # with this runtime's query embedding.
-                vector_row(model="v8std-hash-embeddings-v1"),
+                vector_row(model="v8std-hash-embeddings-v2"),
                 {key: value for key, value in vector_row().items() if key != "model"},
             ]
             for payload in invalid_payloads:

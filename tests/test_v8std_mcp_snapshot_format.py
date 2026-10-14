@@ -349,7 +349,7 @@ class SnapshotFormatTests(unittest.TestCase):
         self.assertIs(fmt.page_chunks, chunks.page_chunks)
         self.assertEqual(generator.MAX_CHUNK_CHARS, chunks.MAX_CHUNK_CHARS)
         self.assertEqual((generator.DEFAULT_DIM, generator.DEFAULT_MODEL, generator.MAX_CHUNK_CHARS),
-                         (256, "v8std-hash-embeddings-v2", 2200))
+                         (256, "v8std-hash-embeddings-v1", 2200))
         self.assertIsInstance(generator.page_chunks(fixture.page_fixture()), list)
 
     def test_chunk_rule_preserves_independent_boundary_examples(self):
