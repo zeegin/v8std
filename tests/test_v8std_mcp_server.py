@@ -366,6 +366,16 @@ class ClientSystemTrackingTests(unittest.TestCase):
         self.assertEqual(server_module.classify_client_system("custom-client"), "other")
         self.assertEqual(server_module.classify_client_system(""), "unknown")
 
+    def test_classifies_unica_and_copilot_clients(self):
+        server_module = load_server_module()
+
+        self.assertEqual(server_module.classify_client_system("unica/0.13.2 (darwin; aarch64)"), "unica")
+        self.assertEqual(server_module.classify_client_system("ureq/2.12.1"), "unica_legacy")
+        self.assertEqual(server_module.classify_client_system("GitHubCopilotChat/0.22.4"), "copilot")
+        self.assertEqual(server_module.classify_client_system("copilot-language-server/1.2"), "copilot")
+        for system in ("unica", "unica_legacy", "copilot"):
+            self.assertIn(system, server_module.ALLOWED_CLIENT_SYSTEMS)
+
     def test_mcp_request_sets_current_client_system_for_downstream_app(self):
         server_module = load_server_module()
         observed_systems = []
@@ -392,7 +402,119 @@ class ClientSystemTrackingTests(unittest.TestCase):
         self.assertEqual(server_module.current_client_system(), "unknown")
 
 
+class UsageWireTests(unittest.TestCase):
+    def test_initialize_client_and_search_shape_reach_usage_log_over_http(self):
+        from starlette.testclient import TestClient
+
+        from runtime.v8std_mcp_index import V8StdIndex
+        from runtime.v8std_mcp_server import McpToolUsageLogger, build_server
+
+        index = V8StdIndex(pages_path=REPO_ROOT / "docs/ai/pages.jsonl", vectors_path=None)
+        index.load()
+        with tempfile.TemporaryDirectory() as directory:
+            usage_path = Path(directory) / "usage.jsonl"
+            server = build_server(index, host="127.0.0.1", port=8765, mcp_path="/mcp",
+                                  allowed_hosts=["127.0.0.1:*"], allowed_origins=[],
+                                  usage_logger=McpToolUsageLogger(usage_path))
+            headers = {"Accept": "application/json, text/event-stream", "Content-Type": "application/json",
+                       "User-Agent": "unica/0.13.2", "X-Real-IP": "8.8.8.8"}
+            with TestClient(server.streamable_http_app(), base_url="http://127.0.0.1:8765") as client:
+                def rpc(method, params, number=1):
+                    response = client.post("/mcp", headers=headers, content=json.dumps(
+                        {"jsonrpc": "2.0", "id": number, "method": method, "params": params}).encode("utf-8"))
+                    self.assertEqual(response.status_code, 200, response.text)
+                    return response.json()["result"]
+
+                initialized = rpc("initialize", {"protocolVersion": "2025-03-26", "capabilities": {},
+                                                 "clientInfo": {"name": "unica", "version": "0.13.2"}})
+                self.assertIn("serverInfo", initialized)
+                first = rpc("tools/call", {"name": "v8std_search",
+                                           "arguments": {"query": "модуль", "limit": 2, "mode": "bm25"}}, 2)
+                cursor = first["structuredContent"]["next_cursor"]
+                rpc("tools/call", {"name": "v8std_search", "arguments": {
+                    "query": "модуль", "limit": 2, "mode": "bm25", "cursor": cursor}}, 3)
+                rpc("tools/call", {"name": "v8std_get_page", "arguments": {"id_or_alias_or_url": "std437"}}, 4)
+            rows = [json.loads(line) for line in usage_path.read_text(encoding="utf-8").splitlines()]
+
+        self.assertEqual([row["tool"] for row in rows],
+                         ["mcp_initialize", "v8std_search", "v8std_search", "v8std_get_page"])
+        sessions = {row.get("session") for row in rows}
+        self.assertEqual(len(sessions), 1)
+        self.assertIsNotNone(next(iter(sessions)))
+        self.assertTrue(all(row["system"] == "unica" for row in rows))
+        self.assertTrue(all((row["client_name"], row["client_version"]) == ("unica", "0.13.2") for row in rows))
+        self.assertEqual([(row["mode"], row["limit"], row["page"], row["returned"]) for row in rows[1:3]],
+                         [("bm25", 2, 0, 2), ("bm25", 2, 1, 2)])
+        self.assertGreater(rows[1]["total"], 2)
+        self.assertNotIn("8.8.8.8", usage_path.name + json.dumps(rows))
+
+
 class McpToolUsageLoggerTests(unittest.TestCase):
+    def test_search_record_carries_request_shape_and_counts(self):
+        server_module = load_server_module()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "tool-usage.jsonl"
+            logger = server_module.McpToolUsageLogger(log_path)
+            result = {
+                "normalized_query": "модальные окна",
+                "mode": "hybrid",
+                "types": ["diagnostic", "standard", "secret"],
+                "total": 14,
+                "results": [{"id": "std404", "title": "Модальные окна", "url": "https://v8std.ru/std/404/"}],
+            }
+            logger.record_search("модальные окна", result, system="unica", limit=1, page=3)
+            logger.record_search("бессмыслица", {"mode": "exact", "types": None, "total": 0, "results": []},
+                                 system="unica", limit=10, page=0)
+            rows = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines()]
+
+        self.assertEqual(
+            {key: rows[0][key] for key in ("mode", "limit", "types", "page", "total", "returned")},
+            {"mode": "hybrid", "limit": 1, "types": ["diagnostic", "standard"], "page": 3, "total": 14, "returned": 1},
+        )
+        self.assertEqual(
+            {key: rows[1].get(key) for key in ("mode", "limit", "types", "page", "total", "returned")},
+            {"mode": "exact", "limit": 10, "types": None, "page": 0, "total": 0, "returned": 0},
+        )
+        self.assertNotIn("session", rows[0])
+
+    def test_session_pseudonym_links_requests_without_storing_the_address(self):
+        server_module = load_server_module()
+        tracker = server_module.ClientSessionTracker()
+
+        def session(address, user_agent="unica/0.13.2", **headers):
+            values = {b"user-agent": user_agent, **{key.encode(): value for key, value in headers.items()}}
+            return tracker.session_for({"client": (address, 40000)}, values)
+
+        first = session("8.8.8.8")
+        self.assertRegex(first, r"^[0-9a-f]{16}$")
+        self.assertEqual(session("8.8.8.8"), first)
+        self.assertNotEqual(session("8.8.8.8", user_agent="codex-cli/0.8"), first)
+        self.assertNotEqual(session("8.8.4.4"), first)
+        self.assertNotEqual(server_module.ClientSessionTracker().session_for(
+            {"client": ("8.8.8.8", 40000)}, {b"user-agent": "unica/0.13.2"}), first)
+        # The edge proxy and container bridges are not client identities.
+        self.assertIsNone(session("127.0.0.1"))
+        self.assertIsNone(session("172.17.0.1"))
+        self.assertEqual(session("127.0.0.1", **{"x-real-ip": "8.8.8.8"}), first)
+        self.assertEqual(session("127.0.0.1", **{"x-forwarded-for": "8.8.8.8, 10.0.0.1"}), first)
+        self.assertRegex(session("127.0.0.1", **{"mcp-session-id": "abc"}), r"^[0-9a-f]{16}$")
+        self.assertNotIn("8.8.8.8", first)
+
+    def test_initialize_client_info_is_sanitized(self):
+        server_module = load_server_module()
+        body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+            "clientInfo": {"name": "unica\n<script>" + "x" * 100, "version": "0.13.2+abc"}}}).encode()
+
+        name, version = server_module.initialize_client_info(body)
+
+        self.assertEqual(version, "0.13.2+abc")
+        self.assertTrue(name.startswith("unica script"))
+        self.assertLessEqual(len(name), server_module.MAX_USAGE_CLIENT_CHARS)
+        self.assertIsNone(server_module.initialize_client_info(b'{"method":"tools/list"}'))
+        self.assertIsNone(server_module.initialize_client_info(b"not json"))
+        self.assertEqual(server_module.initialize_client_info(b'{"method":"initialize","params":{}}'), (None, None))
+
     def test_usage_logger_writes_tool_name_without_arguments_by_default(self):
         server_module = load_server_module()
 

@@ -3,11 +3,17 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import html
+import ipaddress
 import json
 import logging
 import os
+import re
 import sys
+import threading
+from collections import OrderedDict
 from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from datetime import datetime, timezone
@@ -32,6 +38,7 @@ from runtime.v8std_mcp_index import (
     MAX_SNIPPET_CHARS,
     MAX_SNIPPET_LIMIT_CHARS,
     V8StdIndex,
+    clamp_limit,
     validate_max_snippet_chars,
 )
 from runtime.v8std_mcp_runtime import SnapshotIndex
@@ -64,7 +71,17 @@ MAX_USAGE_RESULTS = 50
 MAX_USAGE_CODES = 500
 DEFAULT_LOG_LEVEL = "WARNING"
 CLIENT_SYSTEM_CONTEXT: ContextVar[str] = ContextVar("v8std_client_system", default="unknown")
+CLIENT_SESSION_CONTEXT: ContextVar[str | None] = ContextVar("v8std_client_session", default=None)
+MAX_USAGE_CLIENT_CHARS = 64
+MAX_INITIALIZE_BODY_BYTES = 64 * 1024
+MAX_TRACKED_SESSIONS = 4096
+USAGE_CLIENT_RE = re.compile(r"[^A-Za-z0-9._+/@() -]")
+USAGE_SEARCH_MODES = {"hybrid", "exact", "bm25", "semantic"}
+USAGE_SEARCH_TYPES = {"standard", "diagnostic", "fix", "pattern", "service"}
 ALLOWED_CLIENT_SYSTEMS = {
+    "unica",
+    "unica_legacy",
+    "copilot",
     "codex",
     "claude",
     "cursor",
@@ -93,6 +110,14 @@ def classify_client_system(user_agent: str) -> str:
     ua = user_agent.strip().lower()
     if not ua or ua == "-":
         return "unknown"
+    if "unica/" in ua:
+        return "unica"
+    if ua.startswith("ureq") or "ureq/" in ua:
+        # Unica builds before the unica/<version> agent used the default
+        # agent of the ureq HTTP client.
+        return "unica_legacy"
+    if "copilot" in ua:
+        return "copilot"
     if "codex" in ua or "openai" in ua:
         return "codex"
     if "claude" in ua or "anthropic" in ua:
@@ -126,6 +151,100 @@ def current_client_system() -> str:
     return CLIENT_SYSTEM_CONTEXT.get()
 
 
+def current_client_session() -> str | None:
+    return CLIENT_SESSION_CONTEXT.get()
+
+
+class ClientSessionTracker:
+    """Pseudonymous links between requests of one client, kept in memory only.
+
+    The streamable HTTP endpoint is stateless, so a client is recognised by its
+    MCP session header or by the client address forwarded by the edge proxy
+    together with its User-Agent. The key is reduced to an HMAC under a random
+    per-process secret that rotates every UTC day; neither the secret nor the
+    address is written anywhere, so logged session ids cannot be reversed and
+    do not link across days or restarts. clientInfo from initialize is
+    remembered per session for later tool calls.
+    """
+
+    def __init__(self) -> None:
+        self._secret = os.urandom(32)
+        self._clients: OrderedDict[str, tuple[str | None, str | None]] = OrderedDict()
+        self._lock = threading.Lock()
+
+    def session_for(self, scope: dict[str, Any], headers: dict[bytes, str]) -> str | None:
+        key = headers.get(b"mcp-session-id", "").strip()
+        if key:
+            key = "session\0" + key
+        else:
+            address = _client_address(scope, headers)
+            if address is None:
+                return None
+            key = "address\0" + address + "\0" + headers.get(b"user-agent", "").strip()
+        day = datetime.now(timezone.utc).strftime("%Y-%m-%d").encode("ascii")
+        day_key = hmac.new(self._secret, day, hashlib.sha256).digest()
+        return hmac.new(day_key, key.encode("utf-8", "replace"), hashlib.sha256).hexdigest()[:16]
+
+    def remember_client(self, session: str | None, name: str | None, version: str | None) -> None:
+        if session is None or (name is None and version is None):
+            return
+        with self._lock:
+            self._clients[session] = (name, version)
+            self._clients.move_to_end(session)
+            while len(self._clients) > MAX_TRACKED_SESSIONS:
+                self._clients.popitem(last=False)
+
+    def client_for(self, session: str | None) -> tuple[str | None, str | None]:
+        if session is None:
+            return None, None
+        with self._lock:
+            return self._clients.get(session, (None, None))
+
+
+def _client_address(scope: dict[str, Any], headers: dict[bytes, str]) -> str | None:
+    candidates = [headers.get(b"x-real-ip", "")]
+    candidates.extend(headers.get(b"x-forwarded-for", "").split(",")[:1])
+    client = scope.get("client")
+    if isinstance(client, (list, tuple)) and client:
+        candidates.append(str(client[0]))
+    for candidate in candidates:
+        try:
+            address = ipaddress.ip_address(candidate.strip())
+        except ValueError:
+            continue
+        # The edge proxy and container bridges are not clients: without a
+        # forwarded address every client would share one session id.
+        if address.is_loopback or address.is_private or address.is_link_local or address.is_unspecified:
+            continue
+        return address.compressed
+    return None
+
+
+def _usage_client_text(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    cleaned = USAGE_CLIENT_RE.sub("", " ".join(value.split()))[:MAX_USAGE_CLIENT_CHARS].strip()
+    return cleaned or None
+
+
+def initialize_client_info(body: bytes) -> tuple[str | None, str | None] | None:
+    """clientInfo name and version of a JSON-RPC initialize request, sanitized."""
+    try:
+        payload = json.loads(body)
+    except (ValueError, UnicodeDecodeError):
+        return None
+    messages = payload if isinstance(payload, list) else [payload]
+    for message in messages:
+        if not isinstance(message, dict) or message.get("method") != "initialize":
+            continue
+        params = message.get("params")
+        info = params.get("clientInfo") if isinstance(params, dict) else None
+        if not isinstance(info, dict):
+            return None, None
+        return _usage_client_text(info.get("name")), _usage_client_text(info.get("version"))
+    return None
+
+
 def _usage_system(value: Any) -> str | None:
     if not isinstance(value, str):
         return None
@@ -142,6 +261,12 @@ def _usage_text(value: Any, *, limit: int = MAX_USAGE_TEXT_CHARS) -> str | None:
     if not normalized:
         return None
     return normalized[:limit]
+
+
+def _usage_int(value: Any) -> int | None:
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return value
+    return None
 
 
 def _usage_url(value: Any) -> str | None:
@@ -292,6 +417,30 @@ def _usage_standards_without_page(items: Any) -> list[dict[str, str | int]]:
 class McpToolUsageLogger:
     def __init__(self, path: Path | None) -> None:
         self.path = path
+        self.sessions = ClientSessionTracker()
+
+    @property
+    def enabled(self) -> bool:
+        return self.path is not None
+
+    def client_metadata(self, session: str | None) -> dict[str, Any]:
+        """Session pseudonym and remembered clientInfo for a tool-call record."""
+        if session is None:
+            return {}
+        client_name, client_version = self.sessions.client_for(session)
+        return {"session": session, "client_name": client_name, "client_version": client_version}
+
+    def record_initialize(self, client: tuple[str | None, str | None], *, system: str | None,
+                          session: str | None) -> None:
+        client_name, client_version = client
+        self.sessions.remember_client(session, client_name, client_version)
+        self.record(
+            "mcp_initialize",
+            system=_usage_system(system),
+            session=session,
+            client_name=client_name,
+            client_version=client_version,
+        )
 
     def record(self, tool_name: str, **metadata: Any) -> None:
         if self.path is None:
@@ -314,38 +463,63 @@ class McpToolUsageLogger:
         except OSError:
             return
 
-    def record_search(self, query: str, result: dict[str, Any], *, system: str | None = None) -> None:
+    def record_search(
+        self,
+        query: str,
+        result: dict[str, Any],
+        *,
+        system: str | None = None,
+        session: str | None = None,
+        limit: Any = None,
+        page: int | None = None,
+    ) -> None:
+        results = result.get("results")
+        mode = result.get("mode")
+        types = result.get("types")
+        total = result.get("total")
         self.record(
             "v8std_search",
             system=_usage_system(system),
+            **self.client_metadata(session),
             query=_usage_text(query),
             normalized_query=_usage_text(result.get("normalized_query")),
-            results=_usage_results(result.get("results")),
+            mode=mode if mode in USAGE_SEARCH_MODES else None,
+            limit=_usage_int(limit),
+            types=sorted(t for t in types if t in USAGE_SEARCH_TYPES) if isinstance(types, list) else None,
+            page=_usage_int(page),
+            total=_usage_int(total),
+            returned=len(results) if isinstance(results, list) else None,
+            results=_usage_results(results),
         )
 
-    def record_page(self, requested_page: str, result: dict[str, Any], *, system: str | None = None) -> None:
+    def record_page(self, requested_page: str, result: dict[str, Any], *, system: str | None = None,
+                    session: str | None = None) -> None:
         page = result.get("page") if isinstance(result, dict) else None
         page_result = _usage_result(page)
         if page_result is None:
             self.record(
                 "v8std_get_page",
                 system=_usage_system(system),
+                **self.client_metadata(session),
                 requested_page=_usage_text(requested_page),
             )
             return
         self.record(
             "v8std_get_page",
             system=_usage_system(system),
+            **self.client_metadata(session),
             requested_page=_usage_text(requested_page),
             page_id=page_result.get("id"),
             title=page_result.get("title"),
             url=page_result.get("url"),
         )
 
-    def record_diagnostics(self, codes: list[str], result: dict[str, Any], *, system: str | None = None) -> None:
+    def record_diagnostics(self, codes: list[str], result: dict[str, Any], *, system: str | None = None,
+                           session: str | None = None) -> None:
         self.record(
             "v8std_explain_diagnostics",
             system=_usage_system(system),
+            **self.client_metadata(session),
             diagnostics=_usage_diagnostics(result.get("diagnostics") if isinstance(result, dict) else None),
             unknown_codes=_usage_unknown_codes(result.get("unknown_codes") if isinstance(result, dict) else None),
             standards_without_page=_usage_standards_without_page(result.get("standards") if isinstance(result, dict) else None),
@@ -358,10 +532,11 @@ def normalize_mcp_path(mcp_path: str) -> str:
 
 
 class SelfDocumentingMcpApp:
-    def __init__(self, downstream: Any, *, mcp_path: str) -> None:
+    def __init__(self, downstream: Any, *, mcp_path: str, usage_logger: McpToolUsageLogger | None = None) -> None:
         self.downstream = downstream
         self.mcp_path = normalize_mcp_path(mcp_path)
         self.slash_path = f"{self.mcp_path}/"
+        self.usage_logger = usage_logger
 
     async def __call__(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
         if scope.get("type") != "http":
@@ -391,11 +566,42 @@ class SelfDocumentingMcpApp:
         await self._send_to_downstream(scope, receive, send)
 
     async def _send_to_downstream(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
-        token = CLIENT_SYSTEM_CONTEXT.set(classify_client_system(self._header(scope, b"user-agent")))
+        system = classify_client_system(self._header(scope, b"user-agent"))
+        session = None
+        logger = self.usage_logger
+        if logger is not None and logger.enabled:
+            headers = {key.lower(): value.decode("latin-1") for key, value in scope.get("headers", [])}
+            session = logger.sessions.session_for(scope, headers)
+            if scope.get("method", "").upper() == "POST" and scope.get("path", "") == self.mcp_path:
+                receive = self._observe_initialize(receive, logger, system=system, session=session)
+        token = CLIENT_SYSTEM_CONTEXT.set(system)
+        session_token = CLIENT_SESSION_CONTEXT.set(session)
         try:
             await self.downstream(scope, receive, send)
         finally:
+            CLIENT_SESSION_CONTEXT.reset(session_token)
             CLIENT_SYSTEM_CONTEXT.reset(token)
+
+    @staticmethod
+    def _observe_initialize(receive: Any, logger: McpToolUsageLogger, *, system: str, session: str | None) -> Any:
+        """Pass the request body through unchanged, noting clientInfo of initialize."""
+        body = bytearray()
+        state = {"open": True}
+
+        async def observed_receive() -> dict[str, Any]:
+            message = await receive()
+            if state["open"] and message.get("type") == "http.request":
+                body.extend(message.get("body", b""))
+                if len(body) > MAX_INITIALIZE_BODY_BYTES:
+                    state["open"] = False
+                elif not message.get("more_body", False):
+                    state["open"] = False
+                    client = initialize_client_info(bytes(body))
+                    if client is not None:
+                        logger.record_initialize(client, system=system, session=session)
+            return message
+
+        return observed_receive
 
     def _accept_header(self, scope: dict[str, Any]) -> str:
         return self._header(scope, b"accept").lower()
@@ -496,7 +702,13 @@ class SelfDocumentingMcpApp:
         await send({"type": "http.response.body", "body": body})
 
 
-def install_self_documenting_mcp_app(server: FastMCP, *, mcp_path: str, index=None) -> None:
+def install_self_documenting_mcp_app(
+    server: FastMCP,
+    *,
+    mcp_path: str,
+    index=None,
+    usage_logger: McpToolUsageLogger | None = None,
+) -> None:
     original_streamable_http_app = server.streamable_http_app
 
     def streamable_http_app_with_self_documentation():
@@ -515,7 +727,7 @@ def install_self_documenting_mcp_app(server: FastMCP, *, mcp_path: str, index=No
                         await anyio.to_thread.run_sync(index.close)
 
             app.router.lifespan_context = lifespan
-        return SelfDocumentingMcpApp(app, mcp_path=mcp_path)
+        return SelfDocumentingMcpApp(app, mcp_path=mcp_path, usage_logger=usage_logger)
 
     server.streamable_http_app = streamable_http_app_with_self_documentation  # type: ignore[method-assign]
 
@@ -595,7 +807,16 @@ def build_server(
         cursor: Annotated[str | None, Field(description="Opaque next_cursor from a previous search with identical query, limit, types and mode; rejects changed rankings.")] = None,
     ) -> dict[str, Any]:
         result = index.search(query, types=types, mode=mode, limit=limit, cursor=cursor)
-        tool_usage.record_search(query, result, system=current_client_system())
+        cursor_match = V8StdIndex.validate_search_cursor(cursor)
+        page_number = 0 if cursor_match is None else int(cursor_match.group(2)) // clamp_limit(limit)
+        tool_usage.record_search(
+            query,
+            result,
+            system=current_client_system(),
+            session=current_client_session(),
+            limit=clamp_limit(limit),
+            page=page_number,
+        )
         return result
 
     @server.tool(
@@ -611,7 +832,8 @@ def build_server(
     )
     def page(id_or_alias_or_url: Annotated[str, Field(description="Known article ID, alias, source path, HTML or Markdown URL; up to 1000 Unicode characters. Example: std437.")], body_limit: Annotated[int, Field(description="Markdown character budget, default 12000; clamped to 1000–30000. Truncation marker may add characters; inspect body_truncated.")] = MAX_BODY_CHARS) -> dict[str, Any]:
         result = index.page(id_or_alias_or_url, body_limit=body_limit)
-        tool_usage.record_page(id_or_alias_or_url, result, system=current_client_system())
+        tool_usage.record_page(id_or_alias_or_url, result, system=current_client_system(),
+                               session=current_client_session())
         return result
 
     @server.tool(
@@ -630,7 +852,8 @@ def build_server(
         relations: Annotated[list[str] | None, Field(description="Relation kinds: standard, diagnostic, edt_check, related. Legacy related_standard and related_diagnostic accepted. null or [] means all.")] = None,
         limit: Annotated[int, Field(description="Maximum results, default 10; clamped to 1–50.")] = 10,
     ) -> dict[str, Any]:
-        tool_usage.record("v8std_get_related", system=_usage_system(current_client_system()))
+        tool_usage.record("v8std_get_related", system=_usage_system(current_client_system()),
+                          **tool_usage.client_metadata(current_client_session()))
         return index.related(id_or_alias_or_url, relations=relations, limit=limit)
 
     def explain_snippet(
@@ -638,7 +861,8 @@ def build_server(
         language: Annotated[str, Field(description="Source-language hint: auto (default), bsl or sdbl. Currently echoed without selecting a separate analyzer.")] = "auto",
         limit: Annotated[int, Field(description="Combined diagnostics and standards budget, default 10; clamped to 1–50.")] = 10,
     ) -> dict[str, Any]:
-        tool_usage.record("v8std_explain_snippet", system=_usage_system(current_client_system()))
+        tool_usage.record("v8std_explain_snippet", system=_usage_system(current_client_system()),
+                          **tool_usage.client_metadata(current_client_session()))
         return index.explain_snippet(snippet, language=language, limit=limit)
 
     # Publish the effective bound without Pydantic echoing source code in a
@@ -676,7 +900,8 @@ def build_server(
     )
     def explain_diagnostics(codes: Annotated[list[str], Field(description="Exact diagnostic IDs with analyzer namespace when known; up to 500 entries, each up to 200 characters. Example: [acc 1245, bslls:AssignAliasFieldsInQuery]. Not a raw report.")]) -> dict[str, Any]:
         result = index.explain_diagnostics(codes)
-        tool_usage.record_diagnostics(codes, result, system=current_client_system())
+        tool_usage.record_diagnostics(codes, result, system=current_client_system(),
+                                      session=current_client_session())
         return result
 
     @server.custom_route("/healthz", methods=["GET"], include_in_schema=False)
@@ -695,7 +920,7 @@ def build_server(
             {"service": "v8std-mcp", "api": "v2", "api_profiles": MCP_API_PROFILES, **index.status()}
         )
 
-    install_self_documenting_mcp_app(server, mcp_path=mcp_path, index=index)
+    install_self_documenting_mcp_app(server, mcp_path=mcp_path, index=index, usage_logger=tool_usage)
 
     return server
 
