@@ -1317,6 +1317,78 @@ class TransactionTests(unittest.TestCase):
         self.assertEqual(self.invoke(mode="recover")["state"], "ROLLED_BACK")
         self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
 
+    def operations(self, before=0):
+        return [json.loads(line) for line in (self.root / "calls.jsonl").read_text().splitlines()[before:]]
+
+    def test_rollback_failure_records_steps_and_retry_restores_deploy_cause(self):
+        result = self.invoke("public_dead,switch_old")
+        self.assertEqual(result["state"], "RECOVERY_REQUIRED", result)
+        self.assertEqual(result["error_code"], "rollback_failed")
+        self.assertEqual(result["failure"]["step"], "public_smoke", result)
+        self.assertEqual(result["rollback_failure"], {"step": "restore_upstream", "code": "injected_switch_old"})
+        result = self.invoke(mode="recover")
+        self.assertEqual(result["state"], "ROLLED_BACK", result)
+        self.assertNotIn("rollback_failure", result)
+        self.assertEqual(result["error_code"], result["failure"]["code"])
+        self.assertNotEqual(result["error_code"], "rollback_failed")
+
+    def test_reboot_after_failed_stop_start_restarts_active_and_keeps_cause(self):
+        # Incident 2026-10-14: a failed stop-start rollout, then a host reboot.
+        self.enable_stop_start()
+        self.assertEqual(self.invoke("capacity")["state"], "FAILED")
+        self.adapter.stop(self.previous, time.monotonic() + 5)
+        self.assertIsNone(self.health())
+        result = self.invoke(mode="recover")
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertTrue(result["cleanup_complete"], result)
+        self.assertEqual(result["error_code"], "injected_capacity")
+        self.assertEqual(result["failure"], {"step": "capacity_after_stop", "code": "injected_capacity"})
+        self.assertEqual(self.health()["runtime_sha"], self.previous["runtime_source_sha"])
+        self.assertIsNone(self.health()["hold_token"])
+        # A later healthy pass keeps the release outcome instead of erasing it.
+        self.assertEqual(self.invoke(mode="recover")["error_code"], "injected_capacity")
+
+    def test_failed_active_restart_is_recorded_then_adopts_manual_start(self):
+        self.enable_stop_start()
+        self.assertEqual(self.invoke("capacity")["state"], "FAILED")
+        self.adapter.stop(self.previous, time.monotonic() + 5)
+        def broken_start(record, deadline):
+            raise release.ReleaseError("usage_log_root", "/var/log")
+        with patch.object(self.adapter, "start", broken_start):
+            result = release.Controller(self.root, self.adapter).recover()
+        self.assertEqual(result["error_code"], "active_recovery_failed")
+        self.assertEqual(result["recovery_failure"],
+                         {"step": "recover_active_hold", "code": "usage_log_root", "detail": "/var/log"})
+        self.assertFalse(result["cleanup_complete"])
+        # The operator starts the owned container by hand (`docker start`).
+        self.adapter.start(self.previous, time.monotonic() + 5)
+        eventually(self.health)
+        result = self.invoke(mode="recover")
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertTrue(result["cleanup_complete"], result)
+        self.assertEqual(result["error_code"], "injected_capacity")
+        self.assertNotIn("recovery_failure", result)
+        self.assertIsNone(self.health()["hold_token"])
+        # No manual journal edit is needed before the next release.
+        release.Controller(self.root, self.adapter).existing(self.env | {"release_id": "next", "sequence": 2})
+
+    def test_recover_timer_output_reports_release_journal(self):
+        self.enable_stop_start()
+        self.invoke("capacity")
+        class Inbox:
+            def __init__(self, *args):
+                pass
+            def recover(self):
+                return {"state": "EMPTY"}
+        policy = self.adapter.policy | {"static_root": str(self.root / "static")}
+        with patch.object(release, "ROOT", self.root), patch.object(release, "trusted_policy", return_value=policy), \
+             patch.object(release, "HostAdapter", return_value=self.adapter), patch.object(os, "geteuid", return_value=0), \
+             patch.object(release, "Publisher", Inbox), patch.object(sys, "argv", ["fixture", "_recover"]):
+            result = release.main()
+        self.assertEqual(result["index"], {"state": "EMPTY"})
+        self.assertEqual(result["release"]["release_id"], self.env["release_id"])
+        self.assertEqual(result["release"]["error_code"], "injected_capacity")
+
     def test_manifest_change_between_envelope_and_start_fails_before_switch(self):
         self.source.next_generation()
         result = self.invoke()

@@ -1147,9 +1147,14 @@ class Controller:
     def result(journal):
         if journal["state"] == "REJECTED":
             return dict(journal)  # Durable queued rejection is already a public outcome.
-        return {**journal["envelope"], "state": journal["state"], "intent": journal["intent"],
-                "error_code": journal.get("error_code"), "cleanup_complete": bool(
-                    journal.get("cleanup_complete", False) and not journal.get("active_recovery"))}
+        result = {**journal["envelope"], "state": journal["state"], "intent": journal["intent"],
+                  "error_code": journal.get("error_code"), "cleanup_complete": bool(
+                      journal.get("cleanup_complete", False) and not journal.get("active_recovery"))}
+        # Failed step and short cause; codes and fixed locators only.
+        for key in ("failure", "rollback_failure", "recovery_failure"):
+            if journal.get(key):
+                result[key] = journal[key]
+        return result
 
     def save(self, journal, state=None, intent=None):
         if state:
@@ -1241,6 +1246,7 @@ class Controller:
                 self.cleanup(journal, work if mode == "stop-start" else deadline)
             except Exception as error:
                 journal["error_code"] = error.code if isinstance(error, ReleaseError) else "host_failure"
+                journal["failure"] = failure(journal["intent"], error)
                 self.save(journal)
                 if journal["state"] == "RECEIVED":
                     # Rejected authority cannot trigger runtime mutation.
@@ -1280,6 +1286,9 @@ class Controller:
         self.adapter.resume(candidate, min(deadline, time.monotonic() + SMOKE))
         journal["cleanup_complete"] = True
         journal.pop("error_code", None)
+        # Accepted and fully cleaned up: an earlier cleanup failure is resolved.
+        journal.pop("failure", None)
+        journal.pop("recovery_failure", None)
         self.save(journal, "COMMITTED" if journal.get("rollout_mode") == "stop-start" else None, "complete")
 
     def rollback(self, journal, deadline):
@@ -1308,9 +1317,16 @@ class Controller:
                 self.adapter.stop(journal["candidate"], min(deadline, time.monotonic() + STOP))
             self.adapter.resume(previous, deadline)
             journal["cleanup_complete"] = True
+            journal.pop("rollback_failure", None)
+            if journal.get("error_code") == "rollback_failed":
+                # A retried rollback restores the deploy's own cause.
+                journal["error_code"] = (journal.get("failure") or {}).get("code", "rollback_failed")
             self.save(journal, "ROLLED_BACK" if switched else "FAILED", "complete")
-        except Exception:
+        except Exception as error:
             journal["error_code"] = "rollback_failed"
+            journal["rollback_failure"] = failure(journal["intent"], error)
+            # The recover timer retries this rollback; the intent names the
+            # state an operator sees if retries keep failing.
             self.save(journal, "RECOVERY_REQUIRED", "operator_recovery")
 
     def recover(self):
@@ -1334,8 +1350,12 @@ class Controller:
                             # This is a new recovery transaction, not the old
                             # release's completed drain. Persist before start;
                             # Running alone never discharges switch/smoke/resume.
-                            active = journal.get("active_recovery", {}).get("record", active)
-                            journal["active_recovery"] = {"record": active}
+                            prior = journal.get("active_recovery", {})
+                            active = prior.get("record", active)
+                            # Keep the finished release's own outcome while
+                            # the restart transaction borrows error_code.
+                            journal["active_recovery"] = {"record": active, "prior_error_code": prior.get(
+                                "prior_error_code", journal.get("error_code"))}
                             self.save(journal, intent="recover_active_hold")
                             token = digest((active["release_id"] + ":restart").encode())[:32]
                             active = self.adapter.hold(active, token,
@@ -1350,12 +1370,18 @@ class Controller:
                             write_json(active_path, active)
                             self.save(journal, intent="recover_active_resume")
                             self.adapter.resume(active, min(deadline, time.monotonic() + SMOKE))
-                            journal.pop("active_recovery")
+                            prior = journal.pop("active_recovery").get("prior_error_code")
+                            journal.pop("recovery_failure", None)
+                            journal["error_code"] = prior
                             journal["intent"] = "complete"
-                        journal.pop("error_code", None)
+                        if journal.get("error_code") in {None, "active_recovery_failed"}:
+                            journal.pop("error_code", None)
+                            journal.pop("recovery_failure", None)
                         self.save(journal)
-                    except Exception:
+                    except Exception as error:
                         journal["error_code"] = "active_recovery_failed"
+                        journal["recovery_failure"] = failure(journal["intent"] if journal.get(
+                            "active_recovery") else "recover_active_inspect", error)
                         self.save(journal)
                 return self.status()
             if journal["state"] == "RECEIVED":
@@ -1369,8 +1395,9 @@ class Controller:
             if journal["state"] == "COMMITTED":
                 try:
                     self.cleanup(journal, deadline)
-                except Exception:
+                except Exception as error:
                     journal["error_code"] = "cleanup_failed"
+                    journal["recovery_failure"] = failure(journal["intent"], error)
                     self.save(journal, intent="cleanup_pending")
             else:
                 self.rollback(journal, deadline)
@@ -2238,7 +2265,12 @@ def main():
                     if parse(read_file(pending)) == envelope:
                         pending.unlink()
                         sync_dir(ROOT)
-    if command in {"_recover", "_index"}:
+    if command == "_recover":
+        # The timer's journald line must show the release outcome too; the
+        # index inbox result alone ({"state": "EMPTY"}) hid failed recovery.
+        index = Publisher(ROOT, policy["static_root"]).recover()
+        return {"release": controller.status(), "index": index}
+    if command == "_index":
         return Publisher(ROOT, policy["static_root"]).recover()
     return controller.status()
 
