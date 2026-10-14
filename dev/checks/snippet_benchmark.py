@@ -37,11 +37,25 @@ def historical_module(ref: str, path: str, name: str) -> types.ModuleType:
     return module
 
 
+def ref_has(ref: str, path: str) -> bool:
+    return subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT,
+                          capture_output=True).returncode == 0
+
+
 def load_baseline(ref: str):
     rules = historical_module(ref, "scripts/v8std_retrieval_rules.py", "_snippet_baseline_rules")
     features = historical_module(ref, "scripts/v8std_search_features.py", "_snippet_baseline_features")
-    with patch.dict(sys.modules, {"v8std_retrieval_rules": rules, "v8std_search_features": features}):
-        return historical_module(ref, "scripts/v8std_mcp_index.py", "_snippet_baseline_index").V8StdIndex
+    modules = {"v8std_retrieval_rules": rules, "v8std_search_features": features,
+               "scripts.v8std_retrieval_rules": rules, "scripts.v8std_search_features": features}
+    # The index moved from scripts/ to runtime/ and gained the snapshot format
+    # module; a baseline must be read from the layout of its own commit.
+    index_path = "scripts/v8std_mcp_index.py"
+    if ref_has(ref, "runtime/v8std_mcp_index.py"):
+        index_path = "runtime/v8std_mcp_index.py"
+        modules["runtime.v8std_mcp_snapshot_format"] = historical_module(
+            ref, "runtime/v8std_mcp_snapshot_format.py", "_snippet_baseline_snapshot_format")
+    with patch.dict(sys.modules, modules):
+        return historical_module(ref, index_path, "_snippet_baseline_index").V8StdIndex
 
 
 def fixture(size: int, kind: str) -> str:
