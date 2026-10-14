@@ -75,7 +75,7 @@ jobs:
           .venv/bin/python -m dev.content.generate_diagnostic_standard_links --check
           .venv/bin/python -m dev.checks.check_diagnostic_articles
           .venv/bin/python -m dev.checks.search_benchmark
-          .venv/bin/python -m dev.checks.snippet_benchmark --baseline-ref 4324fa4840d6afc36b42dbad0aa2c682be337f1b
+          .venv/bin/python -m dev.checks.snippet_benchmark --baseline-ref 807925201dc711417848d6b4e0fbea26f9d94b7d
       - name: Build identical public and local corpus with selected corpus SHA
         run: |
           CORPUS_SHA=$(.venv/bin/python -m delivery.ci.publish_mcp_artifacts value --directory .ci --field corpus_sha)
