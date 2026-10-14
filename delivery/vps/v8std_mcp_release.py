@@ -88,16 +88,31 @@ CONFIG_TYPES = {"application/vnd.oci.image.config.v1+json",
 
 
 class ReleaseError(ValueError):
-    """Codes only; raw external errors and command output never enter status."""
+    """Codes only; raw external errors and command output never enter status.
 
-    def __init__(self, code):
+    `detail` is a short controller-chosen locator (a fixed command verb or a
+    host path), never command output, environment, token or request content.
+    """
+
+    def __init__(self, code, detail=None):
         self.code = code
+        self.detail = detail
         super().__init__(code)
 
 
-def require(condition, code):
+def require(condition, code, detail=None):
     if not condition:
-        raise ReleaseError(code)
+        raise ReleaseError(code, detail)
+
+
+def failure(step, error):
+    """Durable, secret-free cause of a failed step for journals and status."""
+    value = {"step": step, "code": error.code if isinstance(error, ReleaseError) else "host_failure"}
+    if isinstance(error, ReleaseError) and error.detail:
+        value["detail"] = str(error.detail)[:128]
+    elif not isinstance(error, ReleaseError):
+        value["detail"] = type(error).__name__[:64]
+    return value
 
 
 def matches(pattern, value):
@@ -222,11 +237,13 @@ def run(argv, deadline, *, limit=2 * 1024 * 1024):
             stdout=output, stderr=subprocess.DEVNULL, start_new_session=True,
             env={"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", "HOME": "/var/lib/v8std-release"})
         try:
+            # Only the fixed program and verb identify a failed command.
+            verb = " ".join(str(x) for x in argv[:2])
             while process.poll() is None:
-                require(output.tell() <= limit, "command_output")
+                require(output.tell() <= limit, "command_output", verb)
                 time.sleep(min(.025, remaining(deadline)))
-            require(process.returncode == 0, "command_failed")
-            require(output.tell() <= limit, "command_output")
+            require(process.returncode == 0, "command_failed", verb)
+            require(output.tell() <= limit, "command_output", verb)
             output.seek(0)
             return output.read(limit + 1)
         finally:
@@ -246,13 +263,26 @@ def trusted_path(path):
     for entry in (path, *path.parents):
         info = entry.lstat()
         require(not stat.S_ISLNK(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022,
-                "policy_permissions")
+                "policy_permissions", str(entry))
+
+
+def trusted_log_root(info):
+    """The distribution owns /var/log, not this controller.
+
+    Ubuntu's tmpfiles rule `z /var/log 0775 root syslog` restores group write
+    on every boot, so requiring 0755 here made each reboot disable start and
+    rollback. Accept that distribution mode, never a symlink, foreign owner or
+    world write. The private directory below it is still verified by its fd.
+    """
+    return (stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode)
+            and info.st_uid == 0 and not info.st_mode & 0o002)
 
 
 def prepare_usage_log(*, create=True):
     """Provision only the fixed private inode; never repair/truncate history."""
     parent = USAGE_LOG.parent
-    trusted_path(parent.parent)
+    trusted_path(parent.parent.parent)
+    require(trusted_log_root(parent.parent.lstat()), "usage_log_root", str(parent.parent))
     try:
         try:
             parent.mkdir(mode=0o700)
@@ -823,10 +853,15 @@ class HostAdapter:
         info = self.inspect(record, deadline)
         if info:
             check_usage_binding(info)
+            if info["State"]["Running"]:
+                # Adopt an owned container that is already running, including
+                # one an operator started with `docker start`: ownership and
+                # binding are verified above, the hold token handshake proves
+                # identity. Host log provisioning only guards a new start.
+                return
         prepare_usage_log(create=info is None)
         if info:
-            if not info["State"]["Running"]:
-                run(["docker", "start", record["name"]], deadline)
+            run(["docker", "start", record["name"]], deadline)
             return
         config = self.config(record)
         directory = self.root / "slots" / record["release_id"]

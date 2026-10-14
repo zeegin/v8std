@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import signal
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -158,6 +159,28 @@ class EnvelopeTests(unittest.TestCase):
     def module(self):
         self.assertIsNotNone(importlib.util.find_spec("delivery.vps.v8std_mcp_release"))
         return importlib.import_module("delivery.vps.v8std_mcp_release")
+
+    def test_distribution_log_root_mode_is_trusted_but_not_world_write_or_foreign_owner(self):
+        def info(mode, uid=0):
+            return os.stat_result((mode, 0, 0, 2, uid, 101, 4096, 0, 0, 0))
+        directory = stat.S_IFDIR
+        # Ubuntu tmpfiles `z /var/log 0775 root syslog` is reapplied at every boot.
+        self.assertTrue(release.trusted_log_root(info(directory | 0o775)))
+        self.assertTrue(release.trusted_log_root(info(directory | 0o755)))
+        self.assertFalse(release.trusted_log_root(info(directory | 0o777)))
+        self.assertFalse(release.trusted_log_root(info(directory | 0o775, uid=1000)))
+        self.assertFalse(release.trusted_log_root(info(stat.S_IFLNK | 0o777)))
+
+    def test_failure_names_step_code_and_fixed_verb_only(self):
+        with self.assertRaises(release.ReleaseError) as raised:
+            release.run(["false", "start"], time.monotonic() + 5)
+        self.assertEqual((raised.exception.code, raised.exception.detail), ("command_failed", "false start"))
+        self.assertEqual(release.failure("start_candidate", raised.exception),
+                         {"step": "start_candidate", "code": "command_failed", "detail": "false start"})
+        self.assertEqual(release.failure("switch", OSError("private text")),
+                         {"step": "switch", "code": "host_failure", "detail": "OSError"})
+        self.assertEqual(release.failure("verify", release.ReleaseError("main_ancestry")),
+                         {"step": "verify", "code": "main_ancestry"})
 
     def test_strict_unprivileged_envelope_boundary(self):
         release = self.module()

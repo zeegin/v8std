@@ -78,6 +78,18 @@ class LoggingLaunchTests(unittest.TestCase):
         self.assertEqual([call[1] for call in self.daemon.calls], ["inspect", "start"])
         self.assertTrue(self.daemon.info["State"]["Running"])
 
+    def test_running_owned_container_is_adopted_without_host_log_provisioning(self):
+        # An operator `docker start` or a still-running predecessor: rollback
+        # and active recovery must not depend on /var/log preparation.
+        self.start()
+        self.daemon.calls.clear()
+        with patch.object(release, "prepare_usage_log", side_effect=release.ReleaseError("usage_log_root")):
+            self.start()
+            self.daemon.info["State"]["Running"] = False
+            with self.assertRaisesRegex(release.ReleaseError, "usage_log_root"):
+                self.start()
+        self.assertEqual([call[1] for call in self.daemon.calls], ["inspect", "inspect"])
+
     def test_rotation_policy_retains_legacy_bytes_and_separate_root_copytruncate(self):
         expected = (
             "/var/lib/v8std-mcp/tool-usage.jsonl {\n"
