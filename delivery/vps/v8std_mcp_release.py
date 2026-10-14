@@ -887,6 +887,27 @@ class HostAdapter:
              "--usage-log", USAGE_LOG_TARGET], deadline)
         self.inspect(record, deadline)
 
+    def preflight(self, record, deadline):
+        """Everything a candidate start needs except memory, checked while
+        the predecessor still serves. Refuse before any stop, not after it."""
+        self.config(record)
+        info = self.inspect(record, deadline)
+        require(info is None or not info["State"]["Running"], "candidate_running")
+        if info:
+            check_usage_binding(info)
+        prepare_usage_log(create=info is None)
+        names = run(["docker", "ps", "--filter", f"publish={record['port']}", "--format", "{{.Names}}"],
+                    deadline).decode().split()
+        require(all(name == record["name"] for name in names), "candidate_port_busy", str(record["port"]))
+        import socket
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                probe.bind(("127.0.0.1", record["port"]))
+            except OSError:
+                raise ReleaseError("candidate_port_busy", str(record["port"])) from None
+        remaining(deadline)
+
     def control(self, record, mode, token, manifest=None):
         control_directory = self.root / "slots" / record["release_id"] / "control"
         ensure_directory(control_directory, 0o755)
@@ -1203,28 +1224,43 @@ class Controller:
             self.save(journal)
             try:
                 descriptors = self.adapter.verify(envelope, work)
+                self.save(journal, intent="capacity")
                 if mode == "stop-start":
                     self.adapter.capacity(work, pre_stop=True)
                 else:
                     self.adapter.capacity(work)
                 manifest = self.adapter.manifest(envelope)
-                self.save(journal, "VERIFIED", "hold_predecessor")
                 token = digest(canonical_json(envelope))[:32]
+                candidate = {**envelope, "name": "v8std-release-" + envelope["release_id"],
+                    "envelope_hash": digest(canonical_json(envelope)), "descriptors": descriptors,
+                    "port": next(p for p in self.adapter.policy["ports"] if p != previous["port"]),
+                    "hold_token": token}
+                # Host prerequisites of the candidate start are checked while
+                # still RECEIVED: a refusal here never touches the predecessor.
+                self.save(journal, intent="candidate_preflight")
+                # A predecessor an operator restarted by hand is the same owned
+                # container (labels, image, envelope checked by inspect) and is
+                # adopted through the hold token below. A stopped one is not
+                # silently replaced: the recover pass must restart it first.
+                info = self.adapter.inspect(previous, work)
+                require(info is not None and info["State"]["Running"], "predecessor_not_running")
+                self.adapter.preflight(candidate, work)
+                self.save(journal, "VERIFIED", "hold_predecessor")
                 previous = self.adapter.hold(previous, token, min(work, time.monotonic() + READINESS))
                 journal["predecessor"] = previous
                 self.adapter.manifest(previous)  # Published record of observed, not disk-pointer, corpus.
                 self.save(journal, intent="pin_predecessor")
                 self.pins(journal)
-                candidate = {**envelope, "name": "v8std-release-" + envelope["release_id"],
-                    "envelope_hash": digest(canonical_json(envelope)), "descriptors": descriptors,
-                    "port": next(p for p in self.adapter.policy["ports"] if p != previous["port"]),
-                    "hold_token": token}
                 journal["candidate"] = candidate
                 self.save(journal, intent="pull_candidate")
                 self.adapter.pull(candidate, work)
                 if mode == "stop-start":
                     require(remaining(work) >= STOP_START_ACCEPTANCE_BUDGET,
                             "insufficient_stop_start_budget")
+                    # Repeat just before the irreversible stop: the pull may
+                    # have taken minutes and the host may have changed.
+                    self.save(journal, intent="candidate_preflight_before_stop")
+                    self.adapter.preflight(candidate, work)
                     self.save(journal, intent="stop_predecessor")
                     self.adapter.stop(previous, min(work, time.monotonic() + STOP))
                     self.save(journal, intent="capacity_after_stop")

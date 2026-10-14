@@ -88,6 +88,11 @@ class ProcessAdapter(release.HostAdapter):
     def pull(self, record, deadline):
         self.record("pull", record)
 
+    def preflight(self, record, deadline):
+        # Host-only checks (Docker port inventory, /var/log ownership) are
+        # covered by HostAdapter unit tests; here only ordering and refusal.
+        self.record("preflight", record)
+
     def inspect(self, record, deadline):
         path = self.root / "processes" / (record["release_id"] + ".json")
         if not path.exists():

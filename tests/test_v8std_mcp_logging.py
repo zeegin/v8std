@@ -90,6 +90,26 @@ class LoggingLaunchTests(unittest.TestCase):
                 self.start()
         self.assertEqual([call[1] for call in self.daemon.calls], ["inspect", "inspect"])
 
+    def test_preflight_refuses_busy_port_or_log_before_any_container_effect(self):
+        import socket
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            listener.listen()
+            record = self.record | {"port": listener.getsockname()[1]}
+            self.daemon.record = record
+            with self.assertRaisesRegex(release.ReleaseError, "candidate_port_busy") as raised:
+                self.adapter.preflight(record, time.monotonic() + 5)
+            self.assertEqual(raised.exception.detail, str(record["port"]))
+        # The port is free now; a log-root failure is still a refusal.
+        self.adapter.preflight(record, time.monotonic() + 5)
+        with patch.object(release, "prepare_usage_log", side_effect=release.ReleaseError("usage_log_root")), \
+             self.assertRaisesRegex(release.ReleaseError, "usage_log_root"):
+            self.adapter.preflight(record, time.monotonic() + 5)
+        self.assertFalse(any(call[1] in {"run", "start", "stop"} for call in self.daemon.calls))
+        self.adapter.start(record, time.monotonic() + 5)
+        with self.assertRaisesRegex(release.ReleaseError, "candidate_running"):
+            self.adapter.preflight(record, time.monotonic() + 5)
+
     def test_rotation_policy_retains_legacy_bytes_and_separate_root_copytruncate(self):
         expected = (
             "/var/lib/v8std-mcp/tool-usage.jsonl {\n"

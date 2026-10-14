@@ -1332,6 +1332,36 @@ class TransactionTests(unittest.TestCase):
         self.assertEqual(result["error_code"], result["failure"]["code"])
         self.assertNotEqual(result["error_code"], "rollback_failed")
 
+    def test_stop_start_preflight_refusal_never_touches_predecessor(self):
+        self.enable_stop_start()
+        before = len((self.root / "calls.jsonl").read_text().splitlines())
+        result = self.invoke("preflight")
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertTrue(result["cleanup_complete"])
+        self.assertEqual(result["failure"], {"step": "candidate_preflight", "code": "injected_preflight"})
+        self.assertEqual([call["operation"] for call in self.operations(before)],
+                         ["verify", "capacity_pre_stop", "preflight"])
+        self.assertEqual(self.health()["hold_token"], self.previous["hold_token"])
+
+    def test_stop_start_repeats_preflight_immediately_before_stop(self):
+        self.enable_stop_start()
+        before = len((self.root / "calls.jsonl").read_text().splitlines())
+        self.assertEqual(self.invoke()["state"], "COMMITTED")
+        calls = self.operations(before)
+        stop = calls.index({"operation": "stop", "release_id": "predecessor"})
+        self.assertEqual(calls[stop - 1], {"operation": "preflight", "release_id": "release-1"})
+        self.assertLess(calls.index({"operation": "pull", "release_id": "release-1"}), stop - 1)
+
+    def test_stopped_predecessor_is_refused_before_any_effect(self):
+        self.adapter.stop(self.previous, time.monotonic() + 5)
+        before = len((self.root / "calls.jsonl").read_text().splitlines())
+        result = self.invoke()
+        self.assertEqual(result["state"], "FAILED", result)
+        self.assertEqual(result["failure"], {"step": "candidate_preflight", "code": "predecessor_not_running"})
+        operations = [call["operation"] for call in self.operations(before)]
+        self.assertNotIn("preflight", operations)
+        self.assertFalse({"pull", "start", "stop", "switch"} & set(operations), operations)
+
     def test_reboot_after_failed_stop_start_restarts_active_and_keeps_cause(self):
         # Incident 2026-10-14: a failed stop-start rollout, then a host reboot.
         self.enable_stop_start()
