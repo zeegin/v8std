@@ -283,17 +283,22 @@ class V8StdMcpIndexTests(unittest.TestCase):
                 self.assertEqual((result["total"], result["results"], result["next_cursor"]),
                                  (0, [], None))
 
-    def test_type_filter_and_threshold_keep_total_consistent_with_pages(self):
-        first = self.index.search("модуль", types=["diagnostic"], limit=5)
-        self.assertGreater(first["total"], 5)
-        seen = list(first["results"])
-        page = first
+    def test_type_filtered_hybrid_search_keeps_matches_below_threshold(self):
+        query = "привести несовместимый интерфейс к ожидаемому клиентом"
+        unfiltered = self.index.search(query, limit=50)
+        self.assertNotIn("patterns:gof:adapter", [item["id"] for item in unfiltered["results"]])
+        filtered = self.index.search(query, types=["pattern"], limit=5)
+        self.assertEqual(filtered["results"][0]["id"], "patterns:gof:adapter")
+        self.assertLess(filtered["results"][0]["score"], MIN_RESULT_SCORE)
+        seen = list(filtered["results"])
+        page = filtered
         while page["next_cursor"] is not None:
-            page = self.index.search("модуль", types=["diagnostic"], limit=5, cursor=page["next_cursor"])
+            page = self.index.search(query, types=["pattern"], limit=5, cursor=page["next_cursor"])
             seen.extend(page["results"])
-        self.assertEqual(len(seen), first["total"])
-        self.assertTrue(all(item["type"] == "diagnostic" and item["score"] >= MIN_RESULT_SCORE
-                            for item in seen))
+        self.assertEqual(len(seen), filtered["total"])
+        self.assertTrue(all(item["type"] == "pattern" for item in seen))
+        # Nothing matched lexically: the filter does not admit vector noise.
+        self.assertEqual(self.index.search("zzzqqqxyz", types=["pattern"])["total"], 0)
 
     def test_related_boost_strengthens_only_existing_candidates(self):
         source = next(page for page in self.index._pages if len(page.get("related", [])) >= 2)

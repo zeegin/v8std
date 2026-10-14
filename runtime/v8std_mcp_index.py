@@ -66,6 +66,9 @@ SEMANTIC_RRF_WEIGHT = 13000.0
 # percentile of the top-1 score: it removes the junk tail and empties many
 # questions the corpus does not answer, keeping recall of the best pages
 # (0.856 against 0.875 without it). Other modes have their own score scales.
+# The calibration covered unfiltered queries only: pages of the small types
+# (pattern, fix) score below it even when they answer, so a request narrowed
+# by types keeps its weaker matches.
 MIN_RESULT_SCORE = 3800.0
 MAX_VECTOR_ROWS = 100000
 MAX_VECTOR_BASE64_CHARS = 8192
@@ -577,7 +580,7 @@ class V8StdIndex:
                     candidate["details"]["section_penalty"] = 0.65
                 if score <= 0:
                     continue
-                if mode == "hybrid" and score < MIN_RESULT_SCORE:
+                if mode == "hybrid" and not allowed_types and score < MIN_RESULT_SCORE:
                     continue
                 entries.append((score, page, candidate))
 
