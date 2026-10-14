@@ -1251,7 +1251,7 @@ class WorkflowTests(unittest.TestCase):
                     patch("sys.stdout", new=io.StringIO()):
                 self.assertEqual(snippet_benchmark.main(), 0)
             baseline = run.call_args.args[0].baseline_ref
-            self.assertEqual(baseline, "3df5b40e773d0e7bc146ac2d9214934bb4145f73")
+            self.assertEqual(baseline, "4324fa4840d6afc36b42dbad0aa2c682be337f1b")
             self.assertTrue(callable(snippet_benchmark.load_baseline(baseline)))
 
     def test_pinned_fail_closed_dag_has_secretless_pr_and_independent_activation(self):
