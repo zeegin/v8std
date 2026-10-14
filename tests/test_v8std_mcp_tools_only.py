@@ -155,11 +155,13 @@ class ToolsOnlyWireTests(unittest.TestCase):
         with http_rpc(index) as rpc:
             initialize(rpc)
             assert_tool_catalog(self, rpc)
-            first = call_tool(self, rpc, "v8std_search", {"query": "модуль", "limit": 50})
-            second = call_tool(self, rpc, "v8std_search", {
-                "query": "модуль", "limit": 50, "cursor": first["next_cursor"],
-            })
-            self.assertGreater(first["total"], 50)
+            # Unfiltered hybrid search drops results below MIN_RESULT_SCORE;
+            # a types filter keeps the weak matches and therefore more than
+            # two pages of them.
+            arguments = {"query": "модуль", "limit": 50, "types": ["standard", "diagnostic"]}
+            first = call_tool(self, rpc, "v8std_search", arguments)
+            second = call_tool(self, rpc, "v8std_search", {**arguments, "cursor": first["next_cursor"]})
+            self.assertGreater(first["total"], 100)
             self.assertEqual(len(first["results"]), 50)
             self.assertEqual(len(second["results"]), 50)
             self.assertFalse({item["id"] for item in first["results"]} &
