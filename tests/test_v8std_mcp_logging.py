@@ -20,9 +20,11 @@ class LoggingLaunchTests(unittest.TestCase):
         self.adapter = release.HostAdapter(Path(temporary.name), policy)
         self.daemon = DockerCommands(self.record)
         # macOS command tests do not claim Linux root ownership evidence.
-        self.enterContext(patch.object(release, "prepare_usage_log", create=True))
+        self.enterContext(patch.object(release, "prepare_usage_log", create=True, return_value=(7, 11)))
         self.enterContext(patch.object(release.os, "chown"))
         self.enterContext(patch.object(release, "run", self.daemon))
+        # No container namespace here: the mounted inode is reported directly.
+        self.bound = self.enterContext(patch.object(self.adapter, "bound_usage_log", return_value=(7, 11)))
 
     def start(self):
         self.adapter.start(self.record, time.monotonic() + 5)
@@ -75,20 +77,39 @@ class LoggingLaunchTests(unittest.TestCase):
         self.daemon.info["State"]["Running"] = False
         self.daemon.calls.clear()
         self.start()
-        self.assertEqual([call[1] for call in self.daemon.calls], ["inspect", "start"])
+        # The trailing inspect confirms the mounted log inode after start.
+        self.assertEqual([call[1] for call in self.daemon.calls], ["inspect", "start", "inspect"])
         self.assertTrue(self.daemon.info["State"]["Running"])
 
-    def test_running_owned_container_is_adopted_without_host_log_provisioning(self):
-        # An operator `docker start` or a still-running predecessor: rollback
-        # and active recovery must not depend on /var/log preparation.
+    def test_running_owned_container_is_adopted_only_after_port_and_inode_checks(self):
+        # An operator `docker start` or a still-running predecessor.
         self.start()
         self.daemon.calls.clear()
-        with patch.object(release, "prepare_usage_log", side_effect=release.ReleaseError("usage_log_root")):
-            self.start()
-            self.daemon.info["State"]["Running"] = False
-            with self.assertRaisesRegex(release.ReleaseError, "usage_log_root"):
-                self.start()
+        self.start()
         self.assertEqual([call[1] for call in self.daemon.calls], ["inspect", "inspect"])
+        release.prepare_usage_log.assert_called_with(create=False)
+        self.assertTrue(self.daemon.info["State"]["Running"])
+        # Wrong published port: refused before any effect.
+        good = self.daemon.info["HostConfig"]["PortBindings"]
+        self.daemon.info["HostConfig"]["PortBindings"] = {"8000/tcp": [{"HostIp": "127.0.0.1", "HostPort": "1"}]}
+        self.daemon.calls.clear()
+        with self.assertRaisesRegex(release.ReleaseError, "port_binding"):
+            self.start()
+        self.assertEqual([call[1] for call in self.daemon.calls], ["inspect"])
+        self.daemon.info["HostConfig"]["PortBindings"] = good
+        # Another inode mounted than the verified one: stop and refuse.
+        self.bound.return_value = (7, 12)
+        with self.assertRaisesRegex(release.ReleaseError, "usage_log_binding") as raised:
+            self.start()
+        self.assertEqual(raised.exception.detail, "inode")
+        self.assertFalse(self.daemon.info["State"]["Running"])
+
+    def test_new_container_with_swapped_log_inode_is_stopped(self):
+        self.bound.return_value = (7, 12)
+        with self.assertRaisesRegex(release.ReleaseError, "usage_log_binding"):
+            self.start()
+        self.assertEqual([call[1] for call in self.daemon.calls][-3:], ["inspect", "stop", "inspect"])
+        self.assertFalse(self.daemon.info["State"]["Running"])
 
     def test_preflight_refuses_busy_port_or_log_before_any_container_effect(self):
         import socket
@@ -123,6 +144,69 @@ class LoggingLaunchTests(unittest.TestCase):
         self.assertEqual(path.read_bytes(), expected.encode())
 
 
+class FdProvisioningTests(unittest.TestCase):
+    """The log root is group-writable: no path below it may be followed."""
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix="v8std-logging-fd-")
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        (self.root / "var-log").mkdir()
+        self.target = self.root / "victim"
+        self.target.mkdir(mode=0o755)
+        self.enterContext(patch.object(release, "USAGE_LOG", self.root / "var-log/v8std-mcp/tool-usage.jsonl"))
+        self.enterContext(patch.object(release, "trusted_path", lambda path: None))
+        self.enterContext(patch.object(release, "trusted_log_root", return_value=True))
+        self.enterContext(patch.object(release.os, "chown", side_effect=AssertionError("chown by path")))
+
+    def unchanged(self):
+        info = self.target.stat()
+        self.assertEqual(stat.S_IMODE(info.st_mode), 0o755)
+        self.assertEqual(list(self.target.iterdir()), [])
+
+    def test_symlink_swapped_in_after_mkdir_is_not_followed_or_chowned(self):
+        mkdir = os.mkdir
+        def racing_mkdir(name, mode=0o777, *, dir_fd=None):
+            mkdir(name, mode, dir_fd=dir_fd)
+            os.rmdir(name, dir_fd=dir_fd)
+            os.symlink(self.target, name, dir_fd=dir_fd)
+        with patch.object(release.os, "mkdir", racing_mkdir), \
+             self.assertRaisesRegex(release.ReleaseError, "usage_log_file"):
+            release.prepare_usage_log()
+        self.unchanged()
+
+    def test_preexisting_symlink_directory_and_log_root_are_rejected(self):
+        (self.root / "var-log/v8std-mcp").symlink_to(self.target, target_is_directory=True)
+        with self.assertRaisesRegex(release.ReleaseError, "usage_log_file"):
+            release.prepare_usage_log()
+        (self.root / "var-log/v8std-mcp").unlink()
+        (self.root / "var-log").rename(self.root / "real-log")
+        (self.root / "var-log").symlink_to(self.target, target_is_directory=True)
+        with self.assertRaisesRegex(release.ReleaseError, "usage_log_root"):
+            release.prepare_usage_log()
+        self.unchanged()
+
+    def test_mounted_inode_is_read_through_the_container_root(self):
+        seen = []
+        def fake_stat(path):
+            seen.append(path)
+            return os.stat_result((stat.S_IFREG | 0o640, 510827, 2049, 1, 10001, 0, 0, 0, 0, 0))
+        with patch.object(release.os, "stat", fake_stat):
+            self.assertEqual(release.HostAdapter.bound_usage_log({"State": {"Pid": 4724}}), (2049, 510827))
+        self.assertEqual(seen, ["/proc/4724/root/var/log/v8std-mcp-usage.jsonl"])
+        for state in ({}, {"Pid": 0}, {"Pid": "4724"}):
+            with self.assertRaisesRegex(release.ReleaseError, "usage_log_binding"):
+                release.HostAdapter.bound_usage_log({"State": state})
+
+    def test_private_directory_is_created_by_descriptor_and_verified(self):
+        # Unprivileged: creation succeeds via dir_fd, then the root:root
+        # ownership check refuses the non-root directory. No chown by name.
+        with self.assertRaisesRegex(release.ReleaseError, "usage_log_directory"):
+            release.prepare_usage_log()
+        created = (self.root / "var-log/v8std-mcp").lstat()
+        self.assertTrue(stat.S_ISDIR(created.st_mode))
+        self.assertEqual(stat.S_IMODE(created.st_mode) & 0o077, 0)
+
+
 @unittest.skipUnless(sys.platform == "linux" and os.getuid() == 0
                      and os.environ.get("V8STD_LOGGING_NATIVE") == "1", "owned native Linux root fixture only")
 class NativeLoggingPreparationTests(unittest.TestCase):
@@ -131,10 +215,14 @@ class NativeLoggingPreparationTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory(prefix="case-", dir="/native-tests")
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
+        self.root.chmod(0o755)  # The distribution log-root layout.
         self.log = self.root / "logs/tool-usage.jsonl"
         self.enterContext(patch.object(release, "USAGE_LOG", self.log, create=True))
         self.record, policy = launch_inputs()
         self.adapter = release.HostAdapter(self.root / "state", policy)
+        # The command seam has no container namespace; compare the host inode.
+        self.adapter.bound_usage_log = lambda info: (
+            release.USAGE_LOG.stat().st_dev, release.USAGE_LOG.stat().st_ino)
         self.daemon = DockerCommands(self.record)
         self.enterContext(patch.object(release, "run", self.daemon))
         old = os.umask(0o077)
@@ -200,6 +288,7 @@ class NativeLoggingPreparationTests(unittest.TestCase):
     def test_unsafe_parent_is_not_repaired_or_followed(self):
         for shape in ("symlink", "owner", "group", "public"):
             with self.subTest(shape=shape), tempfile.TemporaryDirectory(dir=self.root) as case:
+                os.chmod(case, 0o755)  # Only the private directory is unsafe.
                 parent = Path(case) / "logs"
                 other = Path(case) / "other"
                 other.mkdir(mode=0o700)

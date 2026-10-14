@@ -58,7 +58,9 @@ class DockerCommands:
                          "Labels": {"pro.v8std.release": self.record["release_id"],
                                     "pro.v8std.envelope": self.record["envelope_hash"],
                                     "org.opencontainers.image.revision": self.record["runtime_source_sha"]}},
-                         "Image": "sha256:" + "d" * 64, "Mounts": mounts, "State": {"Running": True}}
+                         "Image": "sha256:" + "d" * 64, "Mounts": mounts, "State": {"Running": True, "Pid": 4242},
+                         "HostConfig": {"PortBindings": {"8000/tcp": [
+                             {"HostIp": "127.0.0.1", "HostPort": argv[argv.index("-p") + 1].split(":")[1]}]}}}
             return b"fixture-container\n"
         if argv[:2] in (["docker", "start"], ["docker", "stop"]):
             self.info["State"]["Running"] = argv[1] == "start"
@@ -101,7 +103,11 @@ def native_plan(name, port):
     record.update(name=name, port=port, configuration_digest=key)
     daemon = DockerCommands(record)
     adapter = release.HostAdapter(root / "state", policy)
-    with patch.object(release, "USAGE_LOG", root / "logs/tool-usage.jsonl"), patch.object(release, "run", daemon):
+    log = root / "logs/tool-usage.jsonl"
+    # The command seam has no container namespace; the host inode stands in
+    # for /proc/<pid>/root (native Docker covers the real mount separately).
+    adapter.bound_usage_log = lambda info: (log.stat().st_dev, log.stat().st_ino)
+    with patch.object(release, "USAGE_LOG", log), patch.object(release, "run", daemon):
         adapter.control(record, "resume", "a" * 32)
         adapter.start(record, time.monotonic() + 10)
     return next(argv for argv in daemon.calls if argv[:2] == ["docker", "run"])

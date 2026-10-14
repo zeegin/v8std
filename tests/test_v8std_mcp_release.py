@@ -161,15 +161,20 @@ class EnvelopeTests(unittest.TestCase):
         return importlib.import_module("delivery.vps.v8std_mcp_release")
 
     def test_distribution_log_root_mode_is_trusted_but_not_world_write_or_foreign_owner(self):
-        def info(mode, uid=0):
-            return os.stat_result((mode, 0, 0, 2, uid, 101, 4096, 0, 0, 0))
+        def info(mode, uid=0, gid=101):
+            return os.stat_result((mode, 0, 0, 2, uid, gid, 4096, 0, 0, 0))
         directory = stat.S_IFDIR
-        # Ubuntu tmpfiles `z /var/log 0775 root syslog` is reapplied at every boot.
-        self.assertTrue(release.trusted_log_root(info(directory | 0o775)))
-        self.assertTrue(release.trusted_log_root(info(directory | 0o755)))
-        self.assertFalse(release.trusted_log_root(info(directory | 0o777)))
-        self.assertFalse(release.trusted_log_root(info(directory | 0o775, uid=1000)))
-        self.assertFalse(release.trusted_log_root(info(stat.S_IFLNK | 0o777)))
+        with patch.object(release, "log_root_groups", return_value={0, 101}):
+            # Ubuntu tmpfiles `z /var/log 0775 root syslog` is reapplied at every boot.
+            self.assertTrue(release.trusted_log_root(info(directory | 0o775)))
+            self.assertTrue(release.trusted_log_root(info(directory | 0o755, gid=0)))
+            for mode, uid, gid in ((0o777, 0, 101), (0o775, 1000, 101), (0o775, 0, 20), (0o2775, 0, 101),
+                                   (0o1775, 0, 101), (0o700, 0, 0), (0o765, 0, 101)):
+                with self.subTest(mode=oct(mode), uid=uid, gid=gid):
+                    self.assertFalse(release.trusted_log_root(info(directory | mode, uid, gid)))
+            self.assertFalse(release.trusted_log_root(info(stat.S_IFLNK | 0o755, gid=0)))
+        with patch.object(release.grp, "getgrnam", side_effect=KeyError("syslog")):
+            self.assertEqual(release.log_root_groups(), {0})
 
     def test_failure_names_step_code_and_fixed_verb_only(self):
         with self.assertRaises(release.ReleaseError) as raised:

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 import fcntl
+import grp
 import hashlib
 import json
 import multiprocessing
@@ -18,6 +19,7 @@ import re
 import select
 import shutil
 import signal
+import socket
 import stat
 import subprocess
 import sys
@@ -266,58 +268,91 @@ def trusted_path(path):
                 "policy_permissions", str(entry))
 
 
+def log_root_groups():
+    """root and the distribution's log group; absence of `syslog` is fine."""
+    groups = {0}
+    try:
+        groups.add(grp.getgrnam("syslog").gr_gid)
+    except KeyError:
+        pass
+    return groups
+
+
 def trusted_log_root(info):
     """The distribution owns /var/log, not this controller.
 
     Ubuntu's tmpfiles rule `z /var/log 0775 root syslog` restores group write
     on every boot, so requiring 0755 here made each reboot disable start and
-    rollback. Accept that distribution mode, never a symlink, foreign owner or
-    world write. The private directory below it is still verified by its fd.
+    rollback. Accept exactly that distribution layout: a root-owned directory,
+    mode 0755 or 0775 (no setgid/sticky/world write), group root or syslog.
+    Everything below it is created and verified through file descriptors.
     """
-    return (stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode)
-            and info.st_uid == 0 and not info.st_mode & 0o002)
+    return (stat.S_ISDIR(info.st_mode) and info.st_uid == 0
+            and info.st_mode & 0o7777 in {0o755, 0o775} and info.st_gid in log_root_groups())
 
 
 def prepare_usage_log(*, create=True):
-    """Provision only the fixed private inode; never repair/truncate history."""
+    """Provision only the fixed private inode; never repair/truncate history.
+
+    /var/log is group-writable by the log group, so no path below it is
+    trusted: every step uses dir_fd + O_NOFOLLOW and nothing is chowned by
+    name. Returns (st_dev, st_ino) of the verified file; the caller compares it
+    with the file Docker actually bound into the container.
+    """
     parent = USAGE_LOG.parent
     trusted_path(parent.parent.parent)
-    require(trusted_log_root(parent.parent.lstat()), "usage_log_root", str(parent.parent))
     try:
-        try:
-            parent.mkdir(mode=0o700)
-            os.chown(parent, 0, 0)
-            sync_dir(parent.parent)
-        except FileExistsError:
-            pass
-        directory = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-        try:
-            info = os.fstat(directory)
-            require((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == (0, 0, 0o700), "usage_log_directory")
-            flags = os.O_NOFOLLOW | os.O_NONBLOCK
-            try:
-                fd = os.open(USAGE_LOG.name, os.O_RDONLY | flags, dir_fd=directory)
-            except FileNotFoundError:
-                require(create, "usage_log_missing")
-                fd = os.open(USAGE_LOG.name, os.O_RDWR | os.O_CREAT | os.O_EXCL | flags, 0o600, dir_fd=directory)
-                try:
-                    os.fchown(fd, 10001, 0)
-                    os.fchmod(fd, 0o640)  # Explicit final mode despite UMask0077.
-                    os.fsync(fd)
-                    os.fsync(directory)
-                except BaseException:
-                    os.close(fd)
-                    raise
-            try:
-                info = os.fstat(fd)
-                require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1
-                        and (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == (10001, 0, 0o640), "usage_log_file")
-            finally:
-                os.close(fd)
-        finally:
-            os.close(directory)
+        log_root = os.open(parent.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     except OSError:
-        raise ReleaseError("usage_log_file") from None
+        raise ReleaseError("usage_log_root", str(parent.parent)) from None
+    try:
+        require(trusted_log_root(os.fstat(log_root)), "usage_log_root", str(parent.parent))
+        try:
+            try:
+                # root's uid/gid and mode <= 0700 (umask only clears bits); the
+                # fstat check below rejects anything else, including a swap.
+                os.mkdir(parent.name, 0o700, dir_fd=log_root)
+                os.fsync(log_root)
+            except FileExistsError:
+                pass
+            directory = os.open(parent.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=log_root)
+            try:
+                info = os.fstat(directory)
+                require((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == (0, 0, 0o700), "usage_log_directory")
+                flags = os.O_NOFOLLOW | os.O_NONBLOCK
+                try:
+                    fd = os.open(USAGE_LOG.name, os.O_RDONLY | flags, dir_fd=directory)
+                except FileNotFoundError:
+                    require(create, "usage_log_missing")
+                    fd = os.open(USAGE_LOG.name, os.O_RDWR | os.O_CREAT | os.O_EXCL | flags, 0o600, dir_fd=directory)
+                    try:
+                        os.fchown(fd, 10001, 0)
+                        os.fchmod(fd, 0o640)  # Explicit final mode despite UMask0077.
+                        os.fsync(fd)
+                        os.fsync(directory)
+                    except BaseException:
+                        os.close(fd)
+                        raise
+                try:
+                    info = os.fstat(fd)
+                    require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1
+                            and (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == (10001, 0, 0o640), "usage_log_file")
+                    return info.st_dev, info.st_ino
+                finally:
+                    os.close(fd)
+            finally:
+                os.close(directory)
+        except OSError:
+            raise ReleaseError("usage_log_file") from None
+    finally:
+        os.close(log_root)
+
+
+def check_port_binding(info, record):
+    """An adopted or restarted container must publish exactly its slot port."""
+    bindings = (info.get("HostConfig") or {}).get("PortBindings")
+    require(bindings == {"8000/tcp": [{"HostIp": "127.0.0.1", "HostPort": str(record["port"])}]},
+            "port_binding", str(record["port"]))
 
 
 def check_usage_binding(info):
@@ -849,19 +884,45 @@ class HostAdapter:
         require(labels.get("org.opencontainers.image.revision") == record["runtime_source_sha"], "runtime_revision")
         return info
 
+    @staticmethod
+    def bound_usage_log(info):
+        """(st_dev, st_ino) of the usage log as mounted inside the container."""
+        pid = info["State"].get("Pid")
+        require(type(pid) is int and pid > 0, "usage_log_binding", "pid")
+        try:
+            bound = os.stat(f"/proc/{pid}/root{USAGE_LOG_TARGET}")
+        except OSError:
+            raise ReleaseError("usage_log_binding", "proc") from None
+        return bound.st_dev, bound.st_ino
+
+    def confirm_usage_log(self, record, expected, deadline):
+        """Docker resolves the bind source by path at run/start; the string in
+        inspect proves nothing. Compare the inode actually mounted with the one
+        verified through descriptors, and stop the container on mismatch."""
+        info = self.inspect(record, deadline)
+        try:
+            require(info is not None and info["State"]["Running"], "container_not_running")
+            require(self.bound_usage_log(info) == expected, "usage_log_binding", "inode")
+        except ReleaseError:
+            if info is not None and info["State"]["Running"]:
+                self.stop(record, deadline)
+            raise
+
     def start(self, record, deadline):
         info = self.inspect(record, deadline)
         if info:
             check_usage_binding(info)
-            if info["State"]["Running"]:
-                # Adopt an owned container that is already running, including
-                # one an operator started with `docker start`: ownership and
-                # binding are verified above, the hold token handshake proves
-                # identity. Host log provisioning only guards a new start.
-                return
-        prepare_usage_log(create=info is None)
+            check_port_binding(info, record)
+        expected = prepare_usage_log(create=info is None)
         if info:
-            run(["docker", "start", record["name"]], deadline)
+            if not info["State"]["Running"]:
+                run(["docker", "start", record["name"]], deadline)
+            # A running container, also one an operator started by hand with
+            # `docker start`, is adopted only after the same checks as our own
+            # start: owner labels, image and descriptor (inspect), port, and
+            # the mounted log inode. Docker access is root-equivalent; the
+            # hold token is a liveness handshake, not proof of identity.
+            self.confirm_usage_log(record, expected, deadline)
             return
         config = self.config(record)
         directory = self.root / "slots" / record["release_id"]
@@ -885,7 +946,7 @@ class HostAdapter:
              "--site-url", config["site_url"], "--refresh-seconds", str(config["refresh_seconds"]),
              "--max-snippet-chars", str(config["max_snippet_chars"]),
              "--usage-log", USAGE_LOG_TARGET], deadline)
-        self.inspect(record, deadline)
+        self.confirm_usage_log(record, expected, deadline)
 
     def preflight(self, record, deadline):
         """Everything a candidate start needs except memory, checked while
@@ -895,11 +956,13 @@ class HostAdapter:
         require(info is None or not info["State"]["Running"], "candidate_running")
         if info:
             check_usage_binding(info)
+            check_port_binding(info, record)
+        # Idempotent: may provision the fixed private directory and log inode
+        # while still RECEIVED; never touches an existing file's history.
         prepare_usage_log(create=info is None)
         names = run(["docker", "ps", "--filter", f"publish={record['port']}", "--format", "{{.Names}}"],
                     deadline).decode().split()
         require(all(name == record["name"] for name in names), "candidate_port_busy", str(record["port"]))
-        import socket
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
             probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
@@ -1239,9 +1302,9 @@ class Controller:
                 # still RECEIVED: a refusal here never touches the predecessor.
                 self.save(journal, intent="candidate_preflight")
                 # A predecessor an operator restarted by hand is the same owned
-                # container (labels, image, envelope checked by inspect) and is
-                # adopted through the hold token below. A stopped one is not
-                # silently replaced: the recover pass must restart it first.
+                # container: inspect checks owner labels, image and descriptor,
+                # and Docker access itself is root-equivalent. A stopped one is
+                # not silently replaced: the recover pass must restart it first.
                 info = self.adapter.inspect(previous, work)
                 require(info is not None and info["State"]["Running"], "predecessor_not_running")
                 self.adapter.preflight(candidate, work)
