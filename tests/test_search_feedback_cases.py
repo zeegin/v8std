@@ -3,6 +3,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -10,6 +11,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from dev.checks.search_feedback_cases import (  # noqa: E402
     build_feedback_cases,
+    parse_args,
     sanitize_query,
     write_feedback_report,
 )
@@ -20,6 +22,14 @@ def usage_line(**payload):
 
 
 class SearchFeedbackCasesTests(unittest.TestCase):
+    def test_default_outputs_stay_outside_published_docs_tree(self):
+        with patch("sys.argv", ["search_feedback_cases.py"]):
+            args = parse_args()
+
+        # docs/ is the published site; query-derived cases are local material.
+        self.assertEqual(args.cases_out, Path(".cache/search-feedback-cases.yml"))
+        self.assertEqual(args.report, Path(".cache/search-feedback-cases.md"))
+
     def test_builds_case_from_repeated_search_to_page_transition(self):
         lines = [
             usage_line(

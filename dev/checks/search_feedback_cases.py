@@ -206,8 +206,8 @@ def write_feedback_report(cases: list[dict], path: Path) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build weak search benchmark cases from MCP usage logs.")
     parser.add_argument("--usage-log", action="append", type=Path, default=None)
-    parser.add_argument("--cases-out", type=Path, default=Path("docs/ai/search-feedback-cases.yml"))
-    parser.add_argument("--report", type=Path, default=Path("docs/ai/search-feedback-cases.md"))
+    parser.add_argument("--cases-out", type=Path, default=Path(".cache/search-feedback-cases.yml"))
+    parser.add_argument("--report", type=Path, default=Path(".cache/search-feedback-cases.md"))
     parser.add_argument("--window-seconds", type=int, default=DEFAULT_WINDOW_SECONDS)
     parser.add_argument("--min-frequency", type=int, default=DEFAULT_MIN_FREQUENCY)
     parser.add_argument("--dominance", type=float, default=DEFAULT_DOMINANCE)
