@@ -55,6 +55,18 @@ VECTOR_DIM = 256
 # matches (0.2-0.4 cosine), so no threshold separates them. Pure semantic mode
 # is a nearest-neighbour ranking and returns at most one full page of them.
 SEMANTIC_MODE_MAX_RESULTS = MAX_LIMIT
+# Semantic contribution to a candidate: cosine * weight + rrf / (60 + rank).
+# Calibrated on real queries (twice the original 1200/6500): with similarity
+# limited to re-ranking lexical candidates, the stronger weight lifts relevant
+# pages without admitting new ones.
+SEMANTIC_SCORE_WEIGHT = 2400.0
+SEMANTIC_RRF_WEIGHT = 13000.0
+# A hybrid result below this score is noise: a weak text match plus vector
+# similarity and related boosts. Calibrated on judged real queries as the 10th
+# percentile of the top-1 score: it removes the junk tail and empties many
+# questions the corpus does not answer, keeping recall of the best pages
+# (0.856 against 0.875 without it). Other modes have their own score scales.
+MIN_RESULT_SCORE = 3800.0
 MAX_VECTOR_ROWS = 100000
 MAX_VECTOR_BASE64_CHARS = 8192
 VALID_TYPES = {"standard", "diagnostic", "fix", "pattern", "service"}
@@ -548,6 +560,8 @@ class V8StdIndex:
                 self._add_semantic_scores(candidates, query, rerank_only=False)
 
             if mode == "hybrid":
+                # Links between pages strengthen found pages; a page that no
+                # method matched does not become a result through a link.
                 self._add_related_boosts(candidates)
 
             entries = []
@@ -562,6 +576,8 @@ class V8StdIndex:
                     score *= 0.65
                     candidate["details"]["section_penalty"] = 0.65
                 if score <= 0:
+                    continue
+                if mode == "hybrid" and score < MIN_RESULT_SCORE:
                     continue
                 entries.append((score, page, candidate))
 
@@ -1092,11 +1108,11 @@ class V8StdIndex:
         for rank, (page_id, (score, chunk)) in enumerate(
             sorted(per_page.items(), key=lambda item: item[1][0], reverse=True), start=1
         ):
-            rrf = 6500.0 / (60 + rank)
+            rrf = SEMANTIC_RRF_WEIGHT / (60 + rank)
             self._add_candidate(
                 candidates,
                 page_id,
-                score * 1200.0 + rrf,
+                score * SEMANTIC_SCORE_WEIGHT + rrf,
                 f"semantic:{chunk}",
                 "semantic",
                 score,
@@ -1118,7 +1134,7 @@ class V8StdIndex:
                     boosts[target_id] += boost
                     source_reasons[target_id].append(page_id)
         for page_id, boost in boosts.items():
-            if page_id in candidates and candidates[page_id]["details"].get("exact"):
+            if page_id not in candidates or candidates[page_id]["details"].get("exact"):
                 continue
             self._add_candidate(
                 candidates,

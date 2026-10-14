@@ -18,7 +18,10 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from runtime.v8std_mcp_index import (  # noqa: E402
     IndexLoadError,
+    MIN_RESULT_SCORE,
     SEMANTIC_MODE_MAX_RESULTS,
+    SEMANTIC_RRF_WEIGHT,
+    SEMANTIC_SCORE_WEIGHT,
     VECTOR_DIM,
     VECTOR_MODEL,
     V8StdIndex,
@@ -60,27 +63,29 @@ class V8StdMcpIndexTests(unittest.TestCase):
         self.assertIn("score_details", std_results[0])
 
     def test_search_cursor_reads_past_fifty_without_reordering_or_duplication(self):
-        first = self.index.search("модуль", limit=50)
+        # Hybrid drops results below MIN_RESULT_SCORE; bm25 keeps the long
+        # tail and exercises more than one full page.
+        first = self.index.search("модуль", limit=50, mode="bm25")
         self.assertGreater(first["total"], 50)
         self.assertEqual(len(first["results"]), 50)
         self.assertIsNotNone(first["next_cursor"])
-        second = self.index.search("модуль", limit=50, cursor=first["next_cursor"])
-        self.assertEqual(second, self.index.search("модуль", limit=50, cursor=first["next_cursor"]))
+        second = self.index.search("модуль", limit=50, mode="bm25", cursor=first["next_cursor"])
+        self.assertEqual(second, self.index.search("модуль", limit=50, mode="bm25", cursor=first["next_cursor"]))
         self.assertFalse({item["id"] for item in first["results"]} &
                          {item["id"] for item in second["results"]})
         with self.assertRaisesRegex(ValueError, "stale search cursor"):
-            self.index.search("форма", limit=50, cursor=first["next_cursor"])
+            self.index.search("форма", limit=50, mode="bm25", cursor=first["next_cursor"])
         with self.assertRaisesRegex(ValueError, "stale search cursor"):
-            self.index.search("модуль", limit=20, cursor=first["next_cursor"])
+            self.index.search("модуль", limit=20, mode="bm25", cursor=first["next_cursor"])
         with self.assertRaisesRegex(ValueError, "stale search cursor"):
-            self.index.search("модуль", limit=50, mode="bm25", cursor=first["next_cursor"])
+            self.index.search("модуль", limit=50, mode="hybrid", cursor=first["next_cursor"])
         with self.assertRaisesRegex(ValueError, "stale search cursor"):
-            self.index.search("модуль", limit=50, types=["standard"], cursor=first["next_cursor"])
+            self.index.search("модуль", limit=50, mode="bm25", types=["standard"], cursor=first["next_cursor"])
 
         seen = first["results"] + second["results"]
         page = second
         while page["next_cursor"] is not None:
-            page = self.index.search("модуль", limit=50, cursor=page["next_cursor"])
+            page = self.index.search("модуль", limit=50, mode="bm25", cursor=page["next_cursor"])
             seen.extend(page["results"])
         self.assertEqual(len(seen), first["total"])
         self.assertEqual(len({item["id"] for item in seen}), first["total"])
@@ -99,7 +104,8 @@ class V8StdMcpIndexTests(unittest.TestCase):
                 vectors_path=REPO_ROOT / "docs" / "ai" / "search-vectors.jsonl",
             )
             index.load()
-            first = index.search("module", limit=1)
+            # A three-page corpus scores below the hybrid MIN_RESULT_SCORE.
+            first = index.search("module", limit=1, mode="bm25")
             self.assertIsNotNone(first["next_cursor"])
             pages_path.write_text(
                 '\n'.join(json.dumps({"id": f"std{number}", "type": "standard", "title": "Page module changed"})
@@ -108,9 +114,9 @@ class V8StdMcpIndexTests(unittest.TestCase):
             )
             index.load()
             with self.assertRaisesRegex(ValueError, "stale search cursor"):
-                index.search("module", limit=1, cursor=first["next_cursor"])
+                index.search("module", limit=1, mode="bm25", cursor=first["next_cursor"])
             with self.assertRaisesRegex(ValueError, "invalid search cursor"):
-                index.search("module", limit=1, cursor="vs1.invalid.1")
+                index.search("module", limit=1, mode="bm25", cursor="vs1.invalid.1")
 
     def test_search_cursor_rejects_changed_rules_with_same_ranked_hits(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -252,11 +258,66 @@ class V8StdMcpIndexTests(unittest.TestCase):
         lexical += self.index.search(query, mode="bm25", limit=50)["total"]
         hybrid = self.index.search(query, limit=50)
         self.assertEqual(hybrid["results"][0]["id"], "bslls:GetFormMethod")
-        # Related boosts expand matches through page links; semantic noise
-        # used to make every page in the corpus a candidate.
+        # Semantic noise used to make every page in the corpus a candidate.
         self.assertLess(hybrid["total"], len(self.index._pages) // 4)
         self.assertGreater(hybrid["total"], 0)
         self.assertGreater(lexical, 0)
+
+    def test_hybrid_keeps_only_results_above_min_result_score(self):
+        query = "обработчик события"
+        hybrid = self.index.search(query, limit=50)
+        scores = [item["score"] for item in hybrid["results"]]
+        self.assertTrue(scores)
+        self.assertTrue(all(score >= MIN_RESULT_SCORE for score in scores))
+        # total is the number of admitted results, not of all candidates.
+        self.assertEqual(hybrid["total"], len(scores))
+        # bm25 has its own score scale and keeps the long tail.
+        bm25 = self.index.search(query, mode="bm25", limit=50)
+        self.assertGreater(bm25["total"], hybrid["total"])
+        self.assertTrue(any(item["score"] < MIN_RESULT_SCORE for item in bm25["results"]))
+
+    def test_off_topic_query_is_empty_in_hybrid_mode(self):
+        for query in ("как сварить борщ", "рецепт пиццы", "football results"):
+            with self.subTest(query=query):
+                result = self.index.search(query)
+                self.assertEqual((result["total"], result["results"], result["next_cursor"]),
+                                 (0, [], None))
+
+    def test_type_filter_and_threshold_keep_total_consistent_with_pages(self):
+        first = self.index.search("модуль", types=["diagnostic"], limit=5)
+        self.assertGreater(first["total"], 5)
+        seen = list(first["results"])
+        page = first
+        while page["next_cursor"] is not None:
+            page = self.index.search("модуль", types=["diagnostic"], limit=5, cursor=page["next_cursor"])
+            seen.extend(page["results"])
+        self.assertEqual(len(seen), first["total"])
+        self.assertTrue(all(item["type"] == "diagnostic" and item["score"] >= MIN_RESULT_SCORE
+                            for item in seen))
+
+    def test_related_boost_strengthens_only_existing_candidates(self):
+        source = next(page for page in self.index._pages if len(page.get("related", [])) >= 2)
+        linked_id, unmatched_id = (item["id"] for item in source["related"][:2])
+        candidates = {}
+        self.index._add_candidate(candidates, source["id"], 1000.0, "bm25_body", "bm25_body", 1.0)
+        self.index._add_candidate(candidates, linked_id, 10.0, "bm25_body", "bm25_body", 1.0)
+        self.index._add_related_boosts(candidates)
+        self.assertNotIn(unmatched_id, candidates)
+        self.assertEqual(candidates[linked_id]["score"], 10.0 + 40.0)
+        self.assertIn(f"related_boost:{source['id']}", candidates[linked_id]["reasons"])
+
+    def test_semantic_contribution_uses_calibrated_weights(self):
+        if not self.index.status()["semantic_enabled"]:
+            self.skipTest("search vectors are not generated")
+        self.assertEqual((SEMANTIC_SCORE_WEIGHT, SEMANTIC_RRF_WEIGHT), (2400.0, 13000.0))
+        candidates = {}
+        self.index._add_candidate(candidates, "bslls:GetFormMethod", 0.0, "exact", "exact", 1.0)
+        self.index._add_semantic_scores(candidates, "GetFormMethod", rerank_only=True)
+        candidate = candidates["bslls:GetFormMethod"]
+        cosine = candidate["details"]["semantic"]
+        self.assertGreater(cosine, 0)
+        self.assertAlmostEqual(candidate["score"], cosine * 2400.0 + 13000.0 / 61)
+        self.assertEqual(set(candidates), {"bslls:GetFormMethod"})
 
     def test_semantic_mode_returns_bounded_nearest_pages(self):
         if not self.index.status()["semantic_enabled"]:
