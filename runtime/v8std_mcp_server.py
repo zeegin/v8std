@@ -43,6 +43,7 @@ from runtime.v8std_mcp_index import (
 )
 from runtime.v8std_mcp_runtime import SnapshotIndex
 from runtime.v8std_mcp_snapshot_format import DEFAULT_SITE_URL, SnapshotError, normalize_site_url
+from runtime.v8std_mcp_snapshots import SNAPSHOT_CACHE_SUPPORTED
 
 
 MCP_SELF_DOC_MESSAGE = "This is a MCP Streamable HTTP endpoint"
@@ -990,6 +991,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         args.site_url = None if legacy else normalize_site_url(site if site is not None else DEFAULT_SITE_URL)
     except SnapshotError:
         parser.error("invalid SITE_URL")
+    if args.site_url is not None and not SNAPSHOT_CACHE_SUPPORTED:
+        parser.error("SITE_URL snapshot mode needs POSIX file locking; on this platform use --pages and --vectors")
     args.index_url = args.index_url if args.index_url is not None else DEFAULT_INDEX_URL
     args.vectors_url = args.vectors_url if args.vectors_url is not None else DEFAULT_VECTORS_URL
     raw_limit = args.max_snippet_chars

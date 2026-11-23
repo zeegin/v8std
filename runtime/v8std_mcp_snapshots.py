@@ -16,7 +16,10 @@ in-flight requests; their lifetime is independent of disk-generation retention.
 from __future__ import annotations
 
 from contextlib import contextmanager
-import fcntl
+try:
+    import fcntl
+except ImportError:  # Windows: no flock and no O_NOFOLLOW/O_DIRECTORY; see SNAPSHOT_CACHE_SUPPORTED.
+    fcntl = None
 import http.client
 import io
 import multiprocessing
@@ -44,6 +47,9 @@ from runtime.v8std_mcp_snapshot_format import (
     validate_manifest, verify_archive,
 )
 
+# The snapshot cache relies on POSIX file locking and open flags. Without them only
+# explicit --pages/--vectors sources can run; importing this module must still work.
+SNAPSHOT_CACHE_SUPPORTED = fcntl is not None
 ATTEMPT_SECONDS = 360
 READ_SECONDS = 20
 CACHE_BYTES = 256 * 1024 * 1024
