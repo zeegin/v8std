@@ -313,6 +313,23 @@ class ConfigurationTests(unittest.TestCase):
                 self.assertNotIn("private-path", stderr.getvalue())
                 self.assertNotIn("secret.invalid", stderr.getvalue())
 
+    def test_explicit_local_sources_start_without_fcntl(self):
+        # Windows has no fcntl: the server must still import and accept --pages/--vectors,
+        # while snapshot mode is refused at argument parsing, before any source is loaded.
+        probe = "\n".join((
+            "import sys",
+            "sys.modules['fcntl'] = None",
+            "from runtime.v8std_mcp_server import parse_args",
+            "assert parse_args(['--pages', 'pages.jsonl', '--vectors', 'search-vectors.jsonl']).site_url is None",
+            "parse_args([])",
+        ))
+        environment = {key: value for key, value in os.environ.items() if not key.startswith("V8STD_MCP_")}
+        result = subprocess.run([sys.executable, "-c", probe], cwd=ROOT, env=environment,
+                                capture_output=True, text=True, timeout=60)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("use --pages and --vectors", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
 
 def frozen_real_index(maximum=4000):
     from runtime.v8std_mcp_index import V8StdIndex
